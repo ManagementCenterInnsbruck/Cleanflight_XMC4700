@@ -1,0 +1,569 @@
+   1              	 .syntax unified
+   2              	 .cpu cortex-m4
+   3              	 .eabi_attribute 27,3
+   4              	 .fpu fpv4-sp-d16
+   5              	 .eabi_attribute 20,1
+   6              	 .eabi_attribute 21,1
+   7              	 .eabi_attribute 23,3
+   8              	 .eabi_attribute 24,1
+   9              	 .eabi_attribute 25,1
+  10              	 .eabi_attribute 26,1
+  11              	 .eabi_attribute 30,6
+  12              	 .eabi_attribute 34,1
+  13              	 .eabi_attribute 18,4
+  14              	 .thumb
+  15              	 .file "accgyro_mpu3050.c"
+  16              	 .text
+  17              	.Ltext0:
+  18              	 .cfi_sections .debug_frame
+  19              	 .section .text.mpu3050GetDLPF,"ax",%progbits
+  20              	 .align 2
+  21              	 .thumb
+  22              	 .thumb_func
+  24              	mpu3050GetDLPF:
+  25              	.LFB535:
+  26              	 .file 1 "../cleanflight/src/main/drivers/accgyro/accgyro_mpu3050.c"
+   1:../cleanflight/src/main/drivers/accgyro/accgyro_mpu3050.c **** /*
+   2:../cleanflight/src/main/drivers/accgyro/accgyro_mpu3050.c ****  * This file is part of Cleanflight and Betaflight.
+   3:../cleanflight/src/main/drivers/accgyro/accgyro_mpu3050.c ****  *
+   4:../cleanflight/src/main/drivers/accgyro/accgyro_mpu3050.c ****  * Cleanflight and Betaflight are free software. You can redistribute
+   5:../cleanflight/src/main/drivers/accgyro/accgyro_mpu3050.c ****  * this software and/or modify this software under the terms of the
+   6:../cleanflight/src/main/drivers/accgyro/accgyro_mpu3050.c ****  * GNU General Public License as published by the Free Software
+   7:../cleanflight/src/main/drivers/accgyro/accgyro_mpu3050.c ****  * Foundation, either version 3 of the License, or (at your option)
+   8:../cleanflight/src/main/drivers/accgyro/accgyro_mpu3050.c ****  * any later version.
+   9:../cleanflight/src/main/drivers/accgyro/accgyro_mpu3050.c ****  *
+  10:../cleanflight/src/main/drivers/accgyro/accgyro_mpu3050.c ****  * Cleanflight and Betaflight are distributed in the hope that they
+  11:../cleanflight/src/main/drivers/accgyro/accgyro_mpu3050.c ****  * will be useful, but WITHOUT ANY WARRANTY; without even the implied
+  12:../cleanflight/src/main/drivers/accgyro/accgyro_mpu3050.c ****  * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+  13:../cleanflight/src/main/drivers/accgyro/accgyro_mpu3050.c ****  * See the GNU General Public License for more details.
+  14:../cleanflight/src/main/drivers/accgyro/accgyro_mpu3050.c ****  *
+  15:../cleanflight/src/main/drivers/accgyro/accgyro_mpu3050.c ****  * You should have received a copy of the GNU General Public License
+  16:../cleanflight/src/main/drivers/accgyro/accgyro_mpu3050.c ****  * along with this software.
+  17:../cleanflight/src/main/drivers/accgyro/accgyro_mpu3050.c ****  *
+  18:../cleanflight/src/main/drivers/accgyro/accgyro_mpu3050.c ****  * If not, see <http://www.gnu.org/licenses/>.
+  19:../cleanflight/src/main/drivers/accgyro/accgyro_mpu3050.c ****  */
+  20:../cleanflight/src/main/drivers/accgyro/accgyro_mpu3050.c **** 
+  21:../cleanflight/src/main/drivers/accgyro/accgyro_mpu3050.c **** // NOTE: This gyro is considered obsolete and may be removed in the future.
+  22:../cleanflight/src/main/drivers/accgyro/accgyro_mpu3050.c **** 
+  23:../cleanflight/src/main/drivers/accgyro/accgyro_mpu3050.c **** #include <stdbool.h>
+  24:../cleanflight/src/main/drivers/accgyro/accgyro_mpu3050.c **** #include <stdint.h>
+  25:../cleanflight/src/main/drivers/accgyro/accgyro_mpu3050.c **** 
+  26:../cleanflight/src/main/drivers/accgyro/accgyro_mpu3050.c **** #include "platform.h"
+  27:../cleanflight/src/main/drivers/accgyro/accgyro_mpu3050.c **** 
+  28:../cleanflight/src/main/drivers/accgyro/accgyro_mpu3050.c **** #include "common/maths.h"
+  29:../cleanflight/src/main/drivers/accgyro/accgyro_mpu3050.c **** #include "common/utils.h"
+  30:../cleanflight/src/main/drivers/accgyro/accgyro_mpu3050.c **** 
+  31:../cleanflight/src/main/drivers/accgyro/accgyro_mpu3050.c **** #include "drivers/bus_i2c.h"
+  32:../cleanflight/src/main/drivers/accgyro/accgyro_mpu3050.c **** #include "drivers/exti.h"
+  33:../cleanflight/src/main/drivers/accgyro/accgyro_mpu3050.c **** #include "drivers/sensor.h"
+  34:../cleanflight/src/main/drivers/accgyro/accgyro_mpu3050.c **** #include "drivers/system.h"
+  35:../cleanflight/src/main/drivers/accgyro/accgyro_mpu3050.c **** #include "drivers/time.h"
+  36:../cleanflight/src/main/drivers/accgyro/accgyro_mpu3050.c **** 
+  37:../cleanflight/src/main/drivers/accgyro/accgyro_mpu3050.c **** #include "accgyro.h"
+  38:../cleanflight/src/main/drivers/accgyro/accgyro_mpu3050.c **** #include "accgyro_mpu.h"
+  39:../cleanflight/src/main/drivers/accgyro/accgyro_mpu3050.c **** #include "accgyro_mpu3050.h"
+  40:../cleanflight/src/main/drivers/accgyro/accgyro_mpu3050.c **** 
+  41:../cleanflight/src/main/drivers/accgyro/accgyro_mpu3050.c **** // MPU3050, Standard address 0x68
+  42:../cleanflight/src/main/drivers/accgyro/accgyro_mpu3050.c **** #define MPU3050_ADDRESS         0x68
+  43:../cleanflight/src/main/drivers/accgyro/accgyro_mpu3050.c **** 
+  44:../cleanflight/src/main/drivers/accgyro/accgyro_mpu3050.c **** // Bits
+  45:../cleanflight/src/main/drivers/accgyro/accgyro_mpu3050.c **** #define MPU3050_FS_SEL_2000DPS  0x18
+  46:../cleanflight/src/main/drivers/accgyro/accgyro_mpu3050.c **** #define MPU3050_DLPF_10HZ       0x05
+  47:../cleanflight/src/main/drivers/accgyro/accgyro_mpu3050.c **** #define MPU3050_DLPF_20HZ       0x04
+  48:../cleanflight/src/main/drivers/accgyro/accgyro_mpu3050.c **** #define MPU3050_DLPF_42HZ       0x03
+  49:../cleanflight/src/main/drivers/accgyro/accgyro_mpu3050.c **** #define MPU3050_DLPF_98HZ       0x02
+  50:../cleanflight/src/main/drivers/accgyro/accgyro_mpu3050.c **** #define MPU3050_DLPF_188HZ      0x01
+  51:../cleanflight/src/main/drivers/accgyro/accgyro_mpu3050.c **** #define MPU3050_DLPF_256HZ      0x00
+  52:../cleanflight/src/main/drivers/accgyro/accgyro_mpu3050.c **** 
+  53:../cleanflight/src/main/drivers/accgyro/accgyro_mpu3050.c **** #define MPU3050_USER_RESET      0x01
+  54:../cleanflight/src/main/drivers/accgyro/accgyro_mpu3050.c **** #define MPU3050_CLK_SEL_PLL_GX  0x01
+  55:../cleanflight/src/main/drivers/accgyro/accgyro_mpu3050.c **** 
+  56:../cleanflight/src/main/drivers/accgyro/accgyro_mpu3050.c **** static uint8_t mpu3050GetDLPF(uint8_t lpf)
+  57:../cleanflight/src/main/drivers/accgyro/accgyro_mpu3050.c **** {
+  27              	 .loc 1 57 0
+  28              	 .cfi_startproc
+  29              	 
+  30              	 
+  31              	 
+  32 0000 80B4     	 push {r7}
+  33              	.LCFI0:
+  34              	 .cfi_def_cfa_offset 4
+  35              	 .cfi_offset 7,-4
+  36 0002 85B0     	 sub sp,sp,#20
+  37              	.LCFI1:
+  38              	 .cfi_def_cfa_offset 24
+  39 0004 00AF     	 add r7,sp,#0
+  40              	.LCFI2:
+  41              	 .cfi_def_cfa_register 7
+  42 0006 0346     	 mov r3,r0
+  43 0008 FB71     	 strb r3,[r7,#7]
+  58:../cleanflight/src/main/drivers/accgyro/accgyro_mpu3050.c ****     uint8_t ret;
+  59:../cleanflight/src/main/drivers/accgyro/accgyro_mpu3050.c ****     if (lpf == GYRO_HARDWARE_LPF_1KHZ_SAMPLE) {
+  44              	 .loc 1 59 0
+  45 000a FB79     	 ldrb r3,[r7,#7]
+  46 000c 022B     	 cmp r3,#2
+  47 000e 02D1     	 bne .L2
+  60:../cleanflight/src/main/drivers/accgyro/accgyro_mpu3050.c ****         ret = MPU3050_DLPF_188HZ;
+  48              	 .loc 1 60 0
+  49 0010 0123     	 movs r3,#1
+  50 0012 FB73     	 strb r3,[r7,#15]
+  51 0014 01E0     	 b .L3
+  52              	.L2:
+  61:../cleanflight/src/main/drivers/accgyro/accgyro_mpu3050.c ****     } else {
+  62:../cleanflight/src/main/drivers/accgyro/accgyro_mpu3050.c ****         ret = MPU3050_DLPF_256HZ;
+  53              	 .loc 1 62 0
+  54 0016 0023     	 movs r3,#0
+  55 0018 FB73     	 strb r3,[r7,#15]
+  56              	.L3:
+  63:../cleanflight/src/main/drivers/accgyro/accgyro_mpu3050.c ****     }
+  64:../cleanflight/src/main/drivers/accgyro/accgyro_mpu3050.c ****     return ret;
+  57              	 .loc 1 64 0
+  58 001a FB7B     	 ldrb r3,[r7,#15]
+  65:../cleanflight/src/main/drivers/accgyro/accgyro_mpu3050.c **** }
+  59              	 .loc 1 65 0
+  60 001c 1846     	 mov r0,r3
+  61 001e 1437     	 adds r7,r7,#20
+  62              	.LCFI3:
+  63              	 .cfi_def_cfa_offset 4
+  64 0020 BD46     	 mov sp,r7
+  65              	.LCFI4:
+  66              	 .cfi_def_cfa_register 13
+  67              	 
+  68 0022 5DF8047B 	 ldr r7,[sp],#4
+  69              	.LCFI5:
+  70              	 .cfi_restore 7
+  71              	 .cfi_def_cfa_offset 0
+  72 0026 7047     	 bx lr
+  73              	 .cfi_endproc
+  74              	.LFE535:
+  76              	 .section .text.mpu3050Init,"ax",%progbits
+  77              	 .align 2
+  78              	 .thumb
+  79              	 .thumb_func
+  81              	mpu3050Init:
+  82              	.LFB536:
+  66:../cleanflight/src/main/drivers/accgyro/accgyro_mpu3050.c **** 
+  67:../cleanflight/src/main/drivers/accgyro/accgyro_mpu3050.c **** static void mpu3050Init(gyroDev_t *gyro)
+  68:../cleanflight/src/main/drivers/accgyro/accgyro_mpu3050.c **** {
+  83              	 .loc 1 68 0
+  84              	 .cfi_startproc
+  85              	 
+  86              	 
+  87 0000 90B5     	 push {r4,r7,lr}
+  88              	.LCFI6:
+  89              	 .cfi_def_cfa_offset 12
+  90              	 .cfi_offset 4,-12
+  91              	 .cfi_offset 7,-8
+  92              	 .cfi_offset 14,-4
+  93 0002 85B0     	 sub sp,sp,#20
+  94              	.LCFI7:
+  95              	 .cfi_def_cfa_offset 32
+  96 0004 00AF     	 add r7,sp,#0
+  97              	.LCFI8:
+  98              	 .cfi_def_cfa_register 7
+  99 0006 7860     	 str r0,[r7,#4]
+  69:../cleanflight/src/main/drivers/accgyro/accgyro_mpu3050.c ****     delay(25); // datasheet page 13 says 20ms. other stuff could have been running meanwhile. but w
+ 100              	 .loc 1 69 0
+ 101 0008 1920     	 movs r0,#25
+ 102 000a FFF7FEFF 	 bl delay
+  70:../cleanflight/src/main/drivers/accgyro/accgyro_mpu3050.c **** 
+  71:../cleanflight/src/main/drivers/accgyro/accgyro_mpu3050.c ****     const bool ack = busWriteRegister(&gyro->bus, MPU3050_SMPLRT_DIV, 0);
+ 103              	 .loc 1 71 0
+ 104 000e 7B68     	 ldr r3,[r7,#4]
+ 105 0010 1033     	 adds r3,r3,#16
+ 106 0012 1846     	 mov r0,r3
+ 107 0014 1521     	 movs r1,#21
+ 108 0016 0022     	 movs r2,#0
+ 109 0018 FFF7FEFF 	 bl busWriteRegister
+ 110 001c 0346     	 mov r3,r0
+ 111 001e FB73     	 strb r3,[r7,#15]
+  72:../cleanflight/src/main/drivers/accgyro/accgyro_mpu3050.c ****     if (!ack) {
+ 112              	 .loc 1 72 0
+ 113 0020 FB7B     	 ldrb r3,[r7,#15]
+ 114 0022 83F00103 	 eor r3,r3,#1
+ 115 0026 DBB2     	 uxtb r3,r3
+ 116 0028 002B     	 cmp r3,#0
+ 117 002a 02D0     	 beq .L6
+  73:../cleanflight/src/main/drivers/accgyro/accgyro_mpu3050.c ****         failureMode(FAILURE_ACC_INIT);
+ 118              	 .loc 1 73 0
+ 119 002c 0220     	 movs r0,#2
+ 120 002e FFF7FEFF 	 bl failureMode
+ 121              	.L6:
+  74:../cleanflight/src/main/drivers/accgyro/accgyro_mpu3050.c ****     }
+  75:../cleanflight/src/main/drivers/accgyro/accgyro_mpu3050.c **** 
+  76:../cleanflight/src/main/drivers/accgyro/accgyro_mpu3050.c ****     busWriteRegister(&gyro->bus, MPU3050_DLPF_FS_SYNC, MPU3050_FS_SEL_2000DPS | mpu3050GetDLPF(gyro
+ 122              	 .loc 1 76 0
+ 123 0032 7B68     	 ldr r3,[r7,#4]
+ 124 0034 03F11004 	 add r4,r3,#16
+ 125 0038 7B68     	 ldr r3,[r7,#4]
+ 126 003a 93F85F30 	 ldrb r3,[r3,#95]
+ 127 003e 1846     	 mov r0,r3
+ 128 0040 FFF7FEFF 	 bl mpu3050GetDLPF
+ 129 0044 0346     	 mov r3,r0
+ 130 0046 43F01803 	 orr r3,r3,#24
+ 131 004a DBB2     	 uxtb r3,r3
+ 132 004c 2046     	 mov r0,r4
+ 133 004e 1621     	 movs r1,#22
+ 134 0050 1A46     	 mov r2,r3
+ 135 0052 FFF7FEFF 	 bl busWriteRegister
+  77:../cleanflight/src/main/drivers/accgyro/accgyro_mpu3050.c ****     busWriteRegister(&gyro->bus, MPU3050_INT_CFG, 0);
+ 136              	 .loc 1 77 0
+ 137 0056 7B68     	 ldr r3,[r7,#4]
+ 138 0058 1033     	 adds r3,r3,#16
+ 139 005a 1846     	 mov r0,r3
+ 140 005c 1721     	 movs r1,#23
+ 141 005e 0022     	 movs r2,#0
+ 142 0060 FFF7FEFF 	 bl busWriteRegister
+  78:../cleanflight/src/main/drivers/accgyro/accgyro_mpu3050.c ****     busWriteRegister(&gyro->bus, MPU3050_USER_CTRL, MPU3050_USER_RESET);
+ 143              	 .loc 1 78 0
+ 144 0064 7B68     	 ldr r3,[r7,#4]
+ 145 0066 1033     	 adds r3,r3,#16
+ 146 0068 1846     	 mov r0,r3
+ 147 006a 3D21     	 movs r1,#61
+ 148 006c 0122     	 movs r2,#1
+ 149 006e FFF7FEFF 	 bl busWriteRegister
+  79:../cleanflight/src/main/drivers/accgyro/accgyro_mpu3050.c ****     busWriteRegister(&gyro->bus, MPU3050_PWR_MGM, MPU3050_CLK_SEL_PLL_GX);
+ 150              	 .loc 1 79 0
+ 151 0072 7B68     	 ldr r3,[r7,#4]
+ 152 0074 1033     	 adds r3,r3,#16
+ 153 0076 1846     	 mov r0,r3
+ 154 0078 3E21     	 movs r1,#62
+ 155 007a 0122     	 movs r2,#1
+ 156 007c FFF7FEFF 	 bl busWriteRegister
+  80:../cleanflight/src/main/drivers/accgyro/accgyro_mpu3050.c **** }
+ 157              	 .loc 1 80 0
+ 158 0080 1437     	 adds r7,r7,#20
+ 159              	.LCFI9:
+ 160              	 .cfi_def_cfa_offset 12
+ 161 0082 BD46     	 mov sp,r7
+ 162              	.LCFI10:
+ 163              	 .cfi_def_cfa_register 13
+ 164              	 
+ 165 0084 90BD     	 pop {r4,r7,pc}
+ 166              	 .cfi_endproc
+ 167              	.LFE536:
+ 169 0086 00BF     	 .section .text.mpu3050GyroRead,"ax",%progbits
+ 170              	 .align 2
+ 171              	 .thumb
+ 172              	 .thumb_func
+ 174              	mpu3050GyroRead:
+ 175              	.LFB537:
+  81:../cleanflight/src/main/drivers/accgyro/accgyro_mpu3050.c **** 
+  82:../cleanflight/src/main/drivers/accgyro/accgyro_mpu3050.c **** static bool mpu3050GyroRead(gyroDev_t *gyro)
+  83:../cleanflight/src/main/drivers/accgyro/accgyro_mpu3050.c **** {
+ 176              	 .loc 1 83 0
+ 177              	 .cfi_startproc
+ 178              	 
+ 179              	 
+ 180 0000 80B5     	 push {r7,lr}
+ 181              	.LCFI11:
+ 182              	 .cfi_def_cfa_offset 8
+ 183              	 .cfi_offset 7,-8
+ 184              	 .cfi_offset 14,-4
+ 185 0002 84B0     	 sub sp,sp,#16
+ 186              	.LCFI12:
+ 187              	 .cfi_def_cfa_offset 24
+ 188 0004 00AF     	 add r7,sp,#0
+ 189              	.LCFI13:
+ 190              	 .cfi_def_cfa_register 7
+ 191 0006 7860     	 str r0,[r7,#4]
+  84:../cleanflight/src/main/drivers/accgyro/accgyro_mpu3050.c ****     uint8_t data[6];
+  85:../cleanflight/src/main/drivers/accgyro/accgyro_mpu3050.c **** 
+  86:../cleanflight/src/main/drivers/accgyro/accgyro_mpu3050.c ****     const bool ack = busReadRegisterBuffer(&gyro->bus, MPU3050_GYRO_OUT, data, 6);
+ 192              	 .loc 1 86 0
+ 193 0008 7B68     	 ldr r3,[r7,#4]
+ 194 000a 03F11002 	 add r2,r3,#16
+ 195 000e 07F10803 	 add r3,r7,#8
+ 196 0012 1046     	 mov r0,r2
+ 197 0014 1D21     	 movs r1,#29
+ 198 0016 1A46     	 mov r2,r3
+ 199 0018 0623     	 movs r3,#6
+ 200 001a FFF7FEFF 	 bl busReadRegisterBuffer
+ 201 001e 0346     	 mov r3,r0
+ 202 0020 FB73     	 strb r3,[r7,#15]
+  87:../cleanflight/src/main/drivers/accgyro/accgyro_mpu3050.c ****     if (!ack) {
+ 203              	 .loc 1 87 0
+ 204 0022 FB7B     	 ldrb r3,[r7,#15]
+ 205 0024 83F00103 	 eor r3,r3,#1
+ 206 0028 DBB2     	 uxtb r3,r3
+ 207 002a 002B     	 cmp r3,#0
+ 208 002c 01D0     	 beq .L8
+  88:../cleanflight/src/main/drivers/accgyro/accgyro_mpu3050.c ****         return false;
+ 209              	 .loc 1 88 0
+ 210 002e 0023     	 movs r3,#0
+ 211 0030 1EE0     	 b .L10
+ 212              	.L8:
+  89:../cleanflight/src/main/drivers/accgyro/accgyro_mpu3050.c ****     }
+  90:../cleanflight/src/main/drivers/accgyro/accgyro_mpu3050.c **** 
+  91:../cleanflight/src/main/drivers/accgyro/accgyro_mpu3050.c ****     gyro->gyroADCRaw[X] = (int16_t)((data[0] << 8) | data[1]);
+ 213              	 .loc 1 91 0
+ 214 0032 3B7A     	 ldrb r3,[r7,#8]
+ 215 0034 1B02     	 lsls r3,r3,#8
+ 216 0036 9AB2     	 uxth r2,r3
+ 217 0038 7B7A     	 ldrb r3,[r7,#9]
+ 218 003a 9BB2     	 uxth r3,r3
+ 219 003c 1343     	 orrs r3,r3,r2
+ 220 003e 9AB2     	 uxth r2,r3
+ 221 0040 7B68     	 ldr r3,[r7,#4]
+ 222 0042 A3F84D20 	 strh r2,[r3,#77]
+  92:../cleanflight/src/main/drivers/accgyro/accgyro_mpu3050.c ****     gyro->gyroADCRaw[Y] = (int16_t)((data[2] << 8) | data[3]);
+ 223              	 .loc 1 92 0
+ 224 0046 BB7A     	 ldrb r3,[r7,#10]
+ 225 0048 1B02     	 lsls r3,r3,#8
+ 226 004a 9AB2     	 uxth r2,r3
+ 227 004c FB7A     	 ldrb r3,[r7,#11]
+ 228 004e 9BB2     	 uxth r3,r3
+ 229 0050 1343     	 orrs r3,r3,r2
+ 230 0052 9AB2     	 uxth r2,r3
+ 231 0054 7B68     	 ldr r3,[r7,#4]
+ 232 0056 A3F84F20 	 strh r2,[r3,#79]
+  93:../cleanflight/src/main/drivers/accgyro/accgyro_mpu3050.c ****     gyro->gyroADCRaw[Z] = (int16_t)((data[4] << 8) | data[5]);
+ 233              	 .loc 1 93 0
+ 234 005a 3B7B     	 ldrb r3,[r7,#12]
+ 235 005c 1B02     	 lsls r3,r3,#8
+ 236 005e 9AB2     	 uxth r2,r3
+ 237 0060 7B7B     	 ldrb r3,[r7,#13]
+ 238 0062 9BB2     	 uxth r3,r3
+ 239 0064 1343     	 orrs r3,r3,r2
+ 240 0066 9AB2     	 uxth r2,r3
+ 241 0068 7B68     	 ldr r3,[r7,#4]
+ 242 006a A3F85120 	 strh r2,[r3,#81]
+  94:../cleanflight/src/main/drivers/accgyro/accgyro_mpu3050.c **** 
+  95:../cleanflight/src/main/drivers/accgyro/accgyro_mpu3050.c ****     return true;
+ 243              	 .loc 1 95 0
+ 244 006e 0123     	 movs r3,#1
+ 245              	.L10:
+  96:../cleanflight/src/main/drivers/accgyro/accgyro_mpu3050.c **** }
+ 246              	 .loc 1 96 0 discriminator 1
+ 247 0070 1846     	 mov r0,r3
+ 248 0072 1037     	 adds r7,r7,#16
+ 249              	.LCFI14:
+ 250              	 .cfi_def_cfa_offset 8
+ 251 0074 BD46     	 mov sp,r7
+ 252              	.LCFI15:
+ 253              	 .cfi_def_cfa_register 13
+ 254              	 
+ 255 0076 80BD     	 pop {r7,pc}
+ 256              	 .cfi_endproc
+ 257              	.LFE537:
+ 259              	 .section .text.mpu3050ReadTemperature,"ax",%progbits
+ 260              	 .align 2
+ 261              	 .thumb
+ 262              	 .thumb_func
+ 264              	mpu3050ReadTemperature:
+ 265              	.LFB538:
+  97:../cleanflight/src/main/drivers/accgyro/accgyro_mpu3050.c **** 
+  98:../cleanflight/src/main/drivers/accgyro/accgyro_mpu3050.c **** static bool mpu3050ReadTemperature(gyroDev_t *gyro, int16_t *tempData)
+  99:../cleanflight/src/main/drivers/accgyro/accgyro_mpu3050.c **** {
+ 266              	 .loc 1 99 0
+ 267              	 .cfi_startproc
+ 268              	 
+ 269              	 
+ 270 0000 80B5     	 push {r7,lr}
+ 271              	.LCFI16:
+ 272              	 .cfi_def_cfa_offset 8
+ 273              	 .cfi_offset 7,-8
+ 274              	 .cfi_offset 14,-4
+ 275 0002 84B0     	 sub sp,sp,#16
+ 276              	.LCFI17:
+ 277              	 .cfi_def_cfa_offset 24
+ 278 0004 00AF     	 add r7,sp,#0
+ 279              	.LCFI18:
+ 280              	 .cfi_def_cfa_register 7
+ 281 0006 7860     	 str r0,[r7,#4]
+ 282 0008 3960     	 str r1,[r7]
+ 100:../cleanflight/src/main/drivers/accgyro/accgyro_mpu3050.c ****     uint8_t buf[2];
+ 101:../cleanflight/src/main/drivers/accgyro/accgyro_mpu3050.c ****     if (!busReadRegisterBuffer(&gyro->bus, MPU3050_TEMP_OUT, buf, 2)) {
+ 283              	 .loc 1 101 0
+ 284 000a 7B68     	 ldr r3,[r7,#4]
+ 285 000c 03F11002 	 add r2,r3,#16
+ 286 0010 07F10C03 	 add r3,r7,#12
+ 287 0014 1046     	 mov r0,r2
+ 288 0016 1B21     	 movs r1,#27
+ 289 0018 1A46     	 mov r2,r3
+ 290 001a 0223     	 movs r3,#2
+ 291 001c FFF7FEFF 	 bl busReadRegisterBuffer
+ 292 0020 0346     	 mov r3,r0
+ 293 0022 83F00103 	 eor r3,r3,#1
+ 294 0026 DBB2     	 uxtb r3,r3
+ 295 0028 002B     	 cmp r3,#0
+ 296 002a 01D0     	 beq .L12
+ 102:../cleanflight/src/main/drivers/accgyro/accgyro_mpu3050.c ****         return false;
+ 297              	 .loc 1 102 0
+ 298 002c 0023     	 movs r3,#0
+ 299 002e 14E0     	 b .L14
+ 300              	.L12:
+ 103:../cleanflight/src/main/drivers/accgyro/accgyro_mpu3050.c ****     }
+ 104:../cleanflight/src/main/drivers/accgyro/accgyro_mpu3050.c **** 
+ 105:../cleanflight/src/main/drivers/accgyro/accgyro_mpu3050.c ****     *tempData = 35 + ((int32_t)(buf[0] << 8 | buf[1]) + 13200) / 280;
+ 301              	 .loc 1 105 0
+ 302 0030 3B7B     	 ldrb r3,[r7,#12]
+ 303 0032 1B02     	 lsls r3,r3,#8
+ 304 0034 7A7B     	 ldrb r2,[r7,#13]
+ 305 0036 1343     	 orrs r3,r3,r2
+ 306 0038 03F54E53 	 add r3,r3,#13184
+ 307 003c 1033     	 adds r3,r3,#16
+ 308 003e 094A     	 ldr r2,.L15
+ 309 0040 82FB0312 	 smull r1,r2,r2,r3
+ 310 0044 1A44     	 add r2,r2,r3
+ 311 0046 1212     	 asrs r2,r2,#8
+ 312 0048 DB17     	 asrs r3,r3,#31
+ 313 004a D31A     	 subs r3,r2,r3
+ 314 004c 9BB2     	 uxth r3,r3
+ 315 004e 2333     	 adds r3,r3,#35
+ 316 0050 9BB2     	 uxth r3,r3
+ 317 0052 9AB2     	 uxth r2,r3
+ 318 0054 3B68     	 ldr r3,[r7]
+ 319 0056 1A80     	 strh r2,[r3]
+ 106:../cleanflight/src/main/drivers/accgyro/accgyro_mpu3050.c **** 
+ 107:../cleanflight/src/main/drivers/accgyro/accgyro_mpu3050.c ****     return true;
+ 320              	 .loc 1 107 0
+ 321 0058 0123     	 movs r3,#1
+ 322              	.L14:
+ 108:../cleanflight/src/main/drivers/accgyro/accgyro_mpu3050.c **** }
+ 323              	 .loc 1 108 0 discriminator 1
+ 324 005a 1846     	 mov r0,r3
+ 325 005c 1037     	 adds r7,r7,#16
+ 326              	.LCFI19:
+ 327              	 .cfi_def_cfa_offset 8
+ 328 005e BD46     	 mov sp,r7
+ 329              	.LCFI20:
+ 330              	 .cfi_def_cfa_register 13
+ 331              	 
+ 332 0060 80BD     	 pop {r7,pc}
+ 333              	.L16:
+ 334 0062 00BF     	 .align 2
+ 335              	.L15:
+ 336 0064 EBA00EEA 	 .word -368140053
+ 337              	 .cfi_endproc
+ 338              	.LFE538:
+ 340              	 .section .text.mpu3050Detect,"ax",%progbits
+ 341              	 .align 2
+ 342              	 .global mpu3050Detect
+ 343              	 .thumb
+ 344              	 .thumb_func
+ 346              	mpu3050Detect:
+ 347              	.LFB539:
+ 109:../cleanflight/src/main/drivers/accgyro/accgyro_mpu3050.c **** 
+ 110:../cleanflight/src/main/drivers/accgyro/accgyro_mpu3050.c **** bool mpu3050Detect(gyroDev_t *gyro)
+ 111:../cleanflight/src/main/drivers/accgyro/accgyro_mpu3050.c **** {
+ 348              	 .loc 1 111 0
+ 349              	 .cfi_startproc
+ 350              	 
+ 351              	 
+ 352              	 
+ 353 0000 80B4     	 push {r7}
+ 354              	.LCFI21:
+ 355              	 .cfi_def_cfa_offset 4
+ 356              	 .cfi_offset 7,-4
+ 357 0002 83B0     	 sub sp,sp,#12
+ 358              	.LCFI22:
+ 359              	 .cfi_def_cfa_offset 16
+ 360 0004 00AF     	 add r7,sp,#0
+ 361              	.LCFI23:
+ 362              	 .cfi_def_cfa_register 7
+ 363 0006 7860     	 str r0,[r7,#4]
+ 112:../cleanflight/src/main/drivers/accgyro/accgyro_mpu3050.c ****     if (gyro->mpuDetectionResult.sensor != MPU_3050) {
+ 364              	 .loc 1 112 0
+ 365 0008 7B68     	 ldr r3,[r7,#4]
+ 366 000a 93F85930 	 ldrb r3,[r3,#89]
+ 367 000e 012B     	 cmp r3,#1
+ 368 0010 01D0     	 beq .L18
+ 113:../cleanflight/src/main/drivers/accgyro/accgyro_mpu3050.c ****         return false;
+ 369              	 .loc 1 113 0
+ 370 0012 0023     	 movs r3,#0
+ 371 0014 0DE0     	 b .L19
+ 372              	.L18:
+ 114:../cleanflight/src/main/drivers/accgyro/accgyro_mpu3050.c ****     }
+ 115:../cleanflight/src/main/drivers/accgyro/accgyro_mpu3050.c ****     gyro->initFn = mpu3050Init;
+ 373              	 .loc 1 115 0
+ 374 0016 7B68     	 ldr r3,[r7,#4]
+ 375 0018 094A     	 ldr r2,.L20
+ 376 001a 1A60     	 str r2,[r3]
+ 116:../cleanflight/src/main/drivers/accgyro/accgyro_mpu3050.c ****     gyro->readFn = mpu3050GyroRead;
+ 377              	 .loc 1 116 0
+ 378 001c 7B68     	 ldr r3,[r7,#4]
+ 379 001e 094A     	 ldr r2,.L20+4
+ 380 0020 5A60     	 str r2,[r3,#4]
+ 117:../cleanflight/src/main/drivers/accgyro/accgyro_mpu3050.c ****     gyro->temperatureFn = mpu3050ReadTemperature;
+ 381              	 .loc 1 117 0
+ 382 0022 7B68     	 ldr r3,[r7,#4]
+ 383 0024 084A     	 ldr r2,.L20+8
+ 384 0026 9A60     	 str r2,[r3,#8]
+ 118:../cleanflight/src/main/drivers/accgyro/accgyro_mpu3050.c **** 
+ 119:../cleanflight/src/main/drivers/accgyro/accgyro_mpu3050.c ****     // 16.4 dps/lsb scalefactor
+ 120:../cleanflight/src/main/drivers/accgyro/accgyro_mpu3050.c ****     gyro->scale = 1.0f / 16.4f;
+ 385              	 .loc 1 120 0
+ 386 0028 7B68     	 ldr r3,[r7,#4]
+ 387 002a 1933     	 adds r3,r3,#25
+ 388 002c 074A     	 ldr r2,.L20+12
+ 389 002e 1A60     	 str r2,[r3]
+ 121:../cleanflight/src/main/drivers/accgyro/accgyro_mpu3050.c **** 
+ 122:../cleanflight/src/main/drivers/accgyro/accgyro_mpu3050.c ****     return true;
+ 390              	 .loc 1 122 0
+ 391 0030 0123     	 movs r3,#1
+ 392              	.L19:
+ 123:../cleanflight/src/main/drivers/accgyro/accgyro_mpu3050.c **** }
+ 393              	 .loc 1 123 0
+ 394 0032 1846     	 mov r0,r3
+ 395 0034 0C37     	 adds r7,r7,#12
+ 396              	.LCFI24:
+ 397              	 .cfi_def_cfa_offset 4
+ 398 0036 BD46     	 mov sp,r7
+ 399              	.LCFI25:
+ 400              	 .cfi_def_cfa_register 13
+ 401              	 
+ 402 0038 5DF8047B 	 ldr r7,[sp],#4
+ 403              	.LCFI26:
+ 404              	 .cfi_restore 7
+ 405              	 .cfi_def_cfa_offset 0
+ 406 003c 7047     	 bx lr
+ 407              	.L21:
+ 408 003e 00BF     	 .align 2
+ 409              	.L20:
+ 410 0040 00000000 	 .word mpu3050Init
+ 411 0044 00000000 	 .word mpu3050GyroRead
+ 412 0048 00000000 	 .word mpu3050ReadTemperature
+ 413 004c 90C1793D 	 .word 1031389584
+ 414              	 .cfi_endproc
+ 415              	.LFE539:
+ 417              	 .text
+ 418              	.Letext0:
+ 419              	 .file 2 "d:\\xmc\\dave-ide-4.4.2-64bit\\eclipse\\arm-gcc-49\\arm-none-eabi\\include\\machine\\_default_types.h"
+ 420              	 .file 3 "d:\\xmc\\dave-ide-4.4.2-64bit\\eclipse\\arm-gcc-49\\arm-none-eabi\\include\\stdint.h"
+ 421              	 .file 4 "D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/lib/main/XMC4000/xmc4700.h"
+ 422              	 .file 5 "D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/platform.h"
+ 423              	 .file 6 "D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/drivers/io_types.h"
+ 424              	 .file 7 "D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/drivers/bus_i2c.h"
+ 425              	 .file 8 "D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/drivers/exti.h"
+ 426              	 .file 9 "D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/drivers/sensor.h"
+ 427              	 .file 10 "../cleanflight/src/main/drivers/accgyro/accgyro.h"
+ 428              	 .file 11 "D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/drivers/system.h"
+ 429              	 .file 12 "D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/common/time.h"
+ 430              	 .file 13 "D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/common/axis.h"
+ 431              	 .file 14 "D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/drivers/bus.h"
+ 432              	 .file 15 "D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/drivers/accgyro/accgyro_mpu.h"
+ 433              	 .file 16 "D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/sensors/gyro.h"
+ 434              	 .file 17 "D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/lib/main/CMSIS/Core/Include/core_cm4.h"
+ 435              	 .file 18 "D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/lib/main/XMC4000/system_XMC4700.h"
+DEFINED SYMBOLS
+                            *ABS*:00000000 accgyro_mpu3050.c
+    {standard input}:20     .text.mpu3050GetDLPF:00000000 $t
+    {standard input}:24     .text.mpu3050GetDLPF:00000000 mpu3050GetDLPF
+    {standard input}:77     .text.mpu3050Init:00000000 $t
+    {standard input}:81     .text.mpu3050Init:00000000 mpu3050Init
+    {standard input}:170    .text.mpu3050GyroRead:00000000 $t
+    {standard input}:174    .text.mpu3050GyroRead:00000000 mpu3050GyroRead
+    {standard input}:260    .text.mpu3050ReadTemperature:00000000 $t
+    {standard input}:264    .text.mpu3050ReadTemperature:00000000 mpu3050ReadTemperature
+    {standard input}:336    .text.mpu3050ReadTemperature:00000064 $d
+    {standard input}:341    .text.mpu3050Detect:00000000 $t
+    {standard input}:346    .text.mpu3050Detect:00000000 mpu3050Detect
+    {standard input}:410    .text.mpu3050Detect:00000040 $d
+                     .debug_frame:00000010 $d
+
+UNDEFINED SYMBOLS
+delay
+busWriteRegister
+failureMode
+busReadRegisterBuffer

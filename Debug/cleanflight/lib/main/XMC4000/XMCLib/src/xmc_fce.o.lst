@@ -1,0 +1,1114 @@
+   1              	 .syntax unified
+   2              	 .cpu cortex-m4
+   3              	 .eabi_attribute 27,3
+   4              	 .fpu fpv4-sp-d16
+   5              	 .eabi_attribute 20,1
+   6              	 .eabi_attribute 21,1
+   7              	 .eabi_attribute 23,3
+   8              	 .eabi_attribute 24,1
+   9              	 .eabi_attribute 25,1
+  10              	 .eabi_attribute 26,1
+  11              	 .eabi_attribute 30,6
+  12              	 .eabi_attribute 34,1
+  13              	 .eabi_attribute 18,4
+  14              	 .thumb
+  15              	 .file "xmc_fce.c"
+  16              	 .text
+  17              	.Ltext0:
+  18              	 .cfi_sections .debug_frame
+  19              	 .section .text.XMC_FCE_Init,"ax",%progbits
+  20              	 .align 2
+  21              	 .global XMC_FCE_Init
+  22              	 .thumb
+  23              	 .thumb_func
+  25              	XMC_FCE_Init:
+  26              	.LFB185:
+  27              	 .file 1 "../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_fce.c"
+   1:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_fce.c **** /**
+   2:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_fce.c ****  * @file xmc_fce.c
+   3:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_fce.c ****  * @date 2017-12-14
+   4:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_fce.c ****  *
+   5:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_fce.c ****  * @cond
+   6:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_fce.c ****  **************************************************************************************************
+   7:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_fce.c ****  * XMClib v2.1.20 - XMC Peripheral Driver Library 
+   8:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_fce.c ****  *
+   9:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_fce.c ****  * Copyright (c) 2015-2018, Infineon Technologies AG
+  10:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_fce.c ****  * All rights reserved.                        
+  11:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_fce.c ****  *                                             
+  12:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_fce.c ****  * Redistribution and use in source and binary forms, with or without modification,are permitted pr
+  13:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_fce.c ****  * following conditions are met:   
+  14:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_fce.c ****  *                                                                              
+  15:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_fce.c ****  * Redistributions of source code must retain the above copyright notice, this list of conditions a
+  16:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_fce.c ****  * disclaimer.                        
+  17:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_fce.c ****  * 
+  18:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_fce.c ****  * Redistributions in binary form must reproduce the above copyright notice, this list of condition
+  19:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_fce.c ****  * disclaimer in the documentation and/or other materials provided with the distribution.          
+  20:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_fce.c ****  * 
+  21:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_fce.c ****  * Neither the name of the copyright holders nor the names of its contributors may be used to endor
+  22:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_fce.c ****  * products derived from this software without specific prior written permission.                  
+  23:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_fce.c ****  *                                                                              
+  24:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_fce.c ****  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND ANY EXPRESS OR I
+  25:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_fce.c ****  * INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTI
+  26:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_fce.c ****  * DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE  FOR ANY DIRECT, IN
+  27:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_fce.c ****  * SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBS
+  28:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_fce.c ****  * SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THE
+  29:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_fce.c ****  * WHETHER IN CONTRACT, STRICT LIABILITY,OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY
+  30:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_fce.c ****  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.                            
+  31:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_fce.c ****  *                                                                              
+  32:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_fce.c ****  * To improve the quality of the software, users are encouraged to share modifications, enhancement
+  33:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_fce.c ****  * Infineon Technologies AG dave@infineon.com).                                                    
+  34:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_fce.c ****  **************************************************************************************************
+  35:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_fce.c ****  *
+  36:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_fce.c ****  * Change History
+  37:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_fce.c ****  * --------------
+  38:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_fce.c ****  *
+  39:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_fce.c ****  * 2015-02-20:
+  40:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_fce.c ****  *     - Initial <br>
+  41:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_fce.c ****  *      
+  42:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_fce.c ****  * 2015-06-20:
+  43:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_fce.c ****  *     - Removed GetDriverVersion API
+  44:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_fce.c ****  *
+  45:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_fce.c ****  * 2017-12-14:
+  46:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_fce.c ****  *     - XMC_FCE_CalculateCRC8()
+  47:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_fce.c ****  *       Ensure 32bit access to IR register
+  48:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_fce.c ****  *     - XMC_FCE_CalculateCRC16()
+  49:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_fce.c ****  *       Ensure 32bit access to IR register
+  50:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_fce.c ****  *       Remove restriction on data source allignment
+  51:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_fce.c ****  *     - XMC_FCE_CalculateCRC32()
+  52:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_fce.c ****  *       Ensure 32bit access to IR register
+  53:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_fce.c ****  *       Remove restriction on data source allignment
+  54:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_fce.c ****  *
+  55:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_fce.c ****  * @endcond 
+  56:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_fce.c ****  *
+  57:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_fce.c ****  */
+  58:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_fce.c **** 
+  59:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_fce.c **** /**************************************************************************************************
+  60:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_fce.c ****  * HEADER FILES
+  61:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_fce.c ****  **************************************************************************************************
+  62:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_fce.c **** #include <xmc_fce.h>
+  63:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_fce.c **** 
+  64:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_fce.c **** #if defined (FCE)
+  65:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_fce.c **** #include <xmc_scu.h>
+  66:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_fce.c **** 
+  67:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_fce.c **** /*******************************************************************************
+  68:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_fce.c ****  * API IMPLEMENTATION
+  69:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_fce.c ****  **************************************************************************************************
+  70:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_fce.c **** 
+  71:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_fce.c **** /*
+  72:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_fce.c ****  * Initialize the FCE peripheral:
+  73:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_fce.c ****  * Update FCE configuration and initialize seed value
+  74:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_fce.c ****  */
+  75:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_fce.c **** XMC_FCE_STATUS_t XMC_FCE_Init(const XMC_FCE_t *const engine)
+  76:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_fce.c **** {
+  28              	 .loc 1 76 0
+  29              	 .cfi_startproc
+  30              	 
+  31              	 
+  32              	 
+  33 0000 80B4     	 push {r7}
+  34              	.LCFI0:
+  35              	 .cfi_def_cfa_offset 4
+  36              	 .cfi_offset 7,-4
+  37 0002 83B0     	 sub sp,sp,#12
+  38              	.LCFI1:
+  39              	 .cfi_def_cfa_offset 16
+  40 0004 00AF     	 add r7,sp,#0
+  41              	.LCFI2:
+  42              	 .cfi_def_cfa_register 7
+  43 0006 7860     	 str r0,[r7,#4]
+  77:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_fce.c ****   engine->kernel_ptr->CFG = engine->fce_cfg_update.regval;
+  44              	 .loc 1 77 0
+  45 0008 7B68     	 ldr r3,[r7,#4]
+  46 000a 1B68     	 ldr r3,[r3]
+  47 000c 7A68     	 ldr r2,[r7,#4]
+  48 000e 5268     	 ldr r2,[r2,#4]
+  49 0010 9968     	 ldr r1,[r3,#8]
+  50 0012 0021     	 movs r1,#0
+  51 0014 0A43     	 orrs r2,r2,r1
+  52 0016 9A60     	 str r2,[r3,#8]
+  78:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_fce.c ****   engine->kernel_ptr->CRC = engine->seedvalue;
+  53              	 .loc 1 78 0
+  54 0018 7B68     	 ldr r3,[r7,#4]
+  55 001a 1B68     	 ldr r3,[r3]
+  56 001c 7A68     	 ldr r2,[r7,#4]
+  57 001e 9268     	 ldr r2,[r2,#8]
+  58 0020 9969     	 ldr r1,[r3,#24]
+  59 0022 0021     	 movs r1,#0
+  60 0024 0A43     	 orrs r2,r2,r1
+  61 0026 9A61     	 str r2,[r3,#24]
+  79:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_fce.c ****   
+  80:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_fce.c ****   return XMC_FCE_STATUS_OK;
+  62              	 .loc 1 80 0
+  63 0028 0023     	 movs r3,#0
+  81:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_fce.c **** }
+  64              	 .loc 1 81 0
+  65 002a 1846     	 mov r0,r3
+  66 002c 0C37     	 adds r7,r7,#12
+  67              	.LCFI3:
+  68              	 .cfi_def_cfa_offset 4
+  69 002e BD46     	 mov sp,r7
+  70              	.LCFI4:
+  71              	 .cfi_def_cfa_register 13
+  72              	 
+  73 0030 5DF8047B 	 ldr r7,[sp],#4
+  74              	.LCFI5:
+  75              	 .cfi_restore 7
+  76              	 .cfi_def_cfa_offset 0
+  77 0034 7047     	 bx lr
+  78              	 .cfi_endproc
+  79              	.LFE185:
+  81 0036 00BF     	 .section .text.XMC_FCE_Disable,"ax",%progbits
+  82              	 .align 2
+  83              	 .global XMC_FCE_Disable
+  84              	 .thumb
+  85              	 .thumb_func
+  87              	XMC_FCE_Disable:
+  88              	.LFB186:
+  82:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_fce.c **** 
+  83:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_fce.c **** /* Disable FCE */
+  84:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_fce.c **** void XMC_FCE_Disable(void)
+  85:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_fce.c **** {
+  89              	 .loc 1 85 0
+  90              	 .cfi_startproc
+  91              	 
+  92              	 
+  93 0000 80B5     	 push {r7,lr}
+  94              	.LCFI6:
+  95              	 .cfi_def_cfa_offset 8
+  96              	 .cfi_offset 7,-8
+  97              	 .cfi_offset 14,-4
+  98 0002 00AF     	 add r7,sp,#0
+  99              	.LCFI7:
+ 100              	 .cfi_def_cfa_register 7
+  86:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_fce.c ****   FCE->CLC |= (uint32_t)FCE_CLC_DISR_Msk;
+ 101              	 .loc 1 86 0
+ 102 0004 074B     	 ldr r3,.L4
+ 103 0006 074A     	 ldr r2,.L4
+ 104 0008 1268     	 ldr r2,[r2]
+ 105 000a 42F00102 	 orr r2,r2,#1
+ 106 000e 1968     	 ldr r1,[r3]
+ 107 0010 0021     	 movs r1,#0
+ 108 0012 0A43     	 orrs r2,r2,r1
+ 109 0014 1A60     	 str r2,[r3]
+  87:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_fce.c ****   
+  88:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_fce.c ****   XMC_SCU_RESET_AssertPeripheralReset(XMC_SCU_PERIPHERAL_RESET_FCE);
+ 110              	 .loc 1 88 0
+ 111 0016 0448     	 ldr r0,.L4+4
+ 112 0018 FFF7FEFF 	 bl XMC_SCU_RESET_AssertPeripheralReset
+  89:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_fce.c **** 
+  90:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_fce.c **** #if defined(CLOCK_GATING_SUPPORTED)
+  91:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_fce.c ****   XMC_SCU_CLOCK_GatePeripheralClock(XMC_SCU_PERIPHERAL_CLOCK_FCE);
+ 113              	 .loc 1 91 0
+ 114 001c 0248     	 ldr r0,.L4+4
+ 115 001e FFF7FEFF 	 bl XMC_SCU_CLOCK_GatePeripheralClock
+  92:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_fce.c **** #endif
+  93:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_fce.c **** 
+  94:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_fce.c **** }
+ 116              	 .loc 1 94 0
+ 117 0022 80BD     	 pop {r7,pc}
+ 118              	.L5:
+ 119              	 .align 2
+ 120              	.L4:
+ 121 0024 00000250 	 .word 1342308352
+ 122 0028 40000020 	 .word 536870976
+ 123              	 .cfi_endproc
+ 124              	.LFE186:
+ 126              	 .section .text.XMC_FCE_Enable,"ax",%progbits
+ 127              	 .align 2
+ 128              	 .global XMC_FCE_Enable
+ 129              	 .thumb
+ 130              	 .thumb_func
+ 132              	XMC_FCE_Enable:
+ 133              	.LFB187:
+  95:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_fce.c **** 
+  96:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_fce.c **** /* Enable FCE */
+  97:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_fce.c **** void XMC_FCE_Enable(void)
+  98:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_fce.c **** {
+ 134              	 .loc 1 98 0
+ 135              	 .cfi_startproc
+ 136              	 
+ 137              	 
+ 138 0000 80B5     	 push {r7,lr}
+ 139              	.LCFI8:
+ 140              	 .cfi_def_cfa_offset 8
+ 141              	 .cfi_offset 7,-8
+ 142              	 .cfi_offset 14,-4
+ 143 0002 00AF     	 add r7,sp,#0
+ 144              	.LCFI9:
+ 145              	 .cfi_def_cfa_register 7
+  99:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_fce.c **** #if defined(CLOCK_GATING_SUPPORTED)
+ 100:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_fce.c ****   XMC_SCU_CLOCK_UngatePeripheralClock(XMC_SCU_PERIPHERAL_CLOCK_FCE);
+ 146              	 .loc 1 100 0
+ 147 0004 0748     	 ldr r0,.L7
+ 148 0006 FFF7FEFF 	 bl XMC_SCU_CLOCK_UngatePeripheralClock
+ 101:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_fce.c **** #endif
+ 102:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_fce.c **** 
+ 103:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_fce.c ****   XMC_SCU_RESET_DeassertPeripheralReset(XMC_SCU_PERIPHERAL_RESET_FCE);
+ 149              	 .loc 1 103 0
+ 150 000a 0648     	 ldr r0,.L7
+ 151 000c FFF7FEFF 	 bl XMC_SCU_RESET_DeassertPeripheralReset
+ 104:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_fce.c **** 
+ 105:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_fce.c ****   FCE->CLC &= (uint32_t)~FCE_CLC_DISR_Msk;
+ 152              	 .loc 1 105 0
+ 153 0010 054B     	 ldr r3,.L7+4
+ 154 0012 054A     	 ldr r2,.L7+4
+ 155 0014 1268     	 ldr r2,[r2]
+ 156 0016 22F00102 	 bic r2,r2,#1
+ 157 001a 1968     	 ldr r1,[r3]
+ 158 001c 0021     	 movs r1,#0
+ 159 001e 0A43     	 orrs r2,r2,r1
+ 160 0020 1A60     	 str r2,[r3]
+ 106:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_fce.c **** }
+ 161              	 .loc 1 106 0
+ 162 0022 80BD     	 pop {r7,pc}
+ 163              	.L8:
+ 164              	 .align 2
+ 165              	.L7:
+ 166 0024 40000020 	 .word 536870976
+ 167 0028 00000250 	 .word 1342308352
+ 168              	 .cfi_endproc
+ 169              	.LFE187:
+ 171              	 .section .text.XMC_FCE_CalculateCRC8,"ax",%progbits
+ 172              	 .align 2
+ 173              	 .global XMC_FCE_CalculateCRC8
+ 174              	 .thumb
+ 175              	 .thumb_func
+ 177              	XMC_FCE_CalculateCRC8:
+ 178              	.LFB188:
+ 107:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_fce.c **** 
+ 108:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_fce.c **** /* Calculate and return the SAE J1850 CRC8 checksum */
+ 109:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_fce.c **** XMC_FCE_STATUS_t XMC_FCE_CalculateCRC8(const XMC_FCE_t *const engine,
+ 110:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_fce.c ****                                        const uint8_t *data,
+ 111:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_fce.c **** 									   uint32_t length,
+ 112:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_fce.c **** 									   uint8_t *result)
+ 113:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_fce.c **** {
+ 179              	 .loc 1 113 0
+ 180              	 .cfi_startproc
+ 181              	 
+ 182              	 
+ 183              	 
+ 184 0000 80B4     	 push {r7}
+ 185              	.LCFI10:
+ 186              	 .cfi_def_cfa_offset 4
+ 187              	 .cfi_offset 7,-4
+ 188 0002 87B0     	 sub sp,sp,#28
+ 189              	.LCFI11:
+ 190              	 .cfi_def_cfa_offset 32
+ 191 0004 00AF     	 add r7,sp,#0
+ 192              	.LCFI12:
+ 193              	 .cfi_def_cfa_register 7
+ 194 0006 F860     	 str r0,[r7,#12]
+ 195 0008 B960     	 str r1,[r7,#8]
+ 196 000a 7A60     	 str r2,[r7,#4]
+ 197 000c 3B60     	 str r3,[r7]
+ 114:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_fce.c ****   XMC_FCE_STATUS_t status = XMC_FCE_STATUS_OK;
+ 198              	 .loc 1 114 0
+ 199 000e 0023     	 movs r3,#0
+ 200 0010 FB75     	 strb r3,[r7,#23]
+ 115:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_fce.c **** 	
+ 116:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_fce.c ****   XMC_ASSERT("XMC_FCE_CalculateCRC8: Wrong FCE kernel used", (engine -> kernel_ptr == XMC_FCE_CRC8)
+ 117:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_fce.c **** 
+ 118:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_fce.c ****   if (length == 0UL)
+ 201              	 .loc 1 118 0
+ 202 0012 7B68     	 ldr r3,[r7,#4]
+ 203 0014 002B     	 cmp r3,#0
+ 204 0016 02D1     	 bne .L10
+ 119:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_fce.c ****   {
+ 120:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_fce.c ****     status = XMC_FCE_STATUS_ERROR;
+ 205              	 .loc 1 120 0
+ 206 0018 0223     	 movs r3,#2
+ 207 001a FB75     	 strb r3,[r7,#23]
+ 208 001c 18E0     	 b .L11
+ 209              	.L10:
+ 121:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_fce.c ****   }
+ 122:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_fce.c ****   else
+ 123:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_fce.c ****   {
+ 124:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_fce.c ****     while (0UL != length)
+ 210              	 .loc 1 124 0
+ 211 001e 0EE0     	 b .L12
+ 212              	.L13:
+ 125:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_fce.c ****     {
+ 126:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_fce.c ****       engine->kernel_ptr->IR = (uint32_t)*data;
+ 213              	 .loc 1 126 0
+ 214 0020 FB68     	 ldr r3,[r7,#12]
+ 215 0022 1B68     	 ldr r3,[r3]
+ 216 0024 BA68     	 ldr r2,[r7,#8]
+ 217 0026 1278     	 ldrb r2,[r2]
+ 218 0028 1146     	 mov r1,r2
+ 219 002a 1A68     	 ldr r2,[r3]
+ 220 002c 0022     	 movs r2,#0
+ 221 002e 0A43     	 orrs r2,r2,r1
+ 222 0030 1A60     	 str r2,[r3]
+ 127:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_fce.c ****       data++;
+ 223              	 .loc 1 127 0
+ 224 0032 BB68     	 ldr r3,[r7,#8]
+ 225 0034 0133     	 adds r3,r3,#1
+ 226 0036 BB60     	 str r3,[r7,#8]
+ 128:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_fce.c ****       length -= 1U;
+ 227              	 .loc 1 128 0
+ 228 0038 7B68     	 ldr r3,[r7,#4]
+ 229 003a 013B     	 subs r3,r3,#1
+ 230 003c 7B60     	 str r3,[r7,#4]
+ 231              	.L12:
+ 124:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_fce.c ****     {
+ 232              	 .loc 1 124 0
+ 233 003e 7B68     	 ldr r3,[r7,#4]
+ 234 0040 002B     	 cmp r3,#0
+ 235 0042 EDD1     	 bne .L13
+ 129:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_fce.c ****     }
+ 130:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_fce.c **** 
+ 131:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_fce.c ****     *result = (uint8_t)engine->kernel_ptr->CRC;
+ 236              	 .loc 1 131 0
+ 237 0044 FB68     	 ldr r3,[r7,#12]
+ 238 0046 1B68     	 ldr r3,[r3]
+ 239 0048 9B69     	 ldr r3,[r3,#24]
+ 240 004a DAB2     	 uxtb r2,r3
+ 241 004c 3B68     	 ldr r3,[r7]
+ 242 004e 1A70     	 strb r2,[r3]
+ 243              	.L11:
+ 132:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_fce.c ****   }
+ 133:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_fce.c **** 
+ 134:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_fce.c ****   return status;
+ 244              	 .loc 1 134 0
+ 245 0050 FB7D     	 ldrb r3,[r7,#23]
+ 135:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_fce.c **** }
+ 246              	 .loc 1 135 0
+ 247 0052 1846     	 mov r0,r3
+ 248 0054 1C37     	 adds r7,r7,#28
+ 249              	.LCFI13:
+ 250              	 .cfi_def_cfa_offset 4
+ 251 0056 BD46     	 mov sp,r7
+ 252              	.LCFI14:
+ 253              	 .cfi_def_cfa_register 13
+ 254              	 
+ 255 0058 5DF8047B 	 ldr r7,[sp],#4
+ 256              	.LCFI15:
+ 257              	 .cfi_restore 7
+ 258              	 .cfi_def_cfa_offset 0
+ 259 005c 7047     	 bx lr
+ 260              	 .cfi_endproc
+ 261              	.LFE188:
+ 263 005e 00BF     	 .section .text.XMC_FCE_CalculateCRC16,"ax",%progbits
+ 264              	 .align 2
+ 265              	 .global XMC_FCE_CalculateCRC16
+ 266              	 .thumb
+ 267              	 .thumb_func
+ 269              	XMC_FCE_CalculateCRC16:
+ 270              	.LFB189:
+ 136:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_fce.c **** 
+ 137:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_fce.c **** /* Calculate and return calculated CCITT CRC16 checksum */
+ 138:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_fce.c **** XMC_FCE_STATUS_t XMC_FCE_CalculateCRC16(const XMC_FCE_t *const engine,
+ 139:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_fce.c ****                                         const uint16_t *data,
+ 140:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_fce.c **** 										uint32_t length,
+ 141:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_fce.c **** 										uint16_t *result)
+ 142:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_fce.c **** {
+ 271              	 .loc 1 142 0
+ 272              	 .cfi_startproc
+ 273              	 
+ 274              	 
+ 275              	 
+ 276 0000 80B4     	 push {r7}
+ 277              	.LCFI16:
+ 278              	 .cfi_def_cfa_offset 4
+ 279              	 .cfi_offset 7,-4
+ 280 0002 87B0     	 sub sp,sp,#28
+ 281              	.LCFI17:
+ 282              	 .cfi_def_cfa_offset 32
+ 283 0004 00AF     	 add r7,sp,#0
+ 284              	.LCFI18:
+ 285              	 .cfi_def_cfa_register 7
+ 286 0006 F860     	 str r0,[r7,#12]
+ 287 0008 B960     	 str r1,[r7,#8]
+ 288 000a 7A60     	 str r2,[r7,#4]
+ 289 000c 3B60     	 str r3,[r7]
+ 143:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_fce.c ****   XMC_FCE_STATUS_t status = XMC_FCE_STATUS_OK;
+ 290              	 .loc 1 143 0
+ 291 000e 0023     	 movs r3,#0
+ 292 0010 FB75     	 strb r3,[r7,#23]
+ 144:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_fce.c **** 	
+ 145:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_fce.c ****   XMC_ASSERT("XMC_FCE_CalculateCRC16: Wrong FCE kernel used", (engine -> kernel_ptr == XMC_FCE_CRC1
+ 146:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_fce.c ****   XMC_ASSERT("XMC_FCE_CalculateCRC16: Length field is empty", (length != 0));
+ 147:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_fce.c ****   XMC_ASSERT("XMC_FCE_CalculateCRC16: Length is not aligned", ((length & 0x1U) == 0));
+ 148:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_fce.c **** 
+ 149:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_fce.c ****   /* Check length is a multiple of 2 */
+ 150:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_fce.c ****   if ((length == 0) || ((length & 0x1U) != 0U))
+ 293              	 .loc 1 150 0
+ 294 0012 7B68     	 ldr r3,[r7,#4]
+ 295 0014 002B     	 cmp r3,#0
+ 296 0016 04D0     	 beq .L16
+ 297              	 .loc 1 150 0 is_stmt 0 discriminator 1
+ 298 0018 7B68     	 ldr r3,[r7,#4]
+ 299 001a 03F00103 	 and r3,r3,#1
+ 300 001e 002B     	 cmp r3,#0
+ 301 0020 02D0     	 beq .L17
+ 302              	.L16:
+ 151:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_fce.c ****   {
+ 152:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_fce.c ****     status = XMC_FCE_STATUS_ERROR;
+ 303              	 .loc 1 152 0 is_stmt 1
+ 304 0022 0223     	 movs r3,#2
+ 305 0024 FB75     	 strb r3,[r7,#23]
+ 306 0026 18E0     	 b .L18
+ 307              	.L17:
+ 153:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_fce.c ****   }
+ 154:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_fce.c ****   else
+ 155:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_fce.c ****   {
+ 156:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_fce.c ****     while (0UL != length)
+ 308              	 .loc 1 156 0
+ 309 0028 0EE0     	 b .L19
+ 310              	.L20:
+ 157:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_fce.c ****     {
+ 158:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_fce.c ****       engine->kernel_ptr->IR = (uint32_t)*data;
+ 311              	 .loc 1 158 0
+ 312 002a FB68     	 ldr r3,[r7,#12]
+ 313 002c 1B68     	 ldr r3,[r3]
+ 314 002e BA68     	 ldr r2,[r7,#8]
+ 315 0030 1288     	 ldrh r2,[r2]
+ 316 0032 1146     	 mov r1,r2
+ 317 0034 1A68     	 ldr r2,[r3]
+ 318 0036 0022     	 movs r2,#0
+ 319 0038 0A43     	 orrs r2,r2,r1
+ 320 003a 1A60     	 str r2,[r3]
+ 159:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_fce.c ****       data++;
+ 321              	 .loc 1 159 0
+ 322 003c BB68     	 ldr r3,[r7,#8]
+ 323 003e 0233     	 adds r3,r3,#2
+ 324 0040 BB60     	 str r3,[r7,#8]
+ 160:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_fce.c ****       length -= 2U;
+ 325              	 .loc 1 160 0
+ 326 0042 7B68     	 ldr r3,[r7,#4]
+ 327 0044 023B     	 subs r3,r3,#2
+ 328 0046 7B60     	 str r3,[r7,#4]
+ 329              	.L19:
+ 156:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_fce.c ****     {
+ 330              	 .loc 1 156 0
+ 331 0048 7B68     	 ldr r3,[r7,#4]
+ 332 004a 002B     	 cmp r3,#0
+ 333 004c EDD1     	 bne .L20
+ 161:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_fce.c ****     }
+ 162:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_fce.c **** 	
+ 163:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_fce.c ****     *result = (uint16_t)engine->kernel_ptr->CRC;
+ 334              	 .loc 1 163 0
+ 335 004e FB68     	 ldr r3,[r7,#12]
+ 336 0050 1B68     	 ldr r3,[r3]
+ 337 0052 9B69     	 ldr r3,[r3,#24]
+ 338 0054 9AB2     	 uxth r2,r3
+ 339 0056 3B68     	 ldr r3,[r7]
+ 340 0058 1A80     	 strh r2,[r3]
+ 341              	.L18:
+ 164:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_fce.c ****   }
+ 165:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_fce.c **** 
+ 166:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_fce.c ****   return status;
+ 342              	 .loc 1 166 0
+ 343 005a FB7D     	 ldrb r3,[r7,#23]
+ 167:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_fce.c **** }
+ 344              	 .loc 1 167 0
+ 345 005c 1846     	 mov r0,r3
+ 346 005e 1C37     	 adds r7,r7,#28
+ 347              	.LCFI19:
+ 348              	 .cfi_def_cfa_offset 4
+ 349 0060 BD46     	 mov sp,r7
+ 350              	.LCFI20:
+ 351              	 .cfi_def_cfa_register 13
+ 352              	 
+ 353 0062 5DF8047B 	 ldr r7,[sp],#4
+ 354              	.LCFI21:
+ 355              	 .cfi_restore 7
+ 356              	 .cfi_def_cfa_offset 0
+ 357 0066 7047     	 bx lr
+ 358              	 .cfi_endproc
+ 359              	.LFE189:
+ 361              	 .section .text.XMC_FCE_CalculateCRC32,"ax",%progbits
+ 362              	 .align 2
+ 363              	 .global XMC_FCE_CalculateCRC32
+ 364              	 .thumb
+ 365              	 .thumb_func
+ 367              	XMC_FCE_CalculateCRC32:
+ 368              	.LFB190:
+ 168:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_fce.c **** 
+ 169:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_fce.c **** /* Calculate and return the IEEE 802.3 Ethernet CRC32 checksum */
+ 170:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_fce.c **** XMC_FCE_STATUS_t XMC_FCE_CalculateCRC32(const XMC_FCE_t *const engine,
+ 171:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_fce.c ****                                         const uint32_t *data,
+ 172:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_fce.c **** 										uint32_t length,
+ 173:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_fce.c **** 										uint32_t *result)
+ 174:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_fce.c **** {
+ 369              	 .loc 1 174 0
+ 370              	 .cfi_startproc
+ 371              	 
+ 372              	 
+ 373              	 
+ 374 0000 80B4     	 push {r7}
+ 375              	.LCFI22:
+ 376              	 .cfi_def_cfa_offset 4
+ 377              	 .cfi_offset 7,-4
+ 378 0002 87B0     	 sub sp,sp,#28
+ 379              	.LCFI23:
+ 380              	 .cfi_def_cfa_offset 32
+ 381 0004 00AF     	 add r7,sp,#0
+ 382              	.LCFI24:
+ 383              	 .cfi_def_cfa_register 7
+ 384 0006 F860     	 str r0,[r7,#12]
+ 385 0008 B960     	 str r1,[r7,#8]
+ 386 000a 7A60     	 str r2,[r7,#4]
+ 387 000c 3B60     	 str r3,[r7]
+ 175:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_fce.c ****   XMC_FCE_STATUS_t status = XMC_FCE_STATUS_OK;
+ 388              	 .loc 1 175 0
+ 389 000e 0023     	 movs r3,#0
+ 390 0010 FB75     	 strb r3,[r7,#23]
+ 176:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_fce.c **** 	
+ 177:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_fce.c ****   XMC_ASSERT("XMC_FCE_CalculateCRC32: Wrong FCE kernel used", ((engine->kernel_ptr == XMC_FCE_CRC32
+ 178:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_fce.c ****                                                                (engine->kernel_ptr == XMC_FCE_CRC32
+ 179:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_fce.c ****   XMC_ASSERT("XMC_FCE_CalculateCRC32: Length field is empty", (length != 0));
+ 180:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_fce.c ****   XMC_ASSERT("XMC_FCE_CalculateCRC32: Length is not aligned", ((length & 0x3U) == 0));
+ 181:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_fce.c **** 
+ 182:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_fce.c ****   /* Check length is a multiple of 4 */
+ 183:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_fce.c ****   if ((length == 0) || ((length & 0x3U) != 0U))
+ 391              	 .loc 1 183 0
+ 392 0012 7B68     	 ldr r3,[r7,#4]
+ 393 0014 002B     	 cmp r3,#0
+ 394 0016 04D0     	 beq .L23
+ 395              	 .loc 1 183 0 is_stmt 0 discriminator 1
+ 396 0018 7B68     	 ldr r3,[r7,#4]
+ 397 001a 03F00303 	 and r3,r3,#3
+ 398 001e 002B     	 cmp r3,#0
+ 399 0020 02D0     	 beq .L24
+ 400              	.L23:
+ 184:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_fce.c ****   {
+ 185:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_fce.c ****     status = XMC_FCE_STATUS_ERROR;
+ 401              	 .loc 1 185 0 is_stmt 1
+ 402 0022 0223     	 movs r3,#2
+ 403 0024 FB75     	 strb r3,[r7,#23]
+ 404 0026 16E0     	 b .L25
+ 405              	.L24:
+ 186:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_fce.c ****   }
+ 187:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_fce.c ****   else
+ 188:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_fce.c ****   {
+ 189:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_fce.c ****     while (0UL != length)
+ 406              	 .loc 1 189 0
+ 407 0028 0DE0     	 b .L26
+ 408              	.L27:
+ 190:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_fce.c ****     {
+ 191:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_fce.c ****       engine->kernel_ptr->IR = *data;
+ 409              	 .loc 1 191 0
+ 410 002a FB68     	 ldr r3,[r7,#12]
+ 411 002c 1B68     	 ldr r3,[r3]
+ 412 002e BA68     	 ldr r2,[r7,#8]
+ 413 0030 1268     	 ldr r2,[r2]
+ 414 0032 1968     	 ldr r1,[r3]
+ 415 0034 0021     	 movs r1,#0
+ 416 0036 0A43     	 orrs r2,r2,r1
+ 417 0038 1A60     	 str r2,[r3]
+ 192:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_fce.c ****       data++;
+ 418              	 .loc 1 192 0
+ 419 003a BB68     	 ldr r3,[r7,#8]
+ 420 003c 0433     	 adds r3,r3,#4
+ 421 003e BB60     	 str r3,[r7,#8]
+ 193:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_fce.c ****       length -= 4U;
+ 422              	 .loc 1 193 0
+ 423 0040 7B68     	 ldr r3,[r7,#4]
+ 424 0042 043B     	 subs r3,r3,#4
+ 425 0044 7B60     	 str r3,[r7,#4]
+ 426              	.L26:
+ 189:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_fce.c ****     {
+ 427              	 .loc 1 189 0
+ 428 0046 7B68     	 ldr r3,[r7,#4]
+ 429 0048 002B     	 cmp r3,#0
+ 430 004a EED1     	 bne .L27
+ 194:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_fce.c ****     }
+ 195:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_fce.c **** 
+ 196:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_fce.c ****     *result = engine->kernel_ptr->CRC;
+ 431              	 .loc 1 196 0
+ 432 004c FB68     	 ldr r3,[r7,#12]
+ 433 004e 1B68     	 ldr r3,[r3]
+ 434 0050 9A69     	 ldr r2,[r3,#24]
+ 435 0052 3B68     	 ldr r3,[r7]
+ 436 0054 1A60     	 str r2,[r3]
+ 437              	.L25:
+ 197:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_fce.c ****   }
+ 198:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_fce.c ****   
+ 199:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_fce.c ****   return status;
+ 438              	 .loc 1 199 0
+ 439 0056 FB7D     	 ldrb r3,[r7,#23]
+ 200:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_fce.c **** }
+ 440              	 .loc 1 200 0
+ 441 0058 1846     	 mov r0,r3
+ 442 005a 1C37     	 adds r7,r7,#28
+ 443              	.LCFI25:
+ 444              	 .cfi_def_cfa_offset 4
+ 445 005c BD46     	 mov sp,r7
+ 446              	.LCFI26:
+ 447              	 .cfi_def_cfa_register 13
+ 448              	 
+ 449 005e 5DF8047B 	 ldr r7,[sp],#4
+ 450              	.LCFI27:
+ 451              	 .cfi_restore 7
+ 452              	 .cfi_def_cfa_offset 0
+ 453 0062 7047     	 bx lr
+ 454              	 .cfi_endproc
+ 455              	.LFE190:
+ 457              	 .section .text.XMC_FCE_TriggerMismatch,"ax",%progbits
+ 458              	 .align 2
+ 459              	 .global XMC_FCE_TriggerMismatch
+ 460              	 .thumb
+ 461              	 .thumb_func
+ 463              	XMC_FCE_TriggerMismatch:
+ 464              	.LFB191:
+ 201:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_fce.c **** 
+ 202:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_fce.c **** /* Trigger mismatch in the CRC registers */
+ 203:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_fce.c **** void XMC_FCE_TriggerMismatch(const XMC_FCE_t *const engine, XMC_FCE_CTR_TEST_t test)
+ 204:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_fce.c **** {
+ 465              	 .loc 1 204 0
+ 466              	 .cfi_startproc
+ 467              	 
+ 468              	 
+ 469              	 
+ 470 0000 80B4     	 push {r7}
+ 471              	.LCFI28:
+ 472              	 .cfi_def_cfa_offset 4
+ 473              	 .cfi_offset 7,-4
+ 474 0002 83B0     	 sub sp,sp,#12
+ 475              	.LCFI29:
+ 476              	 .cfi_def_cfa_offset 16
+ 477 0004 00AF     	 add r7,sp,#0
+ 478              	.LCFI30:
+ 479              	 .cfi_def_cfa_register 7
+ 480 0006 7860     	 str r0,[r7,#4]
+ 481 0008 0B46     	 mov r3,r1
+ 482 000a FB70     	 strb r3,[r7,#3]
+ 205:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_fce.c ****   /* Create a 0 to 1 transition and clear to 0 once it is done */
+ 206:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_fce.c ****   engine->kernel_ptr->CTR &= ~((uint32_t)test);
+ 483              	 .loc 1 206 0
+ 484 000c 7B68     	 ldr r3,[r7,#4]
+ 485 000e 1B68     	 ldr r3,[r3]
+ 486 0010 7A68     	 ldr r2,[r7,#4]
+ 487 0012 1268     	 ldr r2,[r2]
+ 488 0014 D169     	 ldr r1,[r2,#28]
+ 489 0016 FA78     	 ldrb r2,[r7,#3]
+ 490 0018 D243     	 mvns r2,r2
+ 491 001a 0A40     	 ands r2,r2,r1
+ 492 001c D969     	 ldr r1,[r3,#28]
+ 493 001e 0021     	 movs r1,#0
+ 494 0020 0A43     	 orrs r2,r2,r1
+ 495 0022 DA61     	 str r2,[r3,#28]
+ 207:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_fce.c ****   engine->kernel_ptr->CTR |= (uint32_t)test;
+ 496              	 .loc 1 207 0
+ 497 0024 7B68     	 ldr r3,[r7,#4]
+ 498 0026 1B68     	 ldr r3,[r3]
+ 499 0028 7A68     	 ldr r2,[r7,#4]
+ 500 002a 1268     	 ldr r2,[r2]
+ 501 002c D169     	 ldr r1,[r2,#28]
+ 502 002e FA78     	 ldrb r2,[r7,#3]
+ 503 0030 0A43     	 orrs r2,r2,r1
+ 504 0032 D969     	 ldr r1,[r3,#28]
+ 505 0034 0021     	 movs r1,#0
+ 506 0036 0A43     	 orrs r2,r2,r1
+ 507 0038 DA61     	 str r2,[r3,#28]
+ 208:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_fce.c ****   engine->kernel_ptr->CTR &= ~((uint32_t)test);
+ 508              	 .loc 1 208 0
+ 509 003a 7B68     	 ldr r3,[r7,#4]
+ 510 003c 1B68     	 ldr r3,[r3]
+ 511 003e 7A68     	 ldr r2,[r7,#4]
+ 512 0040 1268     	 ldr r2,[r2]
+ 513 0042 D169     	 ldr r1,[r2,#28]
+ 514 0044 FA78     	 ldrb r2,[r7,#3]
+ 515 0046 D243     	 mvns r2,r2
+ 516 0048 0A40     	 ands r2,r2,r1
+ 517 004a D969     	 ldr r1,[r3,#28]
+ 518 004c 0021     	 movs r1,#0
+ 519 004e 0A43     	 orrs r2,r2,r1
+ 520 0050 DA61     	 str r2,[r3,#28]
+ 209:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_fce.c **** }
+ 521              	 .loc 1 209 0
+ 522 0052 0C37     	 adds r7,r7,#12
+ 523              	.LCFI31:
+ 524              	 .cfi_def_cfa_offset 4
+ 525 0054 BD46     	 mov sp,r7
+ 526              	.LCFI32:
+ 527              	 .cfi_def_cfa_register 13
+ 528              	 
+ 529 0056 5DF8047B 	 ldr r7,[sp],#4
+ 530              	.LCFI33:
+ 531              	 .cfi_restore 7
+ 532              	 .cfi_def_cfa_offset 0
+ 533 005a 7047     	 bx lr
+ 534              	 .cfi_endproc
+ 535              	.LFE191:
+ 537              	 .section .text.XMC_FCE_LittleEndian16bit,"ax",%progbits
+ 538              	 .align 2
+ 539              	 .global XMC_FCE_LittleEndian16bit
+ 540              	 .thumb
+ 541              	 .thumb_func
+ 543              	XMC_FCE_LittleEndian16bit:
+ 544              	.LFB192:
+ 210:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_fce.c **** 
+ 211:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_fce.c **** /* Change endianness of 16-bit input buffer */
+ 212:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_fce.c **** void XMC_FCE_LittleEndian16bit(uint8_t* inbuffer, uint16_t* outbuffer, uint16_t length)
+ 213:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_fce.c **** {
+ 545              	 .loc 1 213 0
+ 546              	 .cfi_startproc
+ 547              	 
+ 548              	 
+ 549              	 
+ 550 0000 80B4     	 push {r7}
+ 551              	.LCFI34:
+ 552              	 .cfi_def_cfa_offset 4
+ 553              	 .cfi_offset 7,-4
+ 554 0002 87B0     	 sub sp,sp,#28
+ 555              	.LCFI35:
+ 556              	 .cfi_def_cfa_offset 32
+ 557 0004 00AF     	 add r7,sp,#0
+ 558              	.LCFI36:
+ 559              	 .cfi_def_cfa_register 7
+ 560 0006 F860     	 str r0,[r7,#12]
+ 561 0008 B960     	 str r1,[r7,#8]
+ 562 000a 1346     	 mov r3,r2
+ 563 000c FB80     	 strh r3,[r7,#6]
+ 214:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_fce.c ****   uint16_t counter = 0U;
+ 564              	 .loc 1 214 0
+ 565 000e 0023     	 movs r3,#0
+ 566 0010 FB82     	 strh r3,[r7,#22]
+ 215:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_fce.c ****   uint16_t bytecounter = 0U;
+ 567              	 .loc 1 215 0
+ 568 0012 0023     	 movs r3,#0
+ 569 0014 BB82     	 strh r3,[r7,#20]
+ 216:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_fce.c **** 
+ 217:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_fce.c ****   if ((length & 0x01U)  == 0)
+ 570              	 .loc 1 217 0
+ 571 0016 FB88     	 ldrh r3,[r7,#6]
+ 572 0018 03F00103 	 and r3,r3,#1
+ 573 001c 002B     	 cmp r3,#0
+ 574 001e 3AD1     	 bne .L30
+ 218:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_fce.c ****   {
+ 219:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_fce.c ****     for (counter = 0U; counter < (length >> 1); counter++)
+ 575              	 .loc 1 219 0
+ 576 0020 0023     	 movs r3,#0
+ 577 0022 FB82     	 strh r3,[r7,#22]
+ 578 0024 08E0     	 b .L32
+ 579              	.L33:
+ 220:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_fce.c ****     {
+ 221:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_fce.c ****       outbuffer[counter] = 0U;
+ 580              	 .loc 1 221 0 discriminator 3
+ 581 0026 FB8A     	 ldrh r3,[r7,#22]
+ 582 0028 5B00     	 lsls r3,r3,#1
+ 583 002a BA68     	 ldr r2,[r7,#8]
+ 584 002c 1344     	 add r3,r3,r2
+ 585 002e 0022     	 movs r2,#0
+ 586 0030 1A80     	 strh r2,[r3]
+ 219:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_fce.c ****     {
+ 587              	 .loc 1 219 0 discriminator 3
+ 588 0032 FB8A     	 ldrh r3,[r7,#22]
+ 589 0034 0133     	 adds r3,r3,#1
+ 590 0036 FB82     	 strh r3,[r7,#22]
+ 591              	.L32:
+ 219:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_fce.c ****     {
+ 592              	 .loc 1 219 0 is_stmt 0 discriminator 1
+ 593 0038 FB88     	 ldrh r3,[r7,#6]
+ 594 003a 5B08     	 lsrs r3,r3,#1
+ 595 003c 9BB2     	 uxth r3,r3
+ 596 003e FA8A     	 ldrh r2,[r7,#22]
+ 597 0040 9A42     	 cmp r2,r3
+ 598 0042 F0D3     	 bcc .L33
+ 222:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_fce.c ****     }
+ 223:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_fce.c **** 
+ 224:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_fce.c ****     outbuffer[counter] = 0U;
+ 599              	 .loc 1 224 0 is_stmt 1
+ 600 0044 FB8A     	 ldrh r3,[r7,#22]
+ 601 0046 5B00     	 lsls r3,r3,#1
+ 602 0048 BA68     	 ldr r2,[r7,#8]
+ 603 004a 1344     	 add r3,r3,r2
+ 604 004c 0022     	 movs r2,#0
+ 605 004e 1A80     	 strh r2,[r3]
+ 225:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_fce.c ****     counter = 0U;
+ 606              	 .loc 1 225 0
+ 607 0050 0023     	 movs r3,#0
+ 608 0052 FB82     	 strh r3,[r7,#22]
+ 226:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_fce.c **** 
+ 227:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_fce.c ****     while (length)
+ 609              	 .loc 1 227 0
+ 610 0054 1CE0     	 b .L34
+ 611              	.L35:
+ 228:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_fce.c ****     {
+ 229:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_fce.c ****       outbuffer[counter] = ((uint16_t)((uint16_t)inbuffer[bytecounter] << 8U) |
+ 612              	 .loc 1 229 0
+ 613 0056 FB8A     	 ldrh r3,[r7,#22]
+ 614 0058 5B00     	 lsls r3,r3,#1
+ 615 005a BA68     	 ldr r2,[r7,#8]
+ 616 005c 1344     	 add r3,r3,r2
+ 617 005e BA8A     	 ldrh r2,[r7,#20]
+ 618 0060 F968     	 ldr r1,[r7,#12]
+ 619 0062 0A44     	 add r2,r2,r1
+ 620 0064 1278     	 ldrb r2,[r2]
+ 621 0066 92B2     	 uxth r2,r2
+ 622 0068 1202     	 lsls r2,r2,#8
+ 623 006a 91B2     	 uxth r1,r2
+ 230:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_fce.c ****                             (inbuffer[bytecounter + 1U]));
+ 624              	 .loc 1 230 0
+ 625 006c BA8A     	 ldrh r2,[r7,#20]
+ 626 006e 0132     	 adds r2,r2,#1
+ 627 0070 F868     	 ldr r0,[r7,#12]
+ 628 0072 0244     	 add r2,r2,r0
+ 629 0074 1278     	 ldrb r2,[r2]
+ 229:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_fce.c ****                             (inbuffer[bytecounter + 1U]));
+ 630              	 .loc 1 229 0
+ 631 0076 92B2     	 uxth r2,r2
+ 632 0078 0A43     	 orrs r2,r2,r1
+ 633 007a 92B2     	 uxth r2,r2
+ 634 007c 1A80     	 strh r2,[r3]
+ 231:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_fce.c ****       counter += 1U;
+ 635              	 .loc 1 231 0
+ 636 007e FB8A     	 ldrh r3,[r7,#22]
+ 637 0080 0133     	 adds r3,r3,#1
+ 638 0082 FB82     	 strh r3,[r7,#22]
+ 232:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_fce.c ****       bytecounter += 2U;
+ 639              	 .loc 1 232 0
+ 640 0084 BB8A     	 ldrh r3,[r7,#20]
+ 641 0086 0233     	 adds r3,r3,#2
+ 642 0088 BB82     	 strh r3,[r7,#20]
+ 233:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_fce.c ****       length -= 2U;
+ 643              	 .loc 1 233 0
+ 644 008a FB88     	 ldrh r3,[r7,#6]
+ 645 008c 023B     	 subs r3,r3,#2
+ 646 008e FB80     	 strh r3,[r7,#6]
+ 647              	.L34:
+ 227:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_fce.c ****     {
+ 648              	 .loc 1 227 0
+ 649 0090 FB88     	 ldrh r3,[r7,#6]
+ 650 0092 002B     	 cmp r3,#0
+ 651 0094 DFD1     	 bne .L35
+ 652              	.L30:
+ 234:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_fce.c ****     }
+ 235:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_fce.c ****   }
+ 236:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_fce.c **** }
+ 653              	 .loc 1 236 0
+ 654 0096 1C37     	 adds r7,r7,#28
+ 655              	.LCFI37:
+ 656              	 .cfi_def_cfa_offset 4
+ 657 0098 BD46     	 mov sp,r7
+ 658              	.LCFI38:
+ 659              	 .cfi_def_cfa_register 13
+ 660              	 
+ 661 009a 5DF8047B 	 ldr r7,[sp],#4
+ 662              	.LCFI39:
+ 663              	 .cfi_restore 7
+ 664              	 .cfi_def_cfa_offset 0
+ 665 009e 7047     	 bx lr
+ 666              	 .cfi_endproc
+ 667              	.LFE192:
+ 669              	 .section .text.XMC_FCE_LittleEndian32bit,"ax",%progbits
+ 670              	 .align 2
+ 671              	 .global XMC_FCE_LittleEndian32bit
+ 672              	 .thumb
+ 673              	 .thumb_func
+ 675              	XMC_FCE_LittleEndian32bit:
+ 676              	.LFB193:
+ 237:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_fce.c **** 
+ 238:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_fce.c **** /* Change endianness of 32-bit input buffer */
+ 239:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_fce.c **** void XMC_FCE_LittleEndian32bit(uint8_t* inbuffer, uint32_t* outbuffer, uint16_t length)
+ 240:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_fce.c **** {
+ 677              	 .loc 1 240 0
+ 678              	 .cfi_startproc
+ 679              	 
+ 680              	 
+ 681              	 
+ 682 0000 80B4     	 push {r7}
+ 683              	.LCFI40:
+ 684              	 .cfi_def_cfa_offset 4
+ 685              	 .cfi_offset 7,-4
+ 686 0002 87B0     	 sub sp,sp,#28
+ 687              	.LCFI41:
+ 688              	 .cfi_def_cfa_offset 32
+ 689 0004 00AF     	 add r7,sp,#0
+ 690              	.LCFI42:
+ 691              	 .cfi_def_cfa_register 7
+ 692 0006 F860     	 str r0,[r7,#12]
+ 693 0008 B960     	 str r1,[r7,#8]
+ 694 000a 1346     	 mov r3,r2
+ 695 000c FB80     	 strh r3,[r7,#6]
+ 241:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_fce.c ****   uint16_t counter = 0U;
+ 696              	 .loc 1 241 0
+ 697 000e 0023     	 movs r3,#0
+ 698 0010 FB82     	 strh r3,[r7,#22]
+ 242:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_fce.c ****   uint16_t bytecounter = 0U;
+ 699              	 .loc 1 242 0
+ 700 0012 0023     	 movs r3,#0
+ 701 0014 BB82     	 strh r3,[r7,#20]
+ 243:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_fce.c ****  
+ 244:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_fce.c ****   if ((length & 0x03U) == 0)
+ 702              	 .loc 1 244 0
+ 703 0016 FB88     	 ldrh r3,[r7,#6]
+ 704 0018 03F00303 	 and r3,r3,#3
+ 705 001c 002B     	 cmp r3,#0
+ 706 001e 44D1     	 bne .L36
+ 245:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_fce.c ****   {
+ 246:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_fce.c ****     for (counter = 0U; counter < (length >> 2U); counter++)
+ 707              	 .loc 1 246 0
+ 708 0020 0023     	 movs r3,#0
+ 709 0022 FB82     	 strh r3,[r7,#22]
+ 710 0024 08E0     	 b .L38
+ 711              	.L39:
+ 247:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_fce.c ****     {
+ 248:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_fce.c ****       outbuffer[counter] = 0U;
+ 712              	 .loc 1 248 0 discriminator 3
+ 713 0026 FB8A     	 ldrh r3,[r7,#22]
+ 714 0028 9B00     	 lsls r3,r3,#2
+ 715 002a BA68     	 ldr r2,[r7,#8]
+ 716 002c 1344     	 add r3,r3,r2
+ 717 002e 0022     	 movs r2,#0
+ 718 0030 1A60     	 str r2,[r3]
+ 246:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_fce.c ****     {
+ 719              	 .loc 1 246 0 discriminator 3
+ 720 0032 FB8A     	 ldrh r3,[r7,#22]
+ 721 0034 0133     	 adds r3,r3,#1
+ 722 0036 FB82     	 strh r3,[r7,#22]
+ 723              	.L38:
+ 246:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_fce.c ****     {
+ 724              	 .loc 1 246 0 is_stmt 0 discriminator 1
+ 725 0038 FB88     	 ldrh r3,[r7,#6]
+ 726 003a 9B08     	 lsrs r3,r3,#2
+ 727 003c 9BB2     	 uxth r3,r3
+ 728 003e FA8A     	 ldrh r2,[r7,#22]
+ 729 0040 9A42     	 cmp r2,r3
+ 730 0042 F0D3     	 bcc .L39
+ 249:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_fce.c ****     }
+ 250:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_fce.c **** 
+ 251:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_fce.c ****     outbuffer[counter] = 0U;
+ 731              	 .loc 1 251 0 is_stmt 1
+ 732 0044 FB8A     	 ldrh r3,[r7,#22]
+ 733 0046 9B00     	 lsls r3,r3,#2
+ 734 0048 BA68     	 ldr r2,[r7,#8]
+ 735 004a 1344     	 add r3,r3,r2
+ 736 004c 0022     	 movs r2,#0
+ 737 004e 1A60     	 str r2,[r3]
+ 252:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_fce.c ****     counter = 0U;
+ 738              	 .loc 1 252 0
+ 739 0050 0023     	 movs r3,#0
+ 740 0052 FB82     	 strh r3,[r7,#22]
+ 253:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_fce.c **** 
+ 254:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_fce.c ****     while (length)
+ 741              	 .loc 1 254 0
+ 742 0054 26E0     	 b .L40
+ 743              	.L41:
+ 255:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_fce.c ****     {
+ 256:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_fce.c ****       outbuffer[counter] = ((uint32_t)inbuffer[bytecounter]      << 24U) |
+ 744              	 .loc 1 256 0
+ 745 0056 FB8A     	 ldrh r3,[r7,#22]
+ 746 0058 9B00     	 lsls r3,r3,#2
+ 747 005a BA68     	 ldr r2,[r7,#8]
+ 748 005c 1344     	 add r3,r3,r2
+ 749 005e BA8A     	 ldrh r2,[r7,#20]
+ 750 0060 F968     	 ldr r1,[r7,#12]
+ 751 0062 0A44     	 add r2,r2,r1
+ 752 0064 1278     	 ldrb r2,[r2]
+ 753 0066 1106     	 lsls r1,r2,#24
+ 257:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_fce.c ****                            ((uint32_t)inbuffer[bytecounter + 1U] << 16U) |
+ 754              	 .loc 1 257 0
+ 755 0068 BA8A     	 ldrh r2,[r7,#20]
+ 756 006a 0132     	 adds r2,r2,#1
+ 757 006c F868     	 ldr r0,[r7,#12]
+ 758 006e 0244     	 add r2,r2,r0
+ 759 0070 1278     	 ldrb r2,[r2]
+ 760 0072 1204     	 lsls r2,r2,#16
+ 256:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_fce.c ****                            ((uint32_t)inbuffer[bytecounter + 1U] << 16U) |
+ 761              	 .loc 1 256 0
+ 762 0074 1143     	 orrs r1,r1,r2
+ 258:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_fce.c ****                            ((uint32_t)inbuffer[bytecounter + 2U] <<  8U) |
+ 763              	 .loc 1 258 0
+ 764 0076 BA8A     	 ldrh r2,[r7,#20]
+ 765 0078 0232     	 adds r2,r2,#2
+ 766 007a F868     	 ldr r0,[r7,#12]
+ 767 007c 0244     	 add r2,r2,r0
+ 768 007e 1278     	 ldrb r2,[r2]
+ 769 0080 1202     	 lsls r2,r2,#8
+ 257:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_fce.c ****                            ((uint32_t)inbuffer[bytecounter + 1U] << 16U) |
+ 770              	 .loc 1 257 0
+ 771 0082 0A43     	 orrs r2,r2,r1
+ 259:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_fce.c ****                            (inbuffer[bytecounter + 3U]);
+ 772              	 .loc 1 259 0
+ 773 0084 B98A     	 ldrh r1,[r7,#20]
+ 774 0086 0331     	 adds r1,r1,#3
+ 775 0088 F868     	 ldr r0,[r7,#12]
+ 776 008a 0144     	 add r1,r1,r0
+ 777 008c 0978     	 ldrb r1,[r1]
+ 258:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_fce.c ****                            ((uint32_t)inbuffer[bytecounter + 2U] <<  8U) |
+ 778              	 .loc 1 258 0
+ 779 008e 0A43     	 orrs r2,r2,r1
+ 256:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_fce.c ****                            ((uint32_t)inbuffer[bytecounter + 1U] << 16U) |
+ 780              	 .loc 1 256 0
+ 781 0090 1A60     	 str r2,[r3]
+ 260:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_fce.c ****       counter += 1U;
+ 782              	 .loc 1 260 0
+ 783 0092 FB8A     	 ldrh r3,[r7,#22]
+ 784 0094 0133     	 adds r3,r3,#1
+ 785 0096 FB82     	 strh r3,[r7,#22]
+ 261:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_fce.c ****       bytecounter += 4U;
+ 786              	 .loc 1 261 0
+ 787 0098 BB8A     	 ldrh r3,[r7,#20]
+ 788 009a 0433     	 adds r3,r3,#4
+ 789 009c BB82     	 strh r3,[r7,#20]
+ 262:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_fce.c ****       length -= 4U;
+ 790              	 .loc 1 262 0
+ 791 009e FB88     	 ldrh r3,[r7,#6]
+ 792 00a0 043B     	 subs r3,r3,#4
+ 793 00a2 FB80     	 strh r3,[r7,#6]
+ 794              	.L40:
+ 254:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_fce.c ****     {
+ 795              	 .loc 1 254 0
+ 796 00a4 FB88     	 ldrh r3,[r7,#6]
+ 797 00a6 002B     	 cmp r3,#0
+ 798 00a8 D5D1     	 bne .L41
+ 799              	.L36:
+ 263:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_fce.c ****     }
+ 264:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_fce.c ****   }
+ 265:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_fce.c **** }
+ 800              	 .loc 1 265 0
+ 801 00aa 1C37     	 adds r7,r7,#28
+ 802              	.LCFI43:
+ 803              	 .cfi_def_cfa_offset 4
+ 804 00ac BD46     	 mov sp,r7
+ 805              	.LCFI44:
+ 806              	 .cfi_def_cfa_register 13
+ 807              	 
+ 808 00ae 5DF8047B 	 ldr r7,[sp],#4
+ 809              	.LCFI45:
+ 810              	 .cfi_restore 7
+ 811              	 .cfi_def_cfa_offset 0
+ 812 00b2 7047     	 bx lr
+ 813              	 .cfi_endproc
+ 814              	.LFE193:
+ 816              	 .text
+ 817              	.Letext0:
+ 818              	 .file 2 "d:\\xmc\\dave-ide-4.4.2-64bit\\eclipse\\arm-gcc-49\\arm-none-eabi\\include\\machine\\_default_types.h"
+ 819              	 .file 3 "d:\\xmc\\dave-ide-4.4.2-64bit\\eclipse\\arm-gcc-49\\arm-none-eabi\\include\\stdint.h"
+ 820              	 .file 4 "D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/lib/main/XMC4000/XMC4700.h"
+ 821              	 .file 5 "D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/lib/main/XMC4000/XMCLib/inc/xmc_fce.h"
+ 822              	 .file 6 "D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/lib/main/XMC4000/XMCLib/inc/xmc4_scu.h"
+ 823              	 .file 7 "D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/lib/main/CMSIS/Core/Include/core_cm4.h"
+ 824              	 .file 8 "D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/lib/main/XMC4000/system_XMC4700.h"
+DEFINED SYMBOLS
+                            *ABS*:00000000 xmc_fce.c
+    {standard input}:20     .text.XMC_FCE_Init:00000000 $t
+    {standard input}:25     .text.XMC_FCE_Init:00000000 XMC_FCE_Init
+    {standard input}:82     .text.XMC_FCE_Disable:00000000 $t
+    {standard input}:87     .text.XMC_FCE_Disable:00000000 XMC_FCE_Disable
+    {standard input}:121    .text.XMC_FCE_Disable:00000024 $d
+    {standard input}:127    .text.XMC_FCE_Enable:00000000 $t
+    {standard input}:132    .text.XMC_FCE_Enable:00000000 XMC_FCE_Enable
+    {standard input}:166    .text.XMC_FCE_Enable:00000024 $d
+    {standard input}:172    .text.XMC_FCE_CalculateCRC8:00000000 $t
+    {standard input}:177    .text.XMC_FCE_CalculateCRC8:00000000 XMC_FCE_CalculateCRC8
+    {standard input}:264    .text.XMC_FCE_CalculateCRC16:00000000 $t
+    {standard input}:269    .text.XMC_FCE_CalculateCRC16:00000000 XMC_FCE_CalculateCRC16
+    {standard input}:362    .text.XMC_FCE_CalculateCRC32:00000000 $t
+    {standard input}:367    .text.XMC_FCE_CalculateCRC32:00000000 XMC_FCE_CalculateCRC32
+    {standard input}:458    .text.XMC_FCE_TriggerMismatch:00000000 $t
+    {standard input}:463    .text.XMC_FCE_TriggerMismatch:00000000 XMC_FCE_TriggerMismatch
+    {standard input}:538    .text.XMC_FCE_LittleEndian16bit:00000000 $t
+    {standard input}:543    .text.XMC_FCE_LittleEndian16bit:00000000 XMC_FCE_LittleEndian16bit
+    {standard input}:670    .text.XMC_FCE_LittleEndian32bit:00000000 $t
+    {standard input}:675    .text.XMC_FCE_LittleEndian32bit:00000000 XMC_FCE_LittleEndian32bit
+                     .debug_frame:00000010 $d
+
+UNDEFINED SYMBOLS
+XMC_SCU_RESET_AssertPeripheralReset
+XMC_SCU_CLOCK_GatePeripheralClock
+XMC_SCU_CLOCK_UngatePeripheralClock
+XMC_SCU_RESET_DeassertPeripheralReset

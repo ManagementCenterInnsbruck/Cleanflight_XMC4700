@@ -1,0 +1,53 @@
+################################################################################
+# Automatically-generated file. Do not edit!
+################################################################################
+
+# Add inputs and outputs from these tool invocations to the build variables 
+C_SRCS += \
+../cleanflight/src/main/cms/cms.c \
+../cleanflight/src/main/cms/cms_menu_blackbox.c \
+../cleanflight/src/main/cms/cms_menu_builtin.c \
+../cleanflight/src/main/cms/cms_menu_imu.c \
+../cleanflight/src/main/cms/cms_menu_ledstrip.c \
+../cleanflight/src/main/cms/cms_menu_misc.c \
+../cleanflight/src/main/cms/cms_menu_osd.c \
+../cleanflight/src/main/cms/cms_menu_power.c \
+../cleanflight/src/main/cms/cms_menu_vtx_rtc6705.c \
+../cleanflight/src/main/cms/cms_menu_vtx_smartaudio.c \
+../cleanflight/src/main/cms/cms_menu_vtx_tramp.c 
+
+OBJS += \
+./cleanflight/src/main/cms/cms.o \
+./cleanflight/src/main/cms/cms_menu_blackbox.o \
+./cleanflight/src/main/cms/cms_menu_builtin.o \
+./cleanflight/src/main/cms/cms_menu_imu.o \
+./cleanflight/src/main/cms/cms_menu_ledstrip.o \
+./cleanflight/src/main/cms/cms_menu_misc.o \
+./cleanflight/src/main/cms/cms_menu_osd.o \
+./cleanflight/src/main/cms/cms_menu_power.o \
+./cleanflight/src/main/cms/cms_menu_vtx_rtc6705.o \
+./cleanflight/src/main/cms/cms_menu_vtx_smartaudio.o \
+./cleanflight/src/main/cms/cms_menu_vtx_tramp.o 
+
+C_DEPS += \
+./cleanflight/src/main/cms/cms.d \
+./cleanflight/src/main/cms/cms_menu_blackbox.d \
+./cleanflight/src/main/cms/cms_menu_builtin.d \
+./cleanflight/src/main/cms/cms_menu_imu.d \
+./cleanflight/src/main/cms/cms_menu_ledstrip.d \
+./cleanflight/src/main/cms/cms_menu_misc.d \
+./cleanflight/src/main/cms/cms_menu_osd.d \
+./cleanflight/src/main/cms/cms_menu_power.d \
+./cleanflight/src/main/cms/cms_menu_vtx_rtc6705.d \
+./cleanflight/src/main/cms/cms_menu_vtx_smartaudio.d \
+./cleanflight/src/main/cms/cms_menu_vtx_tramp.d 
+
+
+# Each subdirectory must supply rules for building sources it contributes
+cleanflight/src/main/cms/%.o: ../cleanflight/src/main/cms/%.c
+	@echo 'Building file: $<'
+	@echo 'Invoking: ARM-GCC C Compiler'
+	"$(TOOLCHAIN_ROOT)/bin/arm-none-eabi-gcc" -MMD -MT "$@" -DXMC4700_F100x2048 -DARM_MATH_CM4 -D__FPU_PRESENT=1 -DFLASH_SIZE=2048 -D'__TARGET__="LEDUV3"' -D'__REVISION__="1.0"' -I"$(PROJECT_LOC)/cleanflight/lib/main/CMSIS/Core/Include" -I"$(PROJECT_LOC)/cleanflight/lib/main/CMSIS/DSP/Include" -I"$(PROJECT_LOC)/cleanflight/lib/main/XMC4000/USBD" -I"$(PROJECT_LOC)/cleanflight/lib/main/XMC4000/USBD_VCOM" -I"$(PROJECT_LOC)/cleanflight/lib/main/XMC4000" -I"$(PROJECT_LOC)/cleanflight/lib/main/XMC4000/XMCLib/inc" -I"$(PROJECT_LOC)/cleanflight/src/main" -I"$(PROJECT_LOC)/cleanflight/src/main/target/LARIXEDUV3" -O0 -fpack-struct -ffunction-sections -fdata-sections -Wall -std=gnu99 -mfloat-abi=softfp -Wa,-adhlns="$@.lst" -pipe -c -fmessage-length=0 -MMD -MP -MF"$(@:%.o=%.d)" -MT"$(@:%.o=%.d) $@" -mcpu=cortex-m4 -mfpu=fpv4-sp-d16 -mthumb -g -gdwarf-2 -o "$@" "$<" 
+	@echo 'Finished building: $<'
+	@echo.
+

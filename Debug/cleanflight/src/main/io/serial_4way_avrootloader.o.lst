@@ -1,0 +1,1992 @@
+   1              	 .syntax unified
+   2              	 .cpu cortex-m4
+   3              	 .eabi_attribute 27,3
+   4              	 .fpu fpv4-sp-d16
+   5              	 .eabi_attribute 20,1
+   6              	 .eabi_attribute 21,1
+   7              	 .eabi_attribute 23,3
+   8              	 .eabi_attribute 24,1
+   9              	 .eabi_attribute 25,1
+  10              	 .eabi_attribute 26,1
+  11              	 .eabi_attribute 30,6
+  12              	 .eabi_attribute 34,1
+  13              	 .eabi_attribute 18,4
+  14              	 .thumb
+  15              	 .file "serial_4way_avrootloader.c"
+  16              	 .text
+  17              	.Ltext0:
+  18              	 .cfi_sections .debug_frame
+  19              	 .section .text.suart_getc_,"ax",%progbits
+  20              	 .align 2
+  21              	 .thumb
+  22              	 .thumb_func
+  24              	suart_getc_:
+  25              	.LFB531:
+  26              	 .file 1 "../cleanflight/src/main/io/serial_4way_avrootloader.c"
+   1:../cleanflight/src/main/io/serial_4way_avrootloader.c **** /*
+   2:../cleanflight/src/main/io/serial_4way_avrootloader.c ****  * This file is part of Cleanflight and Betaflight.
+   3:../cleanflight/src/main/io/serial_4way_avrootloader.c ****  *
+   4:../cleanflight/src/main/io/serial_4way_avrootloader.c ****  * Cleanflight and Betaflight are free software. You can redistribute
+   5:../cleanflight/src/main/io/serial_4way_avrootloader.c ****  * this software and/or modify this software under the terms of the
+   6:../cleanflight/src/main/io/serial_4way_avrootloader.c ****  * GNU General Public License as published by the Free Software
+   7:../cleanflight/src/main/io/serial_4way_avrootloader.c ****  * Foundation, either version 3 of the License, or (at your option)
+   8:../cleanflight/src/main/io/serial_4way_avrootloader.c ****  * any later version.
+   9:../cleanflight/src/main/io/serial_4way_avrootloader.c ****  *
+  10:../cleanflight/src/main/io/serial_4way_avrootloader.c ****  * Cleanflight and Betaflight are distributed in the hope that they
+  11:../cleanflight/src/main/io/serial_4way_avrootloader.c ****  * will be useful, but WITHOUT ANY WARRANTY; without even the implied
+  12:../cleanflight/src/main/io/serial_4way_avrootloader.c ****  * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+  13:../cleanflight/src/main/io/serial_4way_avrootloader.c ****  * See the GNU General Public License for more details.
+  14:../cleanflight/src/main/io/serial_4way_avrootloader.c ****  *
+  15:../cleanflight/src/main/io/serial_4way_avrootloader.c ****  * You should have received a copy of the GNU General Public License
+  16:../cleanflight/src/main/io/serial_4way_avrootloader.c ****  * along with this software.
+  17:../cleanflight/src/main/io/serial_4way_avrootloader.c ****  *
+  18:../cleanflight/src/main/io/serial_4way_avrootloader.c ****  * If not, see <http://www.gnu.org/licenses/>.
+  19:../cleanflight/src/main/io/serial_4way_avrootloader.c ****  */
+  20:../cleanflight/src/main/io/serial_4way_avrootloader.c **** 
+  21:../cleanflight/src/main/io/serial_4way_avrootloader.c **** /*
+  22:../cleanflight/src/main/io/serial_4way_avrootloader.c ****  * Author: 4712
+  23:../cleanflight/src/main/io/serial_4way_avrootloader.c ****  * for info about Hagens AVRootloader:
+  24:../cleanflight/src/main/io/serial_4way_avrootloader.c ****  * http://www.mikrocontroller.net/topic/avr-bootloader-mit-verschluesselung
+  25:../cleanflight/src/main/io/serial_4way_avrootloader.c **** */
+  26:../cleanflight/src/main/io/serial_4way_avrootloader.c **** 
+  27:../cleanflight/src/main/io/serial_4way_avrootloader.c **** #include <stdbool.h>
+  28:../cleanflight/src/main/io/serial_4way_avrootloader.c **** #include <stdint.h>
+  29:../cleanflight/src/main/io/serial_4way_avrootloader.c **** #include <string.h>
+  30:../cleanflight/src/main/io/serial_4way_avrootloader.c **** 
+  31:../cleanflight/src/main/io/serial_4way_avrootloader.c **** #include "platform.h"
+  32:../cleanflight/src/main/io/serial_4way_avrootloader.c **** 
+  33:../cleanflight/src/main/io/serial_4way_avrootloader.c **** #ifdef  USE_SERIAL_4WAY_BLHELI_INTERFACE
+  34:../cleanflight/src/main/io/serial_4way_avrootloader.c **** 
+  35:../cleanflight/src/main/io/serial_4way_avrootloader.c **** #include "drivers/io.h"
+  36:../cleanflight/src/main/io/serial_4way_avrootloader.c **** #include "drivers/serial.h"
+  37:../cleanflight/src/main/io/serial_4way_avrootloader.c **** #include "drivers/time.h"
+  38:../cleanflight/src/main/io/serial_4way_avrootloader.c **** #include "drivers/timer.h"
+  39:../cleanflight/src/main/io/serial_4way_avrootloader.c **** 
+  40:../cleanflight/src/main/io/serial_4way_avrootloader.c **** #include "io/serial.h"
+  41:../cleanflight/src/main/io/serial_4way_avrootloader.c **** #include "io/serial_4way.h"
+  42:../cleanflight/src/main/io/serial_4way_avrootloader.c **** #include "io/serial_4way_impl.h"
+  43:../cleanflight/src/main/io/serial_4way_avrootloader.c **** #include "io/serial_4way_avrootloader.h"
+  44:../cleanflight/src/main/io/serial_4way_avrootloader.c **** 
+  45:../cleanflight/src/main/io/serial_4way_avrootloader.c **** #if defined(USE_SERIAL_4WAY_BLHELI_BOOTLOADER) && !defined(USE_FAKE_ESC)
+  46:../cleanflight/src/main/io/serial_4way_avrootloader.c **** 
+  47:../cleanflight/src/main/io/serial_4way_avrootloader.c **** // Bootloader commands
+  48:../cleanflight/src/main/io/serial_4way_avrootloader.c **** // RunCmd
+  49:../cleanflight/src/main/io/serial_4way_avrootloader.c **** #define RestartBootloader   0
+  50:../cleanflight/src/main/io/serial_4way_avrootloader.c **** #define ExitBootloader      1
+  51:../cleanflight/src/main/io/serial_4way_avrootloader.c **** 
+  52:../cleanflight/src/main/io/serial_4way_avrootloader.c **** #define CMD_RUN             0x00
+  53:../cleanflight/src/main/io/serial_4way_avrootloader.c **** #define CMD_PROG_FLASH      0x01
+  54:../cleanflight/src/main/io/serial_4way_avrootloader.c **** #define CMD_ERASE_FLASH     0x02
+  55:../cleanflight/src/main/io/serial_4way_avrootloader.c **** #define CMD_READ_FLASH_SIL  0x03
+  56:../cleanflight/src/main/io/serial_4way_avrootloader.c **** #define CMD_VERIFY_FLASH    0x03
+  57:../cleanflight/src/main/io/serial_4way_avrootloader.c **** #define CMD_VERIFY_FLASH_ARM 0x04
+  58:../cleanflight/src/main/io/serial_4way_avrootloader.c **** #define CMD_READ_EEPROM     0x04
+  59:../cleanflight/src/main/io/serial_4way_avrootloader.c **** #define CMD_PROG_EEPROM     0x05
+  60:../cleanflight/src/main/io/serial_4way_avrootloader.c **** #define CMD_READ_SRAM       0x06
+  61:../cleanflight/src/main/io/serial_4way_avrootloader.c **** #define CMD_READ_FLASH_ATM  0x07
+  62:../cleanflight/src/main/io/serial_4way_avrootloader.c **** #define CMD_KEEP_ALIVE      0xFD
+  63:../cleanflight/src/main/io/serial_4way_avrootloader.c **** #define CMD_SET_ADDRESS     0xFF
+  64:../cleanflight/src/main/io/serial_4way_avrootloader.c **** #define CMD_SET_BUFFER      0xFE
+  65:../cleanflight/src/main/io/serial_4way_avrootloader.c **** 
+  66:../cleanflight/src/main/io/serial_4way_avrootloader.c **** #define CMD_BOOTINIT        0x07
+  67:../cleanflight/src/main/io/serial_4way_avrootloader.c **** #define CMD_BOOTSIGN        0x08
+  68:../cleanflight/src/main/io/serial_4way_avrootloader.c **** 
+  69:../cleanflight/src/main/io/serial_4way_avrootloader.c **** #define START_BIT_TIMEOUT_MS 2
+  70:../cleanflight/src/main/io/serial_4way_avrootloader.c **** 
+  71:../cleanflight/src/main/io/serial_4way_avrootloader.c **** #define BIT_TIME (52)       // 52uS
+  72:../cleanflight/src/main/io/serial_4way_avrootloader.c **** #define BIT_TIME_HALVE      (BIT_TIME >> 1) // 26uS
+  73:../cleanflight/src/main/io/serial_4way_avrootloader.c **** #define BIT_TIME_3_4        (BIT_TIME_HALVE + (BIT_TIME_HALVE >> 1))   // 39uS
+  74:../cleanflight/src/main/io/serial_4way_avrootloader.c **** #define START_BIT_TIME      (BIT_TIME_3_4)
+  75:../cleanflight/src/main/io/serial_4way_avrootloader.c **** //#define STOP_BIT_TIME     ((BIT_TIME * 9) + BIT_TIME_HALVE)
+  76:../cleanflight/src/main/io/serial_4way_avrootloader.c **** 
+  77:../cleanflight/src/main/io/serial_4way_avrootloader.c **** static uint8_t suart_getc_(uint8_t *bt)
+  78:../cleanflight/src/main/io/serial_4way_avrootloader.c **** {
+  27              	 .loc 1 78 0
+  28              	 .cfi_startproc
+  29              	 
+  30              	 
+  31 0000 80B5     	 push {r7,lr}
+  32              	.LCFI0:
+  33              	 .cfi_def_cfa_offset 8
+  34              	 .cfi_offset 7,-8
+  35              	 .cfi_offset 14,-4
+  36 0002 86B0     	 sub sp,sp,#24
+  37              	.LCFI1:
+  38              	 .cfi_def_cfa_offset 32
+  39 0004 00AF     	 add r7,sp,#0
+  40              	.LCFI2:
+  41              	 .cfi_def_cfa_register 7
+  42 0006 7860     	 str r0,[r7,#4]
+  79:../cleanflight/src/main/io/serial_4way_avrootloader.c ****     uint32_t btime;
+  80:../cleanflight/src/main/io/serial_4way_avrootloader.c ****     uint32_t start_time;
+  81:../cleanflight/src/main/io/serial_4way_avrootloader.c **** 
+  82:../cleanflight/src/main/io/serial_4way_avrootloader.c ****     uint32_t wait_time = millis() + START_BIT_TIMEOUT_MS;
+  43              	 .loc 1 82 0
+  44 0008 FFF7FEFF 	 bl millis
+  45 000c 0346     	 mov r3,r0
+  46 000e 0233     	 adds r3,r3,#2
+  47 0010 FB60     	 str r3,[r7,#12]
+  83:../cleanflight/src/main/io/serial_4way_avrootloader.c ****     while (ESC_IS_HI) {
+  48              	 .loc 1 83 0
+  49 0012 07E0     	 b .L2
+  50              	.L4:
+  84:../cleanflight/src/main/io/serial_4way_avrootloader.c ****         // check for startbit begin
+  85:../cleanflight/src/main/io/serial_4way_avrootloader.c ****         if (millis() >= wait_time) {
+  51              	 .loc 1 85 0
+  52 0014 FFF7FEFF 	 bl millis
+  53 0018 0246     	 mov r2,r0
+  54 001a FB68     	 ldr r3,[r7,#12]
+  55 001c 9A42     	 cmp r2,r3
+  56 001e 01D3     	 bcc .L2
+  86:../cleanflight/src/main/io/serial_4way_avrootloader.c ****             return 0;
+  57              	 .loc 1 86 0
+  58 0020 0023     	 movs r3,#0
+  59 0022 4FE0     	 b .L3
+  60              	.L2:
+  83:../cleanflight/src/main/io/serial_4way_avrootloader.c ****     while (ESC_IS_HI) {
+  61              	 .loc 1 83 0
+  62 0024 294B     	 ldr r3,.L14
+  63 0026 1B78     	 ldrb r3,[r3]
+  64 0028 1846     	 mov r0,r3
+  65 002a FFF7FEFF 	 bl isEscHi
+  66 002e 0346     	 mov r3,r0
+  67 0030 002B     	 cmp r3,#0
+  68 0032 EFD1     	 bne .L4
+  87:../cleanflight/src/main/io/serial_4way_avrootloader.c ****         }
+  88:../cleanflight/src/main/io/serial_4way_avrootloader.c ****     }
+  89:../cleanflight/src/main/io/serial_4way_avrootloader.c ****     // start bit
+  90:../cleanflight/src/main/io/serial_4way_avrootloader.c ****     start_time = micros();
+  69              	 .loc 1 90 0
+  70 0034 FFF7FEFF 	 bl micros
+  71 0038 B860     	 str r0,[r7,#8]
+  91:../cleanflight/src/main/io/serial_4way_avrootloader.c ****     btime = start_time + START_BIT_TIME;
+  72              	 .loc 1 91 0
+  73 003a BB68     	 ldr r3,[r7,#8]
+  74 003c 2733     	 adds r3,r3,#39
+  75 003e 7B61     	 str r3,[r7,#20]
+  92:../cleanflight/src/main/io/serial_4way_avrootloader.c ****     uint16_t bitmask = 0;
+  76              	 .loc 1 92 0
+  77 0040 0023     	 movs r3,#0
+  78 0042 7B82     	 strh r3,[r7,#18]
+  93:../cleanflight/src/main/io/serial_4way_avrootloader.c ****     uint8_t bit = 0;
+  79              	 .loc 1 93 0
+  80 0044 0023     	 movs r3,#0
+  81 0046 7B74     	 strb r3,[r7,#17]
+  94:../cleanflight/src/main/io/serial_4way_avrootloader.c ****     while (micros() < btime);
+  82              	 .loc 1 94 0
+  83 0048 00BF     	 nop
+  84              	.L5:
+  85              	 .loc 1 94 0 is_stmt 0 discriminator 1
+  86 004a FFF7FEFF 	 bl micros
+  87 004e 0246     	 mov r2,r0
+  88 0050 7B69     	 ldr r3,[r7,#20]
+  89 0052 9A42     	 cmp r2,r3
+  90 0054 F9D3     	 bcc .L5
+  91              	.L10:
+  95:../cleanflight/src/main/io/serial_4way_avrootloader.c ****     while (1) {
+  96:../cleanflight/src/main/io/serial_4way_avrootloader.c ****         if (ESC_IS_HI)
+  92              	 .loc 1 96 0 is_stmt 1
+  93 0056 1D4B     	 ldr r3,.L14
+  94 0058 1B78     	 ldrb r3,[r3]
+  95 005a 1846     	 mov r0,r3
+  96 005c FFF7FEFF 	 bl isEscHi
+  97 0060 0346     	 mov r3,r0
+  98 0062 002B     	 cmp r3,#0
+  99 0064 08D0     	 beq .L6
+  97:../cleanflight/src/main/io/serial_4way_avrootloader.c ****         {
+  98:../cleanflight/src/main/io/serial_4way_avrootloader.c ****             bitmask |= (1 << bit);
+ 100              	 .loc 1 98 0
+ 101 0066 7B7C     	 ldrb r3,[r7,#17]
+ 102 0068 0122     	 movs r2,#1
+ 103 006a 02FA03F3 	 lsl r3,r2,r3
+ 104 006e 9AB2     	 uxth r2,r3
+ 105 0070 7B8A     	 ldrh r3,[r7,#18]
+ 106 0072 1343     	 orrs r3,r3,r2
+ 107 0074 9BB2     	 uxth r3,r3
+ 108 0076 7B82     	 strh r3,[r7,#18]
+ 109              	.L6:
+  99:../cleanflight/src/main/io/serial_4way_avrootloader.c ****         }
+ 100:../cleanflight/src/main/io/serial_4way_avrootloader.c ****         btime = btime + BIT_TIME;
+ 110              	 .loc 1 100 0
+ 111 0078 7B69     	 ldr r3,[r7,#20]
+ 112 007a 3433     	 adds r3,r3,#52
+ 113 007c 7B61     	 str r3,[r7,#20]
+ 101:../cleanflight/src/main/io/serial_4way_avrootloader.c ****         bit++;
+ 114              	 .loc 1 101 0
+ 115 007e 7B7C     	 ldrb r3,[r7,#17]
+ 116 0080 0133     	 adds r3,r3,#1
+ 117 0082 7B74     	 strb r3,[r7,#17]
+ 102:../cleanflight/src/main/io/serial_4way_avrootloader.c ****         if (bit == 10) break;
+ 118              	 .loc 1 102 0
+ 119 0084 7B7C     	 ldrb r3,[r7,#17]
+ 120 0086 0A2B     	 cmp r3,#10
+ 121 0088 06D1     	 bne .L7
+ 122 008a 00BF     	 nop
+ 103:../cleanflight/src/main/io/serial_4way_avrootloader.c ****         while (micros() < btime);
+ 104:../cleanflight/src/main/io/serial_4way_avrootloader.c ****     }
+ 105:../cleanflight/src/main/io/serial_4way_avrootloader.c ****     // check start bit and stop bit
+ 106:../cleanflight/src/main/io/serial_4way_avrootloader.c ****     if ((bitmask & 1) || (!(bitmask & (1 << 9)))) {
+ 123              	 .loc 1 106 0
+ 124 008c 7B8A     	 ldrh r3,[r7,#18]
+ 125 008e 03F00103 	 and r3,r3,#1
+ 126 0092 002B     	 cmp r3,#0
+ 127 0094 0DD1     	 bne .L11
+ 128 0096 07E0     	 b .L13
+ 129              	.L7:
+ 103:../cleanflight/src/main/io/serial_4way_avrootloader.c ****         while (micros() < btime);
+ 130              	 .loc 1 103 0
+ 131 0098 00BF     	 nop
+ 132              	.L9:
+ 103:../cleanflight/src/main/io/serial_4way_avrootloader.c ****         while (micros() < btime);
+ 133              	 .loc 1 103 0 is_stmt 0 discriminator 1
+ 134 009a FFF7FEFF 	 bl micros
+ 135 009e 0246     	 mov r2,r0
+ 136 00a0 7B69     	 ldr r3,[r7,#20]
+ 137 00a2 9A42     	 cmp r2,r3
+ 138 00a4 F9D3     	 bcc .L9
+ 104:../cleanflight/src/main/io/serial_4way_avrootloader.c ****     // check start bit and stop bit
+ 139              	 .loc 1 104 0 is_stmt 1
+ 140 00a6 D6E7     	 b .L10
+ 141              	.L13:
+ 142              	 .loc 1 106 0 discriminator 1
+ 143 00a8 7B8A     	 ldrh r3,[r7,#18]
+ 144 00aa 03F40073 	 and r3,r3,#512
+ 145 00ae 002B     	 cmp r3,#0
+ 146 00b0 01D1     	 bne .L12
+ 147              	.L11:
+ 107:../cleanflight/src/main/io/serial_4way_avrootloader.c ****         return 0;
+ 148              	 .loc 1 107 0
+ 149 00b2 0023     	 movs r3,#0
+ 150 00b4 06E0     	 b .L3
+ 151              	.L12:
+ 108:../cleanflight/src/main/io/serial_4way_avrootloader.c ****     }
+ 109:../cleanflight/src/main/io/serial_4way_avrootloader.c ****     *bt = bitmask >> 1;
+ 152              	 .loc 1 109 0
+ 153 00b6 7B8A     	 ldrh r3,[r7,#18]
+ 154 00b8 5B08     	 lsrs r3,r3,#1
+ 155 00ba 9BB2     	 uxth r3,r3
+ 156 00bc DAB2     	 uxtb r2,r3
+ 157 00be 7B68     	 ldr r3,[r7,#4]
+ 158 00c0 1A70     	 strb r2,[r3]
+ 110:../cleanflight/src/main/io/serial_4way_avrootloader.c ****     return 1;
+ 159              	 .loc 1 110 0
+ 160 00c2 0123     	 movs r3,#1
+ 161              	.L3:
+ 111:../cleanflight/src/main/io/serial_4way_avrootloader.c **** }
+ 162              	 .loc 1 111 0
+ 163 00c4 1846     	 mov r0,r3
+ 164 00c6 1837     	 adds r7,r7,#24
+ 165              	.LCFI3:
+ 166              	 .cfi_def_cfa_offset 8
+ 167 00c8 BD46     	 mov sp,r7
+ 168              	.LCFI4:
+ 169              	 .cfi_def_cfa_register 13
+ 170              	 
+ 171 00ca 80BD     	 pop {r7,pc}
+ 172              	.L15:
+ 173              	 .align 2
+ 174              	.L14:
+ 175 00cc 00000000 	 .word selected_esc
+ 176              	 .cfi_endproc
+ 177              	.LFE531:
+ 179              	 .section .text.suart_putc_,"ax",%progbits
+ 180              	 .align 2
+ 181              	 .thumb
+ 182              	 .thumb_func
+ 184              	suart_putc_:
+ 185              	.LFB532:
+ 112:../cleanflight/src/main/io/serial_4way_avrootloader.c **** 
+ 113:../cleanflight/src/main/io/serial_4way_avrootloader.c **** static void suart_putc_(uint8_t *tx_b)
+ 114:../cleanflight/src/main/io/serial_4way_avrootloader.c **** {
+ 186              	 .loc 1 114 0
+ 187              	 .cfi_startproc
+ 188              	 
+ 189              	 
+ 190 0000 80B5     	 push {r7,lr}
+ 191              	.LCFI5:
+ 192              	 .cfi_def_cfa_offset 8
+ 193              	 .cfi_offset 7,-8
+ 194              	 .cfi_offset 14,-4
+ 195 0002 84B0     	 sub sp,sp,#16
+ 196              	.LCFI6:
+ 197              	 .cfi_def_cfa_offset 24
+ 198 0004 00AF     	 add r7,sp,#0
+ 199              	.LCFI7:
+ 200              	 .cfi_def_cfa_register 7
+ 201 0006 7860     	 str r0,[r7,#4]
+ 115:../cleanflight/src/main/io/serial_4way_avrootloader.c ****     // shift out stopbit first
+ 116:../cleanflight/src/main/io/serial_4way_avrootloader.c ****     uint16_t bitmask = (*tx_b << 2) | 1 | (1 << 10);
+ 202              	 .loc 1 116 0
+ 203 0008 7B68     	 ldr r3,[r7,#4]
+ 204 000a 1B78     	 ldrb r3,[r3]
+ 205 000c 9B00     	 lsls r3,r3,#2
+ 206 000e 9BB2     	 uxth r3,r3
+ 207 0010 43F48063 	 orr r3,r3,#1024
+ 208 0014 43F00103 	 orr r3,r3,#1
+ 209 0018 9BB2     	 uxth r3,r3
+ 210 001a FB81     	 strh r3,[r7,#14]
+ 117:../cleanflight/src/main/io/serial_4way_avrootloader.c ****     uint32_t btime = micros();
+ 211              	 .loc 1 117 0
+ 212 001c FFF7FEFF 	 bl micros
+ 213 0020 B860     	 str r0,[r7,#8]
+ 214              	.L22:
+ 118:../cleanflight/src/main/io/serial_4way_avrootloader.c ****     while (1) {
+ 119:../cleanflight/src/main/io/serial_4way_avrootloader.c ****         if (bitmask & 1) {
+ 215              	 .loc 1 119 0
+ 216 0022 FB89     	 ldrh r3,[r7,#14]
+ 217 0024 03F00103 	 and r3,r3,#1
+ 218 0028 002B     	 cmp r3,#0
+ 219 002a 05D0     	 beq .L17
+ 120:../cleanflight/src/main/io/serial_4way_avrootloader.c ****             ESC_SET_HI; // 1
+ 220              	 .loc 1 120 0
+ 221 002c 0F4B     	 ldr r3,.L24
+ 222 002e 1B78     	 ldrb r3,[r3]
+ 223 0030 1846     	 mov r0,r3
+ 224 0032 FFF7FEFF 	 bl setEscHi
+ 225 0036 04E0     	 b .L18
+ 226              	.L17:
+ 121:../cleanflight/src/main/io/serial_4way_avrootloader.c ****         }
+ 122:../cleanflight/src/main/io/serial_4way_avrootloader.c ****         else {
+ 123:../cleanflight/src/main/io/serial_4way_avrootloader.c ****             ESC_SET_LO; // 0
+ 227              	 .loc 1 123 0
+ 228 0038 0C4B     	 ldr r3,.L24
+ 229 003a 1B78     	 ldrb r3,[r3]
+ 230 003c 1846     	 mov r0,r3
+ 231 003e FFF7FEFF 	 bl setEscLo
+ 232              	.L18:
+ 124:../cleanflight/src/main/io/serial_4way_avrootloader.c ****         }
+ 125:../cleanflight/src/main/io/serial_4way_avrootloader.c ****         btime = btime + BIT_TIME;
+ 233              	 .loc 1 125 0
+ 234 0042 BB68     	 ldr r3,[r7,#8]
+ 235 0044 3433     	 adds r3,r3,#52
+ 236 0046 BB60     	 str r3,[r7,#8]
+ 126:../cleanflight/src/main/io/serial_4way_avrootloader.c ****         bitmask = (bitmask >> 1);
+ 237              	 .loc 1 126 0
+ 238 0048 FB89     	 ldrh r3,[r7,#14]
+ 239 004a 5B08     	 lsrs r3,r3,#1
+ 240 004c FB81     	 strh r3,[r7,#14]
+ 127:../cleanflight/src/main/io/serial_4way_avrootloader.c ****         if (bitmask == 0) break; // stopbit shifted out - but don't wait
+ 241              	 .loc 1 127 0
+ 242 004e FB89     	 ldrh r3,[r7,#14]
+ 243 0050 002B     	 cmp r3,#0
+ 244 0052 00D1     	 bne .L19
+ 245 0054 07E0     	 b .L23
+ 246              	.L19:
+ 128:../cleanflight/src/main/io/serial_4way_avrootloader.c ****         while (micros() < btime);
+ 247              	 .loc 1 128 0
+ 248 0056 00BF     	 nop
+ 249              	.L21:
+ 250              	 .loc 1 128 0 is_stmt 0 discriminator 1
+ 251 0058 FFF7FEFF 	 bl micros
+ 252 005c 0246     	 mov r2,r0
+ 253 005e BB68     	 ldr r3,[r7,#8]
+ 254 0060 9A42     	 cmp r2,r3
+ 255 0062 F9D3     	 bcc .L21
+ 129:../cleanflight/src/main/io/serial_4way_avrootloader.c ****     }
+ 256              	 .loc 1 129 0 is_stmt 1
+ 257 0064 DDE7     	 b .L22
+ 258              	.L23:
+ 130:../cleanflight/src/main/io/serial_4way_avrootloader.c **** }
+ 259              	 .loc 1 130 0
+ 260 0066 1037     	 adds r7,r7,#16
+ 261              	.LCFI8:
+ 262              	 .cfi_def_cfa_offset 8
+ 263 0068 BD46     	 mov sp,r7
+ 264              	.LCFI9:
+ 265              	 .cfi_def_cfa_register 13
+ 266              	 
+ 267 006a 80BD     	 pop {r7,pc}
+ 268              	.L25:
+ 269              	 .align 2
+ 270              	.L24:
+ 271 006c 00000000 	 .word selected_esc
+ 272              	 .cfi_endproc
+ 273              	.LFE532:
+ 275              	 .section .bss.CRC_16,"aw",%nobits
+ 276              	 .align 2
+ 279              	CRC_16:
+ 280 0000 0000     	 .space 2
+ 281 0002 0000     	 .section .bss.LastCRC_16,"aw",%nobits
+ 282              	 .align 2
+ 285              	LastCRC_16:
+ 286 0000 0000     	 .space 2
+ 287 0002 0000     	 .section .text.ByteCrc,"ax",%progbits
+ 288              	 .align 2
+ 289              	 .thumb
+ 290              	 .thumb_func
+ 292              	ByteCrc:
+ 293              	.LFB533:
+ 131:../cleanflight/src/main/io/serial_4way_avrootloader.c **** 
+ 132:../cleanflight/src/main/io/serial_4way_avrootloader.c **** static uint8_16_u CRC_16;
+ 133:../cleanflight/src/main/io/serial_4way_avrootloader.c **** static uint8_16_u LastCRC_16;
+ 134:../cleanflight/src/main/io/serial_4way_avrootloader.c **** 
+ 135:../cleanflight/src/main/io/serial_4way_avrootloader.c **** static void ByteCrc(uint8_t *bt)
+ 136:../cleanflight/src/main/io/serial_4way_avrootloader.c **** {
+ 294              	 .loc 1 136 0
+ 295              	 .cfi_startproc
+ 296              	 
+ 297              	 
+ 298              	 
+ 299 0000 80B4     	 push {r7}
+ 300              	.LCFI10:
+ 301              	 .cfi_def_cfa_offset 4
+ 302              	 .cfi_offset 7,-4
+ 303 0002 85B0     	 sub sp,sp,#20
+ 304              	.LCFI11:
+ 305              	 .cfi_def_cfa_offset 24
+ 306 0004 00AF     	 add r7,sp,#0
+ 307              	.LCFI12:
+ 308              	 .cfi_def_cfa_register 7
+ 309 0006 7860     	 str r0,[r7,#4]
+ 137:../cleanflight/src/main/io/serial_4way_avrootloader.c ****     uint8_t xb = *bt;
+ 310              	 .loc 1 137 0
+ 311 0008 7B68     	 ldr r3,[r7,#4]
+ 312 000a 1B78     	 ldrb r3,[r3]
+ 313 000c FB73     	 strb r3,[r7,#15]
+ 314              	.LBB2:
+ 138:../cleanflight/src/main/io/serial_4way_avrootloader.c ****     for (uint8_t i = 0; i < 8; i++)
+ 315              	 .loc 1 138 0
+ 316 000e 0023     	 movs r3,#0
+ 317 0010 BB73     	 strb r3,[r7,#14]
+ 318 0012 21E0     	 b .L27
+ 319              	.L30:
+ 139:../cleanflight/src/main/io/serial_4way_avrootloader.c ****     {
+ 140:../cleanflight/src/main/io/serial_4way_avrootloader.c ****         if (((xb & 0x01) ^ (CRC_16.word & 0x0001)) !=0 ) {
+ 320              	 .loc 1 140 0
+ 321 0014 FB7B     	 ldrb r3,[r7,#15]
+ 322 0016 144A     	 ldr r2,.L31
+ 323 0018 1288     	 ldrh r2,[r2]
+ 324 001a 5340     	 eors r3,r3,r2
+ 325 001c 03F00103 	 and r3,r3,#1
+ 326 0020 002B     	 cmp r3,#0
+ 327 0022 0DD0     	 beq .L28
+ 141:../cleanflight/src/main/io/serial_4way_avrootloader.c ****             CRC_16.word = CRC_16.word >> 1;
+ 328              	 .loc 1 141 0
+ 329 0024 104B     	 ldr r3,.L31
+ 330 0026 1B88     	 ldrh r3,[r3]
+ 331 0028 5B08     	 lsrs r3,r3,#1
+ 332 002a 9AB2     	 uxth r2,r3
+ 333 002c 0E4B     	 ldr r3,.L31
+ 334 002e 1A80     	 strh r2,[r3]
+ 142:../cleanflight/src/main/io/serial_4way_avrootloader.c ****             CRC_16.word = CRC_16.word ^ 0xA001;
+ 335              	 .loc 1 142 0
+ 336 0030 0D4B     	 ldr r3,.L31
+ 337 0032 1A88     	 ldrh r2,[r3]
+ 338 0034 0D4B     	 ldr r3,.L31+4
+ 339 0036 5340     	 eors r3,r3,r2
+ 340 0038 9AB2     	 uxth r2,r3
+ 341 003a 0B4B     	 ldr r3,.L31
+ 342 003c 1A80     	 strh r2,[r3]
+ 343 003e 05E0     	 b .L29
+ 344              	.L28:
+ 143:../cleanflight/src/main/io/serial_4way_avrootloader.c ****         } else {
+ 144:../cleanflight/src/main/io/serial_4way_avrootloader.c ****             CRC_16.word = CRC_16.word >> 1;
+ 345              	 .loc 1 144 0
+ 346 0040 094B     	 ldr r3,.L31
+ 347 0042 1B88     	 ldrh r3,[r3]
+ 348 0044 5B08     	 lsrs r3,r3,#1
+ 349 0046 9AB2     	 uxth r2,r3
+ 350 0048 074B     	 ldr r3,.L31
+ 351 004a 1A80     	 strh r2,[r3]
+ 352              	.L29:
+ 145:../cleanflight/src/main/io/serial_4way_avrootloader.c ****         }
+ 146:../cleanflight/src/main/io/serial_4way_avrootloader.c ****         xb = xb >> 1;
+ 353              	 .loc 1 146 0 discriminator 2
+ 354 004c FB7B     	 ldrb r3,[r7,#15]
+ 355 004e 5B08     	 lsrs r3,r3,#1
+ 356 0050 FB73     	 strb r3,[r7,#15]
+ 138:../cleanflight/src/main/io/serial_4way_avrootloader.c ****     {
+ 357              	 .loc 1 138 0 discriminator 2
+ 358 0052 BB7B     	 ldrb r3,[r7,#14]
+ 359 0054 0133     	 adds r3,r3,#1
+ 360 0056 BB73     	 strb r3,[r7,#14]
+ 361              	.L27:
+ 138:../cleanflight/src/main/io/serial_4way_avrootloader.c ****     {
+ 362              	 .loc 1 138 0 is_stmt 0 discriminator 1
+ 363 0058 BB7B     	 ldrb r3,[r7,#14]
+ 364 005a 072B     	 cmp r3,#7
+ 365 005c DAD9     	 bls .L30
+ 366              	.LBE2:
+ 147:../cleanflight/src/main/io/serial_4way_avrootloader.c ****     }
+ 148:../cleanflight/src/main/io/serial_4way_avrootloader.c **** }
+ 367              	 .loc 1 148 0 is_stmt 1
+ 368 005e 1437     	 adds r7,r7,#20
+ 369              	.LCFI13:
+ 370              	 .cfi_def_cfa_offset 4
+ 371 0060 BD46     	 mov sp,r7
+ 372              	.LCFI14:
+ 373              	 .cfi_def_cfa_register 13
+ 374              	 
+ 375 0062 5DF8047B 	 ldr r7,[sp],#4
+ 376              	.LCFI15:
+ 377              	 .cfi_restore 7
+ 378              	 .cfi_def_cfa_offset 0
+ 379 0066 7047     	 bx lr
+ 380              	.L32:
+ 381              	 .align 2
+ 382              	.L31:
+ 383 0068 00000000 	 .word CRC_16
+ 384 006c 01A0FFFF 	 .word -24575
+ 385              	 .cfi_endproc
+ 386              	.LFE533:
+ 388              	 .section .text.BL_ReadBuf,"ax",%progbits
+ 389              	 .align 2
+ 390              	 .thumb
+ 391              	 .thumb_func
+ 393              	BL_ReadBuf:
+ 394              	.LFB534:
+ 149:../cleanflight/src/main/io/serial_4way_avrootloader.c **** 
+ 150:../cleanflight/src/main/io/serial_4way_avrootloader.c **** static uint8_t BL_ReadBuf(uint8_t *pstring, uint8_t len)
+ 151:../cleanflight/src/main/io/serial_4way_avrootloader.c **** {
+ 395              	 .loc 1 151 0
+ 396              	 .cfi_startproc
+ 397              	 
+ 398              	 
+ 399 0000 80B5     	 push {r7,lr}
+ 400              	.LCFI16:
+ 401              	 .cfi_def_cfa_offset 8
+ 402              	 .cfi_offset 7,-8
+ 403              	 .cfi_offset 14,-4
+ 404 0002 84B0     	 sub sp,sp,#16
+ 405              	.LCFI17:
+ 406              	 .cfi_def_cfa_offset 24
+ 407 0004 00AF     	 add r7,sp,#0
+ 408              	.LCFI18:
+ 409              	 .cfi_def_cfa_register 7
+ 410 0006 7860     	 str r0,[r7,#4]
+ 411 0008 0B46     	 mov r3,r1
+ 412 000a FB70     	 strb r3,[r7,#3]
+ 152:../cleanflight/src/main/io/serial_4way_avrootloader.c ****     // len 0 means 256
+ 153:../cleanflight/src/main/io/serial_4way_avrootloader.c ****     CRC_16.word = 0;
+ 413              	 .loc 1 153 0
+ 414 000c 294B     	 ldr r3,.L43
+ 415 000e 0022     	 movs r2,#0
+ 416 0010 1A80     	 strh r2,[r3]
+ 154:../cleanflight/src/main/io/serial_4way_avrootloader.c ****     LastCRC_16.word = 0;
+ 417              	 .loc 1 154 0
+ 418 0012 294B     	 ldr r3,.L43+4
+ 419 0014 0022     	 movs r2,#0
+ 420 0016 1A80     	 strh r2,[r3]
+ 155:../cleanflight/src/main/io/serial_4way_avrootloader.c ****     uint8_t  LastACK = brNONE;
+ 421              	 .loc 1 155 0
+ 422 0018 FF23     	 movs r3,#255
+ 423 001a FB73     	 strb r3,[r7,#15]
+ 424              	.L36:
+ 156:../cleanflight/src/main/io/serial_4way_avrootloader.c ****     do {
+ 157:../cleanflight/src/main/io/serial_4way_avrootloader.c ****         if (!suart_getc_(pstring)) goto timeout;
+ 425              	 .loc 1 157 0
+ 426 001c 7868     	 ldr r0,[r7,#4]
+ 427 001e FFF7FEFF 	 bl suart_getc_
+ 428 0022 0346     	 mov r3,r0
+ 429 0024 002B     	 cmp r3,#0
+ 430 0026 00D1     	 bne .L34
+ 431 0028 39E0     	 b .L35
+ 432              	.L34:
+ 158:../cleanflight/src/main/io/serial_4way_avrootloader.c ****         ByteCrc(pstring);
+ 433              	 .loc 1 158 0
+ 434 002a 7868     	 ldr r0,[r7,#4]
+ 435 002c FFF7FEFF 	 bl ByteCrc
+ 159:../cleanflight/src/main/io/serial_4way_avrootloader.c ****         pstring++;
+ 436              	 .loc 1 159 0
+ 437 0030 7B68     	 ldr r3,[r7,#4]
+ 438 0032 0133     	 adds r3,r3,#1
+ 439 0034 7B60     	 str r3,[r7,#4]
+ 160:../cleanflight/src/main/io/serial_4way_avrootloader.c ****         len--;
+ 440              	 .loc 1 160 0
+ 441 0036 FB78     	 ldrb r3,[r7,#3]
+ 442 0038 013B     	 subs r3,r3,#1
+ 443 003a FB70     	 strb r3,[r7,#3]
+ 161:../cleanflight/src/main/io/serial_4way_avrootloader.c ****     } while (len > 0);
+ 444              	 .loc 1 161 0
+ 445 003c FB78     	 ldrb r3,[r7,#3]
+ 446 003e 002B     	 cmp r3,#0
+ 447 0040 ECD1     	 bne .L36
+ 162:../cleanflight/src/main/io/serial_4way_avrootloader.c **** 
+ 163:../cleanflight/src/main/io/serial_4way_avrootloader.c ****     if (isMcuConnected()) {
+ 448              	 .loc 1 163 0
+ 449 0042 FFF7FEFF 	 bl isMcuConnected
+ 450 0046 0346     	 mov r3,r0
+ 451 0048 002B     	 cmp r3,#0
+ 452 004a 1FD0     	 beq .L37
+ 164:../cleanflight/src/main/io/serial_4way_avrootloader.c ****         //With CRC read 3 more
+ 165:../cleanflight/src/main/io/serial_4way_avrootloader.c ****         if (!suart_getc_(&LastCRC_16.bytes[0])) goto timeout;
+ 453              	 .loc 1 165 0
+ 454 004c 1A48     	 ldr r0,.L43+4
+ 455 004e FFF7FEFF 	 bl suart_getc_
+ 456 0052 0346     	 mov r3,r0
+ 457 0054 002B     	 cmp r3,#0
+ 458 0056 00D1     	 bne .L38
+ 459 0058 21E0     	 b .L35
+ 460              	.L38:
+ 166:../cleanflight/src/main/io/serial_4way_avrootloader.c ****         if (!suart_getc_(&LastCRC_16.bytes[1])) goto timeout;
+ 461              	 .loc 1 166 0
+ 462 005a 1848     	 ldr r0,.L43+8
+ 463 005c FFF7FEFF 	 bl suart_getc_
+ 464 0060 0346     	 mov r3,r0
+ 465 0062 002B     	 cmp r3,#0
+ 466 0064 00D1     	 bne .L39
+ 467 0066 1AE0     	 b .L35
+ 468              	.L39:
+ 167:../cleanflight/src/main/io/serial_4way_avrootloader.c ****         if (!suart_getc_(&LastACK)) goto timeout;
+ 469              	 .loc 1 167 0
+ 470 0068 07F10F03 	 add r3,r7,#15
+ 471 006c 1846     	 mov r0,r3
+ 472 006e FFF7FEFF 	 bl suart_getc_
+ 473 0072 0346     	 mov r3,r0
+ 474 0074 002B     	 cmp r3,#0
+ 475 0076 00D1     	 bne .L40
+ 476 0078 11E0     	 b .L35
+ 477              	.L40:
+ 168:../cleanflight/src/main/io/serial_4way_avrootloader.c ****         if (CRC_16.word != LastCRC_16.word) {
+ 478              	 .loc 1 168 0
+ 479 007a 0E4B     	 ldr r3,.L43
+ 480 007c 1A88     	 ldrh r2,[r3]
+ 481 007e 0E4B     	 ldr r3,.L43+4
+ 482 0080 1B88     	 ldrh r3,[r3]
+ 483 0082 9A42     	 cmp r2,r3
+ 484 0084 0BD0     	 beq .L35
+ 169:../cleanflight/src/main/io/serial_4way_avrootloader.c ****             LastACK = brERRORCRC;
+ 485              	 .loc 1 169 0
+ 486 0086 C223     	 movs r3,#194
+ 487 0088 FB73     	 strb r3,[r7,#15]
+ 488 008a 08E0     	 b .L35
+ 489              	.L37:
+ 170:../cleanflight/src/main/io/serial_4way_avrootloader.c ****         }
+ 171:../cleanflight/src/main/io/serial_4way_avrootloader.c ****     } else {
+ 172:../cleanflight/src/main/io/serial_4way_avrootloader.c ****         if (!suart_getc_(&LastACK)) goto timeout;
+ 490              	 .loc 1 172 0
+ 491 008c 07F10F03 	 add r3,r7,#15
+ 492 0090 1846     	 mov r0,r3
+ 493 0092 FFF7FEFF 	 bl suart_getc_
+ 494 0096 0346     	 mov r3,r0
+ 495 0098 002B     	 cmp r3,#0
+ 496 009a 00D1     	 bne .L35
+ 497 009c 00BF     	 nop
+ 498              	.L35:
+ 173:../cleanflight/src/main/io/serial_4way_avrootloader.c ****     }
+ 174:../cleanflight/src/main/io/serial_4way_avrootloader.c **** timeout:
+ 175:../cleanflight/src/main/io/serial_4way_avrootloader.c ****     return (LastACK == brSUCCESS);
+ 499              	 .loc 1 175 0
+ 500 009e FB7B     	 ldrb r3,[r7,#15]
+ 501 00a0 302B     	 cmp r3,#48
+ 502 00a2 0CBF     	 ite eq
+ 503 00a4 0123     	 moveq r3,#1
+ 504 00a6 0023     	 movne r3,#0
+ 505 00a8 DBB2     	 uxtb r3,r3
+ 176:../cleanflight/src/main/io/serial_4way_avrootloader.c **** }
+ 506              	 .loc 1 176 0
+ 507 00aa 1846     	 mov r0,r3
+ 508 00ac 1037     	 adds r7,r7,#16
+ 509              	.LCFI19:
+ 510              	 .cfi_def_cfa_offset 8
+ 511 00ae BD46     	 mov sp,r7
+ 512              	.LCFI20:
+ 513              	 .cfi_def_cfa_register 13
+ 514              	 
+ 515 00b0 80BD     	 pop {r7,pc}
+ 516              	.L44:
+ 517 00b2 00BF     	 .align 2
+ 518              	.L43:
+ 519 00b4 00000000 	 .word CRC_16
+ 520 00b8 00000000 	 .word LastCRC_16
+ 521 00bc 01000000 	 .word LastCRC_16+1
+ 522              	 .cfi_endproc
+ 523              	.LFE534:
+ 525              	 .section .text.BL_SendBuf,"ax",%progbits
+ 526              	 .align 2
+ 527              	 .thumb
+ 528              	 .thumb_func
+ 530              	BL_SendBuf:
+ 531              	.LFB535:
+ 177:../cleanflight/src/main/io/serial_4way_avrootloader.c **** 
+ 178:../cleanflight/src/main/io/serial_4way_avrootloader.c **** static void BL_SendBuf(uint8_t *pstring, uint8_t len)
+ 179:../cleanflight/src/main/io/serial_4way_avrootloader.c **** {
+ 532              	 .loc 1 179 0
+ 533              	 .cfi_startproc
+ 534              	 
+ 535              	 
+ 536 0000 80B5     	 push {r7,lr}
+ 537              	.LCFI21:
+ 538              	 .cfi_def_cfa_offset 8
+ 539              	 .cfi_offset 7,-8
+ 540              	 .cfi_offset 14,-4
+ 541 0002 82B0     	 sub sp,sp,#8
+ 542              	.LCFI22:
+ 543              	 .cfi_def_cfa_offset 16
+ 544 0004 00AF     	 add r7,sp,#0
+ 545              	.LCFI23:
+ 546              	 .cfi_def_cfa_register 7
+ 547 0006 7860     	 str r0,[r7,#4]
+ 548 0008 0B46     	 mov r3,r1
+ 549 000a FB70     	 strb r3,[r7,#3]
+ 180:../cleanflight/src/main/io/serial_4way_avrootloader.c ****     ESC_OUTPUT;
+ 550              	 .loc 1 180 0
+ 551 000c 144B     	 ldr r3,.L48
+ 552 000e 1B78     	 ldrb r3,[r3]
+ 553 0010 1846     	 mov r0,r3
+ 554 0012 FFF7FEFF 	 bl setEscOutput
+ 181:../cleanflight/src/main/io/serial_4way_avrootloader.c ****     CRC_16.word=0;
+ 555              	 .loc 1 181 0
+ 556 0016 134B     	 ldr r3,.L48+4
+ 557 0018 0022     	 movs r2,#0
+ 558 001a 1A80     	 strh r2,[r3]
+ 559              	.L46:
+ 182:../cleanflight/src/main/io/serial_4way_avrootloader.c ****     do {
+ 183:../cleanflight/src/main/io/serial_4way_avrootloader.c ****         suart_putc_(pstring);
+ 560              	 .loc 1 183 0 discriminator 1
+ 561 001c 7868     	 ldr r0,[r7,#4]
+ 562 001e FFF7FEFF 	 bl suart_putc_
+ 184:../cleanflight/src/main/io/serial_4way_avrootloader.c ****         ByteCrc(pstring);
+ 563              	 .loc 1 184 0 discriminator 1
+ 564 0022 7868     	 ldr r0,[r7,#4]
+ 565 0024 FFF7FEFF 	 bl ByteCrc
+ 185:../cleanflight/src/main/io/serial_4way_avrootloader.c ****         pstring++;
+ 566              	 .loc 1 185 0 discriminator 1
+ 567 0028 7B68     	 ldr r3,[r7,#4]
+ 568 002a 0133     	 adds r3,r3,#1
+ 569 002c 7B60     	 str r3,[r7,#4]
+ 186:../cleanflight/src/main/io/serial_4way_avrootloader.c ****         len--;
+ 570              	 .loc 1 186 0 discriminator 1
+ 571 002e FB78     	 ldrb r3,[r7,#3]
+ 572 0030 013B     	 subs r3,r3,#1
+ 573 0032 FB70     	 strb r3,[r7,#3]
+ 187:../cleanflight/src/main/io/serial_4way_avrootloader.c ****     } while (len > 0);
+ 574              	 .loc 1 187 0 discriminator 1
+ 575 0034 FB78     	 ldrb r3,[r7,#3]
+ 576 0036 002B     	 cmp r3,#0
+ 577 0038 F0D1     	 bne .L46
+ 188:../cleanflight/src/main/io/serial_4way_avrootloader.c **** 
+ 189:../cleanflight/src/main/io/serial_4way_avrootloader.c ****     if (isMcuConnected()) {
+ 578              	 .loc 1 189 0
+ 579 003a FFF7FEFF 	 bl isMcuConnected
+ 580 003e 0346     	 mov r3,r0
+ 581 0040 002B     	 cmp r3,#0
+ 582 0042 05D0     	 beq .L47
+ 190:../cleanflight/src/main/io/serial_4way_avrootloader.c ****         suart_putc_(&CRC_16.bytes[0]);
+ 583              	 .loc 1 190 0
+ 584 0044 0748     	 ldr r0,.L48+4
+ 585 0046 FFF7FEFF 	 bl suart_putc_
+ 191:../cleanflight/src/main/io/serial_4way_avrootloader.c ****         suart_putc_(&CRC_16.bytes[1]);
+ 586              	 .loc 1 191 0
+ 587 004a 0748     	 ldr r0,.L48+8
+ 588 004c FFF7FEFF 	 bl suart_putc_
+ 589              	.L47:
+ 192:../cleanflight/src/main/io/serial_4way_avrootloader.c ****     }
+ 193:../cleanflight/src/main/io/serial_4way_avrootloader.c ****     ESC_INPUT;
+ 590              	 .loc 1 193 0
+ 591 0050 034B     	 ldr r3,.L48
+ 592 0052 1B78     	 ldrb r3,[r3]
+ 593 0054 1846     	 mov r0,r3
+ 594 0056 FFF7FEFF 	 bl setEscInput
+ 194:../cleanflight/src/main/io/serial_4way_avrootloader.c **** }
+ 595              	 .loc 1 194 0
+ 596 005a 0837     	 adds r7,r7,#8
+ 597              	.LCFI24:
+ 598              	 .cfi_def_cfa_offset 8
+ 599 005c BD46     	 mov sp,r7
+ 600              	.LCFI25:
+ 601              	 .cfi_def_cfa_register 13
+ 602              	 
+ 603 005e 80BD     	 pop {r7,pc}
+ 604              	.L49:
+ 605              	 .align 2
+ 606              	.L48:
+ 607 0060 00000000 	 .word selected_esc
+ 608 0064 00000000 	 .word CRC_16
+ 609 0068 01000000 	 .word CRC_16+1
+ 610              	 .cfi_endproc
+ 611              	.LFE535:
+ 613              	 .section .rodata
+ 614              	 .align 2
+ 615              	.LC3:
+ 616 0000 34373100 	 .ascii "471\000"
+ 617              	 .align 2
+ 618              	.LC0:
+ 619 0004 00       	 .byte 0
+ 620 0005 00       	 .byte 0
+ 621 0006 00       	 .byte 0
+ 622 0007 00       	 .byte 0
+ 623 0008 00       	 .byte 0
+ 624 0009 00       	 .byte 0
+ 625 000a 00       	 .byte 0
+ 626 000b 00       	 .byte 0
+ 627 000c 00       	 .byte 0
+ 628 000d 00       	 .byte 0
+ 629 000e 00       	 .byte 0
+ 630 000f 00       	 .byte 0
+ 631 0010 0D       	 .byte 13
+ 632 0011 42       	 .byte 66
+ 633 0012 4C       	 .byte 76
+ 634 0013 48       	 .byte 72
+ 635 0014 65       	 .byte 101
+ 636 0015 6C       	 .byte 108
+ 637 0016 69       	 .byte 105
+ 638 0017 F4       	 .byte -12
+ 639 0018 7D       	 .byte 125
+ 640              	 .section .text.BL_ConnectEx,"ax",%progbits
+ 641              	 .align 2
+ 642              	 .global BL_ConnectEx
+ 643              	 .thumb
+ 644              	 .thumb_func
+ 646              	BL_ConnectEx:
+ 647              	.LFB536:
+ 195:../cleanflight/src/main/io/serial_4way_avrootloader.c **** 
+ 196:../cleanflight/src/main/io/serial_4way_avrootloader.c **** uint8_t BL_ConnectEx(uint8_32_u *pDeviceInfo)
+ 197:../cleanflight/src/main/io/serial_4way_avrootloader.c **** {
+ 648              	 .loc 1 197 0
+ 649              	 .cfi_startproc
+ 650              	 
+ 651              	 
+ 652 0000 B0B5     	 push {r4,r5,r7,lr}
+ 653              	.LCFI26:
+ 654              	 .cfi_def_cfa_offset 16
+ 655              	 .cfi_offset 4,-16
+ 656              	 .cfi_offset 5,-12
+ 657              	 .cfi_offset 7,-8
+ 658              	 .cfi_offset 14,-4
+ 659 0002 8CB0     	 sub sp,sp,#48
+ 660              	.LCFI27:
+ 661              	 .cfi_def_cfa_offset 64
+ 662 0004 00AF     	 add r7,sp,#0
+ 663              	.LCFI28:
+ 664              	 .cfi_def_cfa_register 7
+ 665 0006 7860     	 str r0,[r7,#4]
+ 198:../cleanflight/src/main/io/serial_4way_avrootloader.c ****     #define BootMsgLen 4
+ 199:../cleanflight/src/main/io/serial_4way_avrootloader.c ****     #define DevSignHi (BootMsgLen)
+ 200:../cleanflight/src/main/io/serial_4way_avrootloader.c ****     #define DevSignLo (BootMsgLen+1)
+ 201:../cleanflight/src/main/io/serial_4way_avrootloader.c **** 
+ 202:../cleanflight/src/main/io/serial_4way_avrootloader.c ****     //DeviceInfo.dword=0; is set before
+ 203:../cleanflight/src/main/io/serial_4way_avrootloader.c ****     uint8_t BootInfo[9];
+ 204:../cleanflight/src/main/io/serial_4way_avrootloader.c ****     uint8_t BootMsg[BootMsgLen-1] = "471";
+ 666              	 .loc 1 204 0
+ 667 0008 2B4A     	 ldr r2,.L57
+ 668 000a 07F12003 	 add r3,r7,#32
+ 669 000e 1268     	 ldr r2,[r2]
+ 670 0010 1146     	 mov r1,r2
+ 671 0012 1980     	 strh r1,[r3]
+ 672 0014 0233     	 adds r3,r3,#2
+ 673 0016 120C     	 lsrs r2,r2,#16
+ 674 0018 1A70     	 strb r2,[r3]
+ 205:../cleanflight/src/main/io/serial_4way_avrootloader.c ****     // x * 0 + 9
+ 206:../cleanflight/src/main/io/serial_4way_avrootloader.c **** #if defined(USE_SERIAL_4WAY_SK_BOOTLOADER)
+ 207:../cleanflight/src/main/io/serial_4way_avrootloader.c ****     uint8_t BootInit[] = {0,0,0,0,0,0,0,0,0,0,0,0,0x0D,'B','L','H','e','l','i',0xF4,0x7D};
+ 675              	 .loc 1 207 0
+ 676 001a 284B     	 ldr r3,.L57+4
+ 677 001c 07F10804 	 add r4,r7,#8
+ 678 0020 1D46     	 mov r5,r3
+ 679 0022 2868     	 ldr r0,[r5]
+ 680 0024 6968     	 ldr r1,[r5,#4]
+ 681 0026 AA68     	 ldr r2,[r5,#8]
+ 682 0028 EB68     	 ldr r3,[r5,#12]
+ 683 002a 0FC4     	 stmia r4!,{r0,r1,r2,r3}
+ 684 002c 2869     	 ldr r0,[r5,#16]
+ 685 002e 2060     	 str r0,[r4]
+ 686 0030 2B7D     	 ldrb r3,[r5,#20]
+ 687 0032 2371     	 strb r3,[r4,#4]
+ 208:../cleanflight/src/main/io/serial_4way_avrootloader.c ****     BL_SendBuf(BootInit, 21);
+ 688              	 .loc 1 208 0
+ 689 0034 07F10803 	 add r3,r7,#8
+ 690 0038 1846     	 mov r0,r3
+ 691 003a 1521     	 movs r1,#21
+ 692 003c FFF7FEFF 	 bl BL_SendBuf
+ 209:../cleanflight/src/main/io/serial_4way_avrootloader.c **** #else
+ 210:../cleanflight/src/main/io/serial_4way_avrootloader.c ****     uint8_t BootInit[] = {0,0,0,0,0,0,0,0,0x0D,'B','L','H','e','l','i',0xF4,0x7D};
+ 211:../cleanflight/src/main/io/serial_4way_avrootloader.c ****     BL_SendBuf(BootInit, 17);
+ 212:../cleanflight/src/main/io/serial_4way_avrootloader.c **** #endif
+ 213:../cleanflight/src/main/io/serial_4way_avrootloader.c ****     if (!BL_ReadBuf(BootInfo, BootMsgLen + 4)) {
+ 693              	 .loc 1 213 0
+ 694 0040 07F12403 	 add r3,r7,#36
+ 695 0044 1846     	 mov r0,r3
+ 696 0046 0821     	 movs r1,#8
+ 697 0048 FFF7FEFF 	 bl BL_ReadBuf
+ 698 004c 0346     	 mov r3,r0
+ 699 004e 002B     	 cmp r3,#0
+ 700 0050 01D1     	 bne .L51
+ 214:../cleanflight/src/main/io/serial_4way_avrootloader.c ****         return 0;
+ 701              	 .loc 1 214 0
+ 702 0052 0023     	 movs r3,#0
+ 703 0054 2BE0     	 b .L56
+ 704              	.L51:
+ 705              	.LBB3:
+ 215:../cleanflight/src/main/io/serial_4way_avrootloader.c ****     }
+ 216:../cleanflight/src/main/io/serial_4way_avrootloader.c ****     // BootInfo has no CRC  (ACK byte already analyzed... )
+ 217:../cleanflight/src/main/io/serial_4way_avrootloader.c ****     // Format = BootMsg("471c") SIGNATURE_001, SIGNATURE_002, BootVersion (always 6), BootPages (,A
+ 218:../cleanflight/src/main/io/serial_4way_avrootloader.c ****     for (uint8_t i = 0; i < (BootMsgLen - 1); i++) { // Check only the first 3 letters -> 471x OK
+ 706              	 .loc 1 218 0
+ 707 0056 0023     	 movs r3,#0
+ 708 0058 87F82F30 	 strb r3,[r7,#47]
+ 709 005c 16E0     	 b .L53
+ 710              	.L55:
+ 219:../cleanflight/src/main/io/serial_4way_avrootloader.c ****         if (BootInfo[i] != BootMsg[i]) {
+ 711              	 .loc 1 219 0
+ 712 005e 97F82F30 	 ldrb r3,[r7,#47]
+ 713 0062 07F13002 	 add r2,r7,#48
+ 714 0066 1344     	 add r3,r3,r2
+ 715 0068 13F80C2C 	 ldrb r2,[r3,#-12]
+ 716 006c 97F82F30 	 ldrb r3,[r7,#47]
+ 717 0070 07F13001 	 add r1,r7,#48
+ 718 0074 0B44     	 add r3,r3,r1
+ 719 0076 13F8103C 	 ldrb r3,[r3,#-16]
+ 720 007a 9A42     	 cmp r2,r3
+ 721 007c 01D0     	 beq .L54
+ 220:../cleanflight/src/main/io/serial_4way_avrootloader.c ****             return (0);
+ 722              	 .loc 1 220 0
+ 723 007e 0023     	 movs r3,#0
+ 724 0080 15E0     	 b .L56
+ 725              	.L54:
+ 218:../cleanflight/src/main/io/serial_4way_avrootloader.c ****         if (BootInfo[i] != BootMsg[i]) {
+ 726              	 .loc 1 218 0 discriminator 2
+ 727 0082 97F82F30 	 ldrb r3,[r7,#47]
+ 728 0086 0133     	 adds r3,r3,#1
+ 729 0088 87F82F30 	 strb r3,[r7,#47]
+ 730              	.L53:
+ 218:../cleanflight/src/main/io/serial_4way_avrootloader.c ****         if (BootInfo[i] != BootMsg[i]) {
+ 731              	 .loc 1 218 0 is_stmt 0 discriminator 1
+ 732 008c 97F82F30 	 ldrb r3,[r7,#47]
+ 733 0090 022B     	 cmp r3,#2
+ 734 0092 E4D9     	 bls .L55
+ 735              	.LBE3:
+ 221:../cleanflight/src/main/io/serial_4way_avrootloader.c ****         }
+ 222:../cleanflight/src/main/io/serial_4way_avrootloader.c ****     }
+ 223:../cleanflight/src/main/io/serial_4way_avrootloader.c **** 
+ 224:../cleanflight/src/main/io/serial_4way_avrootloader.c ****     //only 2 bytes used $1E9307 -> 0x9307
+ 225:../cleanflight/src/main/io/serial_4way_avrootloader.c ****     pDeviceInfo->bytes[2] = BootInfo[BootMsgLen - 1];
+ 736              	 .loc 1 225 0 is_stmt 1
+ 737 0094 97F82720 	 ldrb r2,[r7,#39]
+ 738 0098 7B68     	 ldr r3,[r7,#4]
+ 739 009a 9A70     	 strb r2,[r3,#2]
+ 226:../cleanflight/src/main/io/serial_4way_avrootloader.c ****     pDeviceInfo->bytes[1] = BootInfo[DevSignHi];
+ 740              	 .loc 1 226 0
+ 741 009c 97F82820 	 ldrb r2,[r7,#40]
+ 742 00a0 7B68     	 ldr r3,[r7,#4]
+ 743 00a2 5A70     	 strb r2,[r3,#1]
+ 227:../cleanflight/src/main/io/serial_4way_avrootloader.c ****     pDeviceInfo->bytes[0] = BootInfo[DevSignLo];
+ 744              	 .loc 1 227 0
+ 745 00a4 97F82920 	 ldrb r2,[r7,#41]
+ 746 00a8 7B68     	 ldr r3,[r7,#4]
+ 747 00aa 1A70     	 strb r2,[r3]
+ 228:../cleanflight/src/main/io/serial_4way_avrootloader.c ****     return (1);
+ 748              	 .loc 1 228 0
+ 749 00ac 0123     	 movs r3,#1
+ 750              	.L56:
+ 229:../cleanflight/src/main/io/serial_4way_avrootloader.c **** }
+ 751              	 .loc 1 229 0 discriminator 1
+ 752 00ae 1846     	 mov r0,r3
+ 753 00b0 3037     	 adds r7,r7,#48
+ 754              	.LCFI29:
+ 755              	 .cfi_def_cfa_offset 16
+ 756 00b2 BD46     	 mov sp,r7
+ 757              	.LCFI30:
+ 758              	 .cfi_def_cfa_register 13
+ 759              	 
+ 760 00b4 B0BD     	 pop {r4,r5,r7,pc}
+ 761              	.L58:
+ 762 00b6 00BF     	 .align 2
+ 763              	.L57:
+ 764 00b8 00000000 	 .word .LC3
+ 765 00bc 04000000 	 .word .LC0
+ 766              	 .cfi_endproc
+ 767              	.LFE536:
+ 769              	 .section .text.BL_GetACK,"ax",%progbits
+ 770              	 .align 2
+ 771              	 .thumb
+ 772              	 .thumb_func
+ 774              	BL_GetACK:
+ 775              	.LFB537:
+ 230:../cleanflight/src/main/io/serial_4way_avrootloader.c **** 
+ 231:../cleanflight/src/main/io/serial_4way_avrootloader.c **** static uint8_t BL_GetACK(uint32_t Timeout)
+ 232:../cleanflight/src/main/io/serial_4way_avrootloader.c **** {
+ 776              	 .loc 1 232 0
+ 777              	 .cfi_startproc
+ 778              	 
+ 779              	 
+ 780 0000 80B5     	 push {r7,lr}
+ 781              	.LCFI31:
+ 782              	 .cfi_def_cfa_offset 8
+ 783              	 .cfi_offset 7,-8
+ 784              	 .cfi_offset 14,-4
+ 785 0002 84B0     	 sub sp,sp,#16
+ 786              	.LCFI32:
+ 787              	 .cfi_def_cfa_offset 24
+ 788 0004 00AF     	 add r7,sp,#0
+ 789              	.LCFI33:
+ 790              	 .cfi_def_cfa_register 7
+ 791 0006 7860     	 str r0,[r7,#4]
+ 233:../cleanflight/src/main/io/serial_4way_avrootloader.c ****     uint8_t LastACK = brNONE;
+ 792              	 .loc 1 233 0
+ 793 0008 FF23     	 movs r3,#255
+ 794 000a FB73     	 strb r3,[r7,#15]
+ 234:../cleanflight/src/main/io/serial_4way_avrootloader.c ****     while (!(suart_getc_(&LastACK)) && (Timeout)) {
+ 795              	 .loc 1 234 0
+ 796 000c 02E0     	 b .L60
+ 797              	.L62:
+ 235:../cleanflight/src/main/io/serial_4way_avrootloader.c ****         Timeout--;
+ 798              	 .loc 1 235 0
+ 799 000e 7B68     	 ldr r3,[r7,#4]
+ 800 0010 013B     	 subs r3,r3,#1
+ 801 0012 7B60     	 str r3,[r7,#4]
+ 802              	.L60:
+ 234:../cleanflight/src/main/io/serial_4way_avrootloader.c ****     while (!(suart_getc_(&LastACK)) && (Timeout)) {
+ 803              	 .loc 1 234 0
+ 804 0014 07F10F03 	 add r3,r7,#15
+ 805 0018 1846     	 mov r0,r3
+ 806 001a FFF7FEFF 	 bl suart_getc_
+ 807 001e 0346     	 mov r3,r0
+ 808 0020 002B     	 cmp r3,#0
+ 809 0022 02D1     	 bne .L61
+ 234:../cleanflight/src/main/io/serial_4way_avrootloader.c ****     while (!(suart_getc_(&LastACK)) && (Timeout)) {
+ 810              	 .loc 1 234 0 is_stmt 0 discriminator 1
+ 811 0024 7B68     	 ldr r3,[r7,#4]
+ 812 0026 002B     	 cmp r3,#0
+ 813 0028 F1D1     	 bne .L62
+ 814              	.L61:
+ 236:../cleanflight/src/main/io/serial_4way_avrootloader.c ****     } ;
+ 237:../cleanflight/src/main/io/serial_4way_avrootloader.c ****     return (LastACK);
+ 815              	 .loc 1 237 0 is_stmt 1
+ 816 002a FB7B     	 ldrb r3,[r7,#15]
+ 238:../cleanflight/src/main/io/serial_4way_avrootloader.c **** }
+ 817              	 .loc 1 238 0
+ 818 002c 1846     	 mov r0,r3
+ 819 002e 1037     	 adds r7,r7,#16
+ 820              	.LCFI34:
+ 821              	 .cfi_def_cfa_offset 8
+ 822 0030 BD46     	 mov sp,r7
+ 823              	.LCFI35:
+ 824              	 .cfi_def_cfa_register 13
+ 825              	 
+ 826 0032 80BD     	 pop {r7,pc}
+ 827              	 .cfi_endproc
+ 828              	.LFE537:
+ 830              	 .section .text.BL_SendCMDKeepAlive,"ax",%progbits
+ 831              	 .align 2
+ 832              	 .global BL_SendCMDKeepAlive
+ 833              	 .thumb
+ 834              	 .thumb_func
+ 836              	BL_SendCMDKeepAlive:
+ 837              	.LFB538:
+ 239:../cleanflight/src/main/io/serial_4way_avrootloader.c **** 
+ 240:../cleanflight/src/main/io/serial_4way_avrootloader.c **** uint8_t BL_SendCMDKeepAlive(void)
+ 241:../cleanflight/src/main/io/serial_4way_avrootloader.c **** {
+ 838              	 .loc 1 241 0
+ 839              	 .cfi_startproc
+ 840              	 
+ 841              	 
+ 842 0000 80B5     	 push {r7,lr}
+ 843              	.LCFI36:
+ 844              	 .cfi_def_cfa_offset 8
+ 845              	 .cfi_offset 7,-8
+ 846              	 .cfi_offset 14,-4
+ 847 0002 82B0     	 sub sp,sp,#8
+ 848              	.LCFI37:
+ 849              	 .cfi_def_cfa_offset 16
+ 850 0004 00AF     	 add r7,sp,#0
+ 851              	.LCFI38:
+ 852              	 .cfi_def_cfa_register 7
+ 242:../cleanflight/src/main/io/serial_4way_avrootloader.c ****     uint8_t sCMD[] = {CMD_KEEP_ALIVE, 0};
+ 853              	 .loc 1 242 0
+ 854 0006 FD23     	 movs r3,#253
+ 855 0008 3B71     	 strb r3,[r7,#4]
+ 856 000a 0023     	 movs r3,#0
+ 857 000c 7B71     	 strb r3,[r7,#5]
+ 243:../cleanflight/src/main/io/serial_4way_avrootloader.c ****     BL_SendBuf(sCMD, 2);
+ 858              	 .loc 1 243 0
+ 859 000e 3B1D     	 adds r3,r7,#4
+ 860 0010 1846     	 mov r0,r3
+ 861 0012 0221     	 movs r1,#2
+ 862 0014 FFF7FEFF 	 bl BL_SendBuf
+ 244:../cleanflight/src/main/io/serial_4way_avrootloader.c ****     if (BL_GetACK(1) != brERRORCOMMAND) {
+ 863              	 .loc 1 244 0
+ 864 0018 0120     	 movs r0,#1
+ 865 001a FFF7FEFF 	 bl BL_GetACK
+ 866 001e 0346     	 mov r3,r0
+ 867 0020 C12B     	 cmp r3,#193
+ 868 0022 01D0     	 beq .L65
+ 245:../cleanflight/src/main/io/serial_4way_avrootloader.c ****         return 0;
+ 869              	 .loc 1 245 0
+ 870 0024 0023     	 movs r3,#0
+ 871 0026 00E0     	 b .L67
+ 872              	.L65:
+ 246:../cleanflight/src/main/io/serial_4way_avrootloader.c ****     }
+ 247:../cleanflight/src/main/io/serial_4way_avrootloader.c ****     return 1;
+ 873              	 .loc 1 247 0
+ 874 0028 0123     	 movs r3,#1
+ 875              	.L67:
+ 248:../cleanflight/src/main/io/serial_4way_avrootloader.c **** }
+ 876              	 .loc 1 248 0 discriminator 1
+ 877 002a 1846     	 mov r0,r3
+ 878 002c 0837     	 adds r7,r7,#8
+ 879              	.LCFI39:
+ 880              	 .cfi_def_cfa_offset 8
+ 881 002e BD46     	 mov sp,r7
+ 882              	.LCFI40:
+ 883              	 .cfi_def_cfa_register 13
+ 884              	 
+ 885 0030 80BD     	 pop {r7,pc}
+ 886              	 .cfi_endproc
+ 887              	.LFE538:
+ 889 0032 00BF     	 .section .text.BL_SendCMDRunRestartBootloader,"ax",%progbits
+ 890              	 .align 2
+ 891              	 .global BL_SendCMDRunRestartBootloader
+ 892              	 .thumb
+ 893              	 .thumb_func
+ 895              	BL_SendCMDRunRestartBootloader:
+ 896              	.LFB539:
+ 249:../cleanflight/src/main/io/serial_4way_avrootloader.c **** 
+ 250:../cleanflight/src/main/io/serial_4way_avrootloader.c **** void BL_SendCMDRunRestartBootloader(uint8_32_u *pDeviceInfo)
+ 251:../cleanflight/src/main/io/serial_4way_avrootloader.c **** {
+ 897              	 .loc 1 251 0
+ 898              	 .cfi_startproc
+ 899              	 
+ 900              	 
+ 901 0000 80B5     	 push {r7,lr}
+ 902              	.LCFI41:
+ 903              	 .cfi_def_cfa_offset 8
+ 904              	 .cfi_offset 7,-8
+ 905              	 .cfi_offset 14,-4
+ 906 0002 84B0     	 sub sp,sp,#16
+ 907              	.LCFI42:
+ 908              	 .cfi_def_cfa_offset 24
+ 909 0004 00AF     	 add r7,sp,#0
+ 910              	.LCFI43:
+ 911              	 .cfi_def_cfa_register 7
+ 912 0006 7860     	 str r0,[r7,#4]
+ 252:../cleanflight/src/main/io/serial_4way_avrootloader.c ****     uint8_t sCMD[] = {RestartBootloader, 0};
+ 913              	 .loc 1 252 0
+ 914 0008 0023     	 movs r3,#0
+ 915 000a 3B73     	 strb r3,[r7,#12]
+ 916 000c 0023     	 movs r3,#0
+ 917 000e 7B73     	 strb r3,[r7,#13]
+ 253:../cleanflight/src/main/io/serial_4way_avrootloader.c ****     pDeviceInfo->bytes[0] = 1;
+ 918              	 .loc 1 253 0
+ 919 0010 7B68     	 ldr r3,[r7,#4]
+ 920 0012 0122     	 movs r2,#1
+ 921 0014 1A70     	 strb r2,[r3]
+ 254:../cleanflight/src/main/io/serial_4way_avrootloader.c ****     BL_SendBuf(sCMD, 2); //sends simply 4 x 0x00 (CRC =00)
+ 922              	 .loc 1 254 0
+ 923 0016 07F10C03 	 add r3,r7,#12
+ 924 001a 1846     	 mov r0,r3
+ 925 001c 0221     	 movs r1,#2
+ 926 001e FFF7FEFF 	 bl BL_SendBuf
+ 255:../cleanflight/src/main/io/serial_4way_avrootloader.c ****     return;
+ 927              	 .loc 1 255 0
+ 928 0022 00BF     	 nop
+ 256:../cleanflight/src/main/io/serial_4way_avrootloader.c **** }
+ 929              	 .loc 1 256 0
+ 930 0024 1037     	 adds r7,r7,#16
+ 931              	.LCFI44:
+ 932              	 .cfi_def_cfa_offset 8
+ 933 0026 BD46     	 mov sp,r7
+ 934              	.LCFI45:
+ 935              	 .cfi_def_cfa_register 13
+ 936              	 
+ 937 0028 80BD     	 pop {r7,pc}
+ 938              	 .cfi_endproc
+ 939              	.LFE539:
+ 941 002a 00BF     	 .section .text.BL_SendCMDSetAddress,"ax",%progbits
+ 942              	 .align 2
+ 943              	 .thumb
+ 944              	 .thumb_func
+ 946              	BL_SendCMDSetAddress:
+ 947              	.LFB540:
+ 257:../cleanflight/src/main/io/serial_4way_avrootloader.c **** 
+ 258:../cleanflight/src/main/io/serial_4way_avrootloader.c **** static uint8_t BL_SendCMDSetAddress(ioMem_t *pMem) //supports only 16 bit Adr
+ 259:../cleanflight/src/main/io/serial_4way_avrootloader.c **** {
+ 948              	 .loc 1 259 0
+ 949              	 .cfi_startproc
+ 950              	 
+ 951              	 
+ 952 0000 80B5     	 push {r7,lr}
+ 953              	.LCFI46:
+ 954              	 .cfi_def_cfa_offset 8
+ 955              	 .cfi_offset 7,-8
+ 956              	 .cfi_offset 14,-4
+ 957 0002 84B0     	 sub sp,sp,#16
+ 958              	.LCFI47:
+ 959              	 .cfi_def_cfa_offset 24
+ 960 0004 00AF     	 add r7,sp,#0
+ 961              	.LCFI48:
+ 962              	 .cfi_def_cfa_register 7
+ 963 0006 7860     	 str r0,[r7,#4]
+ 260:../cleanflight/src/main/io/serial_4way_avrootloader.c ****     // skip if adr == 0xFFFF
+ 261:../cleanflight/src/main/io/serial_4way_avrootloader.c ****     if ((pMem->D_FLASH_ADDR_H == 0xFF) && (pMem->D_FLASH_ADDR_L == 0xFF)) return 1;
+ 964              	 .loc 1 261 0
+ 965 0008 7B68     	 ldr r3,[r7,#4]
+ 966 000a 5B78     	 ldrb r3,[r3,#1]
+ 967 000c FF2B     	 cmp r3,#255
+ 968 000e 05D1     	 bne .L71
+ 969              	 .loc 1 261 0 is_stmt 0 discriminator 1
+ 970 0010 7B68     	 ldr r3,[r7,#4]
+ 971 0012 9B78     	 ldrb r3,[r3,#2]
+ 972 0014 FF2B     	 cmp r3,#255
+ 973 0016 01D1     	 bne .L71
+ 974              	 .loc 1 261 0 discriminator 2
+ 975 0018 0123     	 movs r3,#1
+ 976 001a 18E0     	 b .L73
+ 977              	.L71:
+ 262:../cleanflight/src/main/io/serial_4way_avrootloader.c ****     uint8_t sCMD[] = {CMD_SET_ADDRESS, 0, pMem->D_FLASH_ADDR_H, pMem->D_FLASH_ADDR_L };
+ 978              	 .loc 1 262 0 is_stmt 1
+ 979 001c FF23     	 movs r3,#255
+ 980 001e 3B73     	 strb r3,[r7,#12]
+ 981 0020 0023     	 movs r3,#0
+ 982 0022 7B73     	 strb r3,[r7,#13]
+ 983 0024 7B68     	 ldr r3,[r7,#4]
+ 984 0026 5B78     	 ldrb r3,[r3,#1]
+ 985 0028 BB73     	 strb r3,[r7,#14]
+ 986 002a 7B68     	 ldr r3,[r7,#4]
+ 987 002c 9B78     	 ldrb r3,[r3,#2]
+ 988 002e FB73     	 strb r3,[r7,#15]
+ 263:../cleanflight/src/main/io/serial_4way_avrootloader.c ****     BL_SendBuf(sCMD, 4);
+ 989              	 .loc 1 263 0
+ 990 0030 07F10C03 	 add r3,r7,#12
+ 991 0034 1846     	 mov r0,r3
+ 992 0036 0421     	 movs r1,#4
+ 993 0038 FFF7FEFF 	 bl BL_SendBuf
+ 264:../cleanflight/src/main/io/serial_4way_avrootloader.c ****     return (BL_GetACK(2) == brSUCCESS);
+ 994              	 .loc 1 264 0
+ 995 003c 0220     	 movs r0,#2
+ 996 003e FFF7FEFF 	 bl BL_GetACK
+ 997 0042 0346     	 mov r3,r0
+ 998 0044 302B     	 cmp r3,#48
+ 999 0046 0CBF     	 ite eq
+ 1000 0048 0123     	 moveq r3,#1
+ 1001 004a 0023     	 movne r3,#0
+ 1002 004c DBB2     	 uxtb r3,r3
+ 1003              	.L73:
+ 265:../cleanflight/src/main/io/serial_4way_avrootloader.c **** }
+ 1004              	 .loc 1 265 0 discriminator 1
+ 1005 004e 1846     	 mov r0,r3
+ 1006 0050 1037     	 adds r7,r7,#16
+ 1007              	.LCFI49:
+ 1008              	 .cfi_def_cfa_offset 8
+ 1009 0052 BD46     	 mov sp,r7
+ 1010              	.LCFI50:
+ 1011              	 .cfi_def_cfa_register 13
+ 1012              	 
+ 1013 0054 80BD     	 pop {r7,pc}
+ 1014              	 .cfi_endproc
+ 1015              	.LFE540:
+ 1017 0056 00BF     	 .section .text.BL_SendCMDSetBuffer,"ax",%progbits
+ 1018              	 .align 2
+ 1019              	 .thumb
+ 1020              	 .thumb_func
+ 1022              	BL_SendCMDSetBuffer:
+ 1023              	.LFB541:
+ 266:../cleanflight/src/main/io/serial_4way_avrootloader.c **** 
+ 267:../cleanflight/src/main/io/serial_4way_avrootloader.c **** static uint8_t BL_SendCMDSetBuffer(ioMem_t *pMem)
+ 268:../cleanflight/src/main/io/serial_4way_avrootloader.c **** {
+ 1024              	 .loc 1 268 0
+ 1025              	 .cfi_startproc
+ 1026              	 
+ 1027              	 
+ 1028 0000 80B5     	 push {r7,lr}
+ 1029              	.LCFI51:
+ 1030              	 .cfi_def_cfa_offset 8
+ 1031              	 .cfi_offset 7,-8
+ 1032              	 .cfi_offset 14,-4
+ 1033 0002 84B0     	 sub sp,sp,#16
+ 1034              	.LCFI52:
+ 1035              	 .cfi_def_cfa_offset 24
+ 1036 0004 00AF     	 add r7,sp,#0
+ 1037              	.LCFI53:
+ 1038              	 .cfi_def_cfa_register 7
+ 1039 0006 7860     	 str r0,[r7,#4]
+ 269:../cleanflight/src/main/io/serial_4way_avrootloader.c ****     uint8_t sCMD[] = {CMD_SET_BUFFER, 0, 0, pMem->D_NUM_BYTES};
+ 1040              	 .loc 1 269 0
+ 1041 0008 FE23     	 movs r3,#254
+ 1042 000a 3B73     	 strb r3,[r7,#12]
+ 1043 000c 0023     	 movs r3,#0
+ 1044 000e 7B73     	 strb r3,[r7,#13]
+ 1045 0010 0023     	 movs r3,#0
+ 1046 0012 BB73     	 strb r3,[r7,#14]
+ 1047 0014 7B68     	 ldr r3,[r7,#4]
+ 1048 0016 1B78     	 ldrb r3,[r3]
+ 1049 0018 FB73     	 strb r3,[r7,#15]
+ 270:../cleanflight/src/main/io/serial_4way_avrootloader.c ****     if (pMem->D_NUM_BYTES == 0) {
+ 1050              	 .loc 1 270 0
+ 1051 001a 7B68     	 ldr r3,[r7,#4]
+ 1052 001c 1B78     	 ldrb r3,[r3]
+ 1053 001e 002B     	 cmp r3,#0
+ 1054 0020 01D1     	 bne .L75
+ 271:../cleanflight/src/main/io/serial_4way_avrootloader.c ****         // set high byte
+ 272:../cleanflight/src/main/io/serial_4way_avrootloader.c ****         sCMD[2] = 1;
+ 1055              	 .loc 1 272 0
+ 1056 0022 0123     	 movs r3,#1
+ 1057 0024 BB73     	 strb r3,[r7,#14]
+ 1058              	.L75:
+ 273:../cleanflight/src/main/io/serial_4way_avrootloader.c ****     }
+ 274:../cleanflight/src/main/io/serial_4way_avrootloader.c ****     BL_SendBuf(sCMD, 4);
+ 1059              	 .loc 1 274 0
+ 1060 0026 07F10C03 	 add r3,r7,#12
+ 1061 002a 1846     	 mov r0,r3
+ 1062 002c 0421     	 movs r1,#4
+ 1063 002e FFF7FEFF 	 bl BL_SendBuf
+ 275:../cleanflight/src/main/io/serial_4way_avrootloader.c ****     if (BL_GetACK(2) != brNONE) return 0;
+ 1064              	 .loc 1 275 0
+ 1065 0032 0220     	 movs r0,#2
+ 1066 0034 FFF7FEFF 	 bl BL_GetACK
+ 1067 0038 0346     	 mov r3,r0
+ 1068 003a FF2B     	 cmp r3,#255
+ 1069 003c 01D0     	 beq .L76
+ 1070              	 .loc 1 275 0 is_stmt 0 discriminator 1
+ 1071 003e 0023     	 movs r3,#0
+ 1072 0040 11E0     	 b .L78
+ 1073              	.L76:
+ 276:../cleanflight/src/main/io/serial_4way_avrootloader.c ****     BL_SendBuf(pMem->D_PTR_I, pMem->D_NUM_BYTES);
+ 1074              	 .loc 1 276 0 is_stmt 1
+ 1075 0042 7B68     	 ldr r3,[r7,#4]
+ 1076 0044 D3F80320 	 ldr r2,[r3,#3]
+ 1077 0048 7B68     	 ldr r3,[r7,#4]
+ 1078 004a 1B78     	 ldrb r3,[r3]
+ 1079 004c 1046     	 mov r0,r2
+ 1080 004e 1946     	 mov r1,r3
+ 1081 0050 FFF7FEFF 	 bl BL_SendBuf
+ 277:../cleanflight/src/main/io/serial_4way_avrootloader.c ****     return (BL_GetACK(40) == brSUCCESS);
+ 1082              	 .loc 1 277 0
+ 1083 0054 2820     	 movs r0,#40
+ 1084 0056 FFF7FEFF 	 bl BL_GetACK
+ 1085 005a 0346     	 mov r3,r0
+ 1086 005c 302B     	 cmp r3,#48
+ 1087 005e 0CBF     	 ite eq
+ 1088 0060 0123     	 moveq r3,#1
+ 1089 0062 0023     	 movne r3,#0
+ 1090 0064 DBB2     	 uxtb r3,r3
+ 1091              	.L78:
+ 278:../cleanflight/src/main/io/serial_4way_avrootloader.c **** }
+ 1092              	 .loc 1 278 0 discriminator 1
+ 1093 0066 1846     	 mov r0,r3
+ 1094 0068 1037     	 adds r7,r7,#16
+ 1095              	.LCFI54:
+ 1096              	 .cfi_def_cfa_offset 8
+ 1097 006a BD46     	 mov sp,r7
+ 1098              	.LCFI55:
+ 1099              	 .cfi_def_cfa_register 13
+ 1100              	 
+ 1101 006c 80BD     	 pop {r7,pc}
+ 1102              	 .cfi_endproc
+ 1103              	.LFE541:
+ 1105 006e 00BF     	 .section .text.BL_ReadA,"ax",%progbits
+ 1106              	 .align 2
+ 1107              	 .thumb
+ 1108              	 .thumb_func
+ 1110              	BL_ReadA:
+ 1111              	.LFB542:
+ 279:../cleanflight/src/main/io/serial_4way_avrootloader.c **** 
+ 280:../cleanflight/src/main/io/serial_4way_avrootloader.c **** static uint8_t BL_ReadA(uint8_t cmd, ioMem_t *pMem)
+ 281:../cleanflight/src/main/io/serial_4way_avrootloader.c **** {
+ 1112              	 .loc 1 281 0
+ 1113              	 .cfi_startproc
+ 1114              	 
+ 1115              	 
+ 1116 0000 80B5     	 push {r7,lr}
+ 1117              	.LCFI56:
+ 1118              	 .cfi_def_cfa_offset 8
+ 1119              	 .cfi_offset 7,-8
+ 1120              	 .cfi_offset 14,-4
+ 1121 0002 84B0     	 sub sp,sp,#16
+ 1122              	.LCFI57:
+ 1123              	 .cfi_def_cfa_offset 24
+ 1124 0004 00AF     	 add r7,sp,#0
+ 1125              	.LCFI58:
+ 1126              	 .cfi_def_cfa_register 7
+ 1127 0006 0346     	 mov r3,r0
+ 1128 0008 3960     	 str r1,[r7]
+ 1129 000a FB71     	 strb r3,[r7,#7]
+ 282:../cleanflight/src/main/io/serial_4way_avrootloader.c ****     if (BL_SendCMDSetAddress(pMem)) {
+ 1130              	 .loc 1 282 0
+ 1131 000c 3868     	 ldr r0,[r7]
+ 1132 000e FFF7FEFF 	 bl BL_SendCMDSetAddress
+ 1133 0012 0346     	 mov r3,r0
+ 1134 0014 002B     	 cmp r3,#0
+ 1135 0016 15D0     	 beq .L80
+ 1136              	.LBB4:
+ 283:../cleanflight/src/main/io/serial_4way_avrootloader.c ****         uint8_t sCMD[] = {cmd, pMem->D_NUM_BYTES};
+ 1137              	 .loc 1 283 0
+ 1138 0018 FB79     	 ldrb r3,[r7,#7]
+ 1139 001a 3B73     	 strb r3,[r7,#12]
+ 1140 001c 3B68     	 ldr r3,[r7]
+ 1141 001e 1B78     	 ldrb r3,[r3]
+ 1142 0020 7B73     	 strb r3,[r7,#13]
+ 284:../cleanflight/src/main/io/serial_4way_avrootloader.c ****         BL_SendBuf(sCMD, 2);
+ 1143              	 .loc 1 284 0
+ 1144 0022 07F10C03 	 add r3,r7,#12
+ 1145 0026 1846     	 mov r0,r3
+ 1146 0028 0221     	 movs r1,#2
+ 1147 002a FFF7FEFF 	 bl BL_SendBuf
+ 285:../cleanflight/src/main/io/serial_4way_avrootloader.c ****         return (BL_ReadBuf(pMem->D_PTR_I, pMem->D_NUM_BYTES ));
+ 1148              	 .loc 1 285 0
+ 1149 002e 3B68     	 ldr r3,[r7]
+ 1150 0030 D3F80320 	 ldr r2,[r3,#3]
+ 1151 0034 3B68     	 ldr r3,[r7]
+ 1152 0036 1B78     	 ldrb r3,[r3]
+ 1153 0038 1046     	 mov r0,r2
+ 1154 003a 1946     	 mov r1,r3
+ 1155 003c FFF7FEFF 	 bl BL_ReadBuf
+ 1156 0040 0346     	 mov r3,r0
+ 1157 0042 00E0     	 b .L81
+ 1158              	.L80:
+ 1159              	.LBE4:
+ 286:../cleanflight/src/main/io/serial_4way_avrootloader.c ****     }
+ 287:../cleanflight/src/main/io/serial_4way_avrootloader.c ****     return 0;
+ 1160              	 .loc 1 287 0
+ 1161 0044 0023     	 movs r3,#0
+ 1162              	.L81:
+ 288:../cleanflight/src/main/io/serial_4way_avrootloader.c **** }
+ 1163              	 .loc 1 288 0 discriminator 1
+ 1164 0046 1846     	 mov r0,r3
+ 1165 0048 1037     	 adds r7,r7,#16
+ 1166              	.LCFI59:
+ 1167              	 .cfi_def_cfa_offset 8
+ 1168 004a BD46     	 mov sp,r7
+ 1169              	.LCFI60:
+ 1170              	 .cfi_def_cfa_register 13
+ 1171              	 
+ 1172 004c 80BD     	 pop {r7,pc}
+ 1173              	 .cfi_endproc
+ 1174              	.LFE542:
+ 1176 004e 00BF     	 .section .text.BL_WriteA,"ax",%progbits
+ 1177              	 .align 2
+ 1178              	 .thumb
+ 1179              	 .thumb_func
+ 1181              	BL_WriteA:
+ 1182              	.LFB543:
+ 289:../cleanflight/src/main/io/serial_4way_avrootloader.c **** 
+ 290:../cleanflight/src/main/io/serial_4way_avrootloader.c **** static uint8_t BL_WriteA(uint8_t cmd, ioMem_t *pMem, uint32_t timeout)
+ 291:../cleanflight/src/main/io/serial_4way_avrootloader.c **** {
+ 1183              	 .loc 1 291 0
+ 1184              	 .cfi_startproc
+ 1185              	 
+ 1186              	 
+ 1187 0000 80B5     	 push {r7,lr}
+ 1188              	.LCFI61:
+ 1189              	 .cfi_def_cfa_offset 8
+ 1190              	 .cfi_offset 7,-8
+ 1191              	 .cfi_offset 14,-4
+ 1192 0002 86B0     	 sub sp,sp,#24
+ 1193              	.LCFI62:
+ 1194              	 .cfi_def_cfa_offset 32
+ 1195 0004 00AF     	 add r7,sp,#0
+ 1196              	.LCFI63:
+ 1197              	 .cfi_def_cfa_register 7
+ 1198 0006 0346     	 mov r3,r0
+ 1199 0008 B960     	 str r1,[r7,#8]
+ 1200 000a 7A60     	 str r2,[r7,#4]
+ 1201 000c FB73     	 strb r3,[r7,#15]
+ 292:../cleanflight/src/main/io/serial_4way_avrootloader.c ****     if (BL_SendCMDSetAddress(pMem)) {
+ 1202              	 .loc 1 292 0
+ 1203 000e B868     	 ldr r0,[r7,#8]
+ 1204 0010 FFF7FEFF 	 bl BL_SendCMDSetAddress
+ 1205 0014 0346     	 mov r3,r0
+ 1206 0016 002B     	 cmp r3,#0
+ 1207 0018 1BD0     	 beq .L83
+ 1208              	.LBB5:
+ 293:../cleanflight/src/main/io/serial_4way_avrootloader.c ****         if (!BL_SendCMDSetBuffer(pMem)) return 0;
+ 1209              	 .loc 1 293 0
+ 1210 001a B868     	 ldr r0,[r7,#8]
+ 1211 001c FFF7FEFF 	 bl BL_SendCMDSetBuffer
+ 1212 0020 0346     	 mov r3,r0
+ 1213 0022 002B     	 cmp r3,#0
+ 1214 0024 01D1     	 bne .L84
+ 1215              	 .loc 1 293 0 is_stmt 0 discriminator 1
+ 1216 0026 0023     	 movs r3,#0
+ 1217 0028 14E0     	 b .L86
+ 1218              	.L84:
+ 294:../cleanflight/src/main/io/serial_4way_avrootloader.c ****         uint8_t sCMD[] = {cmd, 0x01};
+ 1219              	 .loc 1 294 0 is_stmt 1
+ 1220 002a FB7B     	 ldrb r3,[r7,#15]
+ 1221 002c 3B75     	 strb r3,[r7,#20]
+ 1222 002e 0123     	 movs r3,#1
+ 1223 0030 7B75     	 strb r3,[r7,#21]
+ 295:../cleanflight/src/main/io/serial_4way_avrootloader.c ****         BL_SendBuf(sCMD, 2);
+ 1224              	 .loc 1 295 0
+ 1225 0032 07F11403 	 add r3,r7,#20
+ 1226 0036 1846     	 mov r0,r3
+ 1227 0038 0221     	 movs r1,#2
+ 1228 003a FFF7FEFF 	 bl BL_SendBuf
+ 296:../cleanflight/src/main/io/serial_4way_avrootloader.c ****         return (BL_GetACK(timeout) == brSUCCESS);
+ 1229              	 .loc 1 296 0
+ 1230 003e 7868     	 ldr r0,[r7,#4]
+ 1231 0040 FFF7FEFF 	 bl BL_GetACK
+ 1232 0044 0346     	 mov r3,r0
+ 1233 0046 302B     	 cmp r3,#48
+ 1234 0048 0CBF     	 ite eq
+ 1235 004a 0123     	 moveq r3,#1
+ 1236 004c 0023     	 movne r3,#0
+ 1237 004e DBB2     	 uxtb r3,r3
+ 1238 0050 00E0     	 b .L86
+ 1239              	.L83:
+ 1240              	.LBE5:
+ 297:../cleanflight/src/main/io/serial_4way_avrootloader.c ****     }
+ 298:../cleanflight/src/main/io/serial_4way_avrootloader.c ****     return 0;
+ 1241              	 .loc 1 298 0
+ 1242 0052 0023     	 movs r3,#0
+ 1243              	.L86:
+ 299:../cleanflight/src/main/io/serial_4way_avrootloader.c **** }
+ 1244              	 .loc 1 299 0 discriminator 1
+ 1245 0054 1846     	 mov r0,r3
+ 1246 0056 1837     	 adds r7,r7,#24
+ 1247              	.LCFI64:
+ 1248              	 .cfi_def_cfa_offset 8
+ 1249 0058 BD46     	 mov sp,r7
+ 1250              	.LCFI65:
+ 1251              	 .cfi_def_cfa_register 13
+ 1252              	 
+ 1253 005a 80BD     	 pop {r7,pc}
+ 1254              	 .cfi_endproc
+ 1255              	.LFE543:
+ 1257              	 .section .text.BL_ReadFlash,"ax",%progbits
+ 1258              	 .align 2
+ 1259              	 .global BL_ReadFlash
+ 1260              	 .thumb
+ 1261              	 .thumb_func
+ 1263              	BL_ReadFlash:
+ 1264              	.LFB544:
+ 300:../cleanflight/src/main/io/serial_4way_avrootloader.c **** 
+ 301:../cleanflight/src/main/io/serial_4way_avrootloader.c **** uint8_t BL_ReadFlash(uint8_t interface_mode, ioMem_t *pMem)
+ 302:../cleanflight/src/main/io/serial_4way_avrootloader.c **** {
+ 1265              	 .loc 1 302 0
+ 1266              	 .cfi_startproc
+ 1267              	 
+ 1268              	 
+ 1269 0000 80B5     	 push {r7,lr}
+ 1270              	.LCFI66:
+ 1271              	 .cfi_def_cfa_offset 8
+ 1272              	 .cfi_offset 7,-8
+ 1273              	 .cfi_offset 14,-4
+ 1274 0002 82B0     	 sub sp,sp,#8
+ 1275              	.LCFI67:
+ 1276              	 .cfi_def_cfa_offset 16
+ 1277 0004 00AF     	 add r7,sp,#0
+ 1278              	.LCFI68:
+ 1279              	 .cfi_def_cfa_register 7
+ 1280 0006 0346     	 mov r3,r0
+ 1281 0008 3960     	 str r1,[r7]
+ 1282 000a FB71     	 strb r3,[r7,#7]
+ 303:../cleanflight/src/main/io/serial_4way_avrootloader.c ****     if (interface_mode == imATM_BLB) {
+ 1283              	 .loc 1 303 0
+ 1284 000c FB79     	 ldrb r3,[r7,#7]
+ 1285 000e 022B     	 cmp r3,#2
+ 1286 0010 05D1     	 bne .L88
+ 304:../cleanflight/src/main/io/serial_4way_avrootloader.c ****         return BL_ReadA(CMD_READ_FLASH_ATM, pMem);
+ 1287              	 .loc 1 304 0
+ 1288 0012 0720     	 movs r0,#7
+ 1289 0014 3968     	 ldr r1,[r7]
+ 1290 0016 FFF7FEFF 	 bl BL_ReadA
+ 1291 001a 0346     	 mov r3,r0
+ 1292 001c 04E0     	 b .L89
+ 1293              	.L88:
+ 305:../cleanflight/src/main/io/serial_4way_avrootloader.c ****     } else {
+ 306:../cleanflight/src/main/io/serial_4way_avrootloader.c ****         return BL_ReadA(CMD_READ_FLASH_SIL, pMem);
+ 1294              	 .loc 1 306 0
+ 1295 001e 0320     	 movs r0,#3
+ 1296 0020 3968     	 ldr r1,[r7]
+ 1297 0022 FFF7FEFF 	 bl BL_ReadA
+ 1298 0026 0346     	 mov r3,r0
+ 1299              	.L89:
+ 307:../cleanflight/src/main/io/serial_4way_avrootloader.c ****     }
+ 308:../cleanflight/src/main/io/serial_4way_avrootloader.c **** }
+ 1300              	 .loc 1 308 0
+ 1301 0028 1846     	 mov r0,r3
+ 1302 002a 0837     	 adds r7,r7,#8
+ 1303              	.LCFI69:
+ 1304              	 .cfi_def_cfa_offset 8
+ 1305 002c BD46     	 mov sp,r7
+ 1306              	.LCFI70:
+ 1307              	 .cfi_def_cfa_register 13
+ 1308              	 
+ 1309 002e 80BD     	 pop {r7,pc}
+ 1310              	 .cfi_endproc
+ 1311              	.LFE544:
+ 1313              	 .section .text.BL_ReadEEprom,"ax",%progbits
+ 1314              	 .align 2
+ 1315              	 .global BL_ReadEEprom
+ 1316              	 .thumb
+ 1317              	 .thumb_func
+ 1319              	BL_ReadEEprom:
+ 1320              	.LFB545:
+ 309:../cleanflight/src/main/io/serial_4way_avrootloader.c **** 
+ 310:../cleanflight/src/main/io/serial_4way_avrootloader.c **** uint8_t BL_ReadEEprom(ioMem_t *pMem)
+ 311:../cleanflight/src/main/io/serial_4way_avrootloader.c **** {
+ 1321              	 .loc 1 311 0
+ 1322              	 .cfi_startproc
+ 1323              	 
+ 1324              	 
+ 1325 0000 80B5     	 push {r7,lr}
+ 1326              	.LCFI71:
+ 1327              	 .cfi_def_cfa_offset 8
+ 1328              	 .cfi_offset 7,-8
+ 1329              	 .cfi_offset 14,-4
+ 1330 0002 82B0     	 sub sp,sp,#8
+ 1331              	.LCFI72:
+ 1332              	 .cfi_def_cfa_offset 16
+ 1333 0004 00AF     	 add r7,sp,#0
+ 1334              	.LCFI73:
+ 1335              	 .cfi_def_cfa_register 7
+ 1336 0006 7860     	 str r0,[r7,#4]
+ 312:../cleanflight/src/main/io/serial_4way_avrootloader.c ****     return BL_ReadA(CMD_READ_EEPROM, pMem);
+ 1337              	 .loc 1 312 0
+ 1338 0008 0420     	 movs r0,#4
+ 1339 000a 7968     	 ldr r1,[r7,#4]
+ 1340 000c FFF7FEFF 	 bl BL_ReadA
+ 1341 0010 0346     	 mov r3,r0
+ 313:../cleanflight/src/main/io/serial_4way_avrootloader.c **** }
+ 1342              	 .loc 1 313 0
+ 1343 0012 1846     	 mov r0,r3
+ 1344 0014 0837     	 adds r7,r7,#8
+ 1345              	.LCFI74:
+ 1346              	 .cfi_def_cfa_offset 8
+ 1347 0016 BD46     	 mov sp,r7
+ 1348              	.LCFI75:
+ 1349              	 .cfi_def_cfa_register 13
+ 1350              	 
+ 1351 0018 80BD     	 pop {r7,pc}
+ 1352              	 .cfi_endproc
+ 1353              	.LFE545:
+ 1355 001a 00BF     	 .section .rodata
+ 1356 0019 000000   	 .align 2
+ 1357              	.LC1:
+ 1358 001c 02       	 .byte 2
+ 1359 001d 01       	 .byte 1
+ 1360              	 .section .text.BL_PageErase,"ax",%progbits
+ 1361              	 .align 2
+ 1362              	 .global BL_PageErase
+ 1363              	 .thumb
+ 1364              	 .thumb_func
+ 1366              	BL_PageErase:
+ 1367              	.LFB546:
+ 314:../cleanflight/src/main/io/serial_4way_avrootloader.c **** 
+ 315:../cleanflight/src/main/io/serial_4way_avrootloader.c **** uint8_t BL_PageErase(ioMem_t *pMem)
+ 316:../cleanflight/src/main/io/serial_4way_avrootloader.c **** {
+ 1368              	 .loc 1 316 0
+ 1369              	 .cfi_startproc
+ 1370              	 
+ 1371              	 
+ 1372 0000 80B5     	 push {r7,lr}
+ 1373              	.LCFI76:
+ 1374              	 .cfi_def_cfa_offset 8
+ 1375              	 .cfi_offset 7,-8
+ 1376              	 .cfi_offset 14,-4
+ 1377 0002 84B0     	 sub sp,sp,#16
+ 1378              	.LCFI77:
+ 1379              	 .cfi_def_cfa_offset 24
+ 1380 0004 00AF     	 add r7,sp,#0
+ 1381              	.LCFI78:
+ 1382              	 .cfi_def_cfa_register 7
+ 1383 0006 7860     	 str r0,[r7,#4]
+ 317:../cleanflight/src/main/io/serial_4way_avrootloader.c ****     if (BL_SendCMDSetAddress(pMem)) {
+ 1384              	 .loc 1 317 0
+ 1385 0008 7868     	 ldr r0,[r7,#4]
+ 1386 000a FFF7FEFF 	 bl BL_SendCMDSetAddress
+ 1387 000e 0346     	 mov r3,r0
+ 1388 0010 002B     	 cmp r3,#0
+ 1389 0012 15D0     	 beq .L93
+ 1390              	.LBB6:
+ 318:../cleanflight/src/main/io/serial_4way_avrootloader.c ****         uint8_t sCMD[] = {CMD_ERASE_FLASH, 0x01};
+ 1391              	 .loc 1 318 0
+ 1392 0014 0D4A     	 ldr r2,.L95
+ 1393 0016 07F10C03 	 add r3,r7,#12
+ 1394 001a 1288     	 ldrh r2,[r2]
+ 1395 001c 1A80     	 strh r2,[r3]
+ 319:../cleanflight/src/main/io/serial_4way_avrootloader.c ****         BL_SendBuf(sCMD, 2);
+ 1396              	 .loc 1 319 0
+ 1397 001e 07F10C03 	 add r3,r7,#12
+ 1398 0022 1846     	 mov r0,r3
+ 1399 0024 0221     	 movs r1,#2
+ 1400 0026 FFF7FEFF 	 bl BL_SendBuf
+ 320:../cleanflight/src/main/io/serial_4way_avrootloader.c ****         return (BL_GetACK((1400 / START_BIT_TIMEOUT_MS)) == brSUCCESS);
+ 1401              	 .loc 1 320 0
+ 1402 002a 4FF42F70 	 mov r0,#700
+ 1403 002e FFF7FEFF 	 bl BL_GetACK
+ 1404 0032 0346     	 mov r3,r0
+ 1405 0034 302B     	 cmp r3,#48
+ 1406 0036 0CBF     	 ite eq
+ 1407 0038 0123     	 moveq r3,#1
+ 1408 003a 0023     	 movne r3,#0
+ 1409 003c DBB2     	 uxtb r3,r3
+ 1410 003e 00E0     	 b .L94
+ 1411              	.L93:
+ 1412              	.LBE6:
+ 321:../cleanflight/src/main/io/serial_4way_avrootloader.c ****     }
+ 322:../cleanflight/src/main/io/serial_4way_avrootloader.c ****     return 0;
+ 1413              	 .loc 1 322 0
+ 1414 0040 0023     	 movs r3,#0
+ 1415              	.L94:
+ 323:../cleanflight/src/main/io/serial_4way_avrootloader.c **** }
+ 1416              	 .loc 1 323 0 discriminator 1
+ 1417 0042 1846     	 mov r0,r3
+ 1418 0044 1037     	 adds r7,r7,#16
+ 1419              	.LCFI79:
+ 1420              	 .cfi_def_cfa_offset 8
+ 1421 0046 BD46     	 mov sp,r7
+ 1422              	.LCFI80:
+ 1423              	 .cfi_def_cfa_register 13
+ 1424              	 
+ 1425 0048 80BD     	 pop {r7,pc}
+ 1426              	.L96:
+ 1427 004a 00BF     	 .align 2
+ 1428              	.L95:
+ 1429 004c 1C000000 	 .word .LC1
+ 1430              	 .cfi_endproc
+ 1431              	.LFE546:
+ 1433              	 .section .text.BL_WriteEEprom,"ax",%progbits
+ 1434              	 .align 2
+ 1435              	 .global BL_WriteEEprom
+ 1436              	 .thumb
+ 1437              	 .thumb_func
+ 1439              	BL_WriteEEprom:
+ 1440              	.LFB547:
+ 324:../cleanflight/src/main/io/serial_4way_avrootloader.c **** 
+ 325:../cleanflight/src/main/io/serial_4way_avrootloader.c **** uint8_t BL_WriteEEprom(ioMem_t *pMem)
+ 326:../cleanflight/src/main/io/serial_4way_avrootloader.c **** {
+ 1441              	 .loc 1 326 0
+ 1442              	 .cfi_startproc
+ 1443              	 
+ 1444              	 
+ 1445 0000 80B5     	 push {r7,lr}
+ 1446              	.LCFI81:
+ 1447              	 .cfi_def_cfa_offset 8
+ 1448              	 .cfi_offset 7,-8
+ 1449              	 .cfi_offset 14,-4
+ 1450 0002 82B0     	 sub sp,sp,#8
+ 1451              	.LCFI82:
+ 1452              	 .cfi_def_cfa_offset 16
+ 1453 0004 00AF     	 add r7,sp,#0
+ 1454              	.LCFI83:
+ 1455              	 .cfi_def_cfa_register 7
+ 1456 0006 7860     	 str r0,[r7,#4]
+ 327:../cleanflight/src/main/io/serial_4way_avrootloader.c ****     return BL_WriteA(CMD_PROG_EEPROM, pMem, (3000 / START_BIT_TIMEOUT_MS));
+ 1457              	 .loc 1 327 0
+ 1458 0008 0520     	 movs r0,#5
+ 1459 000a 7968     	 ldr r1,[r7,#4]
+ 1460 000c 40F2DC52 	 movw r2,#1500
+ 1461 0010 FFF7FEFF 	 bl BL_WriteA
+ 1462 0014 0346     	 mov r3,r0
+ 328:../cleanflight/src/main/io/serial_4way_avrootloader.c **** }
+ 1463              	 .loc 1 328 0
+ 1464 0016 1846     	 mov r0,r3
+ 1465 0018 0837     	 adds r7,r7,#8
+ 1466              	.LCFI84:
+ 1467              	 .cfi_def_cfa_offset 8
+ 1468 001a BD46     	 mov sp,r7
+ 1469              	.LCFI85:
+ 1470              	 .cfi_def_cfa_register 13
+ 1471              	 
+ 1472 001c 80BD     	 pop {r7,pc}
+ 1473              	 .cfi_endproc
+ 1474              	.LFE547:
+ 1476 001e 00BF     	 .section .text.BL_WriteFlash,"ax",%progbits
+ 1477              	 .align 2
+ 1478              	 .global BL_WriteFlash
+ 1479              	 .thumb
+ 1480              	 .thumb_func
+ 1482              	BL_WriteFlash:
+ 1483              	.LFB548:
+ 329:../cleanflight/src/main/io/serial_4way_avrootloader.c **** 
+ 330:../cleanflight/src/main/io/serial_4way_avrootloader.c **** uint8_t BL_WriteFlash(ioMem_t *pMem)
+ 331:../cleanflight/src/main/io/serial_4way_avrootloader.c **** {
+ 1484              	 .loc 1 331 0
+ 1485              	 .cfi_startproc
+ 1486              	 
+ 1487              	 
+ 1488 0000 80B5     	 push {r7,lr}
+ 1489              	.LCFI86:
+ 1490              	 .cfi_def_cfa_offset 8
+ 1491              	 .cfi_offset 7,-8
+ 1492              	 .cfi_offset 14,-4
+ 1493 0002 82B0     	 sub sp,sp,#8
+ 1494              	.LCFI87:
+ 1495              	 .cfi_def_cfa_offset 16
+ 1496 0004 00AF     	 add r7,sp,#0
+ 1497              	.LCFI88:
+ 1498              	 .cfi_def_cfa_register 7
+ 1499 0006 7860     	 str r0,[r7,#4]
+ 332:../cleanflight/src/main/io/serial_4way_avrootloader.c ****     return BL_WriteA(CMD_PROG_FLASH, pMem, (500 / START_BIT_TIMEOUT_MS));
+ 1500              	 .loc 1 332 0
+ 1501 0008 0120     	 movs r0,#1
+ 1502 000a 7968     	 ldr r1,[r7,#4]
+ 1503 000c FA22     	 movs r2,#250
+ 1504 000e FFF7FEFF 	 bl BL_WriteA
+ 1505 0012 0346     	 mov r3,r0
+ 333:../cleanflight/src/main/io/serial_4way_avrootloader.c **** }
+ 1506              	 .loc 1 333 0
+ 1507 0014 1846     	 mov r0,r3
+ 1508 0016 0837     	 adds r7,r7,#8
+ 1509              	.LCFI89:
+ 1510              	 .cfi_def_cfa_offset 8
+ 1511 0018 BD46     	 mov sp,r7
+ 1512              	.LCFI90:
+ 1513              	 .cfi_def_cfa_register 13
+ 1514              	 
+ 1515 001a 80BD     	 pop {r7,pc}
+ 1516              	 .cfi_endproc
+ 1517              	.LFE548:
+ 1519              	 .section .rodata
+ 1520 001e 0000     	 .align 2
+ 1521              	.LC2:
+ 1522 0020 04       	 .byte 4
+ 1523 0021 01       	 .byte 1
+ 1524 0022 0000     	 .section .text.BL_VerifyFlash,"ax",%progbits
+ 1525              	 .align 2
+ 1526              	 .global BL_VerifyFlash
+ 1527              	 .thumb
+ 1528              	 .thumb_func
+ 1530              	BL_VerifyFlash:
+ 1531              	.LFB549:
+ 334:../cleanflight/src/main/io/serial_4way_avrootloader.c **** 
+ 335:../cleanflight/src/main/io/serial_4way_avrootloader.c **** uint8_t BL_VerifyFlash(ioMem_t *pMem)
+ 336:../cleanflight/src/main/io/serial_4way_avrootloader.c **** {
+ 1532              	 .loc 1 336 0
+ 1533              	 .cfi_startproc
+ 1534              	 
+ 1535              	 
+ 1536 0000 80B5     	 push {r7,lr}
+ 1537              	.LCFI91:
+ 1538              	 .cfi_def_cfa_offset 8
+ 1539              	 .cfi_offset 7,-8
+ 1540              	 .cfi_offset 14,-4
+ 1541 0002 84B0     	 sub sp,sp,#16
+ 1542              	.LCFI92:
+ 1543              	 .cfi_def_cfa_offset 24
+ 1544 0004 00AF     	 add r7,sp,#0
+ 1545              	.LCFI93:
+ 1546              	 .cfi_def_cfa_register 7
+ 1547 0006 7860     	 str r0,[r7,#4]
+ 337:../cleanflight/src/main/io/serial_4way_avrootloader.c ****     if (BL_SendCMDSetAddress(pMem)) {
+ 1548              	 .loc 1 337 0
+ 1549 0008 7868     	 ldr r0,[r7,#4]
+ 1550 000a FFF7FEFF 	 bl BL_SendCMDSetAddress
+ 1551 000e 0346     	 mov r3,r0
+ 1552 0010 002B     	 cmp r3,#0
+ 1553 0012 17D0     	 beq .L102
+ 1554              	.LBB7:
+ 338:../cleanflight/src/main/io/serial_4way_avrootloader.c ****         if (!BL_SendCMDSetBuffer(pMem)) return 0;
+ 1555              	 .loc 1 338 0
+ 1556 0014 7868     	 ldr r0,[r7,#4]
+ 1557 0016 FFF7FEFF 	 bl BL_SendCMDSetBuffer
+ 1558 001a 0346     	 mov r3,r0
+ 1559 001c 002B     	 cmp r3,#0
+ 1560 001e 01D1     	 bne .L103
+ 1561              	 .loc 1 338 0 is_stmt 0 discriminator 1
+ 1562 0020 0023     	 movs r3,#0
+ 1563 0022 10E0     	 b .L105
+ 1564              	.L103:
+ 339:../cleanflight/src/main/io/serial_4way_avrootloader.c ****         uint8_t sCMD[] = {CMD_VERIFY_FLASH_ARM, 0x01};
+ 1565              	 .loc 1 339 0 is_stmt 1
+ 1566 0024 0A4A     	 ldr r2,.L106
+ 1567 0026 07F10C03 	 add r3,r7,#12
+ 1568 002a 1288     	 ldrh r2,[r2]
+ 1569 002c 1A80     	 strh r2,[r3]
+ 340:../cleanflight/src/main/io/serial_4way_avrootloader.c ****         BL_SendBuf(sCMD, 2);
+ 1570              	 .loc 1 340 0
+ 1571 002e 07F10C03 	 add r3,r7,#12
+ 1572 0032 1846     	 mov r0,r3
+ 1573 0034 0221     	 movs r1,#2
+ 1574 0036 FFF7FEFF 	 bl BL_SendBuf
+ 341:../cleanflight/src/main/io/serial_4way_avrootloader.c ****         return (BL_GetACK(40 / START_BIT_TIMEOUT_MS));
+ 1575              	 .loc 1 341 0
+ 1576 003a 1420     	 movs r0,#20
+ 1577 003c FFF7FEFF 	 bl BL_GetACK
+ 1578 0040 0346     	 mov r3,r0
+ 1579 0042 00E0     	 b .L105
+ 1580              	.L102:
+ 1581              	.LBE7:
+ 342:../cleanflight/src/main/io/serial_4way_avrootloader.c ****     }
+ 343:../cleanflight/src/main/io/serial_4way_avrootloader.c ****     return 0;
+ 1582              	 .loc 1 343 0
+ 1583 0044 0023     	 movs r3,#0
+ 1584              	.L105:
+ 344:../cleanflight/src/main/io/serial_4way_avrootloader.c **** }
+ 1585              	 .loc 1 344 0 discriminator 1
+ 1586 0046 1846     	 mov r0,r3
+ 1587 0048 1037     	 adds r7,r7,#16
+ 1588              	.LCFI94:
+ 1589              	 .cfi_def_cfa_offset 8
+ 1590 004a BD46     	 mov sp,r7
+ 1591              	.LCFI95:
+ 1592              	 .cfi_def_cfa_register 13
+ 1593              	 
+ 1594 004c 80BD     	 pop {r7,pc}
+ 1595              	.L107:
+ 1596 004e 00BF     	 .align 2
+ 1597              	.L106:
+ 1598 0050 20000000 	 .word .LC2
+ 1599              	 .cfi_endproc
+ 1600              	.LFE549:
+ 1602              	 .text
+ 1603              	.Letext0:
+ 1604              	 .file 2 "d:\\xmc\\dave-ide-4.4.2-64bit\\eclipse\\arm-gcc-49\\arm-none-eabi\\include\\machine\\_default_types.h"
+ 1605              	 .file 3 "d:\\xmc\\dave-ide-4.4.2-64bit\\eclipse\\arm-gcc-49\\arm-none-eabi\\include\\stdint.h"
+ 1606              	 .file 4 "D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/lib/main/XMC4000/XMCLib/inc/xmc_usic.h"
+ 1607              	 .file 5 "D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/drivers/io_types.h"
+ 1608              	 .file 6 "D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/drivers/serial.h"
+ 1609              	 .file 7 "D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/common/time.h"
+ 1610              	 .file 8 "D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/drivers/resource.h"
+ 1611              	 .file 9 "D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/io/serial.h"
+ 1612              	 .file 10 "D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/io/serial_4way_impl.h"
+ 1613              	 .file 11 "D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/io/serial_4way.h"
+ 1614              	 .file 12 "D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/lib/main/CMSIS/Core/Include/core_cm4.h"
+ 1615              	 .file 13 "D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/lib/main/XMC4000/system_XMC4700.h"
+DEFINED SYMBOLS
+                            *ABS*:00000000 serial_4way_avrootloader.c
+    {standard input}:20     .text.suart_getc_:00000000 $t
+    {standard input}:24     .text.suart_getc_:00000000 suart_getc_
+    {standard input}:175    .text.suart_getc_:000000cc $d
+    {standard input}:180    .text.suart_putc_:00000000 $t
+    {standard input}:184    .text.suart_putc_:00000000 suart_putc_
+    {standard input}:271    .text.suart_putc_:0000006c $d
+    {standard input}:276    .bss.CRC_16:00000000 $d
+    {standard input}:279    .bss.CRC_16:00000000 CRC_16
+    {standard input}:282    .bss.LastCRC_16:00000000 $d
+    {standard input}:285    .bss.LastCRC_16:00000000 LastCRC_16
+    {standard input}:288    .text.ByteCrc:00000000 $t
+    {standard input}:292    .text.ByteCrc:00000000 ByteCrc
+    {standard input}:383    .text.ByteCrc:00000068 $d
+    {standard input}:389    .text.BL_ReadBuf:00000000 $t
+    {standard input}:393    .text.BL_ReadBuf:00000000 BL_ReadBuf
+    {standard input}:519    .text.BL_ReadBuf:000000b4 $d
+    {standard input}:526    .text.BL_SendBuf:00000000 $t
+    {standard input}:530    .text.BL_SendBuf:00000000 BL_SendBuf
+    {standard input}:607    .text.BL_SendBuf:00000060 $d
+    {standard input}:614    .rodata:00000000 $d
+    {standard input}:641    .text.BL_ConnectEx:00000000 $t
+    {standard input}:646    .text.BL_ConnectEx:00000000 BL_ConnectEx
+    {standard input}:764    .text.BL_ConnectEx:000000b8 $d
+    {standard input}:770    .text.BL_GetACK:00000000 $t
+    {standard input}:774    .text.BL_GetACK:00000000 BL_GetACK
+    {standard input}:831    .text.BL_SendCMDKeepAlive:00000000 $t
+    {standard input}:836    .text.BL_SendCMDKeepAlive:00000000 BL_SendCMDKeepAlive
+    {standard input}:890    .text.BL_SendCMDRunRestartBootloader:00000000 $t
+    {standard input}:895    .text.BL_SendCMDRunRestartBootloader:00000000 BL_SendCMDRunRestartBootloader
+    {standard input}:942    .text.BL_SendCMDSetAddress:00000000 $t
+    {standard input}:946    .text.BL_SendCMDSetAddress:00000000 BL_SendCMDSetAddress
+    {standard input}:1018   .text.BL_SendCMDSetBuffer:00000000 $t
+    {standard input}:1022   .text.BL_SendCMDSetBuffer:00000000 BL_SendCMDSetBuffer
+    {standard input}:1106   .text.BL_ReadA:00000000 $t
+    {standard input}:1110   .text.BL_ReadA:00000000 BL_ReadA
+    {standard input}:1177   .text.BL_WriteA:00000000 $t
+    {standard input}:1181   .text.BL_WriteA:00000000 BL_WriteA
+    {standard input}:1258   .text.BL_ReadFlash:00000000 $t
+    {standard input}:1263   .text.BL_ReadFlash:00000000 BL_ReadFlash
+    {standard input}:1314   .text.BL_ReadEEprom:00000000 $t
+    {standard input}:1319   .text.BL_ReadEEprom:00000000 BL_ReadEEprom
+    {standard input}:1361   .text.BL_PageErase:00000000 $t
+    {standard input}:1366   .text.BL_PageErase:00000000 BL_PageErase
+    {standard input}:1429   .text.BL_PageErase:0000004c $d
+    {standard input}:1434   .text.BL_WriteEEprom:00000000 $t
+    {standard input}:1439   .text.BL_WriteEEprom:00000000 BL_WriteEEprom
+    {standard input}:1477   .text.BL_WriteFlash:00000000 $t
+    {standard input}:1482   .text.BL_WriteFlash:00000000 BL_WriteFlash
+    {standard input}:1525   .text.BL_VerifyFlash:00000000 $t
+    {standard input}:1530   .text.BL_VerifyFlash:00000000 BL_VerifyFlash
+    {standard input}:1598   .text.BL_VerifyFlash:00000050 $d
+                     .debug_frame:00000010 $d
+
+UNDEFINED SYMBOLS
+millis
+isEscHi
+micros
+selected_esc
+setEscHi
+setEscLo
+isMcuConnected
+setEscOutput
+setEscInput

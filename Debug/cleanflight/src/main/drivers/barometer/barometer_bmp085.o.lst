@@ -1,0 +1,1511 @@
+   1              	 .syntax unified
+   2              	 .cpu cortex-m4
+   3              	 .eabi_attribute 27,3
+   4              	 .fpu fpv4-sp-d16
+   5              	 .eabi_attribute 20,1
+   6              	 .eabi_attribute 21,1
+   7              	 .eabi_attribute 23,3
+   8              	 .eabi_attribute 24,1
+   9              	 .eabi_attribute 25,1
+  10              	 .eabi_attribute 26,1
+  11              	 .eabi_attribute 30,6
+  12              	 .eabi_attribute 34,1
+  13              	 .eabi_attribute 18,4
+  14              	 .thumb
+  15              	 .file "barometer_bmp085.c"
+  16              	 .text
+  17              	.Ltext0:
+  18              	 .cfi_sections .debug_frame
+  19              	 .section .bss.bmp085,"aw",%nobits
+  20              	 .align 2
+  23              	bmp085:
+  24 0000 00000000 	 .space 33
+  24      00000000 
+  24      00000000 
+  24      00000000 
+  24      00000000 
+  25 0021 000000   	 .section .bss.bmp085InitDone,"aw",%nobits
+  28              	bmp085InitDone:
+  29 0000 00       	 .space 1
+  30              	 .section .bss.bmp085_ut,"aw",%nobits
+  31              	 .align 1
+  34              	bmp085_ut:
+  35 0000 0000     	 .space 2
+  36              	 .section .bss.bmp085_up,"aw",%nobits
+  37              	 .align 2
+  40              	bmp085_up:
+  41 0000 00000000 	 .space 4
+  42              	 .section .bss.xclrIO,"aw",%nobits
+  43              	 .align 2
+  46              	xclrIO:
+  47 0000 00000000 	 .space 4
+  48              	 .section .text.bmp085InitXclrIO,"ax",%progbits
+  49              	 .align 2
+  50              	 .global bmp085InitXclrIO
+  51              	 .thumb
+  52              	 .thumb_func
+  54              	bmp085InitXclrIO:
+  55              	.LFB527:
+  56              	 .file 1 "../cleanflight/src/main/drivers/barometer/barometer_bmp085.c"
+   1:../cleanflight/src/main/drivers/barometer/barometer_bmp085.c **** /*
+   2:../cleanflight/src/main/drivers/barometer/barometer_bmp085.c ****  * This file is part of Cleanflight and Betaflight.
+   3:../cleanflight/src/main/drivers/barometer/barometer_bmp085.c ****  *
+   4:../cleanflight/src/main/drivers/barometer/barometer_bmp085.c ****  * Cleanflight and Betaflight are free software. You can redistribute
+   5:../cleanflight/src/main/drivers/barometer/barometer_bmp085.c ****  * this software and/or modify this software under the terms of the
+   6:../cleanflight/src/main/drivers/barometer/barometer_bmp085.c ****  * GNU General Public License as published by the Free Software
+   7:../cleanflight/src/main/drivers/barometer/barometer_bmp085.c ****  * Foundation, either version 3 of the License, or (at your option)
+   8:../cleanflight/src/main/drivers/barometer/barometer_bmp085.c ****  * any later version.
+   9:../cleanflight/src/main/drivers/barometer/barometer_bmp085.c ****  *
+  10:../cleanflight/src/main/drivers/barometer/barometer_bmp085.c ****  * Cleanflight and Betaflight are distributed in the hope that they
+  11:../cleanflight/src/main/drivers/barometer/barometer_bmp085.c ****  * will be useful, but WITHOUT ANY WARRANTY; without even the implied
+  12:../cleanflight/src/main/drivers/barometer/barometer_bmp085.c ****  * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+  13:../cleanflight/src/main/drivers/barometer/barometer_bmp085.c ****  * See the GNU General Public License for more details.
+  14:../cleanflight/src/main/drivers/barometer/barometer_bmp085.c ****  *
+  15:../cleanflight/src/main/drivers/barometer/barometer_bmp085.c ****  * You should have received a copy of the GNU General Public License
+  16:../cleanflight/src/main/drivers/barometer/barometer_bmp085.c ****  * along with this software.
+  17:../cleanflight/src/main/drivers/barometer/barometer_bmp085.c ****  *
+  18:../cleanflight/src/main/drivers/barometer/barometer_bmp085.c ****  * If not, see <http://www.gnu.org/licenses/>.
+  19:../cleanflight/src/main/drivers/barometer/barometer_bmp085.c ****  */
+  20:../cleanflight/src/main/drivers/barometer/barometer_bmp085.c **** 
+  21:../cleanflight/src/main/drivers/barometer/barometer_bmp085.c **** #include <stdbool.h>
+  22:../cleanflight/src/main/drivers/barometer/barometer_bmp085.c **** #include <stdint.h>
+  23:../cleanflight/src/main/drivers/barometer/barometer_bmp085.c **** 
+  24:../cleanflight/src/main/drivers/barometer/barometer_bmp085.c **** #include "platform.h"
+  25:../cleanflight/src/main/drivers/barometer/barometer_bmp085.c **** 
+  26:../cleanflight/src/main/drivers/barometer/barometer_bmp085.c **** #include "build/build_config.h"
+  27:../cleanflight/src/main/drivers/barometer/barometer_bmp085.c **** 
+  28:../cleanflight/src/main/drivers/barometer/barometer_bmp085.c **** #include "barometer.h"
+  29:../cleanflight/src/main/drivers/barometer/barometer_bmp085.c **** 
+  30:../cleanflight/src/main/drivers/barometer/barometer_bmp085.c **** #include "drivers/bus.h"
+  31:../cleanflight/src/main/drivers/barometer/barometer_bmp085.c **** #include "drivers/bus_i2c.h"
+  32:../cleanflight/src/main/drivers/barometer/barometer_bmp085.c **** #include "drivers/bus_i2c_busdev.h"
+  33:../cleanflight/src/main/drivers/barometer/barometer_bmp085.c **** #include "drivers/exti.h"
+  34:../cleanflight/src/main/drivers/barometer/barometer_bmp085.c **** #include "drivers/io.h"
+  35:../cleanflight/src/main/drivers/barometer/barometer_bmp085.c **** #include "drivers/nvic.h"
+  36:../cleanflight/src/main/drivers/barometer/barometer_bmp085.c **** #include "drivers/time.h"
+  37:../cleanflight/src/main/drivers/barometer/barometer_bmp085.c **** 
+  38:../cleanflight/src/main/drivers/barometer/barometer_bmp085.c **** #include "barometer_bmp085.h"
+  39:../cleanflight/src/main/drivers/barometer/barometer_bmp085.c **** 
+  40:../cleanflight/src/main/drivers/barometer/barometer_bmp085.c **** #ifdef USE_BARO
+  41:../cleanflight/src/main/drivers/barometer/barometer_bmp085.c **** 
+  42:../cleanflight/src/main/drivers/barometer/barometer_bmp085.c **** #if defined(BARO_EOC_GPIO)
+  43:../cleanflight/src/main/drivers/barometer/barometer_bmp085.c **** 
+  44:../cleanflight/src/main/drivers/barometer/barometer_bmp085.c **** static IO_t eocIO;
+  45:../cleanflight/src/main/drivers/barometer/barometer_bmp085.c **** 
+  46:../cleanflight/src/main/drivers/barometer/barometer_bmp085.c **** static bool isConversionComplete = false;
+  47:../cleanflight/src/main/drivers/barometer/barometer_bmp085.c **** static bool isEOCConnected = true;
+  48:../cleanflight/src/main/drivers/barometer/barometer_bmp085.c **** 
+  49:../cleanflight/src/main/drivers/barometer/barometer_bmp085.c **** // EXTI14 for BMP085 End of Conversion Interrupt
+  50:../cleanflight/src/main/drivers/barometer/barometer_bmp085.c **** void bmp085_extiHandler(extiCallbackRec_t* cb)
+  51:../cleanflight/src/main/drivers/barometer/barometer_bmp085.c **** {
+  52:../cleanflight/src/main/drivers/barometer/barometer_bmp085.c ****     UNUSED(cb);
+  53:../cleanflight/src/main/drivers/barometer/barometer_bmp085.c ****     isConversionComplete = true;
+  54:../cleanflight/src/main/drivers/barometer/barometer_bmp085.c **** }
+  55:../cleanflight/src/main/drivers/barometer/barometer_bmp085.c **** 
+  56:../cleanflight/src/main/drivers/barometer/barometer_bmp085.c **** bool bmp085TestEOCConnected(const bmp085Config_t *config);
+  57:../cleanflight/src/main/drivers/barometer/barometer_bmp085.c **** # endif
+  58:../cleanflight/src/main/drivers/barometer/barometer_bmp085.c **** 
+  59:../cleanflight/src/main/drivers/barometer/barometer_bmp085.c **** typedef struct {
+  60:../cleanflight/src/main/drivers/barometer/barometer_bmp085.c ****     int16_t ac1;
+  61:../cleanflight/src/main/drivers/barometer/barometer_bmp085.c ****     int16_t ac2;
+  62:../cleanflight/src/main/drivers/barometer/barometer_bmp085.c ****     int16_t ac3;
+  63:../cleanflight/src/main/drivers/barometer/barometer_bmp085.c ****     uint16_t ac4;
+  64:../cleanflight/src/main/drivers/barometer/barometer_bmp085.c ****     uint16_t ac5;
+  65:../cleanflight/src/main/drivers/barometer/barometer_bmp085.c ****     uint16_t ac6;
+  66:../cleanflight/src/main/drivers/barometer/barometer_bmp085.c ****     int16_t b1;
+  67:../cleanflight/src/main/drivers/barometer/barometer_bmp085.c ****     int16_t b2;
+  68:../cleanflight/src/main/drivers/barometer/barometer_bmp085.c ****     int16_t mb;
+  69:../cleanflight/src/main/drivers/barometer/barometer_bmp085.c ****     int16_t mc;
+  70:../cleanflight/src/main/drivers/barometer/barometer_bmp085.c ****     int16_t md;
+  71:../cleanflight/src/main/drivers/barometer/barometer_bmp085.c **** } bmp085_smd500_calibration_param_t;
+  72:../cleanflight/src/main/drivers/barometer/barometer_bmp085.c **** 
+  73:../cleanflight/src/main/drivers/barometer/barometer_bmp085.c **** typedef struct {
+  74:../cleanflight/src/main/drivers/barometer/barometer_bmp085.c ****     bmp085_smd500_calibration_param_t cal_param;
+  75:../cleanflight/src/main/drivers/barometer/barometer_bmp085.c ****     uint8_t mode;
+  76:../cleanflight/src/main/drivers/barometer/barometer_bmp085.c ****     uint8_t chip_id, ml_version, al_version;
+  77:../cleanflight/src/main/drivers/barometer/barometer_bmp085.c ****     uint8_t dev_addr;
+  78:../cleanflight/src/main/drivers/barometer/barometer_bmp085.c ****     int32_t param_b5;
+  79:../cleanflight/src/main/drivers/barometer/barometer_bmp085.c ****     int16_t oversampling_setting;
+  80:../cleanflight/src/main/drivers/barometer/barometer_bmp085.c **** } bmp085_t;
+  81:../cleanflight/src/main/drivers/barometer/barometer_bmp085.c **** 
+  82:../cleanflight/src/main/drivers/barometer/barometer_bmp085.c **** #define BMP085_I2C_ADDR         0x77
+  83:../cleanflight/src/main/drivers/barometer/barometer_bmp085.c **** #define BMP085_CHIP_ID          0x55
+  84:../cleanflight/src/main/drivers/barometer/barometer_bmp085.c **** #define BOSCH_PRESSURE_BMP085   85
+  85:../cleanflight/src/main/drivers/barometer/barometer_bmp085.c **** #define BMP085_CHIP_ID_REG      0xD0
+  86:../cleanflight/src/main/drivers/barometer/barometer_bmp085.c **** #define BMP085_VERSION_REG      0xD1
+  87:../cleanflight/src/main/drivers/barometer/barometer_bmp085.c **** #define E_SENSOR_NOT_DETECTED   (char) 0
+  88:../cleanflight/src/main/drivers/barometer/barometer_bmp085.c **** #define BMP085_PROM_START__ADDR 0xaa
+  89:../cleanflight/src/main/drivers/barometer/barometer_bmp085.c **** #define BMP085_PROM_DATA__LEN   22
+  90:../cleanflight/src/main/drivers/barometer/barometer_bmp085.c **** #define BMP085_T_MEASURE        0x2E                // temperature measurent
+  91:../cleanflight/src/main/drivers/barometer/barometer_bmp085.c **** #define BMP085_P_MEASURE        0x34                // pressure measurement
+  92:../cleanflight/src/main/drivers/barometer/barometer_bmp085.c **** #define BMP085_CTRL_MEAS_REG    0xF4
+  93:../cleanflight/src/main/drivers/barometer/barometer_bmp085.c **** #define BMP085_ADC_OUT_MSB_REG  0xF6
+  94:../cleanflight/src/main/drivers/barometer/barometer_bmp085.c **** #define BMP085_ADC_OUT_LSB_REG  0xF7
+  95:../cleanflight/src/main/drivers/barometer/barometer_bmp085.c **** #define BMP085_CHIP_ID__POS     0
+  96:../cleanflight/src/main/drivers/barometer/barometer_bmp085.c **** #define BMP085_CHIP_ID__MSK     0xFF
+  97:../cleanflight/src/main/drivers/barometer/barometer_bmp085.c **** #define BMP085_CHIP_ID__LEN     8
+  98:../cleanflight/src/main/drivers/barometer/barometer_bmp085.c **** #define BMP085_CHIP_ID__REG     BMP085_CHIP_ID_REG
+  99:../cleanflight/src/main/drivers/barometer/barometer_bmp085.c **** 
+ 100:../cleanflight/src/main/drivers/barometer/barometer_bmp085.c **** #define BMP085_ML_VERSION__POS      0
+ 101:../cleanflight/src/main/drivers/barometer/barometer_bmp085.c **** #define BMP085_ML_VERSION__LEN      4
+ 102:../cleanflight/src/main/drivers/barometer/barometer_bmp085.c **** #define BMP085_ML_VERSION__MSK      0x0F
+ 103:../cleanflight/src/main/drivers/barometer/barometer_bmp085.c **** #define BMP085_ML_VERSION__REG      BMP085_VERSION_REG
+ 104:../cleanflight/src/main/drivers/barometer/barometer_bmp085.c **** 
+ 105:../cleanflight/src/main/drivers/barometer/barometer_bmp085.c **** #define BMP085_AL_VERSION__POS      4
+ 106:../cleanflight/src/main/drivers/barometer/barometer_bmp085.c **** #define BMP085_AL_VERSION__LEN      4
+ 107:../cleanflight/src/main/drivers/barometer/barometer_bmp085.c **** #define BMP085_AL_VERSION__MSK      0xF0
+ 108:../cleanflight/src/main/drivers/barometer/barometer_bmp085.c **** #define BMP085_AL_VERSION__REG      BMP085_VERSION_REG
+ 109:../cleanflight/src/main/drivers/barometer/barometer_bmp085.c **** 
+ 110:../cleanflight/src/main/drivers/barometer/barometer_bmp085.c **** #define BMP085_GET_BITSLICE(regvar, bitname) (regvar & bitname##__MSK) >> bitname##__POS
+ 111:../cleanflight/src/main/drivers/barometer/barometer_bmp085.c **** #define BMP085_SET_BITSLICE(regvar, bitname, val) (regvar & ~bitname##__MSK) | ((val<<bitname##__PO
+ 112:../cleanflight/src/main/drivers/barometer/barometer_bmp085.c **** 
+ 113:../cleanflight/src/main/drivers/barometer/barometer_bmp085.c **** #define SMD500_PARAM_MG      3038        //calibration parameter
+ 114:../cleanflight/src/main/drivers/barometer/barometer_bmp085.c **** #define SMD500_PARAM_MH     -7357        //calibration parameter
+ 115:../cleanflight/src/main/drivers/barometer/barometer_bmp085.c **** #define SMD500_PARAM_MI      3791        //calibration parameter
+ 116:../cleanflight/src/main/drivers/barometer/barometer_bmp085.c **** 
+ 117:../cleanflight/src/main/drivers/barometer/barometer_bmp085.c **** STATIC_UNIT_TESTED bmp085_t bmp085;
+ 118:../cleanflight/src/main/drivers/barometer/barometer_bmp085.c **** 
+ 119:../cleanflight/src/main/drivers/barometer/barometer_bmp085.c **** #define UT_DELAY    6000        // 1.5ms margin according to the spec (4.5ms T conversion time)
+ 120:../cleanflight/src/main/drivers/barometer/barometer_bmp085.c **** #define UP_DELAY    27000       // 6000+21000=27000 1.5ms margin according to the spec (25.5ms P co
+ 121:../cleanflight/src/main/drivers/barometer/barometer_bmp085.c **** 
+ 122:../cleanflight/src/main/drivers/barometer/barometer_bmp085.c **** static bool bmp085InitDone = false;
+ 123:../cleanflight/src/main/drivers/barometer/barometer_bmp085.c **** STATIC_UNIT_TESTED uint16_t bmp085_ut;  // static result of temperature measurement
+ 124:../cleanflight/src/main/drivers/barometer/barometer_bmp085.c **** STATIC_UNIT_TESTED uint32_t bmp085_up;  // static result of pressure measurement
+ 125:../cleanflight/src/main/drivers/barometer/barometer_bmp085.c **** 
+ 126:../cleanflight/src/main/drivers/barometer/barometer_bmp085.c **** static void bmp085_get_cal_param(busDevice_t *busdev);
+ 127:../cleanflight/src/main/drivers/barometer/barometer_bmp085.c **** static void bmp085_start_ut(baroDev_t *baro);
+ 128:../cleanflight/src/main/drivers/barometer/barometer_bmp085.c **** static void bmp085_get_ut(baroDev_t *baro);
+ 129:../cleanflight/src/main/drivers/barometer/barometer_bmp085.c **** static void bmp085_start_up(baroDev_t *baro);
+ 130:../cleanflight/src/main/drivers/barometer/barometer_bmp085.c **** static void bmp085_get_up(baroDev_t *baro);
+ 131:../cleanflight/src/main/drivers/barometer/barometer_bmp085.c **** static int32_t bmp085_get_temperature(uint32_t ut);
+ 132:../cleanflight/src/main/drivers/barometer/barometer_bmp085.c **** static int32_t bmp085_get_pressure(uint32_t up);
+ 133:../cleanflight/src/main/drivers/barometer/barometer_bmp085.c **** STATIC_UNIT_TESTED void bmp085_calculate(int32_t *pressure, int32_t *temperature);
+ 134:../cleanflight/src/main/drivers/barometer/barometer_bmp085.c **** 
+ 135:../cleanflight/src/main/drivers/barometer/barometer_bmp085.c **** static IO_t xclrIO;
+ 136:../cleanflight/src/main/drivers/barometer/barometer_bmp085.c **** 
+ 137:../cleanflight/src/main/drivers/barometer/barometer_bmp085.c **** #ifdef BARO_XCLR_PIN
+ 138:../cleanflight/src/main/drivers/barometer/barometer_bmp085.c **** #define BMP085_OFF  IOLo(xclrIO);
+ 139:../cleanflight/src/main/drivers/barometer/barometer_bmp085.c **** #define BMP085_ON   IOHi(xclrIO);
+ 140:../cleanflight/src/main/drivers/barometer/barometer_bmp085.c **** #else
+ 141:../cleanflight/src/main/drivers/barometer/barometer_bmp085.c **** #define BMP085_OFF
+ 142:../cleanflight/src/main/drivers/barometer/barometer_bmp085.c **** #define BMP085_ON
+ 143:../cleanflight/src/main/drivers/barometer/barometer_bmp085.c **** #endif
+ 144:../cleanflight/src/main/drivers/barometer/barometer_bmp085.c **** 
+ 145:../cleanflight/src/main/drivers/barometer/barometer_bmp085.c **** 
+ 146:../cleanflight/src/main/drivers/barometer/barometer_bmp085.c **** void bmp085InitXclrIO(const bmp085Config_t *config)
+ 147:../cleanflight/src/main/drivers/barometer/barometer_bmp085.c **** {
+  57              	 .loc 1 147 0
+  58              	 .cfi_startproc
+  59              	 
+  60              	 
+  61 0000 80B5     	 push {r7,lr}
+  62              	.LCFI0:
+  63              	 .cfi_def_cfa_offset 8
+  64              	 .cfi_offset 7,-8
+  65              	 .cfi_offset 14,-4
+  66 0002 82B0     	 sub sp,sp,#8
+  67              	.LCFI1:
+  68              	 .cfi_def_cfa_offset 16
+  69 0004 00AF     	 add r7,sp,#0
+  70              	.LCFI2:
+  71              	 .cfi_def_cfa_register 7
+  72 0006 7860     	 str r0,[r7,#4]
+ 148:../cleanflight/src/main/drivers/barometer/barometer_bmp085.c ****     if (!xclrIO && config && config->xclrIO) {
+  73              	 .loc 1 148 0
+  74 0008 114B     	 ldr r3,.L3
+  75 000a 1B68     	 ldr r3,[r3]
+  76 000c 002B     	 cmp r3,#0
+  77 000e 1BD1     	 bne .L1
+  78              	 .loc 1 148 0 is_stmt 0 discriminator 1
+  79 0010 7B68     	 ldr r3,[r7,#4]
+  80 0012 002B     	 cmp r3,#0
+  81 0014 18D0     	 beq .L1
+  82              	 .loc 1 148 0 discriminator 2
+  83 0016 7B68     	 ldr r3,[r7,#4]
+  84 0018 1B78     	 ldrb r3,[r3]
+  85 001a 002B     	 cmp r3,#0
+  86 001c 14D0     	 beq .L1
+ 149:../cleanflight/src/main/drivers/barometer/barometer_bmp085.c ****         xclrIO = IOGetByTag(config->xclrIO);
+  87              	 .loc 1 149 0 is_stmt 1
+  88 001e 7B68     	 ldr r3,[r7,#4]
+  89 0020 1B78     	 ldrb r3,[r3]
+  90 0022 1846     	 mov r0,r3
+  91 0024 FFF7FEFF 	 bl IOGetByTag
+  92 0028 0246     	 mov r2,r0
+  93 002a 094B     	 ldr r3,.L3
+  94 002c 1A60     	 str r2,[r3]
+ 150:../cleanflight/src/main/drivers/barometer/barometer_bmp085.c ****         IOInit(xclrIO, OWNER_BARO_CS, 0);
+  95              	 .loc 1 150 0
+  96 002e 084B     	 ldr r3,.L3
+  97 0030 1B68     	 ldr r3,[r3]
+  98 0032 1846     	 mov r0,r3
+  99 0034 1B21     	 movs r1,#27
+ 100 0036 0022     	 movs r2,#0
+ 101 0038 FFF7FEFF 	 bl IOInit
+ 151:../cleanflight/src/main/drivers/barometer/barometer_bmp085.c ****         IOConfigGPIO(xclrIO, IOCFG_OUT_PP);
+ 102              	 .loc 1 151 0
+ 103 003c 044B     	 ldr r3,.L3
+ 104 003e 1B68     	 ldr r3,[r3]
+ 105 0040 1846     	 mov r0,r3
+ 106 0042 8021     	 movs r1,#128
+ 107 0044 FFF7FEFF 	 bl IOConfigGPIO
+ 108              	.L1:
+ 152:../cleanflight/src/main/drivers/barometer/barometer_bmp085.c ****     }
+ 153:../cleanflight/src/main/drivers/barometer/barometer_bmp085.c **** }
+ 109              	 .loc 1 153 0
+ 110 0048 0837     	 adds r7,r7,#8
+ 111              	.LCFI3:
+ 112              	 .cfi_def_cfa_offset 8
+ 113 004a BD46     	 mov sp,r7
+ 114              	.LCFI4:
+ 115              	 .cfi_def_cfa_register 13
+ 116              	 
+ 117 004c 80BD     	 pop {r7,pc}
+ 118              	.L4:
+ 119 004e 00BF     	 .align 2
+ 120              	.L3:
+ 121 0050 00000000 	 .word xclrIO
+ 122              	 .cfi_endproc
+ 123              	.LFE527:
+ 125              	 .section .text.bmp085Disable,"ax",%progbits
+ 126              	 .align 2
+ 127              	 .global bmp085Disable
+ 128              	 .thumb
+ 129              	 .thumb_func
+ 131              	bmp085Disable:
+ 132              	.LFB528:
+ 154:../cleanflight/src/main/drivers/barometer/barometer_bmp085.c **** 
+ 155:../cleanflight/src/main/drivers/barometer/barometer_bmp085.c **** void bmp085Disable(const bmp085Config_t *config)
+ 156:../cleanflight/src/main/drivers/barometer/barometer_bmp085.c **** {
+ 133              	 .loc 1 156 0
+ 134              	 .cfi_startproc
+ 135              	 
+ 136              	 
+ 137 0000 80B5     	 push {r7,lr}
+ 138              	.LCFI5:
+ 139              	 .cfi_def_cfa_offset 8
+ 140              	 .cfi_offset 7,-8
+ 141              	 .cfi_offset 14,-4
+ 142 0002 82B0     	 sub sp,sp,#8
+ 143              	.LCFI6:
+ 144              	 .cfi_def_cfa_offset 16
+ 145 0004 00AF     	 add r7,sp,#0
+ 146              	.LCFI7:
+ 147              	 .cfi_def_cfa_register 7
+ 148 0006 7860     	 str r0,[r7,#4]
+ 157:../cleanflight/src/main/drivers/barometer/barometer_bmp085.c ****     bmp085InitXclrIO(config);
+ 149              	 .loc 1 157 0
+ 150 0008 7868     	 ldr r0,[r7,#4]
+ 151 000a FFF7FEFF 	 bl bmp085InitXclrIO
+ 158:../cleanflight/src/main/drivers/barometer/barometer_bmp085.c ****     BMP085_OFF;
+ 159:../cleanflight/src/main/drivers/barometer/barometer_bmp085.c **** }
+ 152              	 .loc 1 159 0
+ 153 000e 0837     	 adds r7,r7,#8
+ 154              	.LCFI8:
+ 155              	 .cfi_def_cfa_offset 8
+ 156 0010 BD46     	 mov sp,r7
+ 157              	.LCFI9:
+ 158              	 .cfi_def_cfa_register 13
+ 159              	 
+ 160 0012 80BD     	 pop {r7,pc}
+ 161              	 .cfi_endproc
+ 162              	.LFE528:
+ 164              	 .section .text.bmp085Detect,"ax",%progbits
+ 165              	 .align 2
+ 166              	 .global bmp085Detect
+ 167              	 .thumb
+ 168              	 .thumb_func
+ 170              	bmp085Detect:
+ 171              	.LFB529:
+ 160:../cleanflight/src/main/drivers/barometer/barometer_bmp085.c **** 
+ 161:../cleanflight/src/main/drivers/barometer/barometer_bmp085.c **** bool bmp085Detect(const bmp085Config_t *config, baroDev_t *baro)
+ 162:../cleanflight/src/main/drivers/barometer/barometer_bmp085.c **** {
+ 172              	 .loc 1 162 0
+ 173              	 .cfi_startproc
+ 174              	 
+ 175              	 
+ 176 0000 80B5     	 push {r7,lr}
+ 177              	.LCFI10:
+ 178              	 .cfi_def_cfa_offset 8
+ 179              	 .cfi_offset 7,-8
+ 180              	 .cfi_offset 14,-4
+ 181 0002 86B0     	 sub sp,sp,#24
+ 182              	.LCFI11:
+ 183              	 .cfi_def_cfa_offset 32
+ 184 0004 00AF     	 add r7,sp,#0
+ 185              	.LCFI12:
+ 186              	 .cfi_def_cfa_register 7
+ 187 0006 7860     	 str r0,[r7,#4]
+ 188 0008 3960     	 str r1,[r7]
+ 163:../cleanflight/src/main/drivers/barometer/barometer_bmp085.c ****     uint8_t data;
+ 164:../cleanflight/src/main/drivers/barometer/barometer_bmp085.c ****     bool ack;
+ 165:../cleanflight/src/main/drivers/barometer/barometer_bmp085.c ****     bool defaultAddressApplied = false;
+ 189              	 .loc 1 165 0
+ 190 000a 0023     	 movs r3,#0
+ 191 000c FB75     	 strb r3,[r7,#23]
+ 166:../cleanflight/src/main/drivers/barometer/barometer_bmp085.c **** 
+ 167:../cleanflight/src/main/drivers/barometer/barometer_bmp085.c **** #if defined(BARO_EOC_GPIO)
+ 168:../cleanflight/src/main/drivers/barometer/barometer_bmp085.c ****     IO_t eocIO = IO_NONE;
+ 169:../cleanflight/src/main/drivers/barometer/barometer_bmp085.c **** #endif
+ 170:../cleanflight/src/main/drivers/barometer/barometer_bmp085.c **** 
+ 171:../cleanflight/src/main/drivers/barometer/barometer_bmp085.c ****     if (bmp085InitDone)
+ 192              	 .loc 1 171 0
+ 193 000e 414B     	 ldr r3,.L13
+ 194 0010 1B78     	 ldrb r3,[r3]
+ 195 0012 002B     	 cmp r3,#0
+ 196 0014 01D0     	 beq .L7
+ 172:../cleanflight/src/main/drivers/barometer/barometer_bmp085.c ****         return true;
+ 197              	 .loc 1 172 0
+ 198 0016 0123     	 movs r3,#1
+ 199 0018 78E0     	 b .L12
+ 200              	.L7:
+ 173:../cleanflight/src/main/drivers/barometer/barometer_bmp085.c **** 
+ 174:../cleanflight/src/main/drivers/barometer/barometer_bmp085.c ****     bmp085InitXclrIO(config);
+ 201              	 .loc 1 174 0
+ 202 001a 7868     	 ldr r0,[r7,#4]
+ 203 001c FFF7FEFF 	 bl bmp085InitXclrIO
+ 175:../cleanflight/src/main/drivers/barometer/barometer_bmp085.c ****     BMP085_ON;   // enable baro
+ 176:../cleanflight/src/main/drivers/barometer/barometer_bmp085.c **** 
+ 177:../cleanflight/src/main/drivers/barometer/barometer_bmp085.c **** #if defined(BARO_EOC_GPIO) && defined(USE_EXTI)
+ 178:../cleanflight/src/main/drivers/barometer/barometer_bmp085.c ****     if (config && config->eocIO) {
+ 179:../cleanflight/src/main/drivers/barometer/barometer_bmp085.c ****         eocIO = IOGetByTag(config->eocIO);
+ 180:../cleanflight/src/main/drivers/barometer/barometer_bmp085.c ****         // EXTI interrupt for barometer EOC
+ 181:../cleanflight/src/main/drivers/barometer/barometer_bmp085.c ****         IOInit(eocIO, OWNER_BARO_EXTI, 0);
+ 182:../cleanflight/src/main/drivers/barometer/barometer_bmp085.c ****         IOConfigGPIO(eocIO, Mode_IN_FLOATING);
+ 183:../cleanflight/src/main/drivers/barometer/barometer_bmp085.c ****         EXTIHandlerInit(&bmp085_extiCallbackRec, bmp085_extiHandler);
+ 184:../cleanflight/src/main/drivers/barometer/barometer_bmp085.c ****         EXTIConfig(eocIO, &bmp085_extiCallbackRec, NVIC_PRIO_BARO_EXTI, EXTI_Trigger_Rising);
+ 185:../cleanflight/src/main/drivers/barometer/barometer_bmp085.c ****         EXTIEnable(eocIO, true);
+ 186:../cleanflight/src/main/drivers/barometer/barometer_bmp085.c ****     }
+ 187:../cleanflight/src/main/drivers/barometer/barometer_bmp085.c **** #else
+ 188:../cleanflight/src/main/drivers/barometer/barometer_bmp085.c ****     UNUSED(config);
+ 189:../cleanflight/src/main/drivers/barometer/barometer_bmp085.c **** #endif
+ 190:../cleanflight/src/main/drivers/barometer/barometer_bmp085.c **** 
+ 191:../cleanflight/src/main/drivers/barometer/barometer_bmp085.c ****     delay(20); // datasheet says 10ms, we'll be careful and do 20.
+ 204              	 .loc 1 191 0
+ 205 0020 1420     	 movs r0,#20
+ 206 0022 FFF7FEFF 	 bl delay
+ 192:../cleanflight/src/main/drivers/barometer/barometer_bmp085.c **** 
+ 193:../cleanflight/src/main/drivers/barometer/barometer_bmp085.c ****     busDevice_t *busdev = &baro->busdev;
+ 207              	 .loc 1 193 0
+ 208 0026 3B68     	 ldr r3,[r7]
+ 209 0028 3B61     	 str r3,[r7,#16]
+ 194:../cleanflight/src/main/drivers/barometer/barometer_bmp085.c **** 
+ 195:../cleanflight/src/main/drivers/barometer/barometer_bmp085.c ****     if ((busdev->bustype == BUSTYPE_I2C) && (busdev->busdev_u.i2c.address == 0)) {
+ 210              	 .loc 1 195 0
+ 211 002a 3B69     	 ldr r3,[r7,#16]
+ 212 002c 1B78     	 ldrb r3,[r3]
+ 213 002e 012B     	 cmp r3,#1
+ 214 0030 08D1     	 bne .L9
+ 215              	 .loc 1 195 0 is_stmt 0 discriminator 1
+ 216 0032 3B69     	 ldr r3,[r7,#16]
+ 217 0034 9B78     	 ldrb r3,[r3,#2]
+ 218 0036 002B     	 cmp r3,#0
+ 219 0038 04D1     	 bne .L9
+ 196:../cleanflight/src/main/drivers/barometer/barometer_bmp085.c ****         // Default address for BMP085
+ 197:../cleanflight/src/main/drivers/barometer/barometer_bmp085.c ****         busdev->busdev_u.i2c.address = BMP085_I2C_ADDR;
+ 220              	 .loc 1 197 0 is_stmt 1
+ 221 003a 3B69     	 ldr r3,[r7,#16]
+ 222 003c 7722     	 movs r2,#119
+ 223 003e 9A70     	 strb r2,[r3,#2]
+ 198:../cleanflight/src/main/drivers/barometer/barometer_bmp085.c ****         defaultAddressApplied = true;
+ 224              	 .loc 1 198 0
+ 225 0040 0123     	 movs r3,#1
+ 226 0042 FB75     	 strb r3,[r7,#23]
+ 227              	.L9:
+ 199:../cleanflight/src/main/drivers/barometer/barometer_bmp085.c ****     }
+ 200:../cleanflight/src/main/drivers/barometer/barometer_bmp085.c **** 
+ 201:../cleanflight/src/main/drivers/barometer/barometer_bmp085.c ****     ack = busReadRegisterBuffer(busdev, BMP085_CHIP_ID__REG, &data, 1); /* read Chip Id */
+ 228              	 .loc 1 201 0
+ 229 0044 07F10E03 	 add r3,r7,#14
+ 230 0048 3869     	 ldr r0,[r7,#16]
+ 231 004a D021     	 movs r1,#208
+ 232 004c 1A46     	 mov r2,r3
+ 233 004e 0123     	 movs r3,#1
+ 234 0050 FFF7FEFF 	 bl busReadRegisterBuffer
+ 235 0054 0346     	 mov r3,r0
+ 236 0056 FB73     	 strb r3,[r7,#15]
+ 202:../cleanflight/src/main/drivers/barometer/barometer_bmp085.c ****     if (ack) {
+ 237              	 .loc 1 202 0
+ 238 0058 FB7B     	 ldrb r3,[r7,#15]
+ 239 005a 002B     	 cmp r3,#0
+ 240 005c 4FD0     	 beq .L10
+ 203:../cleanflight/src/main/drivers/barometer/barometer_bmp085.c ****         bmp085.chip_id = BMP085_GET_BITSLICE(data, BMP085_CHIP_ID);
+ 241              	 .loc 1 203 0
+ 242 005e BA7B     	 ldrb r2,[r7,#14]
+ 243 0060 2D4B     	 ldr r3,.L13+4
+ 244 0062 DA75     	 strb r2,[r3,#23]
+ 204:../cleanflight/src/main/drivers/barometer/barometer_bmp085.c ****         bmp085.oversampling_setting = 3;
+ 245              	 .loc 1 204 0
+ 246 0064 2C4B     	 ldr r3,.L13+4
+ 247 0066 0022     	 movs r2,#0
+ 248 0068 42F00302 	 orr r2,r2,#3
+ 249 006c DA77     	 strb r2,[r3,#31]
+ 250 006e 0022     	 movs r2,#0
+ 251 0070 83F82020 	 strb r2,[r3,#32]
+ 205:../cleanflight/src/main/drivers/barometer/barometer_bmp085.c **** 
+ 206:../cleanflight/src/main/drivers/barometer/barometer_bmp085.c ****         if (bmp085.chip_id == BMP085_CHIP_ID) { /* get bitslice */
+ 252              	 .loc 1 206 0
+ 253 0074 284B     	 ldr r3,.L13+4
+ 254 0076 DB7D     	 ldrb r3,[r3,#23]
+ 255 0078 552B     	 cmp r3,#85
+ 256 007a 40D1     	 bne .L10
+ 207:../cleanflight/src/main/drivers/barometer/barometer_bmp085.c ****             busReadRegisterBuffer(busdev, BMP085_VERSION_REG, &data, 1); /* read Version reg */
+ 257              	 .loc 1 207 0
+ 258 007c 07F10E03 	 add r3,r7,#14
+ 259 0080 3869     	 ldr r0,[r7,#16]
+ 260 0082 D121     	 movs r1,#209
+ 261 0084 1A46     	 mov r2,r3
+ 262 0086 0123     	 movs r3,#1
+ 263 0088 FFF7FEFF 	 bl busReadRegisterBuffer
+ 208:../cleanflight/src/main/drivers/barometer/barometer_bmp085.c ****             bmp085.ml_version = BMP085_GET_BITSLICE(data, BMP085_ML_VERSION); /* get ML Version */
+ 264              	 .loc 1 208 0
+ 265 008c BB7B     	 ldrb r3,[r7,#14]
+ 266 008e 03F00F03 	 and r3,r3,#15
+ 267 0092 DAB2     	 uxtb r2,r3
+ 268 0094 204B     	 ldr r3,.L13+4
+ 269 0096 1A76     	 strb r2,[r3,#24]
+ 209:../cleanflight/src/main/drivers/barometer/barometer_bmp085.c ****             bmp085.al_version = BMP085_GET_BITSLICE(data, BMP085_AL_VERSION); /* get AL Version */
+ 270              	 .loc 1 209 0
+ 271 0098 BB7B     	 ldrb r3,[r7,#14]
+ 272 009a 1B09     	 lsrs r3,r3,#4
+ 273 009c DAB2     	 uxtb r2,r3
+ 274 009e 1E4B     	 ldr r3,.L13+4
+ 275 00a0 5A76     	 strb r2,[r3,#25]
+ 210:../cleanflight/src/main/drivers/barometer/barometer_bmp085.c ****             bmp085_get_cal_param(busdev); /* readout bmp085 calibparam structure */
+ 276              	 .loc 1 210 0
+ 277 00a2 3869     	 ldr r0,[r7,#16]
+ 278 00a4 FFF7FEFF 	 bl bmp085_get_cal_param
+ 211:../cleanflight/src/main/drivers/barometer/barometer_bmp085.c ****             baro->ut_delay = UT_DELAY;
+ 279              	 .loc 1 211 0
+ 280 00a8 3B68     	 ldr r3,[r7]
+ 281 00aa 0022     	 movs r2,#0
+ 282 00ac 42F07002 	 orr r2,r2,#112
+ 283 00b0 5A72     	 strb r2,[r3,#9]
+ 284 00b2 0022     	 movs r2,#0
+ 285 00b4 42F01702 	 orr r2,r2,#23
+ 286 00b8 9A72     	 strb r2,[r3,#10]
+ 212:../cleanflight/src/main/drivers/barometer/barometer_bmp085.c ****             baro->up_delay = UP_DELAY;
+ 287              	 .loc 1 212 0
+ 288 00ba 3B68     	 ldr r3,[r7]
+ 289 00bc 0022     	 movs r2,#0
+ 290 00be 42F07802 	 orr r2,r2,#120
+ 291 00c2 DA72     	 strb r2,[r3,#11]
+ 292 00c4 0022     	 movs r2,#0
+ 293 00c6 42F06902 	 orr r2,r2,#105
+ 294 00ca 1A73     	 strb r2,[r3,#12]
+ 213:../cleanflight/src/main/drivers/barometer/barometer_bmp085.c ****             baro->start_ut = bmp085_start_ut;
+ 295              	 .loc 1 213 0
+ 296 00cc 3B68     	 ldr r3,[r7]
+ 297 00ce 134A     	 ldr r2,.L13+8
+ 298 00d0 C3F80D20 	 str r2,[r3,#13]
+ 214:../cleanflight/src/main/drivers/barometer/barometer_bmp085.c ****             baro->get_ut = bmp085_get_ut;
+ 299              	 .loc 1 214 0
+ 300 00d4 3B68     	 ldr r3,[r7]
+ 301 00d6 124A     	 ldr r2,.L13+12
+ 302 00d8 C3F81120 	 str r2,[r3,#17]
+ 215:../cleanflight/src/main/drivers/barometer/barometer_bmp085.c ****             baro->start_up = bmp085_start_up;
+ 303              	 .loc 1 215 0
+ 304 00dc 3B68     	 ldr r3,[r7]
+ 305 00de 114A     	 ldr r2,.L13+16
+ 306 00e0 C3F81520 	 str r2,[r3,#21]
+ 216:../cleanflight/src/main/drivers/barometer/barometer_bmp085.c ****             baro->get_up = bmp085_get_up;
+ 307              	 .loc 1 216 0
+ 308 00e4 3B68     	 ldr r3,[r7]
+ 309 00e6 104A     	 ldr r2,.L13+20
+ 310 00e8 C3F81920 	 str r2,[r3,#25]
+ 217:../cleanflight/src/main/drivers/barometer/barometer_bmp085.c ****             baro->calculate = bmp085_calculate;
+ 311              	 .loc 1 217 0
+ 312 00ec 3B68     	 ldr r3,[r7]
+ 313 00ee 0F4A     	 ldr r2,.L13+24
+ 314 00f0 C3F81D20 	 str r2,[r3,#29]
+ 218:../cleanflight/src/main/drivers/barometer/barometer_bmp085.c **** #if defined(BARO_EOC_GPIO)
+ 219:../cleanflight/src/main/drivers/barometer/barometer_bmp085.c ****             isEOCConnected = bmp085TestEOCConnected(config);
+ 220:../cleanflight/src/main/drivers/barometer/barometer_bmp085.c **** #endif
+ 221:../cleanflight/src/main/drivers/barometer/barometer_bmp085.c ****             bmp085InitDone = true;
+ 315              	 .loc 1 221 0
+ 316 00f4 074B     	 ldr r3,.L13
+ 317 00f6 0122     	 movs r2,#1
+ 318 00f8 1A70     	 strb r2,[r3]
+ 222:../cleanflight/src/main/drivers/barometer/barometer_bmp085.c ****             return true;
+ 319              	 .loc 1 222 0
+ 320 00fa 0123     	 movs r3,#1
+ 321 00fc 06E0     	 b .L12
+ 322              	.L10:
+ 223:../cleanflight/src/main/drivers/barometer/barometer_bmp085.c ****         }
+ 224:../cleanflight/src/main/drivers/barometer/barometer_bmp085.c ****     }
+ 225:../cleanflight/src/main/drivers/barometer/barometer_bmp085.c **** 
+ 226:../cleanflight/src/main/drivers/barometer/barometer_bmp085.c **** #if defined(BARO_EOC_GPIO)
+ 227:../cleanflight/src/main/drivers/barometer/barometer_bmp085.c ****     if (eocIO)
+ 228:../cleanflight/src/main/drivers/barometer/barometer_bmp085.c ****         EXTIRelease(eocIO);
+ 229:../cleanflight/src/main/drivers/barometer/barometer_bmp085.c **** #endif
+ 230:../cleanflight/src/main/drivers/barometer/barometer_bmp085.c **** 
+ 231:../cleanflight/src/main/drivers/barometer/barometer_bmp085.c ****     BMP085_OFF;
+ 232:../cleanflight/src/main/drivers/barometer/barometer_bmp085.c **** 
+ 233:../cleanflight/src/main/drivers/barometer/barometer_bmp085.c ****     if (defaultAddressApplied) {
+ 323              	 .loc 1 233 0
+ 324 00fe FB7D     	 ldrb r3,[r7,#23]
+ 325 0100 002B     	 cmp r3,#0
+ 326 0102 02D0     	 beq .L11
+ 234:../cleanflight/src/main/drivers/barometer/barometer_bmp085.c ****         busdev->busdev_u.i2c.address = 0;
+ 327              	 .loc 1 234 0
+ 328 0104 3B69     	 ldr r3,[r7,#16]
+ 329 0106 0022     	 movs r2,#0
+ 330 0108 9A70     	 strb r2,[r3,#2]
+ 331              	.L11:
+ 235:../cleanflight/src/main/drivers/barometer/barometer_bmp085.c ****     }
+ 236:../cleanflight/src/main/drivers/barometer/barometer_bmp085.c **** 
+ 237:../cleanflight/src/main/drivers/barometer/barometer_bmp085.c ****     return false;
+ 332              	 .loc 1 237 0
+ 333 010a 0023     	 movs r3,#0
+ 334              	.L12:
+ 238:../cleanflight/src/main/drivers/barometer/barometer_bmp085.c **** }
+ 335              	 .loc 1 238 0 discriminator 1
+ 336 010c 1846     	 mov r0,r3
+ 337 010e 1837     	 adds r7,r7,#24
+ 338              	.LCFI13:
+ 339              	 .cfi_def_cfa_offset 8
+ 340 0110 BD46     	 mov sp,r7
+ 341              	.LCFI14:
+ 342              	 .cfi_def_cfa_register 13
+ 343              	 
+ 344 0112 80BD     	 pop {r7,pc}
+ 345              	.L14:
+ 346              	 .align 2
+ 347              	.L13:
+ 348 0114 00000000 	 .word bmp085InitDone
+ 349 0118 00000000 	 .word bmp085
+ 350 011c 00000000 	 .word bmp085_start_ut
+ 351 0120 00000000 	 .word bmp085_get_ut
+ 352 0124 00000000 	 .word bmp085_start_up
+ 353 0128 00000000 	 .word bmp085_get_up
+ 354 012c 00000000 	 .word bmp085_calculate
+ 355              	 .cfi_endproc
+ 356              	.LFE529:
+ 358              	 .section .text.bmp085_get_temperature,"ax",%progbits
+ 359              	 .align 2
+ 360              	 .thumb
+ 361              	 .thumb_func
+ 363              	bmp085_get_temperature:
+ 364              	.LFB530:
+ 239:../cleanflight/src/main/drivers/barometer/barometer_bmp085.c **** 
+ 240:../cleanflight/src/main/drivers/barometer/barometer_bmp085.c **** static int32_t bmp085_get_temperature(uint32_t ut)
+ 241:../cleanflight/src/main/drivers/barometer/barometer_bmp085.c **** {
+ 365              	 .loc 1 241 0
+ 366              	 .cfi_startproc
+ 367              	 
+ 368              	 
+ 369              	 
+ 370 0000 80B4     	 push {r7}
+ 371              	.LCFI15:
+ 372              	 .cfi_def_cfa_offset 4
+ 373              	 .cfi_offset 7,-4
+ 374 0002 87B0     	 sub sp,sp,#28
+ 375              	.LCFI16:
+ 376              	 .cfi_def_cfa_offset 32
+ 377 0004 00AF     	 add r7,sp,#0
+ 378              	.LCFI17:
+ 379              	 .cfi_def_cfa_register 7
+ 380 0006 7860     	 str r0,[r7,#4]
+ 242:../cleanflight/src/main/drivers/barometer/barometer_bmp085.c ****     int32_t temperature;
+ 243:../cleanflight/src/main/drivers/barometer/barometer_bmp085.c ****     int32_t x1, x2;
+ 244:../cleanflight/src/main/drivers/barometer/barometer_bmp085.c **** 
+ 245:../cleanflight/src/main/drivers/barometer/barometer_bmp085.c ****     x1 = (((int32_t) ut - (int32_t) bmp085.cal_param.ac6) * (int32_t) bmp085.cal_param.ac5) >> 15;
+ 381              	 .loc 1 245 0
+ 382 0008 7B68     	 ldr r3,[r7,#4]
+ 383 000a 164A     	 ldr r2,.L17
+ 384 000c 5289     	 ldrh r2,[r2,#10]
+ 385 000e 9B1A     	 subs r3,r3,r2
+ 386 0010 144A     	 ldr r2,.L17
+ 387 0012 1289     	 ldrh r2,[r2,#8]
+ 388 0014 02FB03F3 	 mul r3,r2,r3
+ 389 0018 DB13     	 asrs r3,r3,#15
+ 390 001a 7B61     	 str r3,[r7,#20]
+ 246:../cleanflight/src/main/drivers/barometer/barometer_bmp085.c ****     x2 = ((int32_t) bmp085.cal_param.mc << 11) / (x1 + bmp085.cal_param.md);
+ 391              	 .loc 1 246 0
+ 392 001c 114B     	 ldr r3,.L17
+ 393 001e 5B8A     	 ldrh r3,[r3,#18]
+ 394 0020 1BB2     	 sxth r3,r3
+ 395 0022 DA02     	 lsls r2,r3,#11
+ 396 0024 0F4B     	 ldr r3,.L17
+ 397 0026 9B8A     	 ldrh r3,[r3,#20]
+ 398 0028 19B2     	 sxth r1,r3
+ 399 002a 7B69     	 ldr r3,[r7,#20]
+ 400 002c 0B44     	 add r3,r3,r1
+ 401 002e 92FBF3F3 	 sdiv r3,r2,r3
+ 402 0032 3B61     	 str r3,[r7,#16]
+ 247:../cleanflight/src/main/drivers/barometer/barometer_bmp085.c ****     bmp085.param_b5 = x1 + x2;
+ 403              	 .loc 1 247 0
+ 404 0034 7A69     	 ldr r2,[r7,#20]
+ 405 0036 3B69     	 ldr r3,[r7,#16]
+ 406 0038 1344     	 add r3,r3,r2
+ 407 003a 0A4A     	 ldr r2,.L17
+ 408 003c C2F81B30 	 str r3,[r2,#27]
+ 248:../cleanflight/src/main/drivers/barometer/barometer_bmp085.c ****     temperature = ((bmp085.param_b5 * 10 + 8) >> 4);  // temperature in 0.01 C (make same as MS5611
+ 409              	 .loc 1 248 0
+ 410 0040 084B     	 ldr r3,.L17
+ 411 0042 D3F81B20 	 ldr r2,[r3,#27]
+ 412 0046 1346     	 mov r3,r2
+ 413 0048 9B00     	 lsls r3,r3,#2
+ 414 004a 1344     	 add r3,r3,r2
+ 415 004c 5B00     	 lsls r3,r3,#1
+ 416 004e 0833     	 adds r3,r3,#8
+ 417 0050 1B11     	 asrs r3,r3,#4
+ 418 0052 FB60     	 str r3,[r7,#12]
+ 249:../cleanflight/src/main/drivers/barometer/barometer_bmp085.c **** 
+ 250:../cleanflight/src/main/drivers/barometer/barometer_bmp085.c ****     return temperature;
+ 419              	 .loc 1 250 0
+ 420 0054 FB68     	 ldr r3,[r7,#12]
+ 251:../cleanflight/src/main/drivers/barometer/barometer_bmp085.c **** }
+ 421              	 .loc 1 251 0
+ 422 0056 1846     	 mov r0,r3
+ 423 0058 1C37     	 adds r7,r7,#28
+ 424              	.LCFI18:
+ 425              	 .cfi_def_cfa_offset 4
+ 426 005a BD46     	 mov sp,r7
+ 427              	.LCFI19:
+ 428              	 .cfi_def_cfa_register 13
+ 429              	 
+ 430 005c 5DF8047B 	 ldr r7,[sp],#4
+ 431              	.LCFI20:
+ 432              	 .cfi_restore 7
+ 433              	 .cfi_def_cfa_offset 0
+ 434 0060 7047     	 bx lr
+ 435              	.L18:
+ 436 0062 00BF     	 .align 2
+ 437              	.L17:
+ 438 0064 00000000 	 .word bmp085
+ 439              	 .cfi_endproc
+ 440              	.LFE530:
+ 442              	 .section .text.bmp085_get_pressure,"ax",%progbits
+ 443              	 .align 2
+ 444              	 .thumb
+ 445              	 .thumb_func
+ 447              	bmp085_get_pressure:
+ 448              	.LFB531:
+ 252:../cleanflight/src/main/drivers/barometer/barometer_bmp085.c **** 
+ 253:../cleanflight/src/main/drivers/barometer/barometer_bmp085.c **** static int32_t bmp085_get_pressure(uint32_t up)
+ 254:../cleanflight/src/main/drivers/barometer/barometer_bmp085.c **** {
+ 449              	 .loc 1 254 0
+ 450              	 .cfi_startproc
+ 451              	 
+ 452              	 
+ 453              	 
+ 454 0000 80B4     	 push {r7}
+ 455              	.LCFI21:
+ 456              	 .cfi_def_cfa_offset 4
+ 457              	 .cfi_offset 7,-4
+ 458 0002 8BB0     	 sub sp,sp,#44
+ 459              	.LCFI22:
+ 460              	 .cfi_def_cfa_offset 48
+ 461 0004 00AF     	 add r7,sp,#0
+ 462              	.LCFI23:
+ 463              	 .cfi_def_cfa_register 7
+ 464 0006 7860     	 str r0,[r7,#4]
+ 255:../cleanflight/src/main/drivers/barometer/barometer_bmp085.c ****     int32_t pressure, x1, x2, x3, b3, b6;
+ 256:../cleanflight/src/main/drivers/barometer/barometer_bmp085.c ****     uint32_t b4, b7;
+ 257:../cleanflight/src/main/drivers/barometer/barometer_bmp085.c **** 
+ 258:../cleanflight/src/main/drivers/barometer/barometer_bmp085.c ****     b6 = bmp085.param_b5 - 4000;
+ 465              	 .loc 1 258 0
+ 466 0008 4D4B     	 ldr r3,.L23
+ 467 000a D3F81B30 	 ldr r3,[r3,#27]
+ 468 000e A3F57A63 	 sub r3,r3,#4000
+ 469 0012 3B62     	 str r3,[r7,#32]
+ 259:../cleanflight/src/main/drivers/barometer/barometer_bmp085.c ****     // *****calculate B3************
+ 260:../cleanflight/src/main/drivers/barometer/barometer_bmp085.c ****     x1 = (b6 * b6) >> 12;
+ 470              	 .loc 1 260 0
+ 471 0014 3B6A     	 ldr r3,[r7,#32]
+ 472 0016 3A6A     	 ldr r2,[r7,#32]
+ 473 0018 02FB03F3 	 mul r3,r2,r3
+ 474 001c 1B13     	 asrs r3,r3,#12
+ 475 001e FB61     	 str r3,[r7,#28]
+ 261:../cleanflight/src/main/drivers/barometer/barometer_bmp085.c ****     x1 *= bmp085.cal_param.b2;
+ 476              	 .loc 1 261 0
+ 477 0020 474B     	 ldr r3,.L23
+ 478 0022 DB89     	 ldrh r3,[r3,#14]
+ 479 0024 1AB2     	 sxth r2,r3
+ 480 0026 FB69     	 ldr r3,[r7,#28]
+ 481 0028 02FB03F3 	 mul r3,r2,r3
+ 482 002c FB61     	 str r3,[r7,#28]
+ 262:../cleanflight/src/main/drivers/barometer/barometer_bmp085.c ****     x1 >>= 11;
+ 483              	 .loc 1 262 0
+ 484 002e FB69     	 ldr r3,[r7,#28]
+ 485 0030 DB12     	 asrs r3,r3,#11
+ 486 0032 FB61     	 str r3,[r7,#28]
+ 263:../cleanflight/src/main/drivers/barometer/barometer_bmp085.c **** 
+ 264:../cleanflight/src/main/drivers/barometer/barometer_bmp085.c ****     x2 = (bmp085.cal_param.ac2 * b6);
+ 487              	 .loc 1 264 0
+ 488 0034 424B     	 ldr r3,.L23
+ 489 0036 5B88     	 ldrh r3,[r3,#2]
+ 490 0038 1BB2     	 sxth r3,r3
+ 491 003a 3A6A     	 ldr r2,[r7,#32]
+ 492 003c 02FB03F3 	 mul r3,r2,r3
+ 493 0040 BB61     	 str r3,[r7,#24]
+ 265:../cleanflight/src/main/drivers/barometer/barometer_bmp085.c ****     x2 >>= 11;
+ 494              	 .loc 1 265 0
+ 495 0042 BB69     	 ldr r3,[r7,#24]
+ 496 0044 DB12     	 asrs r3,r3,#11
+ 497 0046 BB61     	 str r3,[r7,#24]
+ 266:../cleanflight/src/main/drivers/barometer/barometer_bmp085.c **** 
+ 267:../cleanflight/src/main/drivers/barometer/barometer_bmp085.c ****     x3 = x1 + x2;
+ 498              	 .loc 1 267 0
+ 499 0048 FA69     	 ldr r2,[r7,#28]
+ 500 004a BB69     	 ldr r3,[r7,#24]
+ 501 004c 1344     	 add r3,r3,r2
+ 502 004e 7B61     	 str r3,[r7,#20]
+ 268:../cleanflight/src/main/drivers/barometer/barometer_bmp085.c **** 
+ 269:../cleanflight/src/main/drivers/barometer/barometer_bmp085.c ****     b3 = (((((int32_t) bmp085.cal_param.ac1) * 4 + x3) << bmp085.oversampling_setting) + 2) >> 2;
+ 503              	 .loc 1 269 0
+ 504 0050 3B4B     	 ldr r3,.L23
+ 505 0052 1B88     	 ldrh r3,[r3]
+ 506 0054 1BB2     	 sxth r3,r3
+ 507 0056 9A00     	 lsls r2,r3,#2
+ 508 0058 7B69     	 ldr r3,[r7,#20]
+ 509 005a 1A44     	 add r2,r2,r3
+ 510 005c 384B     	 ldr r3,.L23
+ 511 005e B3F91F30 	 ldrsh r3,[r3,#31]
+ 512 0062 9BB2     	 uxth r3,r3
+ 513 0064 1BB2     	 sxth r3,r3
+ 514 0066 02FA03F3 	 lsl r3,r2,r3
+ 515 006a 0233     	 adds r3,r3,#2
+ 516 006c 9B10     	 asrs r3,r3,#2
+ 517 006e 3B61     	 str r3,[r7,#16]
+ 270:../cleanflight/src/main/drivers/barometer/barometer_bmp085.c **** 
+ 271:../cleanflight/src/main/drivers/barometer/barometer_bmp085.c ****     // *****calculate B4************
+ 272:../cleanflight/src/main/drivers/barometer/barometer_bmp085.c ****     x1 = (bmp085.cal_param.ac3 * b6) >> 13;
+ 518              	 .loc 1 272 0
+ 519 0070 334B     	 ldr r3,.L23
+ 520 0072 9B88     	 ldrh r3,[r3,#4]
+ 521 0074 1BB2     	 sxth r3,r3
+ 522 0076 3A6A     	 ldr r2,[r7,#32]
+ 523 0078 02FB03F3 	 mul r3,r2,r3
+ 524 007c 5B13     	 asrs r3,r3,#13
+ 525 007e FB61     	 str r3,[r7,#28]
+ 273:../cleanflight/src/main/drivers/barometer/barometer_bmp085.c ****     x2 = (bmp085.cal_param.b1 * ((b6 * b6) >> 12)) >> 16;
+ 526              	 .loc 1 273 0
+ 527 0080 2F4B     	 ldr r3,.L23
+ 528 0082 9B89     	 ldrh r3,[r3,#12]
+ 529 0084 1BB2     	 sxth r3,r3
+ 530 0086 3A6A     	 ldr r2,[r7,#32]
+ 531 0088 396A     	 ldr r1,[r7,#32]
+ 532 008a 01FB02F2 	 mul r2,r1,r2
+ 533 008e 1213     	 asrs r2,r2,#12
+ 534 0090 02FB03F3 	 mul r3,r2,r3
+ 535 0094 1B14     	 asrs r3,r3,#16
+ 536 0096 BB61     	 str r3,[r7,#24]
+ 274:../cleanflight/src/main/drivers/barometer/barometer_bmp085.c ****     x3 = ((x1 + x2) + 2) >> 2;
+ 537              	 .loc 1 274 0
+ 538 0098 FA69     	 ldr r2,[r7,#28]
+ 539 009a BB69     	 ldr r3,[r7,#24]
+ 540 009c 1344     	 add r3,r3,r2
+ 541 009e 0233     	 adds r3,r3,#2
+ 542 00a0 9B10     	 asrs r3,r3,#2
+ 543 00a2 7B61     	 str r3,[r7,#20]
+ 275:../cleanflight/src/main/drivers/barometer/barometer_bmp085.c ****     b4 = (bmp085.cal_param.ac4 * (uint32_t)(x3 + 32768)) >> 15;
+ 544              	 .loc 1 275 0
+ 545 00a4 264B     	 ldr r3,.L23
+ 546 00a6 DB88     	 ldrh r3,[r3,#6]
+ 547 00a8 1A46     	 mov r2,r3
+ 548 00aa 7B69     	 ldr r3,[r7,#20]
+ 549 00ac 03F50043 	 add r3,r3,#32768
+ 550 00b0 03FB02F3 	 mul r3,r3,r2
+ 551 00b4 DB0B     	 lsrs r3,r3,#15
+ 552 00b6 FB60     	 str r3,[r7,#12]
+ 276:../cleanflight/src/main/drivers/barometer/barometer_bmp085.c **** 
+ 277:../cleanflight/src/main/drivers/barometer/barometer_bmp085.c ****     b7 = ((uint32_t)(up - b3) * (50000 >> bmp085.oversampling_setting));
+ 553              	 .loc 1 277 0
+ 554 00b8 3B69     	 ldr r3,[r7,#16]
+ 555 00ba 7A68     	 ldr r2,[r7,#4]
+ 556 00bc D31A     	 subs r3,r2,r3
+ 557 00be 204A     	 ldr r2,.L23
+ 558 00c0 B2F91F20 	 ldrsh r2,[r2,#31]
+ 559 00c4 92B2     	 uxth r2,r2
+ 560 00c6 12B2     	 sxth r2,r2
+ 561 00c8 4CF25031 	 movw r1,#50000
+ 562 00cc 41FA02F2 	 asr r2,r1,r2
+ 563 00d0 02FB03F3 	 mul r3,r2,r3
+ 564 00d4 BB60     	 str r3,[r7,#8]
+ 278:../cleanflight/src/main/drivers/barometer/barometer_bmp085.c ****     if (b7 < 0x80000000) {
+ 565              	 .loc 1 278 0
+ 566 00d6 BB68     	 ldr r3,[r7,#8]
+ 567 00d8 002B     	 cmp r3,#0
+ 568 00da 06DB     	 blt .L20
+ 279:../cleanflight/src/main/drivers/barometer/barometer_bmp085.c ****         pressure = (b7 << 1) / b4;
+ 569              	 .loc 1 279 0
+ 570 00dc BB68     	 ldr r3,[r7,#8]
+ 571 00de 5A00     	 lsls r2,r3,#1
+ 572 00e0 FB68     	 ldr r3,[r7,#12]
+ 573 00e2 B2FBF3F3 	 udiv r3,r2,r3
+ 574 00e6 7B62     	 str r3,[r7,#36]
+ 575 00e8 05E0     	 b .L21
+ 576              	.L20:
+ 280:../cleanflight/src/main/drivers/barometer/barometer_bmp085.c ****     } else {
+ 281:../cleanflight/src/main/drivers/barometer/barometer_bmp085.c ****         pressure = (b7 / b4) << 1;
+ 577              	 .loc 1 281 0
+ 578 00ea BA68     	 ldr r2,[r7,#8]
+ 579 00ec FB68     	 ldr r3,[r7,#12]
+ 580 00ee B2FBF3F3 	 udiv r3,r2,r3
+ 581 00f2 5B00     	 lsls r3,r3,#1
+ 582 00f4 7B62     	 str r3,[r7,#36]
+ 583              	.L21:
+ 282:../cleanflight/src/main/drivers/barometer/barometer_bmp085.c ****     }
+ 283:../cleanflight/src/main/drivers/barometer/barometer_bmp085.c **** 
+ 284:../cleanflight/src/main/drivers/barometer/barometer_bmp085.c ****     x1 = pressure >> 8;
+ 584              	 .loc 1 284 0
+ 585 00f6 7B6A     	 ldr r3,[r7,#36]
+ 586 00f8 1B12     	 asrs r3,r3,#8
+ 587 00fa FB61     	 str r3,[r7,#28]
+ 285:../cleanflight/src/main/drivers/barometer/barometer_bmp085.c ****     x1 *= x1;
+ 588              	 .loc 1 285 0
+ 589 00fc FB69     	 ldr r3,[r7,#28]
+ 590 00fe FA69     	 ldr r2,[r7,#28]
+ 591 0100 02FB03F3 	 mul r3,r2,r3
+ 592 0104 FB61     	 str r3,[r7,#28]
+ 286:../cleanflight/src/main/drivers/barometer/barometer_bmp085.c ****     x1 = (x1 * SMD500_PARAM_MG) >> 16;
+ 593              	 .loc 1 286 0
+ 594 0106 FB69     	 ldr r3,[r7,#28]
+ 595 0108 40F6DE32 	 movw r2,#3038
+ 596 010c 02FB03F3 	 mul r3,r2,r3
+ 597 0110 1B14     	 asrs r3,r3,#16
+ 598 0112 FB61     	 str r3,[r7,#28]
+ 287:../cleanflight/src/main/drivers/barometer/barometer_bmp085.c ****     x2 = (pressure * SMD500_PARAM_MH) >> 16;
+ 599              	 .loc 1 287 0
+ 600 0114 7B6A     	 ldr r3,[r7,#36]
+ 601 0116 0B4A     	 ldr r2,.L23+4
+ 602 0118 02FB03F3 	 mul r3,r2,r3
+ 603 011c 1B14     	 asrs r3,r3,#16
+ 604 011e BB61     	 str r3,[r7,#24]
+ 288:../cleanflight/src/main/drivers/barometer/barometer_bmp085.c ****     pressure += (x1 + x2 + SMD500_PARAM_MI) >> 4;   // pressure in Pa
+ 605              	 .loc 1 288 0
+ 606 0120 FA69     	 ldr r2,[r7,#28]
+ 607 0122 BB69     	 ldr r3,[r7,#24]
+ 608 0124 1344     	 add r3,r3,r2
+ 609 0126 03F6CF63 	 addw r3,r3,#3791
+ 610 012a 1B11     	 asrs r3,r3,#4
+ 611 012c 7A6A     	 ldr r2,[r7,#36]
+ 612 012e 1344     	 add r3,r3,r2
+ 613 0130 7B62     	 str r3,[r7,#36]
+ 289:../cleanflight/src/main/drivers/barometer/barometer_bmp085.c **** 
+ 290:../cleanflight/src/main/drivers/barometer/barometer_bmp085.c ****     return pressure;
+ 614              	 .loc 1 290 0
+ 615 0132 7B6A     	 ldr r3,[r7,#36]
+ 291:../cleanflight/src/main/drivers/barometer/barometer_bmp085.c **** }
+ 616              	 .loc 1 291 0
+ 617 0134 1846     	 mov r0,r3
+ 618 0136 2C37     	 adds r7,r7,#44
+ 619              	.LCFI24:
+ 620              	 .cfi_def_cfa_offset 4
+ 621 0138 BD46     	 mov sp,r7
+ 622              	.LCFI25:
+ 623              	 .cfi_def_cfa_register 13
+ 624              	 
+ 625 013a 5DF8047B 	 ldr r7,[sp],#4
+ 626              	.LCFI26:
+ 627              	 .cfi_restore 7
+ 628              	 .cfi_def_cfa_offset 0
+ 629 013e 7047     	 bx lr
+ 630              	.L24:
+ 631              	 .align 2
+ 632              	.L23:
+ 633 0140 00000000 	 .word bmp085
+ 634 0144 43E3FFFF 	 .word -7357
+ 635              	 .cfi_endproc
+ 636              	.LFE531:
+ 638              	 .section .text.bmp085_start_ut,"ax",%progbits
+ 639              	 .align 2
+ 640              	 .thumb
+ 641              	 .thumb_func
+ 643              	bmp085_start_ut:
+ 644              	.LFB532:
+ 292:../cleanflight/src/main/drivers/barometer/barometer_bmp085.c **** 
+ 293:../cleanflight/src/main/drivers/barometer/barometer_bmp085.c **** static void bmp085_start_ut(baroDev_t *baro)
+ 294:../cleanflight/src/main/drivers/barometer/barometer_bmp085.c **** {
+ 645              	 .loc 1 294 0
+ 646              	 .cfi_startproc
+ 647              	 
+ 648              	 
+ 649 0000 80B5     	 push {r7,lr}
+ 650              	.LCFI27:
+ 651              	 .cfi_def_cfa_offset 8
+ 652              	 .cfi_offset 7,-8
+ 653              	 .cfi_offset 14,-4
+ 654 0002 82B0     	 sub sp,sp,#8
+ 655              	.LCFI28:
+ 656              	 .cfi_def_cfa_offset 16
+ 657 0004 00AF     	 add r7,sp,#0
+ 658              	.LCFI29:
+ 659              	 .cfi_def_cfa_register 7
+ 660 0006 7860     	 str r0,[r7,#4]
+ 295:../cleanflight/src/main/drivers/barometer/barometer_bmp085.c **** #if defined(BARO_EOC_GPIO)
+ 296:../cleanflight/src/main/drivers/barometer/barometer_bmp085.c ****     isConversionComplete = false;
+ 297:../cleanflight/src/main/drivers/barometer/barometer_bmp085.c **** #endif
+ 298:../cleanflight/src/main/drivers/barometer/barometer_bmp085.c ****     busWriteRegister(&baro->busdev, BMP085_CTRL_MEAS_REG, BMP085_T_MEASURE);
+ 661              	 .loc 1 298 0
+ 662 0008 7B68     	 ldr r3,[r7,#4]
+ 663 000a 1846     	 mov r0,r3
+ 664 000c F421     	 movs r1,#244
+ 665 000e 2E22     	 movs r2,#46
+ 666 0010 FFF7FEFF 	 bl busWriteRegister
+ 299:../cleanflight/src/main/drivers/barometer/barometer_bmp085.c **** }
+ 667              	 .loc 1 299 0
+ 668 0014 0837     	 adds r7,r7,#8
+ 669              	.LCFI30:
+ 670              	 .cfi_def_cfa_offset 8
+ 671 0016 BD46     	 mov sp,r7
+ 672              	.LCFI31:
+ 673              	 .cfi_def_cfa_register 13
+ 674              	 
+ 675 0018 80BD     	 pop {r7,pc}
+ 676              	 .cfi_endproc
+ 677              	.LFE532:
+ 679 001a 00BF     	 .section .text.bmp085_get_ut,"ax",%progbits
+ 680              	 .align 2
+ 681              	 .thumb
+ 682              	 .thumb_func
+ 684              	bmp085_get_ut:
+ 685              	.LFB533:
+ 300:../cleanflight/src/main/drivers/barometer/barometer_bmp085.c **** 
+ 301:../cleanflight/src/main/drivers/barometer/barometer_bmp085.c **** static void bmp085_get_ut(baroDev_t *baro)
+ 302:../cleanflight/src/main/drivers/barometer/barometer_bmp085.c **** {
+ 686              	 .loc 1 302 0
+ 687              	 .cfi_startproc
+ 688              	 
+ 689              	 
+ 690 0000 80B5     	 push {r7,lr}
+ 691              	.LCFI32:
+ 692              	 .cfi_def_cfa_offset 8
+ 693              	 .cfi_offset 7,-8
+ 694              	 .cfi_offset 14,-4
+ 695 0002 84B0     	 sub sp,sp,#16
+ 696              	.LCFI33:
+ 697              	 .cfi_def_cfa_offset 24
+ 698 0004 00AF     	 add r7,sp,#0
+ 699              	.LCFI34:
+ 700              	 .cfi_def_cfa_register 7
+ 701 0006 7860     	 str r0,[r7,#4]
+ 303:../cleanflight/src/main/drivers/barometer/barometer_bmp085.c ****     uint8_t data[2];
+ 304:../cleanflight/src/main/drivers/barometer/barometer_bmp085.c **** 
+ 305:../cleanflight/src/main/drivers/barometer/barometer_bmp085.c **** #if defined(BARO_EOC_GPIO)
+ 306:../cleanflight/src/main/drivers/barometer/barometer_bmp085.c ****     // return old baro value if conversion time exceeds datasheet max when EOC is connected
+ 307:../cleanflight/src/main/drivers/barometer/barometer_bmp085.c ****     if ((isEOCConnected) && (!isConversionComplete)) {
+ 308:../cleanflight/src/main/drivers/barometer/barometer_bmp085.c ****         return;
+ 309:../cleanflight/src/main/drivers/barometer/barometer_bmp085.c ****     }
+ 310:../cleanflight/src/main/drivers/barometer/barometer_bmp085.c **** #endif
+ 311:../cleanflight/src/main/drivers/barometer/barometer_bmp085.c **** 
+ 312:../cleanflight/src/main/drivers/barometer/barometer_bmp085.c ****     busReadRegisterBuffer(&baro->busdev, BMP085_ADC_OUT_MSB_REG, data, 2);
+ 702              	 .loc 1 312 0
+ 703 0008 7A68     	 ldr r2,[r7,#4]
+ 704 000a 07F10C03 	 add r3,r7,#12
+ 705 000e 1046     	 mov r0,r2
+ 706 0010 F621     	 movs r1,#246
+ 707 0012 1A46     	 mov r2,r3
+ 708 0014 0223     	 movs r3,#2
+ 709 0016 FFF7FEFF 	 bl busReadRegisterBuffer
+ 313:../cleanflight/src/main/drivers/barometer/barometer_bmp085.c ****     bmp085_ut = (data[0] << 8) | data[1];
+ 710              	 .loc 1 313 0
+ 711 001a 3B7B     	 ldrb r3,[r7,#12]
+ 712 001c 1B02     	 lsls r3,r3,#8
+ 713 001e 9AB2     	 uxth r2,r3
+ 714 0020 7B7B     	 ldrb r3,[r7,#13]
+ 715 0022 9BB2     	 uxth r3,r3
+ 716 0024 1343     	 orrs r3,r3,r2
+ 717 0026 9BB2     	 uxth r3,r3
+ 718 0028 9AB2     	 uxth r2,r3
+ 719 002a 024B     	 ldr r3,.L27
+ 720 002c 1A80     	 strh r2,[r3]
+ 314:../cleanflight/src/main/drivers/barometer/barometer_bmp085.c **** }
+ 721              	 .loc 1 314 0
+ 722 002e 1037     	 adds r7,r7,#16
+ 723              	.LCFI35:
+ 724              	 .cfi_def_cfa_offset 8
+ 725 0030 BD46     	 mov sp,r7
+ 726              	.LCFI36:
+ 727              	 .cfi_def_cfa_register 13
+ 728              	 
+ 729 0032 80BD     	 pop {r7,pc}
+ 730              	.L28:
+ 731              	 .align 2
+ 732              	.L27:
+ 733 0034 00000000 	 .word bmp085_ut
+ 734              	 .cfi_endproc
+ 735              	.LFE533:
+ 737              	 .section .text.bmp085_start_up,"ax",%progbits
+ 738              	 .align 2
+ 739              	 .thumb
+ 740              	 .thumb_func
+ 742              	bmp085_start_up:
+ 743              	.LFB534:
+ 315:../cleanflight/src/main/drivers/barometer/barometer_bmp085.c **** 
+ 316:../cleanflight/src/main/drivers/barometer/barometer_bmp085.c **** static void bmp085_start_up(baroDev_t *baro)
+ 317:../cleanflight/src/main/drivers/barometer/barometer_bmp085.c **** {
+ 744              	 .loc 1 317 0
+ 745              	 .cfi_startproc
+ 746              	 
+ 747              	 
+ 748 0000 80B5     	 push {r7,lr}
+ 749              	.LCFI37:
+ 750              	 .cfi_def_cfa_offset 8
+ 751              	 .cfi_offset 7,-8
+ 752              	 .cfi_offset 14,-4
+ 753 0002 84B0     	 sub sp,sp,#16
+ 754              	.LCFI38:
+ 755              	 .cfi_def_cfa_offset 24
+ 756 0004 00AF     	 add r7,sp,#0
+ 757              	.LCFI39:
+ 758              	 .cfi_def_cfa_register 7
+ 759 0006 7860     	 str r0,[r7,#4]
+ 318:../cleanflight/src/main/drivers/barometer/barometer_bmp085.c ****     uint8_t ctrl_reg_data;
+ 319:../cleanflight/src/main/drivers/barometer/barometer_bmp085.c **** 
+ 320:../cleanflight/src/main/drivers/barometer/barometer_bmp085.c ****     ctrl_reg_data = BMP085_P_MEASURE + (bmp085.oversampling_setting << 6);
+ 760              	 .loc 1 320 0
+ 761 0008 094B     	 ldr r3,.L30
+ 762 000a B3F91F30 	 ldrsh r3,[r3,#31]
+ 763 000e 9BB2     	 uxth r3,r3
+ 764 0010 DBB2     	 uxtb r3,r3
+ 765 0012 9B01     	 lsls r3,r3,#6
+ 766 0014 DBB2     	 uxtb r3,r3
+ 767 0016 3433     	 adds r3,r3,#52
+ 768 0018 FB73     	 strb r3,[r7,#15]
+ 321:../cleanflight/src/main/drivers/barometer/barometer_bmp085.c **** 
+ 322:../cleanflight/src/main/drivers/barometer/barometer_bmp085.c **** #if defined(BARO_EOC_GPIO)
+ 323:../cleanflight/src/main/drivers/barometer/barometer_bmp085.c ****     isConversionComplete = false;
+ 324:../cleanflight/src/main/drivers/barometer/barometer_bmp085.c **** #endif
+ 325:../cleanflight/src/main/drivers/barometer/barometer_bmp085.c **** 
+ 326:../cleanflight/src/main/drivers/barometer/barometer_bmp085.c ****     busWriteRegister(&baro->busdev, BMP085_CTRL_MEAS_REG, ctrl_reg_data);
+ 769              	 .loc 1 326 0
+ 770 001a 7A68     	 ldr r2,[r7,#4]
+ 771 001c FB7B     	 ldrb r3,[r7,#15]
+ 772 001e 1046     	 mov r0,r2
+ 773 0020 F421     	 movs r1,#244
+ 774 0022 1A46     	 mov r2,r3
+ 775 0024 FFF7FEFF 	 bl busWriteRegister
+ 327:../cleanflight/src/main/drivers/barometer/barometer_bmp085.c **** }
+ 776              	 .loc 1 327 0
+ 777 0028 1037     	 adds r7,r7,#16
+ 778              	.LCFI40:
+ 779              	 .cfi_def_cfa_offset 8
+ 780 002a BD46     	 mov sp,r7
+ 781              	.LCFI41:
+ 782              	 .cfi_def_cfa_register 13
+ 783              	 
+ 784 002c 80BD     	 pop {r7,pc}
+ 785              	.L31:
+ 786 002e 00BF     	 .align 2
+ 787              	.L30:
+ 788 0030 00000000 	 .word bmp085
+ 789              	 .cfi_endproc
+ 790              	.LFE534:
+ 792              	 .section .text.bmp085_get_up,"ax",%progbits
+ 793              	 .align 2
+ 794              	 .thumb
+ 795              	 .thumb_func
+ 797              	bmp085_get_up:
+ 798              	.LFB535:
+ 328:../cleanflight/src/main/drivers/barometer/barometer_bmp085.c **** 
+ 329:../cleanflight/src/main/drivers/barometer/barometer_bmp085.c **** /** read out up for pressure conversion
+ 330:../cleanflight/src/main/drivers/barometer/barometer_bmp085.c ****  depending on the oversampling ratio setting up can be 16 to 19 bit
+ 331:../cleanflight/src/main/drivers/barometer/barometer_bmp085.c ****  \return up parameter that represents the uncompensated pressure value
+ 332:../cleanflight/src/main/drivers/barometer/barometer_bmp085.c ****  */
+ 333:../cleanflight/src/main/drivers/barometer/barometer_bmp085.c **** static void bmp085_get_up(baroDev_t *baro)
+ 334:../cleanflight/src/main/drivers/barometer/barometer_bmp085.c **** {
+ 799              	 .loc 1 334 0
+ 800              	 .cfi_startproc
+ 801              	 
+ 802              	 
+ 803 0000 80B5     	 push {r7,lr}
+ 804              	.LCFI42:
+ 805              	 .cfi_def_cfa_offset 8
+ 806              	 .cfi_offset 7,-8
+ 807              	 .cfi_offset 14,-4
+ 808 0002 84B0     	 sub sp,sp,#16
+ 809              	.LCFI43:
+ 810              	 .cfi_def_cfa_offset 24
+ 811 0004 00AF     	 add r7,sp,#0
+ 812              	.LCFI44:
+ 813              	 .cfi_def_cfa_register 7
+ 814 0006 7860     	 str r0,[r7,#4]
+ 335:../cleanflight/src/main/drivers/barometer/barometer_bmp085.c ****     uint8_t data[3];
+ 336:../cleanflight/src/main/drivers/barometer/barometer_bmp085.c **** 
+ 337:../cleanflight/src/main/drivers/barometer/barometer_bmp085.c **** #if defined(BARO_EOC_GPIO)
+ 338:../cleanflight/src/main/drivers/barometer/barometer_bmp085.c ****     // return old baro value if conversion time exceeds datasheet max when EOC is connected
+ 339:../cleanflight/src/main/drivers/barometer/barometer_bmp085.c ****     if ((isEOCConnected) && (!isConversionComplete)) {
+ 340:../cleanflight/src/main/drivers/barometer/barometer_bmp085.c ****         return;
+ 341:../cleanflight/src/main/drivers/barometer/barometer_bmp085.c ****     }
+ 342:../cleanflight/src/main/drivers/barometer/barometer_bmp085.c **** #endif
+ 343:../cleanflight/src/main/drivers/barometer/barometer_bmp085.c **** 
+ 344:../cleanflight/src/main/drivers/barometer/barometer_bmp085.c ****     busReadRegisterBuffer(&baro->busdev, BMP085_ADC_OUT_MSB_REG, data, 3);
+ 815              	 .loc 1 344 0
+ 816 0008 7A68     	 ldr r2,[r7,#4]
+ 817 000a 07F10C03 	 add r3,r7,#12
+ 818 000e 1046     	 mov r0,r2
+ 819 0010 F621     	 movs r1,#246
+ 820 0012 1A46     	 mov r2,r3
+ 821 0014 0323     	 movs r3,#3
+ 822 0016 FFF7FEFF 	 bl busReadRegisterBuffer
+ 345:../cleanflight/src/main/drivers/barometer/barometer_bmp085.c ****     bmp085_up = (((uint32_t) data[0] << 16) | ((uint32_t) data[1] << 8) | (uint32_t) data[2])
+ 823              	 .loc 1 345 0
+ 824 001a 3B7B     	 ldrb r3,[r7,#12]
+ 825 001c 1A04     	 lsls r2,r3,#16
+ 826 001e 7B7B     	 ldrb r3,[r7,#13]
+ 827 0020 1B02     	 lsls r3,r3,#8
+ 828 0022 1343     	 orrs r3,r3,r2
+ 829 0024 BA7B     	 ldrb r2,[r7,#14]
+ 830 0026 1A43     	 orrs r2,r2,r3
+ 346:../cleanflight/src/main/drivers/barometer/barometer_bmp085.c ****             >> (8 - bmp085.oversampling_setting);
+ 831              	 .loc 1 346 0
+ 832 0028 064B     	 ldr r3,.L33
+ 833 002a B3F91F30 	 ldrsh r3,[r3,#31]
+ 834 002e 9BB2     	 uxth r3,r3
+ 835 0030 1BB2     	 sxth r3,r3
+ 836 0032 C3F10803 	 rsb r3,r3,#8
+ 837 0036 22FA03F3 	 lsr r3,r2,r3
+ 345:../cleanflight/src/main/drivers/barometer/barometer_bmp085.c ****     bmp085_up = (((uint32_t) data[0] << 16) | ((uint32_t) data[1] << 8) | (uint32_t) data[2])
+ 838              	 .loc 1 345 0
+ 839 003a 034A     	 ldr r2,.L33+4
+ 840 003c 1360     	 str r3,[r2]
+ 347:../cleanflight/src/main/drivers/barometer/barometer_bmp085.c **** }
+ 841              	 .loc 1 347 0
+ 842 003e 1037     	 adds r7,r7,#16
+ 843              	.LCFI45:
+ 844              	 .cfi_def_cfa_offset 8
+ 845 0040 BD46     	 mov sp,r7
+ 846              	.LCFI46:
+ 847              	 .cfi_def_cfa_register 13
+ 848              	 
+ 849 0042 80BD     	 pop {r7,pc}
+ 850              	.L34:
+ 851              	 .align 2
+ 852              	.L33:
+ 853 0044 00000000 	 .word bmp085
+ 854 0048 00000000 	 .word bmp085_up
+ 855              	 .cfi_endproc
+ 856              	.LFE535:
+ 858              	 .section .text.bmp085_calculate,"ax",%progbits
+ 859              	 .align 2
+ 860              	 .thumb
+ 861              	 .thumb_func
+ 863              	bmp085_calculate:
+ 864              	.LFB536:
+ 348:../cleanflight/src/main/drivers/barometer/barometer_bmp085.c **** 
+ 349:../cleanflight/src/main/drivers/barometer/barometer_bmp085.c **** STATIC_UNIT_TESTED void bmp085_calculate(int32_t *pressure, int32_t *temperature)
+ 350:../cleanflight/src/main/drivers/barometer/barometer_bmp085.c **** {
+ 865              	 .loc 1 350 0
+ 866              	 .cfi_startproc
+ 867              	 
+ 868              	 
+ 869 0000 80B5     	 push {r7,lr}
+ 870              	.LCFI47:
+ 871              	 .cfi_def_cfa_offset 8
+ 872              	 .cfi_offset 7,-8
+ 873              	 .cfi_offset 14,-4
+ 874 0002 84B0     	 sub sp,sp,#16
+ 875              	.LCFI48:
+ 876              	 .cfi_def_cfa_offset 24
+ 877 0004 00AF     	 add r7,sp,#0
+ 878              	.LCFI49:
+ 879              	 .cfi_def_cfa_register 7
+ 880 0006 7860     	 str r0,[r7,#4]
+ 881 0008 3960     	 str r1,[r7]
+ 351:../cleanflight/src/main/drivers/barometer/barometer_bmp085.c ****     int32_t temp, press;
+ 352:../cleanflight/src/main/drivers/barometer/barometer_bmp085.c **** 
+ 353:../cleanflight/src/main/drivers/barometer/barometer_bmp085.c ****     temp = bmp085_get_temperature(bmp085_ut);
+ 882              	 .loc 1 353 0
+ 883 000a 0D4B     	 ldr r3,.L38
+ 884 000c 1B88     	 ldrh r3,[r3]
+ 885 000e 1846     	 mov r0,r3
+ 886 0010 FFF7FEFF 	 bl bmp085_get_temperature
+ 887 0014 F860     	 str r0,[r7,#12]
+ 354:../cleanflight/src/main/drivers/barometer/barometer_bmp085.c ****     press = bmp085_get_pressure(bmp085_up);
+ 888              	 .loc 1 354 0
+ 889 0016 0B4B     	 ldr r3,.L38+4
+ 890 0018 1B68     	 ldr r3,[r3]
+ 891 001a 1846     	 mov r0,r3
+ 892 001c FFF7FEFF 	 bl bmp085_get_pressure
+ 893 0020 B860     	 str r0,[r7,#8]
+ 355:../cleanflight/src/main/drivers/barometer/barometer_bmp085.c ****     if (pressure)
+ 894              	 .loc 1 355 0
+ 895 0022 7B68     	 ldr r3,[r7,#4]
+ 896 0024 002B     	 cmp r3,#0
+ 897 0026 02D0     	 beq .L36
+ 356:../cleanflight/src/main/drivers/barometer/barometer_bmp085.c ****         *pressure = press;
+ 898              	 .loc 1 356 0
+ 899 0028 7B68     	 ldr r3,[r7,#4]
+ 900 002a BA68     	 ldr r2,[r7,#8]
+ 901 002c 1A60     	 str r2,[r3]
+ 902              	.L36:
+ 357:../cleanflight/src/main/drivers/barometer/barometer_bmp085.c ****     if (temperature)
+ 903              	 .loc 1 357 0
+ 904 002e 3B68     	 ldr r3,[r7]
+ 905 0030 002B     	 cmp r3,#0
+ 906 0032 02D0     	 beq .L35
+ 358:../cleanflight/src/main/drivers/barometer/barometer_bmp085.c ****         *temperature = temp;
+ 907              	 .loc 1 358 0
+ 908 0034 3B68     	 ldr r3,[r7]
+ 909 0036 FA68     	 ldr r2,[r7,#12]
+ 910 0038 1A60     	 str r2,[r3]
+ 911              	.L35:
+ 359:../cleanflight/src/main/drivers/barometer/barometer_bmp085.c **** }
+ 912              	 .loc 1 359 0
+ 913 003a 1037     	 adds r7,r7,#16
+ 914              	.LCFI50:
+ 915              	 .cfi_def_cfa_offset 8
+ 916 003c BD46     	 mov sp,r7
+ 917              	.LCFI51:
+ 918              	 .cfi_def_cfa_register 13
+ 919              	 
+ 920 003e 80BD     	 pop {r7,pc}
+ 921              	.L39:
+ 922              	 .align 2
+ 923              	.L38:
+ 924 0040 00000000 	 .word bmp085_ut
+ 925 0044 00000000 	 .word bmp085_up
+ 926              	 .cfi_endproc
+ 927              	.LFE536:
+ 929              	 .section .text.bmp085_get_cal_param,"ax",%progbits
+ 930              	 .align 2
+ 931              	 .thumb
+ 932              	 .thumb_func
+ 934              	bmp085_get_cal_param:
+ 935              	.LFB537:
+ 360:../cleanflight/src/main/drivers/barometer/barometer_bmp085.c **** 
+ 361:../cleanflight/src/main/drivers/barometer/barometer_bmp085.c **** static void bmp085_get_cal_param(busDevice_t *busdev)
+ 362:../cleanflight/src/main/drivers/barometer/barometer_bmp085.c **** {
+ 936              	 .loc 1 362 0
+ 937              	 .cfi_startproc
+ 938              	 
+ 939              	 
+ 940 0000 80B5     	 push {r7,lr}
+ 941              	.LCFI52:
+ 942              	 .cfi_def_cfa_offset 8
+ 943              	 .cfi_offset 7,-8
+ 944              	 .cfi_offset 14,-4
+ 945 0002 88B0     	 sub sp,sp,#32
+ 946              	.LCFI53:
+ 947              	 .cfi_def_cfa_offset 40
+ 948 0004 00AF     	 add r7,sp,#0
+ 949              	.LCFI54:
+ 950              	 .cfi_def_cfa_register 7
+ 951 0006 7860     	 str r0,[r7,#4]
+ 363:../cleanflight/src/main/drivers/barometer/barometer_bmp085.c ****     uint8_t data[22];
+ 364:../cleanflight/src/main/drivers/barometer/barometer_bmp085.c ****     busReadRegisterBuffer(busdev, BMP085_PROM_START__ADDR, data, BMP085_PROM_DATA__LEN);
+ 952              	 .loc 1 364 0
+ 953 0008 07F10803 	 add r3,r7,#8
+ 954 000c 7868     	 ldr r0,[r7,#4]
+ 955 000e AA21     	 movs r1,#170
+ 956 0010 1A46     	 mov r2,r3
+ 957 0012 1623     	 movs r3,#22
+ 958 0014 FFF7FEFF 	 bl busReadRegisterBuffer
+ 365:../cleanflight/src/main/drivers/barometer/barometer_bmp085.c **** 
+ 366:../cleanflight/src/main/drivers/barometer/barometer_bmp085.c ****     /*parameters AC1-AC6*/
+ 367:../cleanflight/src/main/drivers/barometer/barometer_bmp085.c ****     bmp085.cal_param.ac1 = (data[0] << 8) | data[1];
+ 959              	 .loc 1 367 0
+ 960 0018 3B7A     	 ldrb r3,[r7,#8]
+ 961 001a 1B02     	 lsls r3,r3,#8
+ 962 001c 9AB2     	 uxth r2,r3
+ 963 001e 7B7A     	 ldrb r3,[r7,#9]
+ 964 0020 9BB2     	 uxth r3,r3
+ 965 0022 1343     	 orrs r3,r3,r2
+ 966 0024 9AB2     	 uxth r2,r3
+ 967 0026 314B     	 ldr r3,.L41
+ 968 0028 1A80     	 strh r2,[r3]
+ 368:../cleanflight/src/main/drivers/barometer/barometer_bmp085.c ****     bmp085.cal_param.ac2 = (data[2] << 8) | data[3];
+ 969              	 .loc 1 368 0
+ 970 002a BB7A     	 ldrb r3,[r7,#10]
+ 971 002c 1B02     	 lsls r3,r3,#8
+ 972 002e 9AB2     	 uxth r2,r3
+ 973 0030 FB7A     	 ldrb r3,[r7,#11]
+ 974 0032 9BB2     	 uxth r3,r3
+ 975 0034 1343     	 orrs r3,r3,r2
+ 976 0036 9AB2     	 uxth r2,r3
+ 977 0038 2C4B     	 ldr r3,.L41
+ 978 003a 5A80     	 strh r2,[r3,#2]
+ 369:../cleanflight/src/main/drivers/barometer/barometer_bmp085.c ****     bmp085.cal_param.ac3 = (data[4] << 8) | data[5];
+ 979              	 .loc 1 369 0
+ 980 003c 3B7B     	 ldrb r3,[r7,#12]
+ 981 003e 1B02     	 lsls r3,r3,#8
+ 982 0040 9AB2     	 uxth r2,r3
+ 983 0042 7B7B     	 ldrb r3,[r7,#13]
+ 984 0044 9BB2     	 uxth r3,r3
+ 985 0046 1343     	 orrs r3,r3,r2
+ 986 0048 9AB2     	 uxth r2,r3
+ 987 004a 284B     	 ldr r3,.L41
+ 988 004c 9A80     	 strh r2,[r3,#4]
+ 370:../cleanflight/src/main/drivers/barometer/barometer_bmp085.c ****     bmp085.cal_param.ac4 = (data[6] << 8) | data[7];
+ 989              	 .loc 1 370 0
+ 990 004e BB7B     	 ldrb r3,[r7,#14]
+ 991 0050 1B02     	 lsls r3,r3,#8
+ 992 0052 9AB2     	 uxth r2,r3
+ 993 0054 FB7B     	 ldrb r3,[r7,#15]
+ 994 0056 9BB2     	 uxth r3,r3
+ 995 0058 1343     	 orrs r3,r3,r2
+ 996 005a 9BB2     	 uxth r3,r3
+ 997 005c 9AB2     	 uxth r2,r3
+ 998 005e 234B     	 ldr r3,.L41
+ 999 0060 DA80     	 strh r2,[r3,#6]
+ 371:../cleanflight/src/main/drivers/barometer/barometer_bmp085.c ****     bmp085.cal_param.ac5 = (data[8] << 8) | data[9];
+ 1000              	 .loc 1 371 0
+ 1001 0062 3B7C     	 ldrb r3,[r7,#16]
+ 1002 0064 1B02     	 lsls r3,r3,#8
+ 1003 0066 9AB2     	 uxth r2,r3
+ 1004 0068 7B7C     	 ldrb r3,[r7,#17]
+ 1005 006a 9BB2     	 uxth r3,r3
+ 1006 006c 1343     	 orrs r3,r3,r2
+ 1007 006e 9BB2     	 uxth r3,r3
+ 1008 0070 9AB2     	 uxth r2,r3
+ 1009 0072 1E4B     	 ldr r3,.L41
+ 1010 0074 1A81     	 strh r2,[r3,#8]
+ 372:../cleanflight/src/main/drivers/barometer/barometer_bmp085.c ****     bmp085.cal_param.ac6 = (data[10] << 8) | data[11];
+ 1011              	 .loc 1 372 0
+ 1012 0076 BB7C     	 ldrb r3,[r7,#18]
+ 1013 0078 1B02     	 lsls r3,r3,#8
+ 1014 007a 9AB2     	 uxth r2,r3
+ 1015 007c FB7C     	 ldrb r3,[r7,#19]
+ 1016 007e 9BB2     	 uxth r3,r3
+ 1017 0080 1343     	 orrs r3,r3,r2
+ 1018 0082 9BB2     	 uxth r3,r3
+ 1019 0084 9AB2     	 uxth r2,r3
+ 1020 0086 194B     	 ldr r3,.L41
+ 1021 0088 5A81     	 strh r2,[r3,#10]
+ 373:../cleanflight/src/main/drivers/barometer/barometer_bmp085.c **** 
+ 374:../cleanflight/src/main/drivers/barometer/barometer_bmp085.c ****     /*parameters B1,B2*/
+ 375:../cleanflight/src/main/drivers/barometer/barometer_bmp085.c ****     bmp085.cal_param.b1 = (data[12] << 8) | data[13];
+ 1022              	 .loc 1 375 0
+ 1023 008a 3B7D     	 ldrb r3,[r7,#20]
+ 1024 008c 1B02     	 lsls r3,r3,#8
+ 1025 008e 9AB2     	 uxth r2,r3
+ 1026 0090 7B7D     	 ldrb r3,[r7,#21]
+ 1027 0092 9BB2     	 uxth r3,r3
+ 1028 0094 1343     	 orrs r3,r3,r2
+ 1029 0096 9AB2     	 uxth r2,r3
+ 1030 0098 144B     	 ldr r3,.L41
+ 1031 009a 9A81     	 strh r2,[r3,#12]
+ 376:../cleanflight/src/main/drivers/barometer/barometer_bmp085.c ****     bmp085.cal_param.b2 = (data[14] << 8) | data[15];
+ 1032              	 .loc 1 376 0
+ 1033 009c BB7D     	 ldrb r3,[r7,#22]
+ 1034 009e 1B02     	 lsls r3,r3,#8
+ 1035 00a0 9AB2     	 uxth r2,r3
+ 1036 00a2 FB7D     	 ldrb r3,[r7,#23]
+ 1037 00a4 9BB2     	 uxth r3,r3
+ 1038 00a6 1343     	 orrs r3,r3,r2
+ 1039 00a8 9AB2     	 uxth r2,r3
+ 1040 00aa 104B     	 ldr r3,.L41
+ 1041 00ac DA81     	 strh r2,[r3,#14]
+ 377:../cleanflight/src/main/drivers/barometer/barometer_bmp085.c **** 
+ 378:../cleanflight/src/main/drivers/barometer/barometer_bmp085.c ****     /*parameters MB,MC,MD*/
+ 379:../cleanflight/src/main/drivers/barometer/barometer_bmp085.c ****     bmp085.cal_param.mb = (data[16] << 8) | data[17];
+ 1042              	 .loc 1 379 0
+ 1043 00ae 3B7E     	 ldrb r3,[r7,#24]
+ 1044 00b0 1B02     	 lsls r3,r3,#8
+ 1045 00b2 9AB2     	 uxth r2,r3
+ 1046 00b4 7B7E     	 ldrb r3,[r7,#25]
+ 1047 00b6 9BB2     	 uxth r3,r3
+ 1048 00b8 1343     	 orrs r3,r3,r2
+ 1049 00ba 9AB2     	 uxth r2,r3
+ 1050 00bc 0B4B     	 ldr r3,.L41
+ 1051 00be 1A82     	 strh r2,[r3,#16]
+ 380:../cleanflight/src/main/drivers/barometer/barometer_bmp085.c ****     bmp085.cal_param.mc = (data[18] << 8) | data[19];
+ 1052              	 .loc 1 380 0
+ 1053 00c0 BB7E     	 ldrb r3,[r7,#26]
+ 1054 00c2 1B02     	 lsls r3,r3,#8
+ 1055 00c4 9AB2     	 uxth r2,r3
+ 1056 00c6 FB7E     	 ldrb r3,[r7,#27]
+ 1057 00c8 9BB2     	 uxth r3,r3
+ 1058 00ca 1343     	 orrs r3,r3,r2
+ 1059 00cc 9AB2     	 uxth r2,r3
+ 1060 00ce 074B     	 ldr r3,.L41
+ 1061 00d0 5A82     	 strh r2,[r3,#18]
+ 381:../cleanflight/src/main/drivers/barometer/barometer_bmp085.c ****     bmp085.cal_param.md = (data[20] << 8) | data[21];
+ 1062              	 .loc 1 381 0
+ 1063 00d2 3B7F     	 ldrb r3,[r7,#28]
+ 1064 00d4 1B02     	 lsls r3,r3,#8
+ 1065 00d6 9AB2     	 uxth r2,r3
+ 1066 00d8 7B7F     	 ldrb r3,[r7,#29]
+ 1067 00da 9BB2     	 uxth r3,r3
+ 1068 00dc 1343     	 orrs r3,r3,r2
+ 1069 00de 9AB2     	 uxth r2,r3
+ 1070 00e0 024B     	 ldr r3,.L41
+ 1071 00e2 9A82     	 strh r2,[r3,#20]
+ 382:../cleanflight/src/main/drivers/barometer/barometer_bmp085.c **** }
+ 1072              	 .loc 1 382 0
+ 1073 00e4 2037     	 adds r7,r7,#32
+ 1074              	.LCFI55:
+ 1075              	 .cfi_def_cfa_offset 8
+ 1076 00e6 BD46     	 mov sp,r7
+ 1077              	.LCFI56:
+ 1078              	 .cfi_def_cfa_register 13
+ 1079              	 
+ 1080 00e8 80BD     	 pop {r7,pc}
+ 1081              	.L42:
+ 1082 00ea 00BF     	 .align 2
+ 1083              	.L41:
+ 1084 00ec 00000000 	 .word bmp085
+ 1085              	 .cfi_endproc
+ 1086              	.LFE537:
+ 1088              	 .text
+ 1089              	.Letext0:
+ 1090              	 .file 2 "d:\\xmc\\dave-ide-4.4.2-64bit\\eclipse\\arm-gcc-49\\arm-none-eabi\\include\\machine\\_default_types.h"
+ 1091              	 .file 3 "d:\\xmc\\dave-ide-4.4.2-64bit\\eclipse\\arm-gcc-49\\arm-none-eabi\\include\\stdint.h"
+ 1092              	 .file 4 "D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/lib/main/XMC4000/xmc4700.h"
+ 1093              	 .file 5 "D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/lib/main/XMC4000/XMCLib/inc/xmc4_gpio.h"
+ 1094              	 .file 6 "D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/lib/main/XMC4000/XMCLib/inc/xmc_usic.h"
+ 1095              	 .file 7 "D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/platform.h"
+ 1096              	 .file 8 "D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/drivers/io_types.h"
+ 1097              	 .file 9 "D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/drivers/bus_i2c.h"
+ 1098              	 .file 10 "D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/drivers/bus.h"
+ 1099              	 .file 11 "../cleanflight/src/main/drivers/barometer/barometer.h"
+ 1100              	 .file 12 "D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/drivers/resource.h"
+ 1101              	 .file 13 "D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/common/time.h"
+ 1102              	 .file 14 "../cleanflight/src/main/drivers/barometer/barometer_bmp085.h"
+ 1103              	 .file 15 "D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/lib/main/CMSIS/Core/Include/core_cm4.h"
+ 1104              	 .file 16 "D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/lib/main/XMC4000/system_XMC4700.h"
+DEFINED SYMBOLS
+                            *ABS*:00000000 barometer_bmp085.c
+    {standard input}:20     .bss.bmp085:00000000 $d
+    {standard input}:23     .bss.bmp085:00000000 bmp085
+    {standard input}:28     .bss.bmp085InitDone:00000000 bmp085InitDone
+    {standard input}:29     .bss.bmp085InitDone:00000000 $d
+    {standard input}:31     .bss.bmp085_ut:00000000 $d
+    {standard input}:34     .bss.bmp085_ut:00000000 bmp085_ut
+    {standard input}:37     .bss.bmp085_up:00000000 $d
+    {standard input}:40     .bss.bmp085_up:00000000 bmp085_up
+    {standard input}:43     .bss.xclrIO:00000000 $d
+    {standard input}:46     .bss.xclrIO:00000000 xclrIO
+    {standard input}:49     .text.bmp085InitXclrIO:00000000 $t
+    {standard input}:54     .text.bmp085InitXclrIO:00000000 bmp085InitXclrIO
+    {standard input}:121    .text.bmp085InitXclrIO:00000050 $d
+    {standard input}:126    .text.bmp085Disable:00000000 $t
+    {standard input}:131    .text.bmp085Disable:00000000 bmp085Disable
+    {standard input}:165    .text.bmp085Detect:00000000 $t
+    {standard input}:170    .text.bmp085Detect:00000000 bmp085Detect
+    {standard input}:934    .text.bmp085_get_cal_param:00000000 bmp085_get_cal_param
+    {standard input}:348    .text.bmp085Detect:00000114 $d
+    {standard input}:643    .text.bmp085_start_ut:00000000 bmp085_start_ut
+    {standard input}:684    .text.bmp085_get_ut:00000000 bmp085_get_ut
+    {standard input}:742    .text.bmp085_start_up:00000000 bmp085_start_up
+    {standard input}:797    .text.bmp085_get_up:00000000 bmp085_get_up
+    {standard input}:863    .text.bmp085_calculate:00000000 bmp085_calculate
+    {standard input}:359    .text.bmp085_get_temperature:00000000 $t
+    {standard input}:363    .text.bmp085_get_temperature:00000000 bmp085_get_temperature
+    {standard input}:438    .text.bmp085_get_temperature:00000064 $d
+    {standard input}:443    .text.bmp085_get_pressure:00000000 $t
+    {standard input}:447    .text.bmp085_get_pressure:00000000 bmp085_get_pressure
+    {standard input}:633    .text.bmp085_get_pressure:00000140 $d
+    {standard input}:639    .text.bmp085_start_ut:00000000 $t
+    {standard input}:680    .text.bmp085_get_ut:00000000 $t
+    {standard input}:733    .text.bmp085_get_ut:00000034 $d
+    {standard input}:738    .text.bmp085_start_up:00000000 $t
+    {standard input}:788    .text.bmp085_start_up:00000030 $d
+    {standard input}:793    .text.bmp085_get_up:00000000 $t
+    {standard input}:853    .text.bmp085_get_up:00000044 $d
+    {standard input}:859    .text.bmp085_calculate:00000000 $t
+    {standard input}:924    .text.bmp085_calculate:00000040 $d
+    {standard input}:930    .text.bmp085_get_cal_param:00000000 $t
+    {standard input}:1084   .text.bmp085_get_cal_param:000000ec $d
+                     .debug_frame:00000010 $d
+
+UNDEFINED SYMBOLS
+IOGetByTag
+IOInit
+IOConfigGPIO
+delay
+busReadRegisterBuffer
+busWriteRegister

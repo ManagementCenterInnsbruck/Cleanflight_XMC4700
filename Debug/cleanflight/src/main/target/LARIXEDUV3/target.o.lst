@@ -1,0 +1,71 @@
+   1              	 .syntax unified
+   2              	 .cpu cortex-m4
+   3              	 .eabi_attribute 27,3
+   4              	 .fpu fpv4-sp-d16
+   5              	 .eabi_attribute 20,1
+   6              	 .eabi_attribute 21,1
+   7              	 .eabi_attribute 23,3
+   8              	 .eabi_attribute 24,1
+   9              	 .eabi_attribute 25,1
+  10              	 .eabi_attribute 26,1
+  11              	 .eabi_attribute 30,6
+  12              	 .eabi_attribute 34,1
+  13              	 .eabi_attribute 18,4
+  14              	 .thumb
+  15              	 .file "target.c"
+  16              	 .text
+  17              	.Ltext0:
+  18              	 .cfi_sections .debug_frame
+  19              	 .global timerHardware
+  20              	 .section .rodata.timerHardware,"a",%progbits
+  21              	 .align 2
+  24              	timerHardware:
+  25 0000 00010140 	 .word 1073807616
+  26 0004 35       	 .byte 53
+  27 0005 01       	 .byte 1
+  28 0006 04       	 .byte 4
+  29 0007 00       	 .byte 0
+  30 0008 98       	 .byte -104
+  31 0009 00020140 	 .4byte 1073807872
+  32 000d 34       	 .byte 52
+  33 000e 02       	 .byte 2
+  34 000f 04       	 .byte 4
+  35 0010 00       	 .byte 0
+  36 0011 98       	 .byte -104
+  37 0012 00030140 	 .4byte 1073808128
+  38 0016 33       	 .byte 51
+  39 0017 03       	 .byte 3
+  40 0018 04       	 .byte 4
+  41 0019 00       	 .byte 0
+  42 001a 98       	 .byte -104
+  43 001b 00040140 	 .4byte 1073808384
+  44 001f 32       	 .byte 50
+  45 0020 04       	 .byte 4
+  46 0021 04       	 .byte 4
+  47 0022 00       	 .byte 0
+  48 0023 98       	 .byte -104
+  49 0024 00000000 	 .space 81
+  49      00000000 
+  49      00000000 
+  49      00000000 
+  49      00000000 
+  50 0075 000000   	 .text
+  51              	.Letext0:
+  52              	 .file 1 "d:\\xmc\\dave-ide-4.4.2-64bit\\eclipse\\arm-gcc-49\\arm-none-eabi\\include\\machine\\_default_types.h"
+  53              	 .file 2 "d:\\xmc\\dave-ide-4.4.2-64bit\\eclipse\\arm-gcc-49\\arm-none-eabi\\include\\stdint.h"
+  54              	 .file 3 "D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/lib/main/XMC4000/xmc4700.h"
+  55              	 .file 4 "D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/lib/main/XMC4000/XMCLib/inc/xmc4_gpio.h"
+  56              	 .file 5 "D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/lib/main/XMC4000/XMCLib/inc/xmc_usic.h"
+  57              	 .file 6 "D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/platform.h"
+  58              	 .file 7 "D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/drivers/io_types.h"
+  59              	 .file 8 "D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/drivers/resource.h"
+  60              	 .file 9 "D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/drivers/timer.h"
+  61              	 .file 10 "D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/lib/main/CMSIS/Core/Include/core_cm4.h"
+  62              	 .file 11 "D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/lib/main/XMC4000/system_XMC4700.h"
+  63              	 .file 12 "../cleanflight/src/main/target/LARIXEDUV3/target.c"
+DEFINED SYMBOLS
+                            *ABS*:00000000 target.c
+    {standard input}:24     .rodata.timerHardware:00000000 timerHardware
+    {standard input}:21     .rodata.timerHardware:00000000 $d
+
+NO UNDEFINED SYMBOLS

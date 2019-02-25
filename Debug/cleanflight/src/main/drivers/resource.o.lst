@@ -1,0 +1,337 @@
+   1              	 .syntax unified
+   2              	 .cpu cortex-m4
+   3              	 .eabi_attribute 27,3
+   4              	 .fpu fpv4-sp-d16
+   5              	 .eabi_attribute 20,1
+   6              	 .eabi_attribute 21,1
+   7              	 .eabi_attribute 23,3
+   8              	 .eabi_attribute 24,1
+   9              	 .eabi_attribute 25,1
+  10              	 .eabi_attribute 26,1
+  11              	 .eabi_attribute 30,6
+  12              	 .eabi_attribute 34,1
+  13              	 .eabi_attribute 18,4
+  14              	 .thumb
+  15              	 .file "resource.c"
+  16              	 .text
+  17              	.Ltext0:
+  18              	 .cfi_sections .debug_frame
+  19              	 .global ownerNames
+  20              	 .section .rodata
+  21              	 .align 2
+  22              	.LC0:
+  23 0000 46524545 	 .ascii "FREE\000"
+  23      00
+  24 0005 000000   	 .align 2
+  25              	.LC1:
+  26 0008 50574D00 	 .ascii "PWM\000"
+  27              	 .align 2
+  28              	.LC2:
+  29 000c 50504D00 	 .ascii "PPM\000"
+  30              	 .align 2
+  31              	.LC3:
+  32 0010 4D4F544F 	 .ascii "MOTOR\000"
+  32      5200
+  33 0016 0000     	 .align 2
+  34              	.LC4:
+  35 0018 53455256 	 .ascii "SERVO\000"
+  35      4F00
+  36 001e 0000     	 .align 2
+  37              	.LC5:
+  38 0020 4C454400 	 .ascii "LED\000"
+  39              	 .align 2
+  40              	.LC6:
+  41 0024 41444300 	 .ascii "ADC\000"
+  42              	 .align 2
+  43              	.LC7:
+  44 0028 4144435F 	 .ascii "ADC_BATT\000"
+  44      42415454 
+  44      00
+  45 0031 000000   	 .align 2
+  46              	.LC8:
+  47 0034 4144435F 	 .ascii "ADC_CURR\000"
+  47      43555252 
+  47      00
+  48 003d 000000   	 .align 2
+  49              	.LC9:
+  50 0040 4144435F 	 .ascii "ADC_EXT\000"
+  50      45585400 
+  51              	 .align 2
+  52              	.LC10:
+  53 0048 4144435F 	 .ascii "ADC_RSSI\000"
+  53      52535349 
+  53      00
+  54 0051 000000   	 .align 2
+  55              	.LC11:
+  56 0054 53455249 	 .ascii "SERIAL_TX\000"
+  56      414C5F54 
+  56      5800
+  57 005e 0000     	 .align 2
+  58              	.LC12:
+  59 0060 53455249 	 .ascii "SERIAL_RX\000"
+  59      414C5F52 
+  59      5800
+  60 006a 0000     	 .align 2
+  61              	.LC13:
+  62 006c 44454255 	 .ascii "DEBUG\000"
+  62      4700
+  63 0072 0000     	 .align 2
+  64              	.LC14:
+  65 0074 54494D45 	 .ascii "TIMER\000"
+  65      5200
+  66 007a 0000     	 .align 2
+  67              	.LC15:
+  68 007c 534F4E41 	 .ascii "SONAR_TRIGGER\000"
+  68      525F5452 
+  68      49474745 
+  68      5200
+  69 008a 0000     	 .align 2
+  70              	.LC16:
+  71 008c 534F4E41 	 .ascii "SONAR_ECHO\000"
+  71      525F4543 
+  71      484F00
+  72 0097 00       	 .align 2
+  73              	.LC17:
+  74 0098 53595354 	 .ascii "SYSTEM\000"
+  74      454D00
+  75 009f 00       	 .align 2
+  76              	.LC18:
+  77 00a0 5350495F 	 .ascii "SPI_SCK\000"
+  77      53434B00 
+  78              	 .align 2
+  79              	.LC19:
+  80 00a8 5350495F 	 .ascii "SPI_MISO\000"
+  80      4D49534F 
+  80      00
+  81 00b1 000000   	 .align 2
+  82              	.LC20:
+  83 00b4 5350495F 	 .ascii "SPI_MOSI\000"
+  83      4D4F5349 
+  83      00
+  84 00bd 000000   	 .align 2
+  85              	.LC21:
+  86 00c0 4932435F 	 .ascii "I2C_SCL\000"
+  86      53434C00 
+  87              	 .align 2
+  88              	.LC22:
+  89 00c8 4932435F 	 .ascii "I2C_SDA\000"
+  89      53444100 
+  90              	 .align 2
+  91              	.LC23:
+  92 00d0 53444341 	 .ascii "SDCARD\000"
+  92      524400
+  93 00d7 00       	 .align 2
+  94              	.LC24:
+  95 00d8 53444341 	 .ascii "SDCARD_CS\000"
+  95      52445F43 
+  95      5300
+  96 00e2 0000     	 .align 2
+  97              	.LC25:
+  98 00e4 53444341 	 .ascii "SDCARD_DETECT\000"
+  98      52445F44 
+  98      45544543 
+  98      5400
+  99 00f2 0000     	 .align 2
+ 100              	.LC26:
+ 101 00f4 464C4153 	 .ascii "FLASH_CS\000"
+ 101      485F4353 
+ 101      00
+ 102 00fd 000000   	 .align 2
+ 103              	.LC27:
+ 104 0100 4241524F 	 .ascii "BARO_CS\000"
+ 104      5F435300 
+ 105              	 .align 2
+ 106              	.LC28:
+ 107 0108 4D50555F 	 .ascii "MPU_CS\000"
+ 107      435300
+ 108 010f 00       	 .align 2
+ 109              	.LC29:
+ 110 0110 4F53445F 	 .ascii "OSD_CS\000"
+ 110      435300
+ 111 0117 00       	 .align 2
+ 112              	.LC30:
+ 113 0118 52585F53 	 .ascii "RX_SPI_CS\000"
+ 113      50495F43 
+ 113      5300
+ 114 0122 0000     	 .align 2
+ 115              	.LC31:
+ 116 0124 5350495F 	 .ascii "SPI_CS\000"
+ 116      435300
+ 117 012b 00       	 .align 2
+ 118              	.LC32:
+ 119 012c 4D50555F 	 .ascii "MPU_EXTI\000"
+ 119      45585449 
+ 119      00
+ 120 0135 000000   	 .align 2
+ 121              	.LC33:
+ 122 0138 4241524F 	 .ascii "BARO_EXTI\000"
+ 122      5F455854 
+ 122      4900
+ 123 0142 0000     	 .align 2
+ 124              	.LC34:
+ 125 0144 434F4D50 	 .ascii "COMPASS_EXTI\000"
+ 125      4153535F 
+ 125      45585449 
+ 125      00
+ 126 0151 000000   	 .align 2
+ 127              	.LC35:
+ 128 0154 55534200 	 .ascii "USB\000"
+ 129              	 .align 2
+ 130              	.LC36:
+ 131 0158 5553425F 	 .ascii "USB_DETECT\000"
+ 131      44455445 
+ 131      435400
+ 132 0163 00       	 .align 2
+ 133              	.LC37:
+ 134 0164 42454550 	 .ascii "BEEPER\000"
+ 134      455200
+ 135 016b 00       	 .align 2
+ 136              	.LC38:
+ 137 016c 4F534400 	 .ascii "OSD\000"
+ 138              	 .align 2
+ 139              	.LC39:
+ 140 0170 52585F42 	 .ascii "RX_BIND\000"
+ 140      494E4400 
+ 141              	 .align 2
+ 142              	.LC40:
+ 143 0178 494E5645 	 .ascii "INVERTER\000"
+ 143      52544552 
+ 143      00
+ 144 0181 000000   	 .align 2
+ 145              	.LC41:
+ 146 0184 4C45445F 	 .ascii "LED_STRIP\000"
+ 146      53545249 
+ 146      5000
+ 147 018e 0000     	 .align 2
+ 148              	.LC42:
+ 149 0190 5452414E 	 .ascii "TRANSPONDER\000"
+ 149      53504F4E 
+ 149      44455200 
+ 150              	 .align 2
+ 151              	.LC43:
+ 152 019c 56545800 	 .ascii "VTX\000"
+ 153              	 .align 2
+ 154              	.LC44:
+ 155 01a0 434F4D50 	 .ascii "COMPASS_CS\000"
+ 155      4153535F 
+ 155      435300
+ 156 01ab 00       	 .align 2
+ 157              	.LC45:
+ 158 01ac 52585F42 	 .ascii "RX_BIND_PLUG\000"
+ 158      494E445F 
+ 158      504C5547 
+ 158      00
+ 159 01b9 000000   	 .align 2
+ 160              	.LC46:
+ 161 01bc 45534353 	 .ascii "ESCSERIAL\000"
+ 161      45524941 
+ 161      4C00
+ 162 01c6 0000     	 .align 2
+ 163              	.LC47:
+ 164 01c8 43414D45 	 .ascii "CAMERA_CONTROL\000"
+ 164      52415F43 
+ 164      4F4E5452 
+ 164      4F4C00
+ 165 01d7 00       	 .align 2
+ 166              	.LC48:
+ 167 01d8 54494D55 	 .ascii "TIMUP\000"
+ 167      5000
+ 168 01de 0000     	 .align 2
+ 169              	.LC49:
+ 170 01e0 52414E47 	 .ascii "RANGEFINDER\000"
+ 170      4546494E 
+ 170      44455200 
+ 171              	 .align 2
+ 172              	.LC50:
+ 173 01ec 52585F53 	 .ascii "RX_SPI\000"
+ 173      504900
+ 174 01f3 00       	 .align 2
+ 175              	.LC51:
+ 176 01f4 50494E49 	 .ascii "PINIO\000"
+ 176      4F00
+ 177 01fa 0000     	 .align 2
+ 178              	.LC52:
+ 179 01fc 5553425F 	 .ascii "USB_MSC_PIN\000"
+ 179      4D53435F 
+ 179      50494E00 
+ 180              	 .align 2
+ 181              	.LC53:
+ 182 0208 5350495F 	 .ascii "SPI_PREINIT_IPU\000"
+ 182      50524549 
+ 182      4E49545F 
+ 182      49505500 
+ 183              	 .align 2
+ 184              	.LC54:
+ 185 0218 5350495F 	 .ascii "SPI_PREINIT_OPU\000"
+ 185      50524549 
+ 185      4E49545F 
+ 185      4F505500 
+ 186              	 .section .rodata.ownerNames,"a",%progbits
+ 187              	 .align 2
+ 190              	ownerNames:
+ 191 0000 00000000 	 .word .LC0
+ 192 0004 08000000 	 .word .LC1
+ 193 0008 0C000000 	 .word .LC2
+ 194 000c 10000000 	 .word .LC3
+ 195 0010 18000000 	 .word .LC4
+ 196 0014 20000000 	 .word .LC5
+ 197 0018 24000000 	 .word .LC6
+ 198 001c 28000000 	 .word .LC7
+ 199 0020 34000000 	 .word .LC8
+ 200 0024 40000000 	 .word .LC9
+ 201 0028 48000000 	 .word .LC10
+ 202 002c 54000000 	 .word .LC11
+ 203 0030 60000000 	 .word .LC12
+ 204 0034 6C000000 	 .word .LC13
+ 205 0038 74000000 	 .word .LC14
+ 206 003c 7C000000 	 .word .LC15
+ 207 0040 8C000000 	 .word .LC16
+ 208 0044 98000000 	 .word .LC17
+ 209 0048 A0000000 	 .word .LC18
+ 210 004c A8000000 	 .word .LC19
+ 211 0050 B4000000 	 .word .LC20
+ 212 0054 C0000000 	 .word .LC21
+ 213 0058 C8000000 	 .word .LC22
+ 214 005c D0000000 	 .word .LC23
+ 215 0060 D8000000 	 .word .LC24
+ 216 0064 E4000000 	 .word .LC25
+ 217 0068 F4000000 	 .word .LC26
+ 218 006c 00010000 	 .word .LC27
+ 219 0070 08010000 	 .word .LC28
+ 220 0074 10010000 	 .word .LC29
+ 221 0078 18010000 	 .word .LC30
+ 222 007c 24010000 	 .word .LC31
+ 223 0080 2C010000 	 .word .LC32
+ 224 0084 38010000 	 .word .LC33
+ 225 0088 44010000 	 .word .LC34
+ 226 008c 54010000 	 .word .LC35
+ 227 0090 58010000 	 .word .LC36
+ 228 0094 64010000 	 .word .LC37
+ 229 0098 6C010000 	 .word .LC38
+ 230 009c 70010000 	 .word .LC39
+ 231 00a0 78010000 	 .word .LC40
+ 232 00a4 84010000 	 .word .LC41
+ 233 00a8 90010000 	 .word .LC42
+ 234 00ac 9C010000 	 .word .LC43
+ 235 00b0 A0010000 	 .word .LC44
+ 236 00b4 AC010000 	 .word .LC45
+ 237 00b8 BC010000 	 .word .LC46
+ 238 00bc C8010000 	 .word .LC47
+ 239 00c0 D8010000 	 .word .LC48
+ 240 00c4 E0010000 	 .word .LC49
+ 241 00c8 EC010000 	 .word .LC50
+ 242 00cc F4010000 	 .word .LC51
+ 243 00d0 FC010000 	 .word .LC52
+ 244 00d4 08020000 	 .word .LC53
+ 245 00d8 18020000 	 .word .LC54
+ 246              	 .text
+ 247              	.Letext0:
+ 248              	 .file 1 "../cleanflight/src/main/drivers/resource.h"
+ 249              	 .file 2 "../cleanflight/src/main/drivers/resource.c"
+DEFINED SYMBOLS
+                            *ABS*:00000000 resource.c
+    {standard input}:190    .rodata.ownerNames:00000000 ownerNames
+    {standard input}:21     .rodata:00000000 $d
+    {standard input}:187    .rodata.ownerNames:00000000 $d
+
+NO UNDEFINED SYMBOLS

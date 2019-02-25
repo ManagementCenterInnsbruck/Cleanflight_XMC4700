@@ -1,0 +1,64 @@
+   1              	 .syntax unified
+   2              	 .cpu cortex-m4
+   3              	 .eabi_attribute 27,3
+   4              	 .fpu fpv4-sp-d16
+   5              	 .eabi_attribute 20,1
+   6              	 .eabi_attribute 21,1
+   7              	 .eabi_attribute 23,3
+   8              	 .eabi_attribute 24,1
+   9              	 .eabi_attribute 25,1
+  10              	 .eabi_attribute 26,1
+  11              	 .eabi_attribute 30,6
+  12              	 .eabi_attribute 34,1
+  13              	 .eabi_attribute 18,4
+  14              	 .thumb
+  15              	 .file "pinio.c"
+  16              	 .text
+  17              	.Ltext0:
+  18              	 .cfi_sections .debug_frame
+  19              	 .comm pinioConfig_System,8,4
+  20              	 .comm pinioConfig_Copy,8,4
+  21              	 .global pinioConfig_Registry
+  22              	 .section .pg_registry,"a",%progbits
+  23              	 .align 2
+  26              	pinioConfig_Registry:
+  27 0000 1102     	 .short 529
+  28 0002 0800     	 .short 8
+  29 0004 00000000 	 .word pinioConfig_System
+  30 0008 00000000 	 .word pinioConfig_Copy
+  31 000c 00000000 	 .word 0
+  32 0010 00000000 	 .word pgResetTemplate_pinioConfig
+  33              	 .global pgResetTemplate_pinioConfig
+  34              	 .section .pg_resetdata,"a",%progbits
+  35              	 .align 1
+  38              	pgResetTemplate_pinioConfig:
+  39 0000 00       	 .byte 0
+  40 0001 00       	 .byte 0
+  41 0002 00       	 .byte 0
+  42 0003 00       	 .byte 0
+  43 0004 01       	 .byte 1
+  44 0005 01       	 .byte 1
+  45 0006 01       	 .byte 1
+  46 0007 01       	 .byte 1
+  47              	 .text
+  48              	.Letext0:
+  49              	 .file 1 "d:\\xmc\\dave-ide-4.4.2-64bit\\eclipse\\arm-gcc-49\\arm-none-eabi\\include\\machine\\_default_types.h"
+  50              	 .file 2 "d:\\xmc\\dave-ide-4.4.2-64bit\\eclipse\\arm-gcc-49\\arm-none-eabi\\include\\stdint.h"
+  51              	 .file 3 "D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/lib/main/XMC4000/XMCLib/inc/xmc_usic.h"
+  52              	 .file 4 "D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/pg/pg.h"
+  53              	 .file 5 "D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/drivers/io_types.h"
+  54              	 .file 6 "../cleanflight/src/main/pg/pinio.h"
+  55              	 .file 7 "D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/drivers/resource.h"
+  56              	 .file 8 "D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/lib/main/CMSIS/Core/Include/core_cm4.h"
+  57              	 .file 9 "D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/lib/main/XMC4000/system_XMC4700.h"
+  58              	 .file 10 "../cleanflight/src/main/pg/pinio.c"
+DEFINED SYMBOLS
+                            *ABS*:00000000 pinio.c
+                            *COM*:00000008 pinioConfig_System
+                            *COM*:00000008 pinioConfig_Copy
+    {standard input}:26     .pg_registry:00000000 pinioConfig_Registry
+    {standard input}:23     .pg_registry:00000000 $d
+    {standard input}:38     .pg_resetdata:00000000 pgResetTemplate_pinioConfig
+    {standard input}:35     .pg_resetdata:00000000 $d
+
+NO UNDEFINED SYMBOLS

@@ -1,0 +1,2502 @@
+   1              	 .syntax unified
+   2              	 .cpu cortex-m4
+   3              	 .eabi_attribute 27,3
+   4              	 .fpu fpv4-sp-d16
+   5              	 .eabi_attribute 20,1
+   6              	 .eabi_attribute 21,1
+   7              	 .eabi_attribute 23,3
+   8              	 .eabi_attribute 24,1
+   9              	 .eabi_attribute 25,1
+  10              	 .eabi_attribute 26,1
+  11              	 .eabi_attribute 30,6
+  12              	 .eabi_attribute 34,1
+  13              	 .eabi_attribute 18,4
+  14              	 .thumb
+  15              	 .file "blackbox_io.c"
+  16              	 .text
+  17              	.Ltext0:
+  18              	 .cfi_sections .debug_frame
+  19              	 .section .text.blackboxConfig,"ax",%progbits
+  20              	 .align 2
+  21              	 .thumb
+  22              	 .thumb_func
+  24              	blackboxConfig:
+  25              	.LFB527:
+  26              	 .file 1 "../cleanflight/src/main/blackbox/blackbox.h"
+   1:../cleanflight/src/main/blackbox/blackbox.h **** /*
+   2:../cleanflight/src/main/blackbox/blackbox.h ****  * This file is part of Cleanflight and Betaflight.
+   3:../cleanflight/src/main/blackbox/blackbox.h ****  *
+   4:../cleanflight/src/main/blackbox/blackbox.h ****  * Cleanflight and Betaflight are free software. You can redistribute
+   5:../cleanflight/src/main/blackbox/blackbox.h ****  * this software and/or modify this software under the terms of the
+   6:../cleanflight/src/main/blackbox/blackbox.h ****  * GNU General Public License as published by the Free Software
+   7:../cleanflight/src/main/blackbox/blackbox.h ****  * Foundation, either version 3 of the License, or (at your option)
+   8:../cleanflight/src/main/blackbox/blackbox.h ****  * any later version.
+   9:../cleanflight/src/main/blackbox/blackbox.h ****  *
+  10:../cleanflight/src/main/blackbox/blackbox.h ****  * Cleanflight and Betaflight are distributed in the hope that they
+  11:../cleanflight/src/main/blackbox/blackbox.h ****  * will be useful, but WITHOUT ANY WARRANTY; without even the implied
+  12:../cleanflight/src/main/blackbox/blackbox.h ****  * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+  13:../cleanflight/src/main/blackbox/blackbox.h ****  * See the GNU General Public License for more details.
+  14:../cleanflight/src/main/blackbox/blackbox.h ****  *
+  15:../cleanflight/src/main/blackbox/blackbox.h ****  * You should have received a copy of the GNU General Public License
+  16:../cleanflight/src/main/blackbox/blackbox.h ****  * along with this software.
+  17:../cleanflight/src/main/blackbox/blackbox.h ****  *
+  18:../cleanflight/src/main/blackbox/blackbox.h ****  * If not, see <http://www.gnu.org/licenses/>.
+  19:../cleanflight/src/main/blackbox/blackbox.h ****  */
+  20:../cleanflight/src/main/blackbox/blackbox.h **** 
+  21:../cleanflight/src/main/blackbox/blackbox.h **** #pragma once
+  22:../cleanflight/src/main/blackbox/blackbox.h **** 
+  23:../cleanflight/src/main/blackbox/blackbox.h **** #include "platform.h"
+  24:../cleanflight/src/main/blackbox/blackbox.h **** #include "build/build_config.h"
+  25:../cleanflight/src/main/blackbox/blackbox.h **** #include "common/time.h"
+  26:../cleanflight/src/main/blackbox/blackbox.h **** #include "pg/pg.h"
+  27:../cleanflight/src/main/blackbox/blackbox.h **** 
+  28:../cleanflight/src/main/blackbox/blackbox.h **** typedef enum BlackboxDevice {
+  29:../cleanflight/src/main/blackbox/blackbox.h ****     BLACKBOX_DEVICE_NONE = 0,
+  30:../cleanflight/src/main/blackbox/blackbox.h **** #ifdef USE_FLASHFS
+  31:../cleanflight/src/main/blackbox/blackbox.h ****     BLACKBOX_DEVICE_FLASH = 1,
+  32:../cleanflight/src/main/blackbox/blackbox.h **** #endif
+  33:../cleanflight/src/main/blackbox/blackbox.h **** #ifdef USE_SDCARD
+  34:../cleanflight/src/main/blackbox/blackbox.h ****     BLACKBOX_DEVICE_SDCARD = 2,
+  35:../cleanflight/src/main/blackbox/blackbox.h **** #endif
+  36:../cleanflight/src/main/blackbox/blackbox.h ****     BLACKBOX_DEVICE_SERIAL = 3
+  37:../cleanflight/src/main/blackbox/blackbox.h **** } BlackboxDevice_e;
+  38:../cleanflight/src/main/blackbox/blackbox.h **** 
+  39:../cleanflight/src/main/blackbox/blackbox.h **** typedef enum BlackboxMode {
+  40:../cleanflight/src/main/blackbox/blackbox.h ****     BLACKBOX_MODE_NORMAL = 0,
+  41:../cleanflight/src/main/blackbox/blackbox.h ****     BLACKBOX_MODE_MOTOR_TEST,
+  42:../cleanflight/src/main/blackbox/blackbox.h ****     BLACKBOX_MODE_ALWAYS_ON
+  43:../cleanflight/src/main/blackbox/blackbox.h **** } BlackboxMode;
+  44:../cleanflight/src/main/blackbox/blackbox.h **** 
+  45:../cleanflight/src/main/blackbox/blackbox.h **** typedef enum FlightLogEvent {
+  46:../cleanflight/src/main/blackbox/blackbox.h ****     FLIGHT_LOG_EVENT_SYNC_BEEP = 0,
+  47:../cleanflight/src/main/blackbox/blackbox.h ****     FLIGHT_LOG_EVENT_INFLIGHT_ADJUSTMENT = 13,
+  48:../cleanflight/src/main/blackbox/blackbox.h ****     FLIGHT_LOG_EVENT_LOGGING_RESUME = 14,
+  49:../cleanflight/src/main/blackbox/blackbox.h ****     FLIGHT_LOG_EVENT_FLIGHTMODE = 30, // Add new event type for flight mode status.
+  50:../cleanflight/src/main/blackbox/blackbox.h ****     FLIGHT_LOG_EVENT_LOG_END = 255
+  51:../cleanflight/src/main/blackbox/blackbox.h **** } FlightLogEvent;
+  52:../cleanflight/src/main/blackbox/blackbox.h **** 
+  53:../cleanflight/src/main/blackbox/blackbox.h **** typedef struct blackboxConfig_s {
+  54:../cleanflight/src/main/blackbox/blackbox.h ****     uint16_t p_ratio; // I-frame interval / P-frame interval
+  55:../cleanflight/src/main/blackbox/blackbox.h ****     uint8_t device;
+  56:../cleanflight/src/main/blackbox/blackbox.h ****     uint8_t record_acc;
+  57:../cleanflight/src/main/blackbox/blackbox.h ****     uint8_t mode;
+  58:../cleanflight/src/main/blackbox/blackbox.h **** } blackboxConfig_t;
+  59:../cleanflight/src/main/blackbox/blackbox.h **** 
+  60:../cleanflight/src/main/blackbox/blackbox.h **** PG_DECLARE(blackboxConfig_t, blackboxConfig);
+  27              	 .loc 1 60 0
+  28              	 .cfi_startproc
+  29              	 
+  30              	 
+  31              	 
+  32 0000 80B4     	 push {r7}
+  33              	.LCFI0:
+  34              	 .cfi_def_cfa_offset 4
+  35              	 .cfi_offset 7,-4
+  36 0002 00AF     	 add r7,sp,#0
+  37              	.LCFI1:
+  38              	 .cfi_def_cfa_register 7
+  39              	 .loc 1 60 0
+  40 0004 024B     	 ldr r3,.L3
+  41 0006 1846     	 mov r0,r3
+  42 0008 BD46     	 mov sp,r7
+  43              	.LCFI2:
+  44              	 .cfi_def_cfa_register 13
+  45              	 
+  46 000a 5DF8047B 	 ldr r7,[sp],#4
+  47              	.LCFI3:
+  48              	 .cfi_restore 7
+  49              	 .cfi_def_cfa_offset 0
+  50 000e 7047     	 bx lr
+  51              	.L4:
+  52              	 .align 2
+  53              	.L3:
+  54 0010 00000000 	 .word blackboxConfig_System
+  55              	 .cfi_endproc
+  56              	.LFE527:
+  58              	 .section .text.constrain,"ax",%progbits
+  59              	 .align 2
+  60              	 .thumb
+  61              	 .thumb_func
+  63              	constrain:
+  64              	.LFB529:
+  65              	 .file 2 "D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/common/maths.h"
+   1:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/common\maths.h **** /*
+   2:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/common\maths.h ****  * This file is part of Cleanflight and Betaflight.
+   3:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/common\maths.h ****  *
+   4:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/common\maths.h ****  * Cleanflight and Betaflight are free software. You can redistribute
+   5:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/common\maths.h ****  * this software and/or modify this software under the terms of the
+   6:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/common\maths.h ****  * GNU General Public License as published by the Free Software
+   7:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/common\maths.h ****  * Foundation, either version 3 of the License, or (at your option)
+   8:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/common\maths.h ****  * any later version.
+   9:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/common\maths.h ****  *
+  10:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/common\maths.h ****  * Cleanflight and Betaflight are distributed in the hope that they
+  11:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/common\maths.h ****  * will be useful, but WITHOUT ANY WARRANTY; without even the implied
+  12:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/common\maths.h ****  * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+  13:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/common\maths.h ****  * See the GNU General Public License for more details.
+  14:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/common\maths.h ****  *
+  15:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/common\maths.h ****  * You should have received a copy of the GNU General Public License
+  16:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/common\maths.h ****  * along with this software.
+  17:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/common\maths.h ****  *
+  18:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/common\maths.h ****  * If not, see <http://www.gnu.org/licenses/>.
+  19:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/common\maths.h ****  */
+  20:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/common\maths.h **** 
+  21:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/common\maths.h **** #pragma once
+  22:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/common\maths.h **** 
+  23:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/common\maths.h **** #include <stdint.h>
+  24:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/common\maths.h **** 
+  25:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/common\maths.h **** #ifndef sq
+  26:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/common\maths.h **** #define sq(x) ((x)*(x))
+  27:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/common\maths.h **** #endif
+  28:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/common\maths.h **** #define power3(x) ((x)*(x)*(x))
+  29:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/common\maths.h **** 
+  30:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/common\maths.h **** // Undefine this for use libc sinf/cosf. Keep this defined to use fast sin/cos approximations
+  31:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/common\maths.h **** #define FAST_MATH             // order 9 approximation
+  32:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/common\maths.h **** #define VERY_FAST_MATH      // order 7 approximation
+  33:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/common\maths.h **** 
+  34:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/common\maths.h **** // Use floating point M_PI instead explicitly.
+  35:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/common\maths.h **** #define M_PIf       3.14159265358979323846f
+  36:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/common\maths.h **** 
+  37:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/common\maths.h **** #define RAD    (M_PIf / 180.0f)
+  38:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/common\maths.h **** #define DEGREES_TO_DECIDEGREES(angle) ((angle) * 10)
+  39:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/common\maths.h **** #define DECIDEGREES_TO_DEGREES(angle) ((angle) / 10)
+  40:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/common\maths.h **** #define DECIDEGREES_TO_RADIANS(angle) ((angle) / 10.0f * 0.0174532925f)
+  41:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/common\maths.h **** #define DEGREES_TO_RADIANS(angle) ((angle) * 0.0174532925f)
+  42:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/common\maths.h **** 
+  43:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/common\maths.h **** #define CM_S_TO_KM_H(centimetersPerSecond) ((centimetersPerSecond) * 36 / 1000)
+  44:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/common\maths.h **** #define CM_S_TO_MPH(centimetersPerSecond) ((centimetersPerSecond) * 10000 / 5080 / 88)
+  45:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/common\maths.h **** 
+  46:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/common\maths.h **** #define MIN(a,b) \
+  47:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/common\maths.h ****   __extension__ ({ __typeof__ (a) _a = (a); \
+  48:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/common\maths.h ****   __typeof__ (b) _b = (b); \
+  49:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/common\maths.h ****   _a < _b ? _a : _b; })
+  50:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/common\maths.h **** #define MAX(a,b) \
+  51:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/common\maths.h ****   __extension__ ({ __typeof__ (a) _a = (a); \
+  52:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/common\maths.h ****   __typeof__ (b) _b = (b); \
+  53:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/common\maths.h ****   _a > _b ? _a : _b; })
+  54:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/common\maths.h **** #define ABS(x) \
+  55:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/common\maths.h ****   __extension__ ({ __typeof__ (x) _x = (x); \
+  56:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/common\maths.h ****   _x > 0 ? _x : -_x; })
+  57:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/common\maths.h **** 
+  58:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/common\maths.h **** #define Q12 (1 << 12)
+  59:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/common\maths.h **** 
+  60:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/common\maths.h **** #define HZ_TO_INTERVAL_US(x) (1000000 / (x))
+  61:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/common\maths.h **** 
+  62:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/common\maths.h **** typedef int32_t fix12_t;
+  63:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/common\maths.h **** 
+  64:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/common\maths.h **** typedef struct stdev_s
+  65:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/common\maths.h **** {
+  66:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/common\maths.h ****     float m_oldM, m_newM, m_oldS, m_newS;
+  67:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/common\maths.h ****     int m_n;
+  68:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/common\maths.h **** } stdev_t;
+  69:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/common\maths.h **** 
+  70:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/common\maths.h **** // Floating point 3 vector.
+  71:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/common\maths.h **** typedef struct fp_vector {
+  72:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/common\maths.h ****     float X;
+  73:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/common\maths.h ****     float Y;
+  74:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/common\maths.h ****     float Z;
+  75:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/common\maths.h **** } t_fp_vector_def;
+  76:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/common\maths.h **** 
+  77:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/common\maths.h **** typedef union u_fp_vector {
+  78:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/common\maths.h ****     float A[3];
+  79:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/common\maths.h ****     t_fp_vector_def V;
+  80:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/common\maths.h **** } t_fp_vector;
+  81:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/common\maths.h **** 
+  82:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/common\maths.h **** // Floating point Euler angles.
+  83:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/common\maths.h **** // Be carefull, could be either of degrees or radians.
+  84:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/common\maths.h **** typedef struct fp_angles {
+  85:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/common\maths.h ****     float roll;
+  86:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/common\maths.h ****     float pitch;
+  87:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/common\maths.h ****     float yaw;
+  88:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/common\maths.h **** } fp_angles_def;
+  89:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/common\maths.h **** 
+  90:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/common\maths.h **** typedef union {
+  91:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/common\maths.h ****     float raw[3];
+  92:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/common\maths.h ****     fp_angles_def angles;
+  93:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/common\maths.h **** } fp_angles_t;
+  94:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/common\maths.h **** 
+  95:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/common\maths.h **** int gcd(int num, int denom);
+  96:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/common\maths.h **** float powerf(float base, int exp);
+  97:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/common\maths.h **** int32_t applyDeadband(int32_t value, int32_t deadband);
+  98:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/common\maths.h **** float fapplyDeadband(float value, float deadband);
+  99:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/common\maths.h **** 
+ 100:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/common\maths.h **** void devClear(stdev_t *dev);
+ 101:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/common\maths.h **** void devPush(stdev_t *dev, float x);
+ 102:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/common\maths.h **** float devVariance(stdev_t *dev);
+ 103:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/common\maths.h **** float devStandardDeviation(stdev_t *dev);
+ 104:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/common\maths.h **** float degreesToRadians(int16_t degrees);
+ 105:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/common\maths.h **** 
+ 106:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/common\maths.h **** int scaleRange(int x, int srcFrom, int srcTo, int destFrom, int destTo);
+ 107:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/common\maths.h **** float scaleRangef(float x, float srcFrom, float srcTo, float destFrom, float destTo);
+ 108:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/common\maths.h **** 
+ 109:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/common\maths.h **** void normalizeV(struct fp_vector *src, struct fp_vector *dest);
+ 110:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/common\maths.h **** 
+ 111:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/common\maths.h **** void rotateV(struct fp_vector *v, fp_angles_t *delta);
+ 112:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/common\maths.h **** void buildRotationMatrix(fp_angles_t *delta, float matrix[3][3]);
+ 113:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/common\maths.h **** 
+ 114:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/common\maths.h **** int32_t quickMedianFilter3(int32_t * v);
+ 115:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/common\maths.h **** int32_t quickMedianFilter5(int32_t * v);
+ 116:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/common\maths.h **** int32_t quickMedianFilter7(int32_t * v);
+ 117:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/common\maths.h **** int32_t quickMedianFilter9(int32_t * v);
+ 118:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/common\maths.h **** 
+ 119:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/common\maths.h **** float quickMedianFilter3f(float * v);
+ 120:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/common\maths.h **** float quickMedianFilter5f(float * v);
+ 121:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/common\maths.h **** float quickMedianFilter7f(float * v);
+ 122:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/common\maths.h **** float quickMedianFilter9f(float * v);
+ 123:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/common\maths.h **** 
+ 124:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/common\maths.h **** #if defined(FAST_MATH) || defined(VERY_FAST_MATH)
+ 125:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/common\maths.h **** float sin_approx(float x);
+ 126:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/common\maths.h **** float cos_approx(float x);
+ 127:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/common\maths.h **** float atan2_approx(float y, float x);
+ 128:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/common\maths.h **** float acos_approx(float x);
+ 129:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/common\maths.h **** #define tan_approx(x)       (sin_approx(x) / cos_approx(x))
+ 130:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/common\maths.h **** float exp_approx(float val);
+ 131:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/common\maths.h **** float log_approx(float val);
+ 132:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/common\maths.h **** float pow_approx(float a, float b);
+ 133:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/common\maths.h **** #else
+ 134:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/common\maths.h **** #define sin_approx(x)   sinf(x)
+ 135:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/common\maths.h **** #define cos_approx(x)   cosf(x)
+ 136:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/common\maths.h **** #define atan2_approx(y,x)   atan2f(y,x)
+ 137:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/common\maths.h **** #define acos_approx(x)      acosf(x)
+ 138:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/common\maths.h **** #define tan_approx(x)       tanf(x)
+ 139:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/common\maths.h **** #define exp_approx(x)       expf(x)
+ 140:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/common\maths.h **** #define log_approx(x)       logf(x)
+ 141:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/common\maths.h **** #define pow_approx(a, b)    powf(b, a)
+ 142:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/common\maths.h **** #endif
+ 143:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/common\maths.h **** 
+ 144:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/common\maths.h **** void arraySubInt32(int32_t *dest, int32_t *array1, int32_t *array2, int count);
+ 145:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/common\maths.h **** 
+ 146:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/common\maths.h **** int16_t qPercent(fix12_t q);
+ 147:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/common\maths.h **** int16_t qMultiply(fix12_t q, int16_t input);
+ 148:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/common\maths.h **** fix12_t qConstruct(int16_t num, int16_t den);
+ 149:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/common\maths.h **** 
+ 150:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/common\maths.h **** static inline int constrain(int amt, int low, int high)
+ 151:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/common\maths.h **** {
+  66              	 .loc 2 151 0
+  67              	 .cfi_startproc
+  68              	 
+  69              	 
+  70              	 
+  71 0000 80B4     	 push {r7}
+  72              	.LCFI4:
+  73              	 .cfi_def_cfa_offset 4
+  74              	 .cfi_offset 7,-4
+  75 0002 85B0     	 sub sp,sp,#20
+  76              	.LCFI5:
+  77              	 .cfi_def_cfa_offset 24
+  78 0004 00AF     	 add r7,sp,#0
+  79              	.LCFI6:
+  80              	 .cfi_def_cfa_register 7
+  81 0006 F860     	 str r0,[r7,#12]
+  82 0008 B960     	 str r1,[r7,#8]
+  83 000a 7A60     	 str r2,[r7,#4]
+ 152:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/common\maths.h ****     if (amt < low)
+  84              	 .loc 2 152 0
+  85 000c FA68     	 ldr r2,[r7,#12]
+  86 000e BB68     	 ldr r3,[r7,#8]
+  87 0010 9A42     	 cmp r2,r3
+  88 0012 01DA     	 bge .L6
+ 153:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/common\maths.h ****         return low;
+  89              	 .loc 2 153 0
+  90 0014 BB68     	 ldr r3,[r7,#8]
+  91 0016 06E0     	 b .L7
+  92              	.L6:
+ 154:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/common\maths.h ****     else if (amt > high)
+  93              	 .loc 2 154 0
+  94 0018 FA68     	 ldr r2,[r7,#12]
+  95 001a 7B68     	 ldr r3,[r7,#4]
+  96 001c 9A42     	 cmp r2,r3
+  97 001e 01DD     	 ble .L8
+ 155:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/common\maths.h ****         return high;
+  98              	 .loc 2 155 0
+  99 0020 7B68     	 ldr r3,[r7,#4]
+ 100 0022 00E0     	 b .L7
+ 101              	.L8:
+ 156:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/common\maths.h ****     else
+ 157:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/common\maths.h ****         return amt;
+ 102              	 .loc 2 157 0
+ 103 0024 FB68     	 ldr r3,[r7,#12]
+ 104              	.L7:
+ 158:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/common\maths.h **** }
+ 105              	 .loc 2 158 0
+ 106 0026 1846     	 mov r0,r3
+ 107 0028 1437     	 adds r7,r7,#20
+ 108              	.LCFI7:
+ 109              	 .cfi_def_cfa_offset 4
+ 110 002a BD46     	 mov sp,r7
+ 111              	.LCFI8:
+ 112              	 .cfi_def_cfa_register 13
+ 113              	 
+ 114 002c 5DF8047B 	 ldr r7,[sp],#4
+ 115              	.LCFI9:
+ 116              	 .cfi_restore 7
+ 117              	 .cfi_def_cfa_offset 0
+ 118 0030 7047     	 bx lr
+ 119              	 .cfi_endproc
+ 120              	.LFE529:
+ 122 0032 00BF     	 .section .bss.blackboxMaxHeaderBytesPerIteration,"aw",%nobits
+ 125              	blackboxMaxHeaderBytesPerIteration:
+ 126 0000 00       	 .space 1
+ 127              	 .comm blackboxHeaderBudget,4,4
+ 128              	 .section .bss.blackboxPort,"aw",%nobits
+ 129              	 .align 2
+ 132              	blackboxPort:
+ 133 0000 00000000 	 .space 4
+ 134              	 .section .bss.blackboxPortSharing,"aw",%nobits
+ 137              	blackboxPortSharing:
+ 138 0000 00       	 .space 1
+ 139              	 .section .bss.blackboxSDCard,"aw",%nobits
+ 140              	 .align 2
+ 143              	blackboxSDCard:
+ 144 0000 00000000 	 .space 19
+ 144      00000000 
+ 144      00000000 
+ 144      00000000 
+ 144      000000
+ 145 0013 00       	 .section .text.blackboxOpen,"ax",%progbits
+ 146              	 .align 2
+ 147              	 .global blackboxOpen
+ 148              	 .thumb
+ 149              	 .thumb_func
+ 151              	blackboxOpen:
+ 152              	.LFB540:
+ 153              	 .file 3 "../cleanflight/src/main/blackbox/blackbox_io.c"
+   1:../cleanflight/src/main/blackbox/blackbox_io.c **** /*
+   2:../cleanflight/src/main/blackbox/blackbox_io.c ****  * This file is part of Cleanflight and Betaflight.
+   3:../cleanflight/src/main/blackbox/blackbox_io.c ****  *
+   4:../cleanflight/src/main/blackbox/blackbox_io.c ****  * Cleanflight and Betaflight are free software. You can redistribute
+   5:../cleanflight/src/main/blackbox/blackbox_io.c ****  * this software and/or modify this software under the terms of the
+   6:../cleanflight/src/main/blackbox/blackbox_io.c ****  * GNU General Public License as published by the Free Software
+   7:../cleanflight/src/main/blackbox/blackbox_io.c ****  * Foundation, either version 3 of the License, or (at your option)
+   8:../cleanflight/src/main/blackbox/blackbox_io.c ****  * any later version.
+   9:../cleanflight/src/main/blackbox/blackbox_io.c ****  *
+  10:../cleanflight/src/main/blackbox/blackbox_io.c ****  * Cleanflight and Betaflight are distributed in the hope that they
+  11:../cleanflight/src/main/blackbox/blackbox_io.c ****  * will be useful, but WITHOUT ANY WARRANTY; without even the implied
+  12:../cleanflight/src/main/blackbox/blackbox_io.c ****  * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+  13:../cleanflight/src/main/blackbox/blackbox_io.c ****  * See the GNU General Public License for more details.
+  14:../cleanflight/src/main/blackbox/blackbox_io.c ****  *
+  15:../cleanflight/src/main/blackbox/blackbox_io.c ****  * You should have received a copy of the GNU General Public License
+  16:../cleanflight/src/main/blackbox/blackbox_io.c ****  * along with this software.
+  17:../cleanflight/src/main/blackbox/blackbox_io.c ****  *
+  18:../cleanflight/src/main/blackbox/blackbox_io.c ****  * If not, see <http://www.gnu.org/licenses/>.
+  19:../cleanflight/src/main/blackbox/blackbox_io.c ****  */
+  20:../cleanflight/src/main/blackbox/blackbox_io.c **** 
+  21:../cleanflight/src/main/blackbox/blackbox_io.c **** #include <stdint.h>
+  22:../cleanflight/src/main/blackbox/blackbox_io.c **** #include <stdbool.h>
+  23:../cleanflight/src/main/blackbox/blackbox_io.c **** #include <stdlib.h>
+  24:../cleanflight/src/main/blackbox/blackbox_io.c **** #include <stdarg.h>
+  25:../cleanflight/src/main/blackbox/blackbox_io.c **** #include <string.h>
+  26:../cleanflight/src/main/blackbox/blackbox_io.c **** 
+  27:../cleanflight/src/main/blackbox/blackbox_io.c **** #include "platform.h"
+  28:../cleanflight/src/main/blackbox/blackbox_io.c **** 
+  29:../cleanflight/src/main/blackbox/blackbox_io.c **** #ifdef USE_BLACKBOX
+  30:../cleanflight/src/main/blackbox/blackbox_io.c **** 
+  31:../cleanflight/src/main/blackbox/blackbox_io.c **** #include "blackbox.h"
+  32:../cleanflight/src/main/blackbox/blackbox_io.c **** #include "blackbox_io.h"
+  33:../cleanflight/src/main/blackbox/blackbox_io.c **** 
+  34:../cleanflight/src/main/blackbox/blackbox_io.c **** #include "common/maths.h"
+  35:../cleanflight/src/main/blackbox/blackbox_io.c **** 
+  36:../cleanflight/src/main/blackbox/blackbox_io.c **** #include "flight/pid.h"
+  37:../cleanflight/src/main/blackbox/blackbox_io.c **** 
+  38:../cleanflight/src/main/blackbox/blackbox_io.c **** #include "io/asyncfatfs/asyncfatfs.h"
+  39:../cleanflight/src/main/blackbox/blackbox_io.c **** #include "io/flashfs.h"
+  40:../cleanflight/src/main/blackbox/blackbox_io.c **** #include "io/serial.h"
+  41:../cleanflight/src/main/blackbox/blackbox_io.c **** 
+  42:../cleanflight/src/main/blackbox/blackbox_io.c **** #include "msp/msp_serial.h"
+  43:../cleanflight/src/main/blackbox/blackbox_io.c **** 
+  44:../cleanflight/src/main/blackbox/blackbox_io.c **** #define BLACKBOX_SERIAL_PORT_MODE MODE_TX
+  45:../cleanflight/src/main/blackbox/blackbox_io.c **** 
+  46:../cleanflight/src/main/blackbox/blackbox_io.c **** // How many bytes can we transmit per loop iteration when writing headers?
+  47:../cleanflight/src/main/blackbox/blackbox_io.c **** static uint8_t blackboxMaxHeaderBytesPerIteration;
+  48:../cleanflight/src/main/blackbox/blackbox_io.c **** 
+  49:../cleanflight/src/main/blackbox/blackbox_io.c **** // How many bytes can we write *this* iteration without overflowing transmit buffers or overstressi
+  50:../cleanflight/src/main/blackbox/blackbox_io.c **** int32_t blackboxHeaderBudget;
+  51:../cleanflight/src/main/blackbox/blackbox_io.c **** 
+  52:../cleanflight/src/main/blackbox/blackbox_io.c **** static serialPort_t *blackboxPort = NULL;
+  53:../cleanflight/src/main/blackbox/blackbox_io.c **** static portSharing_e blackboxPortSharing;
+  54:../cleanflight/src/main/blackbox/blackbox_io.c **** 
+  55:../cleanflight/src/main/blackbox/blackbox_io.c **** #ifdef USE_SDCARD
+  56:../cleanflight/src/main/blackbox/blackbox_io.c **** 
+  57:../cleanflight/src/main/blackbox/blackbox_io.c **** static struct {
+  58:../cleanflight/src/main/blackbox/blackbox_io.c ****     afatfsFilePtr_t logFile;
+  59:../cleanflight/src/main/blackbox/blackbox_io.c ****     afatfsFilePtr_t logDirectory;
+  60:../cleanflight/src/main/blackbox/blackbox_io.c ****     afatfsFinder_t logDirectoryFinder;
+  61:../cleanflight/src/main/blackbox/blackbox_io.c ****     uint32_t largestLogFileNumber;
+  62:../cleanflight/src/main/blackbox/blackbox_io.c **** 
+  63:../cleanflight/src/main/blackbox/blackbox_io.c ****     enum {
+  64:../cleanflight/src/main/blackbox/blackbox_io.c ****         BLACKBOX_SDCARD_INITIAL,
+  65:../cleanflight/src/main/blackbox/blackbox_io.c ****         BLACKBOX_SDCARD_WAITING,
+  66:../cleanflight/src/main/blackbox/blackbox_io.c ****         BLACKBOX_SDCARD_ENUMERATE_FILES,
+  67:../cleanflight/src/main/blackbox/blackbox_io.c ****         BLACKBOX_SDCARD_CHANGE_INTO_LOG_DIRECTORY,
+  68:../cleanflight/src/main/blackbox/blackbox_io.c ****         BLACKBOX_SDCARD_READY_TO_CREATE_LOG,
+  69:../cleanflight/src/main/blackbox/blackbox_io.c ****         BLACKBOX_SDCARD_READY_TO_LOG
+  70:../cleanflight/src/main/blackbox/blackbox_io.c ****     } state;
+  71:../cleanflight/src/main/blackbox/blackbox_io.c **** } blackboxSDCard;
+  72:../cleanflight/src/main/blackbox/blackbox_io.c **** 
+  73:../cleanflight/src/main/blackbox/blackbox_io.c **** #define LOGFILE_PREFIX "LOG"
+  74:../cleanflight/src/main/blackbox/blackbox_io.c **** #define LOGFILE_SUFFIX "BBL"
+  75:../cleanflight/src/main/blackbox/blackbox_io.c **** 
+  76:../cleanflight/src/main/blackbox/blackbox_io.c **** #endif // USE_SDCARD
+  77:../cleanflight/src/main/blackbox/blackbox_io.c **** 
+  78:../cleanflight/src/main/blackbox/blackbox_io.c **** void blackboxOpen(void)
+  79:../cleanflight/src/main/blackbox/blackbox_io.c **** {
+ 154              	 .loc 3 79 0
+ 155              	 .cfi_startproc
+ 156              	 
+ 157              	 
+ 158 0000 80B5     	 push {r7,lr}
+ 159              	.LCFI10:
+ 160              	 .cfi_def_cfa_offset 8
+ 161              	 .cfi_offset 7,-8
+ 162              	 .cfi_offset 14,-4
+ 163 0002 82B0     	 sub sp,sp,#8
+ 164              	.LCFI11:
+ 165              	 .cfi_def_cfa_offset 16
+ 166 0004 00AF     	 add r7,sp,#0
+ 167              	.LCFI12:
+ 168              	 .cfi_def_cfa_register 7
+  80:../cleanflight/src/main/blackbox/blackbox_io.c ****     serialPort_t *sharedBlackboxAndMspPort = findSharedSerialPort(FUNCTION_BLACKBOX, FUNCTION_MSP);
+ 169              	 .loc 3 80 0
+ 170 0006 8020     	 movs r0,#128
+ 171 0008 0121     	 movs r1,#1
+ 172 000a FFF7FEFF 	 bl findSharedSerialPort
+ 173 000e 7860     	 str r0,[r7,#4]
+  81:../cleanflight/src/main/blackbox/blackbox_io.c ****     if (sharedBlackboxAndMspPort) {
+ 174              	 .loc 3 81 0
+ 175 0010 7B68     	 ldr r3,[r7,#4]
+ 176 0012 002B     	 cmp r3,#0
+ 177 0014 02D0     	 beq .L9
+  82:../cleanflight/src/main/blackbox/blackbox_io.c ****         mspSerialReleasePortIfAllocated(sharedBlackboxAndMspPort);
+ 178              	 .loc 3 82 0
+ 179 0016 7868     	 ldr r0,[r7,#4]
+ 180 0018 FFF7FEFF 	 bl mspSerialReleasePortIfAllocated
+ 181              	.L9:
+  83:../cleanflight/src/main/blackbox/blackbox_io.c ****     }
+  84:../cleanflight/src/main/blackbox/blackbox_io.c **** }
+ 182              	 .loc 3 84 0
+ 183 001c 0837     	 adds r7,r7,#8
+ 184              	.LCFI13:
+ 185              	 .cfi_def_cfa_offset 8
+ 186 001e BD46     	 mov sp,r7
+ 187              	.LCFI14:
+ 188              	 .cfi_def_cfa_register 13
+ 189              	 
+ 190 0020 80BD     	 pop {r7,pc}
+ 191              	 .cfi_endproc
+ 192              	.LFE540:
+ 194 0022 00BF     	 .section .text.blackboxWrite,"ax",%progbits
+ 195              	 .align 2
+ 196              	 .global blackboxWrite
+ 197              	 .thumb
+ 198              	 .thumb_func
+ 200              	blackboxWrite:
+ 201              	.LFB541:
+  85:../cleanflight/src/main/blackbox/blackbox_io.c **** 
+  86:../cleanflight/src/main/blackbox/blackbox_io.c **** void blackboxWrite(uint8_t value)
+  87:../cleanflight/src/main/blackbox/blackbox_io.c **** {
+ 202              	 .loc 3 87 0
+ 203              	 .cfi_startproc
+ 204              	 
+ 205              	 
+ 206 0000 80B5     	 push {r7,lr}
+ 207              	.LCFI15:
+ 208              	 .cfi_def_cfa_offset 8
+ 209              	 .cfi_offset 7,-8
+ 210              	 .cfi_offset 14,-4
+ 211 0002 82B0     	 sub sp,sp,#8
+ 212              	.LCFI16:
+ 213              	 .cfi_def_cfa_offset 16
+ 214 0004 00AF     	 add r7,sp,#0
+ 215              	.LCFI17:
+ 216              	 .cfi_def_cfa_register 7
+ 217 0006 0346     	 mov r3,r0
+ 218 0008 FB71     	 strb r3,[r7,#7]
+  88:../cleanflight/src/main/blackbox/blackbox_io.c ****     switch (blackboxConfig()->device) {
+ 219              	 .loc 3 88 0
+ 220 000a FFF7FEFF 	 bl blackboxConfig
+ 221 000e 0346     	 mov r3,r0
+ 222 0010 9B78     	 ldrb r3,[r3,#2]
+ 223 0012 022B     	 cmp r3,#2
+ 224 0014 07D1     	 bne .L15
+  89:../cleanflight/src/main/blackbox/blackbox_io.c **** #ifdef USE_FLASHFS
+  90:../cleanflight/src/main/blackbox/blackbox_io.c ****     case BLACKBOX_DEVICE_FLASH:
+  91:../cleanflight/src/main/blackbox/blackbox_io.c ****         flashfsWriteByte(value); // Write byte asynchronously
+  92:../cleanflight/src/main/blackbox/blackbox_io.c ****         break;
+  93:../cleanflight/src/main/blackbox/blackbox_io.c **** #endif
+  94:../cleanflight/src/main/blackbox/blackbox_io.c **** #ifdef USE_SDCARD
+  95:../cleanflight/src/main/blackbox/blackbox_io.c ****     case BLACKBOX_DEVICE_SDCARD:
+  96:../cleanflight/src/main/blackbox/blackbox_io.c ****         afatfs_fputc(blackboxSDCard.logFile, value);
+ 225              	 .loc 3 96 0
+ 226 0016 094B     	 ldr r3,.L16
+ 227 0018 1A68     	 ldr r2,[r3]
+ 228 001a FB79     	 ldrb r3,[r7,#7]
+ 229 001c 1046     	 mov r0,r2
+ 230 001e 1946     	 mov r1,r3
+ 231 0020 FFF7FEFF 	 bl afatfs_fputc
+  97:../cleanflight/src/main/blackbox/blackbox_io.c ****         break;
+ 232              	 .loc 3 97 0
+ 233 0024 07E0     	 b .L11
+ 234              	.L15:
+  98:../cleanflight/src/main/blackbox/blackbox_io.c **** #endif
+  99:../cleanflight/src/main/blackbox/blackbox_io.c ****     case BLACKBOX_DEVICE_SERIAL:
+ 100:../cleanflight/src/main/blackbox/blackbox_io.c ****     default:
+ 101:../cleanflight/src/main/blackbox/blackbox_io.c ****         serialWrite(blackboxPort, value);
+ 235              	 .loc 3 101 0
+ 236 0026 064B     	 ldr r3,.L16+4
+ 237 0028 1A68     	 ldr r2,[r3]
+ 238 002a FB79     	 ldrb r3,[r7,#7]
+ 239 002c 1046     	 mov r0,r2
+ 240 002e 1946     	 mov r1,r3
+ 241 0030 FFF7FEFF 	 bl serialWrite
+ 102:../cleanflight/src/main/blackbox/blackbox_io.c ****         break;
+ 242              	 .loc 3 102 0
+ 243 0034 00BF     	 nop
+ 244              	.L11:
+ 103:../cleanflight/src/main/blackbox/blackbox_io.c ****     }
+ 104:../cleanflight/src/main/blackbox/blackbox_io.c **** }
+ 245              	 .loc 3 104 0
+ 246 0036 0837     	 adds r7,r7,#8
+ 247              	.LCFI18:
+ 248              	 .cfi_def_cfa_offset 8
+ 249 0038 BD46     	 mov sp,r7
+ 250              	.LCFI19:
+ 251              	 .cfi_def_cfa_register 13
+ 252              	 
+ 253 003a 80BD     	 pop {r7,pc}
+ 254              	.L17:
+ 255              	 .align 2
+ 256              	.L16:
+ 257 003c 00000000 	 .word blackboxSDCard
+ 258 0040 00000000 	 .word blackboxPort
+ 259              	 .cfi_endproc
+ 260              	.LFE541:
+ 262              	 .section .text.blackboxWriteString,"ax",%progbits
+ 263              	 .align 2
+ 264              	 .global blackboxWriteString
+ 265              	 .thumb
+ 266              	 .thumb_func
+ 268              	blackboxWriteString:
+ 269              	.LFB542:
+ 105:../cleanflight/src/main/blackbox/blackbox_io.c **** 
+ 106:../cleanflight/src/main/blackbox/blackbox_io.c **** // Print the null-terminated string 's' to the blackbox device and return the number of bytes writt
+ 107:../cleanflight/src/main/blackbox/blackbox_io.c **** int blackboxWriteString(const char *s)
+ 108:../cleanflight/src/main/blackbox/blackbox_io.c **** {
+ 270              	 .loc 3 108 0
+ 271              	 .cfi_startproc
+ 272              	 
+ 273              	 
+ 274 0000 80B5     	 push {r7,lr}
+ 275              	.LCFI20:
+ 276              	 .cfi_def_cfa_offset 8
+ 277              	 .cfi_offset 7,-8
+ 278              	 .cfi_offset 14,-4
+ 279 0002 84B0     	 sub sp,sp,#16
+ 280              	.LCFI21:
+ 281              	 .cfi_def_cfa_offset 24
+ 282 0004 00AF     	 add r7,sp,#0
+ 283              	.LCFI22:
+ 284              	 .cfi_def_cfa_register 7
+ 285 0006 7860     	 str r0,[r7,#4]
+ 109:../cleanflight/src/main/blackbox/blackbox_io.c ****     int length;
+ 110:../cleanflight/src/main/blackbox/blackbox_io.c ****     const uint8_t *pos;
+ 111:../cleanflight/src/main/blackbox/blackbox_io.c **** 
+ 112:../cleanflight/src/main/blackbox/blackbox_io.c ****     switch (blackboxConfig()->device) {
+ 286              	 .loc 3 112 0
+ 287 0008 FFF7FEFF 	 bl blackboxConfig
+ 288 000c 0346     	 mov r3,r0
+ 289 000e 9B78     	 ldrb r3,[r3,#2]
+ 290 0010 022B     	 cmp r3,#2
+ 291 0012 0DD1     	 bne .L25
+ 113:../cleanflight/src/main/blackbox/blackbox_io.c **** 
+ 114:../cleanflight/src/main/blackbox/blackbox_io.c **** #ifdef USE_FLASHFS
+ 115:../cleanflight/src/main/blackbox/blackbox_io.c ****     case BLACKBOX_DEVICE_FLASH:
+ 116:../cleanflight/src/main/blackbox/blackbox_io.c ****         length = strlen(s);
+ 117:../cleanflight/src/main/blackbox/blackbox_io.c ****         flashfsWrite((const uint8_t*) s, length, false); // Write asynchronously
+ 118:../cleanflight/src/main/blackbox/blackbox_io.c ****         break;
+ 119:../cleanflight/src/main/blackbox/blackbox_io.c **** #endif // USE_FLASHFS
+ 120:../cleanflight/src/main/blackbox/blackbox_io.c **** 
+ 121:../cleanflight/src/main/blackbox/blackbox_io.c **** #ifdef USE_SDCARD
+ 122:../cleanflight/src/main/blackbox/blackbox_io.c ****     case BLACKBOX_DEVICE_SDCARD:
+ 123:../cleanflight/src/main/blackbox/blackbox_io.c ****         length = strlen(s);
+ 292              	 .loc 3 123 0
+ 293 0014 7868     	 ldr r0,[r7,#4]
+ 294 0016 FFF7FEFF 	 bl strlen
+ 295 001a 0346     	 mov r3,r0
+ 296 001c FB60     	 str r3,[r7,#12]
+ 124:../cleanflight/src/main/blackbox/blackbox_io.c ****         afatfs_fwrite(blackboxSDCard.logFile, (const uint8_t*) s, length); // Ignore failures due t
+ 297              	 .loc 3 124 0
+ 298 001e 124B     	 ldr r3,.L26
+ 299 0020 1A68     	 ldr r2,[r3]
+ 300 0022 FB68     	 ldr r3,[r7,#12]
+ 301 0024 1046     	 mov r0,r2
+ 302 0026 7968     	 ldr r1,[r7,#4]
+ 303 0028 1A46     	 mov r2,r3
+ 304 002a FFF7FEFF 	 bl afatfs_fwrite
+ 125:../cleanflight/src/main/blackbox/blackbox_io.c ****         break;
+ 305              	 .loc 3 125 0
+ 306 002e 16E0     	 b .L21
+ 307              	.L25:
+ 126:../cleanflight/src/main/blackbox/blackbox_io.c **** #endif // USE_SDCARD
+ 127:../cleanflight/src/main/blackbox/blackbox_io.c **** 
+ 128:../cleanflight/src/main/blackbox/blackbox_io.c ****     case BLACKBOX_DEVICE_SERIAL:
+ 129:../cleanflight/src/main/blackbox/blackbox_io.c ****     default:
+ 130:../cleanflight/src/main/blackbox/blackbox_io.c ****         pos = (uint8_t*) s;
+ 308              	 .loc 3 130 0
+ 309 0030 7B68     	 ldr r3,[r7,#4]
+ 310 0032 BB60     	 str r3,[r7,#8]
+ 131:../cleanflight/src/main/blackbox/blackbox_io.c ****         while (*pos) {
+ 311              	 .loc 3 131 0
+ 312 0034 0AE0     	 b .L22
+ 313              	.L23:
+ 132:../cleanflight/src/main/blackbox/blackbox_io.c ****             serialWrite(blackboxPort, *pos);
+ 314              	 .loc 3 132 0
+ 315 0036 0D4B     	 ldr r3,.L26+4
+ 316 0038 1A68     	 ldr r2,[r3]
+ 317 003a BB68     	 ldr r3,[r7,#8]
+ 318 003c 1B78     	 ldrb r3,[r3]
+ 319 003e 1046     	 mov r0,r2
+ 320 0040 1946     	 mov r1,r3
+ 321 0042 FFF7FEFF 	 bl serialWrite
+ 133:../cleanflight/src/main/blackbox/blackbox_io.c ****             pos++;
+ 322              	 .loc 3 133 0
+ 323 0046 BB68     	 ldr r3,[r7,#8]
+ 324 0048 0133     	 adds r3,r3,#1
+ 325 004a BB60     	 str r3,[r7,#8]
+ 326              	.L22:
+ 131:../cleanflight/src/main/blackbox/blackbox_io.c ****         while (*pos) {
+ 327              	 .loc 3 131 0
+ 328 004c BB68     	 ldr r3,[r7,#8]
+ 329 004e 1B78     	 ldrb r3,[r3]
+ 330 0050 002B     	 cmp r3,#0
+ 331 0052 F0D1     	 bne .L23
+ 134:../cleanflight/src/main/blackbox/blackbox_io.c ****         }
+ 135:../cleanflight/src/main/blackbox/blackbox_io.c **** 
+ 136:../cleanflight/src/main/blackbox/blackbox_io.c ****         length = pos - (uint8_t*) s;
+ 332              	 .loc 3 136 0
+ 333 0054 BA68     	 ldr r2,[r7,#8]
+ 334 0056 7B68     	 ldr r3,[r7,#4]
+ 335 0058 D31A     	 subs r3,r2,r3
+ 336 005a FB60     	 str r3,[r7,#12]
+ 137:../cleanflight/src/main/blackbox/blackbox_io.c ****         break;
+ 337              	 .loc 3 137 0
+ 338 005c 00BF     	 nop
+ 339              	.L21:
+ 138:../cleanflight/src/main/blackbox/blackbox_io.c ****     }
+ 139:../cleanflight/src/main/blackbox/blackbox_io.c **** 
+ 140:../cleanflight/src/main/blackbox/blackbox_io.c ****     return length;
+ 340              	 .loc 3 140 0
+ 341 005e FB68     	 ldr r3,[r7,#12]
+ 141:../cleanflight/src/main/blackbox/blackbox_io.c **** }
+ 342              	 .loc 3 141 0
+ 343 0060 1846     	 mov r0,r3
+ 344 0062 1037     	 adds r7,r7,#16
+ 345              	.LCFI23:
+ 346              	 .cfi_def_cfa_offset 8
+ 347 0064 BD46     	 mov sp,r7
+ 348              	.LCFI24:
+ 349              	 .cfi_def_cfa_register 13
+ 350              	 
+ 351 0066 80BD     	 pop {r7,pc}
+ 352              	.L27:
+ 353              	 .align 2
+ 354              	.L26:
+ 355 0068 00000000 	 .word blackboxSDCard
+ 356 006c 00000000 	 .word blackboxPort
+ 357              	 .cfi_endproc
+ 358              	.LFE542:
+ 360              	 .section .text.blackboxDeviceFlush,"ax",%progbits
+ 361              	 .align 2
+ 362              	 .global blackboxDeviceFlush
+ 363              	 .thumb
+ 364              	 .thumb_func
+ 366              	blackboxDeviceFlush:
+ 367              	.LFB543:
+ 142:../cleanflight/src/main/blackbox/blackbox_io.c **** 
+ 143:../cleanflight/src/main/blackbox/blackbox_io.c **** /**
+ 144:../cleanflight/src/main/blackbox/blackbox_io.c ****  * If there is data waiting to be written to the blackbox device, attempt to write (a portion of) t
+ 145:../cleanflight/src/main/blackbox/blackbox_io.c ****  *
+ 146:../cleanflight/src/main/blackbox/blackbox_io.c ****  * Intended to be called regularly for the blackbox device to perform housekeeping.
+ 147:../cleanflight/src/main/blackbox/blackbox_io.c ****  */
+ 148:../cleanflight/src/main/blackbox/blackbox_io.c **** void blackboxDeviceFlush(void)
+ 149:../cleanflight/src/main/blackbox/blackbox_io.c **** {
+ 368              	 .loc 3 149 0
+ 369              	 .cfi_startproc
+ 370              	 
+ 371              	 
+ 372 0000 80B5     	 push {r7,lr}
+ 373              	.LCFI25:
+ 374              	 .cfi_def_cfa_offset 8
+ 375              	 .cfi_offset 7,-8
+ 376              	 .cfi_offset 14,-4
+ 377 0002 00AF     	 add r7,sp,#0
+ 378              	.LCFI26:
+ 379              	 .cfi_def_cfa_register 7
+ 150:../cleanflight/src/main/blackbox/blackbox_io.c ****     switch (blackboxConfig()->device) {
+ 380              	 .loc 3 150 0
+ 381 0004 FFF7FEFF 	 bl blackboxConfig
+ 151:../cleanflight/src/main/blackbox/blackbox_io.c **** #ifdef USE_FLASHFS
+ 152:../cleanflight/src/main/blackbox/blackbox_io.c ****         /*
+ 153:../cleanflight/src/main/blackbox/blackbox_io.c ****          * This is our only output device which requires us to call flush() in order for it to writ
+ 154:../cleanflight/src/main/blackbox/blackbox_io.c ****          * devices will progressively write in the background without Blackbox calling anything.
+ 155:../cleanflight/src/main/blackbox/blackbox_io.c ****          */
+ 156:../cleanflight/src/main/blackbox/blackbox_io.c ****     case BLACKBOX_DEVICE_FLASH:
+ 157:../cleanflight/src/main/blackbox/blackbox_io.c ****         flashfsFlushAsync();
+ 158:../cleanflight/src/main/blackbox/blackbox_io.c ****         break;
+ 159:../cleanflight/src/main/blackbox/blackbox_io.c **** #endif // USE_FLASHFS
+ 160:../cleanflight/src/main/blackbox/blackbox_io.c **** 
+ 161:../cleanflight/src/main/blackbox/blackbox_io.c ****     default:
+ 162:../cleanflight/src/main/blackbox/blackbox_io.c ****         ;
+ 163:../cleanflight/src/main/blackbox/blackbox_io.c ****     }
+ 164:../cleanflight/src/main/blackbox/blackbox_io.c **** }
+ 382              	 .loc 3 164 0
+ 383 0008 80BD     	 pop {r7,pc}
+ 384              	 .cfi_endproc
+ 385              	.LFE543:
+ 387 000a 00BF     	 .section .text.blackboxDeviceFlushForce,"ax",%progbits
+ 388              	 .align 2
+ 389              	 .global blackboxDeviceFlushForce
+ 390              	 .thumb
+ 391              	 .thumb_func
+ 393              	blackboxDeviceFlushForce:
+ 394              	.LFB544:
+ 165:../cleanflight/src/main/blackbox/blackbox_io.c **** 
+ 166:../cleanflight/src/main/blackbox/blackbox_io.c **** /**
+ 167:../cleanflight/src/main/blackbox/blackbox_io.c ****  * If there is data waiting to be written to the blackbox device, attempt to write (a portion of) t
+ 168:../cleanflight/src/main/blackbox/blackbox_io.c ****  *
+ 169:../cleanflight/src/main/blackbox/blackbox_io.c ****  * Returns true if all data has been written to the device.
+ 170:../cleanflight/src/main/blackbox/blackbox_io.c ****  */
+ 171:../cleanflight/src/main/blackbox/blackbox_io.c **** bool blackboxDeviceFlushForce(void)
+ 172:../cleanflight/src/main/blackbox/blackbox_io.c **** {
+ 395              	 .loc 3 172 0
+ 396              	 .cfi_startproc
+ 397              	 
+ 398              	 
+ 399 0000 80B5     	 push {r7,lr}
+ 400              	.LCFI27:
+ 401              	 .cfi_def_cfa_offset 8
+ 402              	 .cfi_offset 7,-8
+ 403              	 .cfi_offset 14,-4
+ 404 0002 00AF     	 add r7,sp,#0
+ 405              	.LCFI28:
+ 406              	 .cfi_def_cfa_register 7
+ 173:../cleanflight/src/main/blackbox/blackbox_io.c ****     switch (blackboxConfig()->device) {
+ 407              	 .loc 3 173 0
+ 408 0004 FFF7FEFF 	 bl blackboxConfig
+ 409 0008 0346     	 mov r3,r0
+ 410 000a 9B78     	 ldrb r3,[r3,#2]
+ 411 000c 022B     	 cmp r3,#2
+ 412 000e 08D0     	 beq .L31
+ 413 0010 032B     	 cmp r3,#3
+ 414 0012 0AD1     	 bne .L34
+ 174:../cleanflight/src/main/blackbox/blackbox_io.c ****     case BLACKBOX_DEVICE_SERIAL:
+ 175:../cleanflight/src/main/blackbox/blackbox_io.c ****         // Nothing to speed up flushing on serial, as serial is continuously being drained out of i
+ 176:../cleanflight/src/main/blackbox/blackbox_io.c ****         return isSerialTransmitBufferEmpty(blackboxPort);
+ 415              	 .loc 3 176 0
+ 416 0014 064B     	 ldr r3,.L35
+ 417 0016 1B68     	 ldr r3,[r3]
+ 418 0018 1846     	 mov r0,r3
+ 419 001a FFF7FEFF 	 bl isSerialTransmitBufferEmpty
+ 420 001e 0346     	 mov r3,r0
+ 421 0020 04E0     	 b .L33
+ 422              	.L31:
+ 177:../cleanflight/src/main/blackbox/blackbox_io.c **** 
+ 178:../cleanflight/src/main/blackbox/blackbox_io.c **** #ifdef USE_FLASHFS
+ 179:../cleanflight/src/main/blackbox/blackbox_io.c ****     case BLACKBOX_DEVICE_FLASH:
+ 180:../cleanflight/src/main/blackbox/blackbox_io.c ****         return flashfsFlushAsync();
+ 181:../cleanflight/src/main/blackbox/blackbox_io.c **** #endif // USE_FLASHFS
+ 182:../cleanflight/src/main/blackbox/blackbox_io.c **** 
+ 183:../cleanflight/src/main/blackbox/blackbox_io.c **** #ifdef USE_SDCARD
+ 184:../cleanflight/src/main/blackbox/blackbox_io.c ****     case BLACKBOX_DEVICE_SDCARD:
+ 185:../cleanflight/src/main/blackbox/blackbox_io.c ****         /* SD card will flush itself without us calling it, but we need to call flush manually in o
+ 186:../cleanflight/src/main/blackbox/blackbox_io.c ****          * if it's done yet or not!
+ 187:../cleanflight/src/main/blackbox/blackbox_io.c ****          */
+ 188:../cleanflight/src/main/blackbox/blackbox_io.c ****         return afatfs_flush();
+ 423              	 .loc 3 188 0
+ 424 0022 FFF7FEFF 	 bl afatfs_flush
+ 425 0026 0346     	 mov r3,r0
+ 426 0028 00E0     	 b .L33
+ 427              	.L34:
+ 189:../cleanflight/src/main/blackbox/blackbox_io.c **** #endif // USE_SDCARD
+ 190:../cleanflight/src/main/blackbox/blackbox_io.c **** 
+ 191:../cleanflight/src/main/blackbox/blackbox_io.c ****     default:
+ 192:../cleanflight/src/main/blackbox/blackbox_io.c ****         return false;
+ 428              	 .loc 3 192 0
+ 429 002a 0023     	 movs r3,#0
+ 430              	.L33:
+ 193:../cleanflight/src/main/blackbox/blackbox_io.c ****     }
+ 194:../cleanflight/src/main/blackbox/blackbox_io.c **** }
+ 431              	 .loc 3 194 0
+ 432 002c 1846     	 mov r0,r3
+ 433 002e 80BD     	 pop {r7,pc}
+ 434              	.L36:
+ 435              	 .align 2
+ 436              	.L35:
+ 437 0030 00000000 	 .word blackboxPort
+ 438              	 .cfi_endproc
+ 439              	.LFE544:
+ 441              	 .section .text.blackboxDeviceOpen,"ax",%progbits
+ 442              	 .align 2
+ 443              	 .global blackboxDeviceOpen
+ 444              	 .thumb
+ 445              	 .thumb_func
+ 447              	blackboxDeviceOpen:
+ 448              	.LFB545:
+ 195:../cleanflight/src/main/blackbox/blackbox_io.c **** 
+ 196:../cleanflight/src/main/blackbox/blackbox_io.c **** /**
+ 197:../cleanflight/src/main/blackbox/blackbox_io.c ****  * Attempt to open the logging device. Returns true if successful.
+ 198:../cleanflight/src/main/blackbox/blackbox_io.c ****  */
+ 199:../cleanflight/src/main/blackbox/blackbox_io.c **** bool blackboxDeviceOpen(void)
+ 200:../cleanflight/src/main/blackbox/blackbox_io.c **** {
+ 449              	 .loc 3 200 0
+ 450              	 .cfi_startproc
+ 451              	 
+ 452              	 
+ 453 0000 80B5     	 push {r7,lr}
+ 454              	.LCFI29:
+ 455              	 .cfi_def_cfa_offset 8
+ 456              	 .cfi_offset 7,-8
+ 457              	 .cfi_offset 14,-4
+ 458 0002 88B0     	 sub sp,sp,#32
+ 459              	.LCFI30:
+ 460              	 .cfi_def_cfa_offset 40
+ 461 0004 04AF     	 add r7,sp,#16
+ 462              	.LCFI31:
+ 463              	 .cfi_def_cfa 7,24
+ 201:../cleanflight/src/main/blackbox/blackbox_io.c ****     switch (blackboxConfig()->device) {
+ 464              	 .loc 3 201 0
+ 465 0006 FFF7FEFF 	 bl blackboxConfig
+ 466 000a 0346     	 mov r3,r0
+ 467 000c 9B78     	 ldrb r3,[r3,#2]
+ 468 000e 022B     	 cmp r3,#2
+ 469 0010 5AD0     	 beq .L39
+ 470 0012 032B     	 cmp r3,#3
+ 471 0014 6ED1     	 bne .L50
+ 472              	.LBB2:
+ 202:../cleanflight/src/main/blackbox/blackbox_io.c ****     case BLACKBOX_DEVICE_SERIAL:
+ 203:../cleanflight/src/main/blackbox/blackbox_io.c ****         {
+ 204:../cleanflight/src/main/blackbox/blackbox_io.c ****             serialPortConfig_t *portConfig = findSerialPortConfig(FUNCTION_BLACKBOX);
+ 473              	 .loc 3 204 0
+ 474 0016 8020     	 movs r0,#128
+ 475 0018 FFF7FEFF 	 bl findSerialPortConfig
+ 476 001c B860     	 str r0,[r7,#8]
+ 205:../cleanflight/src/main/blackbox/blackbox_io.c ****             baudRate_e baudRateIndex;
+ 206:../cleanflight/src/main/blackbox/blackbox_io.c ****             portOptions_e portOptions = SERIAL_PARITY_NO | SERIAL_NOT_INVERTED;
+ 477              	 .loc 3 206 0
+ 478 001e 0023     	 movs r3,#0
+ 479 0020 FB73     	 strb r3,[r7,#15]
+ 207:../cleanflight/src/main/blackbox/blackbox_io.c **** 
+ 208:../cleanflight/src/main/blackbox/blackbox_io.c ****             if (!portConfig) {
+ 480              	 .loc 3 208 0
+ 481 0022 BB68     	 ldr r3,[r7,#8]
+ 482 0024 002B     	 cmp r3,#0
+ 483 0026 01D1     	 bne .L41
+ 209:../cleanflight/src/main/blackbox/blackbox_io.c ****                 return false;
+ 484              	 .loc 3 209 0
+ 485 0028 0023     	 movs r3,#0
+ 486 002a 64E0     	 b .L42
+ 487              	.L41:
+ 210:../cleanflight/src/main/blackbox/blackbox_io.c ****             }
+ 211:../cleanflight/src/main/blackbox/blackbox_io.c **** 
+ 212:../cleanflight/src/main/blackbox/blackbox_io.c ****             blackboxPortSharing = determinePortSharing(portConfig, FUNCTION_BLACKBOX);
+ 488              	 .loc 3 212 0
+ 489 002c B868     	 ldr r0,[r7,#8]
+ 490 002e 8021     	 movs r1,#128
+ 491 0030 FFF7FEFF 	 bl determinePortSharing
+ 492 0034 0346     	 mov r3,r0
+ 493 0036 1A46     	 mov r2,r3
+ 494 0038 314B     	 ldr r3,.L51
+ 495 003a 1A70     	 strb r2,[r3]
+ 213:../cleanflight/src/main/blackbox/blackbox_io.c ****             baudRateIndex = portConfig->blackbox_baudrateIndex;
+ 496              	 .loc 3 213 0
+ 497 003c BB68     	 ldr r3,[r7,#8]
+ 498 003e 5B79     	 ldrb r3,[r3,#5]
+ 499 0040 FB71     	 strb r3,[r7,#7]
+ 214:../cleanflight/src/main/blackbox/blackbox_io.c **** 
+ 215:../cleanflight/src/main/blackbox/blackbox_io.c ****             if (baudRates[baudRateIndex] == 230400) {
+ 500              	 .loc 3 215 0
+ 501 0042 FB79     	 ldrb r3,[r7,#7]
+ 502 0044 2F4A     	 ldr r2,.L51+4
+ 503 0046 52F82330 	 ldr r3,[r2,r3,lsl#2]
+ 504 004a B3F5613F 	 cmp r3,#230400
+ 505 004e 03D1     	 bne .L44
+ 216:../cleanflight/src/main/blackbox/blackbox_io.c ****                 /*
+ 217:../cleanflight/src/main/blackbox/blackbox_io.c ****                  * OpenLog's 230400 baud rate is very inaccurate, so it requires a larger inter-cha
+ 218:../cleanflight/src/main/blackbox/blackbox_io.c ****                  * order to maintain synchronization.
+ 219:../cleanflight/src/main/blackbox/blackbox_io.c ****                  */
+ 220:../cleanflight/src/main/blackbox/blackbox_io.c ****                 portOptions |= SERIAL_STOPBITS_2;
+ 506              	 .loc 3 220 0
+ 507 0050 FB7B     	 ldrb r3,[r7,#15]
+ 508 0052 43F00203 	 orr r3,r3,#2
+ 509 0056 FB73     	 strb r3,[r7,#15]
+ 510              	.L44:
+ 221:../cleanflight/src/main/blackbox/blackbox_io.c ****             } else {
+ 222:../cleanflight/src/main/blackbox/blackbox_io.c ****                 portOptions |= SERIAL_STOPBITS_1;
+ 223:../cleanflight/src/main/blackbox/blackbox_io.c ****             }
+ 224:../cleanflight/src/main/blackbox/blackbox_io.c **** 
+ 225:../cleanflight/src/main/blackbox/blackbox_io.c ****             blackboxPort = openSerialPort(portConfig->identifier, FUNCTION_BLACKBOX, NULL, NULL, ba
+ 511              	 .loc 3 225 0
+ 512 0058 BB68     	 ldr r3,[r7,#8]
+ 513 005a 9978     	 ldrb r1,[r3,#2]
+ 514 005c FB79     	 ldrb r3,[r7,#7]
+ 515 005e 294A     	 ldr r2,.L51+4
+ 516 0060 52F82330 	 ldr r3,[r2,r3,lsl#2]
+ 517 0064 4AB2     	 sxtb r2,r1
+ 518 0066 0093     	 str r3,[sp]
+ 519 0068 0223     	 movs r3,#2
+ 520 006a 0193     	 str r3,[sp,#4]
+ 521 006c FB7B     	 ldrb r3,[r7,#15]
+ 522 006e 0293     	 str r3,[sp,#8]
+ 523 0070 1046     	 mov r0,r2
+ 524 0072 8021     	 movs r1,#128
+ 525 0074 0022     	 movs r2,#0
+ 526 0076 0023     	 movs r3,#0
+ 527 0078 FFF7FEFF 	 bl openSerialPort
+ 528 007c 0246     	 mov r2,r0
+ 529 007e 224B     	 ldr r3,.L51+8
+ 530 0080 1A60     	 str r2,[r3]
+ 226:../cleanflight/src/main/blackbox/blackbox_io.c ****                 BLACKBOX_SERIAL_PORT_MODE, portOptions);
+ 227:../cleanflight/src/main/blackbox/blackbox_io.c **** 
+ 228:../cleanflight/src/main/blackbox/blackbox_io.c ****             /*
+ 229:../cleanflight/src/main/blackbox/blackbox_io.c ****              * The slowest MicroSD cards have a write latency approaching 400ms. The OpenLog's buff
+ 230:../cleanflight/src/main/blackbox/blackbox_io.c ****              * bytes. In order for its buffer to be able to absorb this latency we must write slowe
+ 231:../cleanflight/src/main/blackbox/blackbox_io.c ****              *
+ 232:../cleanflight/src/main/blackbox/blackbox_io.c ****              * The OpenLager has a 125KB buffer for when the the MicroSD card is busy, so when the 
+ 233:../cleanflight/src/main/blackbox/blackbox_io.c ****              * high baud rates, assume the OpenLager is in use and so there is no need to constrain
+ 234:../cleanflight/src/main/blackbox/blackbox_io.c ****              *
+ 235:../cleanflight/src/main/blackbox/blackbox_io.c ****              * In all other cases, constrain the writes as follows:
+ 236:../cleanflight/src/main/blackbox/blackbox_io.c ****              *
+ 237:../cleanflight/src/main/blackbox/blackbox_io.c ****              *     Bytes per loop iteration = floor((looptime_ns / 1000000.0) * 6000)
+ 238:../cleanflight/src/main/blackbox/blackbox_io.c ****              *                              = floor((looptime_ns * 6000) / 1000000.0)
+ 239:../cleanflight/src/main/blackbox/blackbox_io.c ****              *                              = floor((looptime_ns * 3) / 500.0)
+ 240:../cleanflight/src/main/blackbox/blackbox_io.c ****              *                              = (looptime_ns * 3) / 500
+ 241:../cleanflight/src/main/blackbox/blackbox_io.c ****              */
+ 242:../cleanflight/src/main/blackbox/blackbox_io.c **** 
+ 243:../cleanflight/src/main/blackbox/blackbox_io.c **** 
+ 244:../cleanflight/src/main/blackbox/blackbox_io.c ****             switch (baudRateIndex) {
+ 531              	 .loc 3 244 0
+ 532 0082 FB79     	 ldrb r3,[r7,#7]
+ 533 0084 0C3B     	 subs r3,r3,#12
+ 534 0086 032B     	 cmp r3,#3
+ 535 0088 03D8     	 bhi .L45
+ 245:../cleanflight/src/main/blackbox/blackbox_io.c ****             case BAUD_1000000:
+ 246:../cleanflight/src/main/blackbox/blackbox_io.c ****             case BAUD_1500000:
+ 247:../cleanflight/src/main/blackbox/blackbox_io.c ****             case BAUD_2000000:
+ 248:../cleanflight/src/main/blackbox/blackbox_io.c ****             case BAUD_2470000:
+ 249:../cleanflight/src/main/blackbox/blackbox_io.c ****                 // assume OpenLager in use, so do not constrain writes
+ 250:../cleanflight/src/main/blackbox/blackbox_io.c ****                 blackboxMaxHeaderBytesPerIteration = BLACKBOX_TARGET_HEADER_BUDGET_PER_ITERATION;
+ 536              	 .loc 3 250 0
+ 537 008a 204B     	 ldr r3,.L51+12
+ 538 008c 4022     	 movs r2,#64
+ 539 008e 1A70     	 strb r2,[r3]
+ 251:../cleanflight/src/main/blackbox/blackbox_io.c ****                 break;
+ 540              	 .loc 3 251 0
+ 541 0090 12E0     	 b .L47
+ 542              	.L45:
+ 252:../cleanflight/src/main/blackbox/blackbox_io.c ****             default:
+ 253:../cleanflight/src/main/blackbox/blackbox_io.c ****                 blackboxMaxHeaderBytesPerIteration = constrain((targetPidLooptime * 3) / 500, 1, BL
+ 543              	 .loc 3 253 0
+ 544 0092 1F4B     	 ldr r3,.L51+16
+ 545 0094 1A68     	 ldr r2,[r3]
+ 546 0096 1346     	 mov r3,r2
+ 547 0098 5B00     	 lsls r3,r3,#1
+ 548 009a 1344     	 add r3,r3,r2
+ 549 009c 1D4A     	 ldr r2,.L51+20
+ 550 009e A2FB0323 	 umull r2,r3,r2,r3
+ 551 00a2 5B09     	 lsrs r3,r3,#5
+ 552 00a4 1846     	 mov r0,r3
+ 553 00a6 0121     	 movs r1,#1
+ 554 00a8 4022     	 movs r2,#64
+ 555 00aa FFF7FEFF 	 bl constrain
+ 556 00ae 0346     	 mov r3,r0
+ 557 00b0 DAB2     	 uxtb r2,r3
+ 558 00b2 164B     	 ldr r3,.L51+12
+ 559 00b4 1A70     	 strb r2,[r3]
+ 254:../cleanflight/src/main/blackbox/blackbox_io.c ****                 break;
+ 560              	 .loc 3 254 0
+ 561 00b6 00BF     	 nop
+ 562              	.L47:
+ 255:../cleanflight/src/main/blackbox/blackbox_io.c ****             };
+ 256:../cleanflight/src/main/blackbox/blackbox_io.c **** 
+ 257:../cleanflight/src/main/blackbox/blackbox_io.c ****             return blackboxPort != NULL;
+ 563              	 .loc 3 257 0
+ 564 00b8 134B     	 ldr r3,.L51+8
+ 565 00ba 1B68     	 ldr r3,[r3]
+ 566 00bc 002B     	 cmp r3,#0
+ 567 00be 14BF     	 ite ne
+ 568 00c0 0123     	 movne r3,#1
+ 569 00c2 0023     	 moveq r3,#0
+ 570 00c4 DBB2     	 uxtb r3,r3
+ 571 00c6 16E0     	 b .L42
+ 572              	.L39:
+ 573              	.LBE2:
+ 258:../cleanflight/src/main/blackbox/blackbox_io.c ****         }
+ 259:../cleanflight/src/main/blackbox/blackbox_io.c ****         break;
+ 260:../cleanflight/src/main/blackbox/blackbox_io.c **** #ifdef USE_FLASHFS
+ 261:../cleanflight/src/main/blackbox/blackbox_io.c ****     case BLACKBOX_DEVICE_FLASH:
+ 262:../cleanflight/src/main/blackbox/blackbox_io.c ****         if (!flashfsIsSupported() || isBlackboxDeviceFull()) {
+ 263:../cleanflight/src/main/blackbox/blackbox_io.c ****             return false;
+ 264:../cleanflight/src/main/blackbox/blackbox_io.c ****         }
+ 265:../cleanflight/src/main/blackbox/blackbox_io.c **** 
+ 266:../cleanflight/src/main/blackbox/blackbox_io.c ****         blackboxMaxHeaderBytesPerIteration = BLACKBOX_TARGET_HEADER_BUDGET_PER_ITERATION;
+ 267:../cleanflight/src/main/blackbox/blackbox_io.c **** 
+ 268:../cleanflight/src/main/blackbox/blackbox_io.c ****         return true;
+ 269:../cleanflight/src/main/blackbox/blackbox_io.c ****         break;
+ 270:../cleanflight/src/main/blackbox/blackbox_io.c **** #endif // USE_FLASHFS
+ 271:../cleanflight/src/main/blackbox/blackbox_io.c **** #ifdef USE_SDCARD
+ 272:../cleanflight/src/main/blackbox/blackbox_io.c ****     case BLACKBOX_DEVICE_SDCARD:
+ 273:../cleanflight/src/main/blackbox/blackbox_io.c ****         if (afatfs_getFilesystemState() == AFATFS_FILESYSTEM_STATE_FATAL || afatfs_getFilesystemSta
+ 574              	 .loc 3 273 0
+ 575 00c8 FFF7FEFF 	 bl afatfs_getFilesystemState
+ 576 00cc 0346     	 mov r3,r0
+ 577 00ce 012B     	 cmp r3,#1
+ 578 00d0 09D0     	 beq .L48
+ 579              	 .loc 3 273 0 is_stmt 0 discriminator 1
+ 580 00d2 FFF7FEFF 	 bl afatfs_getFilesystemState
+ 581 00d6 0346     	 mov r3,r0
+ 582 00d8 002B     	 cmp r3,#0
+ 583 00da 04D0     	 beq .L48
+ 584              	 .loc 3 273 0 discriminator 2
+ 585 00dc FFF7FEFF 	 bl afatfs_isFull
+ 586 00e0 0346     	 mov r3,r0
+ 587 00e2 002B     	 cmp r3,#0
+ 588 00e4 01D0     	 beq .L49
+ 589              	.L48:
+ 274:../cleanflight/src/main/blackbox/blackbox_io.c ****             return false;
+ 590              	 .loc 3 274 0 is_stmt 1
+ 591 00e6 0023     	 movs r3,#0
+ 592 00e8 05E0     	 b .L42
+ 593              	.L49:
+ 275:../cleanflight/src/main/blackbox/blackbox_io.c ****         }
+ 276:../cleanflight/src/main/blackbox/blackbox_io.c **** 
+ 277:../cleanflight/src/main/blackbox/blackbox_io.c ****         blackboxMaxHeaderBytesPerIteration = BLACKBOX_TARGET_HEADER_BUDGET_PER_ITERATION;
+ 594              	 .loc 3 277 0
+ 595 00ea 084B     	 ldr r3,.L51+12
+ 596 00ec 4022     	 movs r2,#64
+ 597 00ee 1A70     	 strb r2,[r3]
+ 278:../cleanflight/src/main/blackbox/blackbox_io.c **** 
+ 279:../cleanflight/src/main/blackbox/blackbox_io.c ****         return true;
+ 598              	 .loc 3 279 0
+ 599 00f0 0123     	 movs r3,#1
+ 600 00f2 00E0     	 b .L42
+ 601              	.L50:
+ 280:../cleanflight/src/main/blackbox/blackbox_io.c ****         break;
+ 281:../cleanflight/src/main/blackbox/blackbox_io.c **** #endif // USE_SDCARD
+ 282:../cleanflight/src/main/blackbox/blackbox_io.c ****     default:
+ 283:../cleanflight/src/main/blackbox/blackbox_io.c ****         return false;
+ 602              	 .loc 3 283 0
+ 603 00f4 0023     	 movs r3,#0
+ 604              	.L42:
+ 284:../cleanflight/src/main/blackbox/blackbox_io.c ****     }
+ 285:../cleanflight/src/main/blackbox/blackbox_io.c **** }
+ 605              	 .loc 3 285 0
+ 606 00f6 1846     	 mov r0,r3
+ 607 00f8 1037     	 adds r7,r7,#16
+ 608              	.LCFI32:
+ 609              	 .cfi_def_cfa_offset 8
+ 610 00fa BD46     	 mov sp,r7
+ 611              	.LCFI33:
+ 612              	 .cfi_def_cfa_register 13
+ 613              	 
+ 614 00fc 80BD     	 pop {r7,pc}
+ 615              	.L52:
+ 616 00fe 00BF     	 .align 2
+ 617              	.L51:
+ 618 0100 00000000 	 .word blackboxPortSharing
+ 619 0104 00000000 	 .word baudRates
+ 620 0108 00000000 	 .word blackboxPort
+ 621 010c 00000000 	 .word blackboxMaxHeaderBytesPerIteration
+ 622 0110 00000000 	 .word targetPidLooptime
+ 623 0114 D34D6210 	 .word 274877907
+ 624              	 .cfi_endproc
+ 625              	.LFE545:
+ 627              	 .section .text.blackboxDeviceClose,"ax",%progbits
+ 628              	 .align 2
+ 629              	 .global blackboxDeviceClose
+ 630              	 .thumb
+ 631              	 .thumb_func
+ 633              	blackboxDeviceClose:
+ 634              	.LFB546:
+ 286:../cleanflight/src/main/blackbox/blackbox_io.c **** 
+ 287:../cleanflight/src/main/blackbox/blackbox_io.c **** /**
+ 288:../cleanflight/src/main/blackbox/blackbox_io.c ****  * Erase all blackbox logs
+ 289:../cleanflight/src/main/blackbox/blackbox_io.c ****  */
+ 290:../cleanflight/src/main/blackbox/blackbox_io.c **** #ifdef USE_FLASHFS
+ 291:../cleanflight/src/main/blackbox/blackbox_io.c **** void blackboxEraseAll(void)
+ 292:../cleanflight/src/main/blackbox/blackbox_io.c **** {
+ 293:../cleanflight/src/main/blackbox/blackbox_io.c ****     switch (blackboxConfig()->device) {
+ 294:../cleanflight/src/main/blackbox/blackbox_io.c ****     case BLACKBOX_DEVICE_FLASH:
+ 295:../cleanflight/src/main/blackbox/blackbox_io.c ****         flashfsEraseCompletely();
+ 296:../cleanflight/src/main/blackbox/blackbox_io.c ****         break;
+ 297:../cleanflight/src/main/blackbox/blackbox_io.c ****     default:
+ 298:../cleanflight/src/main/blackbox/blackbox_io.c ****         //not supported
+ 299:../cleanflight/src/main/blackbox/blackbox_io.c ****         break;
+ 300:../cleanflight/src/main/blackbox/blackbox_io.c ****     }
+ 301:../cleanflight/src/main/blackbox/blackbox_io.c **** }
+ 302:../cleanflight/src/main/blackbox/blackbox_io.c **** 
+ 303:../cleanflight/src/main/blackbox/blackbox_io.c **** /**
+ 304:../cleanflight/src/main/blackbox/blackbox_io.c ****  * Check to see if erasing is done
+ 305:../cleanflight/src/main/blackbox/blackbox_io.c ****  */
+ 306:../cleanflight/src/main/blackbox/blackbox_io.c **** bool isBlackboxErased(void)
+ 307:../cleanflight/src/main/blackbox/blackbox_io.c **** {
+ 308:../cleanflight/src/main/blackbox/blackbox_io.c ****     switch (blackboxConfig()->device) {
+ 309:../cleanflight/src/main/blackbox/blackbox_io.c ****     case BLACKBOX_DEVICE_FLASH:
+ 310:../cleanflight/src/main/blackbox/blackbox_io.c ****         return flashfsIsReady();
+ 311:../cleanflight/src/main/blackbox/blackbox_io.c ****         break;
+ 312:../cleanflight/src/main/blackbox/blackbox_io.c ****     default:
+ 313:../cleanflight/src/main/blackbox/blackbox_io.c ****     //not supported
+ 314:../cleanflight/src/main/blackbox/blackbox_io.c ****         return true;
+ 315:../cleanflight/src/main/blackbox/blackbox_io.c ****         break;
+ 316:../cleanflight/src/main/blackbox/blackbox_io.c ****     }
+ 317:../cleanflight/src/main/blackbox/blackbox_io.c **** }
+ 318:../cleanflight/src/main/blackbox/blackbox_io.c **** #endif
+ 319:../cleanflight/src/main/blackbox/blackbox_io.c **** 
+ 320:../cleanflight/src/main/blackbox/blackbox_io.c **** /**
+ 321:../cleanflight/src/main/blackbox/blackbox_io.c ****  * Close the Blackbox logging device.
+ 322:../cleanflight/src/main/blackbox/blackbox_io.c ****  */
+ 323:../cleanflight/src/main/blackbox/blackbox_io.c **** void blackboxDeviceClose(void)
+ 324:../cleanflight/src/main/blackbox/blackbox_io.c **** {
+ 635              	 .loc 3 324 0
+ 636              	 .cfi_startproc
+ 637              	 
+ 638              	 
+ 639 0000 80B5     	 push {r7,lr}
+ 640              	.LCFI34:
+ 641              	 .cfi_def_cfa_offset 8
+ 642              	 .cfi_offset 7,-8
+ 643              	 .cfi_offset 14,-4
+ 644 0002 00AF     	 add r7,sp,#0
+ 645              	.LCFI35:
+ 646              	 .cfi_def_cfa_register 7
+ 325:../cleanflight/src/main/blackbox/blackbox_io.c ****     switch (blackboxConfig()->device) {
+ 647              	 .loc 3 325 0
+ 648 0004 FFF7FEFF 	 bl blackboxConfig
+ 649 0008 0346     	 mov r3,r0
+ 650 000a 9B78     	 ldrb r3,[r3,#2]
+ 651 000c 032B     	 cmp r3,#3
+ 652 000e 0ED1     	 bne .L53
+ 326:../cleanflight/src/main/blackbox/blackbox_io.c ****     case BLACKBOX_DEVICE_SERIAL:
+ 327:../cleanflight/src/main/blackbox/blackbox_io.c ****         // Can immediately close without attempting to flush any remaining data.
+ 328:../cleanflight/src/main/blackbox/blackbox_io.c ****         // Since the serial port could be shared with other processes, we have to give it back here
+ 329:../cleanflight/src/main/blackbox/blackbox_io.c ****         closeSerialPort(blackboxPort);
+ 653              	 .loc 3 329 0
+ 654 0010 074B     	 ldr r3,.L57
+ 655 0012 1B68     	 ldr r3,[r3]
+ 656 0014 1846     	 mov r0,r3
+ 657 0016 FFF7FEFF 	 bl closeSerialPort
+ 330:../cleanflight/src/main/blackbox/blackbox_io.c ****         blackboxPort = NULL;
+ 658              	 .loc 3 330 0
+ 659 001a 054B     	 ldr r3,.L57
+ 660 001c 0022     	 movs r2,#0
+ 661 001e 1A60     	 str r2,[r3]
+ 331:../cleanflight/src/main/blackbox/blackbox_io.c **** 
+ 332:../cleanflight/src/main/blackbox/blackbox_io.c ****         /*
+ 333:../cleanflight/src/main/blackbox/blackbox_io.c ****          * Normally this would be handled by mw.c, but since we take an unknown amount
+ 334:../cleanflight/src/main/blackbox/blackbox_io.c ****          * of time to shut down asynchronously, we're the only ones that know when to call it.
+ 335:../cleanflight/src/main/blackbox/blackbox_io.c ****          */
+ 336:../cleanflight/src/main/blackbox/blackbox_io.c ****         if (blackboxPortSharing == PORTSHARING_SHARED) {
+ 662              	 .loc 3 336 0
+ 663 0020 044B     	 ldr r3,.L57+4
+ 664 0022 1B78     	 ldrb r3,[r3]
+ 665 0024 022B     	 cmp r3,#2
+ 666 0026 01D1     	 bne .L56
+ 337:../cleanflight/src/main/blackbox/blackbox_io.c ****             mspSerialAllocatePorts();
+ 667              	 .loc 3 337 0
+ 668 0028 FFF7FEFF 	 bl mspSerialAllocatePorts
+ 669              	.L56:
+ 338:../cleanflight/src/main/blackbox/blackbox_io.c ****         }
+ 339:../cleanflight/src/main/blackbox/blackbox_io.c ****         break;
+ 670              	 .loc 3 339 0
+ 671 002c 00BF     	 nop
+ 672              	.L53:
+ 340:../cleanflight/src/main/blackbox/blackbox_io.c **** #ifdef USE_FLASHFS
+ 341:../cleanflight/src/main/blackbox/blackbox_io.c ****     case BLACKBOX_DEVICE_FLASH:
+ 342:../cleanflight/src/main/blackbox/blackbox_io.c ****         // Some flash device, e.g., NAND devices, require explicit close to flush internally buffer
+ 343:../cleanflight/src/main/blackbox/blackbox_io.c ****         flashfsClose();
+ 344:../cleanflight/src/main/blackbox/blackbox_io.c ****         break;
+ 345:../cleanflight/src/main/blackbox/blackbox_io.c **** #endif
+ 346:../cleanflight/src/main/blackbox/blackbox_io.c ****     default:
+ 347:../cleanflight/src/main/blackbox/blackbox_io.c ****         ;
+ 348:../cleanflight/src/main/blackbox/blackbox_io.c ****     }
+ 349:../cleanflight/src/main/blackbox/blackbox_io.c **** }
+ 673              	 .loc 3 349 0
+ 674 002e 80BD     	 pop {r7,pc}
+ 675              	.L58:
+ 676              	 .align 2
+ 677              	.L57:
+ 678 0030 00000000 	 .word blackboxPort
+ 679 0034 00000000 	 .word blackboxPortSharing
+ 680              	 .cfi_endproc
+ 681              	.LFE546:
+ 683              	 .section .text.blackboxLogDirCreated,"ax",%progbits
+ 684              	 .align 2
+ 685              	 .thumb
+ 686              	 .thumb_func
+ 688              	blackboxLogDirCreated:
+ 689              	.LFB547:
+ 350:../cleanflight/src/main/blackbox/blackbox_io.c **** 
+ 351:../cleanflight/src/main/blackbox/blackbox_io.c **** #ifdef USE_SDCARD
+ 352:../cleanflight/src/main/blackbox/blackbox_io.c **** 
+ 353:../cleanflight/src/main/blackbox/blackbox_io.c **** static void blackboxLogDirCreated(afatfsFilePtr_t directory)
+ 354:../cleanflight/src/main/blackbox/blackbox_io.c **** {
+ 690              	 .loc 3 354 0
+ 691              	 .cfi_startproc
+ 692              	 
+ 693              	 
+ 694 0000 80B5     	 push {r7,lr}
+ 695              	.LCFI36:
+ 696              	 .cfi_def_cfa_offset 8
+ 697              	 .cfi_offset 7,-8
+ 698              	 .cfi_offset 14,-4
+ 699 0002 82B0     	 sub sp,sp,#8
+ 700              	.LCFI37:
+ 701              	 .cfi_def_cfa_offset 16
+ 702 0004 00AF     	 add r7,sp,#0
+ 703              	.LCFI38:
+ 704              	 .cfi_def_cfa_register 7
+ 705 0006 7860     	 str r0,[r7,#4]
+ 355:../cleanflight/src/main/blackbox/blackbox_io.c ****     if (directory) {
+ 706              	 .loc 3 355 0
+ 707 0008 7B68     	 ldr r3,[r7,#4]
+ 708 000a 002B     	 cmp r3,#0
+ 709 000c 0CD0     	 beq .L60
+ 356:../cleanflight/src/main/blackbox/blackbox_io.c ****         blackboxSDCard.logDirectory = directory;
+ 710              	 .loc 3 356 0
+ 711 000e 094A     	 ldr r2,.L62
+ 712 0010 7B68     	 ldr r3,[r7,#4]
+ 713 0012 5360     	 str r3,[r2,#4]
+ 357:../cleanflight/src/main/blackbox/blackbox_io.c **** 
+ 358:../cleanflight/src/main/blackbox/blackbox_io.c ****         afatfs_findFirst(blackboxSDCard.logDirectory, &blackboxSDCard.logDirectoryFinder);
+ 714              	 .loc 3 358 0
+ 715 0014 074B     	 ldr r3,.L62
+ 716 0016 5B68     	 ldr r3,[r3,#4]
+ 717 0018 1846     	 mov r0,r3
+ 718 001a 0749     	 ldr r1,.L62+4
+ 719 001c FFF7FEFF 	 bl afatfs_findFirst
+ 359:../cleanflight/src/main/blackbox/blackbox_io.c **** 
+ 360:../cleanflight/src/main/blackbox/blackbox_io.c ****         blackboxSDCard.state = BLACKBOX_SDCARD_ENUMERATE_FILES;
+ 720              	 .loc 3 360 0
+ 721 0020 044B     	 ldr r3,.L62
+ 722 0022 0222     	 movs r2,#2
+ 723 0024 9A74     	 strb r2,[r3,#18]
+ 724 0026 02E0     	 b .L59
+ 725              	.L60:
+ 361:../cleanflight/src/main/blackbox/blackbox_io.c ****     } else {
+ 362:../cleanflight/src/main/blackbox/blackbox_io.c ****         // Retry
+ 363:../cleanflight/src/main/blackbox/blackbox_io.c ****         blackboxSDCard.state = BLACKBOX_SDCARD_INITIAL;
+ 726              	 .loc 3 363 0
+ 727 0028 024B     	 ldr r3,.L62
+ 728 002a 0022     	 movs r2,#0
+ 729 002c 9A74     	 strb r2,[r3,#18]
+ 730              	.L59:
+ 364:../cleanflight/src/main/blackbox/blackbox_io.c ****     }
+ 365:../cleanflight/src/main/blackbox/blackbox_io.c **** }
+ 731              	 .loc 3 365 0
+ 732 002e 0837     	 adds r7,r7,#8
+ 733              	.LCFI39:
+ 734              	 .cfi_def_cfa_offset 8
+ 735 0030 BD46     	 mov sp,r7
+ 736              	.LCFI40:
+ 737              	 .cfi_def_cfa_register 13
+ 738              	 
+ 739 0032 80BD     	 pop {r7,pc}
+ 740              	.L63:
+ 741              	 .align 2
+ 742              	.L62:
+ 743 0034 00000000 	 .word blackboxSDCard
+ 744 0038 08000000 	 .word blackboxSDCard+8
+ 745              	 .cfi_endproc
+ 746              	.LFE547:
+ 748              	 .section .text.blackboxLogFileCreated,"ax",%progbits
+ 749              	 .align 2
+ 750              	 .thumb
+ 751              	 .thumb_func
+ 753              	blackboxLogFileCreated:
+ 754              	.LFB548:
+ 366:../cleanflight/src/main/blackbox/blackbox_io.c **** 
+ 367:../cleanflight/src/main/blackbox/blackbox_io.c **** static void blackboxLogFileCreated(afatfsFilePtr_t file)
+ 368:../cleanflight/src/main/blackbox/blackbox_io.c **** {
+ 755              	 .loc 3 368 0
+ 756              	 .cfi_startproc
+ 757              	 
+ 758              	 
+ 759              	 
+ 760 0000 80B4     	 push {r7}
+ 761              	.LCFI41:
+ 762              	 .cfi_def_cfa_offset 4
+ 763              	 .cfi_offset 7,-4
+ 764 0002 83B0     	 sub sp,sp,#12
+ 765              	.LCFI42:
+ 766              	 .cfi_def_cfa_offset 16
+ 767 0004 00AF     	 add r7,sp,#0
+ 768              	.LCFI43:
+ 769              	 .cfi_def_cfa_register 7
+ 770 0006 7860     	 str r0,[r7,#4]
+ 369:../cleanflight/src/main/blackbox/blackbox_io.c ****     if (file) {
+ 771              	 .loc 3 369 0
+ 772 0008 7B68     	 ldr r3,[r7,#4]
+ 773 000a 002B     	 cmp r3,#0
+ 774 000c 0DD0     	 beq .L65
+ 370:../cleanflight/src/main/blackbox/blackbox_io.c ****         blackboxSDCard.logFile = file;
+ 775              	 .loc 3 370 0
+ 776 000e 0B4A     	 ldr r2,.L67
+ 777 0010 7B68     	 ldr r3,[r7,#4]
+ 778 0012 1360     	 str r3,[r2]
+ 371:../cleanflight/src/main/blackbox/blackbox_io.c **** 
+ 372:../cleanflight/src/main/blackbox/blackbox_io.c ****         blackboxSDCard.largestLogFileNumber++;
+ 779              	 .loc 3 372 0
+ 780 0014 094B     	 ldr r3,.L67
+ 781 0016 D3F80E30 	 ldr r3,[r3,#14]
+ 782 001a 0133     	 adds r3,r3,#1
+ 783 001c 074A     	 ldr r2,.L67
+ 784 001e C2F80E30 	 str r3,[r2,#14]
+ 373:../cleanflight/src/main/blackbox/blackbox_io.c **** 
+ 374:../cleanflight/src/main/blackbox/blackbox_io.c ****         blackboxSDCard.state = BLACKBOX_SDCARD_READY_TO_LOG;
+ 785              	 .loc 3 374 0
+ 786 0022 064B     	 ldr r3,.L67
+ 787 0024 0522     	 movs r2,#5
+ 788 0026 9A74     	 strb r2,[r3,#18]
+ 789 0028 02E0     	 b .L64
+ 790              	.L65:
+ 375:../cleanflight/src/main/blackbox/blackbox_io.c ****     } else {
+ 376:../cleanflight/src/main/blackbox/blackbox_io.c ****         // Retry
+ 377:../cleanflight/src/main/blackbox/blackbox_io.c ****         blackboxSDCard.state = BLACKBOX_SDCARD_READY_TO_CREATE_LOG;
+ 791              	 .loc 3 377 0
+ 792 002a 044B     	 ldr r3,.L67
+ 793 002c 0422     	 movs r2,#4
+ 794 002e 9A74     	 strb r2,[r3,#18]
+ 795              	.L64:
+ 378:../cleanflight/src/main/blackbox/blackbox_io.c ****     }
+ 379:../cleanflight/src/main/blackbox/blackbox_io.c **** }
+ 796              	 .loc 3 379 0
+ 797 0030 0C37     	 adds r7,r7,#12
+ 798              	.LCFI44:
+ 799              	 .cfi_def_cfa_offset 4
+ 800 0032 BD46     	 mov sp,r7
+ 801              	.LCFI45:
+ 802              	 .cfi_def_cfa_register 13
+ 803              	 
+ 804 0034 5DF8047B 	 ldr r7,[sp],#4
+ 805              	.LCFI46:
+ 806              	 .cfi_restore 7
+ 807              	 .cfi_def_cfa_offset 0
+ 808 0038 7047     	 bx lr
+ 809              	.L68:
+ 810 003a 00BF     	 .align 2
+ 811              	.L67:
+ 812 003c 00000000 	 .word blackboxSDCard
+ 813              	 .cfi_endproc
+ 814              	.LFE548:
+ 816              	 .section .rodata
+ 817              	 .align 2
+ 818              	.LC1:
+ 819 0000 617300   	 .ascii "as\000"
+ 820 0003 00       	 .align 2
+ 821              	.LC0:
+ 822 0004 4C4F4730 	 .ascii "LOG00000.BBL\000"
+ 822      30303030 
+ 822      2E42424C 
+ 822      00
+ 823              	 .section .text.blackboxCreateLogFile,"ax",%progbits
+ 824              	 .align 2
+ 825              	 .thumb
+ 826              	 .thumb_func
+ 828              	blackboxCreateLogFile:
+ 829              	.LFB549:
+ 380:../cleanflight/src/main/blackbox/blackbox_io.c **** 
+ 381:../cleanflight/src/main/blackbox/blackbox_io.c **** static void blackboxCreateLogFile(void)
+ 382:../cleanflight/src/main/blackbox/blackbox_io.c **** {
+ 830              	 .loc 3 382 0
+ 831              	 .cfi_startproc
+ 832              	 
+ 833              	 
+ 834 0000 90B5     	 push {r4,r7,lr}
+ 835              	.LCFI47:
+ 836              	 .cfi_def_cfa_offset 12
+ 837              	 .cfi_offset 4,-12
+ 838              	 .cfi_offset 7,-8
+ 839              	 .cfi_offset 14,-4
+ 840 0002 87B0     	 sub sp,sp,#28
+ 841              	.LCFI48:
+ 842              	 .cfi_def_cfa_offset 40
+ 843 0004 00AF     	 add r7,sp,#0
+ 844              	.LCFI49:
+ 845              	 .cfi_def_cfa_register 7
+ 383:../cleanflight/src/main/blackbox/blackbox_io.c ****     uint32_t remainder = blackboxSDCard.largestLogFileNumber + 1;
+ 846              	 .loc 3 383 0
+ 847 0006 1B4B     	 ldr r3,.L72
+ 848 0008 D3F80E30 	 ldr r3,[r3,#14]
+ 849 000c 0133     	 adds r3,r3,#1
+ 850 000e 7B61     	 str r3,[r7,#20]
+ 384:../cleanflight/src/main/blackbox/blackbox_io.c **** 
+ 385:../cleanflight/src/main/blackbox/blackbox_io.c ****     char filename[] = LOGFILE_PREFIX "00000." LOGFILE_SUFFIX;
+ 851              	 .loc 3 385 0
+ 852 0010 194B     	 ldr r3,.L72+4
+ 853 0012 3C46     	 mov r4,r7
+ 854 0014 0FCB     	 ldmia r3,{r0,r1,r2,r3}
+ 855 0016 07C4     	 stmia r4!,{r0,r1,r2}
+ 856 0018 2370     	 strb r3,[r4]
+ 857              	.LBB3:
+ 386:../cleanflight/src/main/blackbox/blackbox_io.c **** 
+ 387:../cleanflight/src/main/blackbox/blackbox_io.c ****     for (int i = 7; i >= 3; i--) {
+ 858              	 .loc 3 387 0
+ 859 001a 0723     	 movs r3,#7
+ 860 001c 3B61     	 str r3,[r7,#16]
+ 861 001e 1AE0     	 b .L70
+ 862              	.L71:
+ 388:../cleanflight/src/main/blackbox/blackbox_io.c ****         filename[i] = (remainder % 10) + '0';
+ 863              	 .loc 3 388 0 discriminator 3
+ 864 0020 7969     	 ldr r1,[r7,#20]
+ 865 0022 164B     	 ldr r3,.L72+8
+ 866 0024 A3FB0123 	 umull r2,r3,r3,r1
+ 867 0028 DA08     	 lsrs r2,r3,#3
+ 868 002a 1346     	 mov r3,r2
+ 869 002c 9B00     	 lsls r3,r3,#2
+ 870 002e 1344     	 add r3,r3,r2
+ 871 0030 5B00     	 lsls r3,r3,#1
+ 872 0032 CA1A     	 subs r2,r1,r3
+ 873 0034 D3B2     	 uxtb r3,r2
+ 874 0036 3033     	 adds r3,r3,#48
+ 875 0038 D9B2     	 uxtb r1,r3
+ 876 003a 3A46     	 mov r2,r7
+ 877 003c 3B69     	 ldr r3,[r7,#16]
+ 878 003e 1344     	 add r3,r3,r2
+ 879 0040 0A46     	 mov r2,r1
+ 880 0042 1A70     	 strb r2,[r3]
+ 389:../cleanflight/src/main/blackbox/blackbox_io.c ****         remainder /= 10;
+ 881              	 .loc 3 389 0 discriminator 3
+ 882 0044 7B69     	 ldr r3,[r7,#20]
+ 883 0046 0D4A     	 ldr r2,.L72+8
+ 884 0048 A2FB0323 	 umull r2,r3,r2,r3
+ 885 004c DB08     	 lsrs r3,r3,#3
+ 886 004e 7B61     	 str r3,[r7,#20]
+ 387:../cleanflight/src/main/blackbox/blackbox_io.c ****         filename[i] = (remainder % 10) + '0';
+ 887              	 .loc 3 387 0 discriminator 3
+ 888 0050 3B69     	 ldr r3,[r7,#16]
+ 889 0052 013B     	 subs r3,r3,#1
+ 890 0054 3B61     	 str r3,[r7,#16]
+ 891              	.L70:
+ 387:../cleanflight/src/main/blackbox/blackbox_io.c ****         filename[i] = (remainder % 10) + '0';
+ 892              	 .loc 3 387 0 is_stmt 0 discriminator 1
+ 893 0056 3B69     	 ldr r3,[r7,#16]
+ 894 0058 022B     	 cmp r3,#2
+ 895 005a E1DC     	 bgt .L71
+ 896              	.LBE3:
+ 390:../cleanflight/src/main/blackbox/blackbox_io.c ****     }
+ 391:../cleanflight/src/main/blackbox/blackbox_io.c **** 
+ 392:../cleanflight/src/main/blackbox/blackbox_io.c ****     blackboxSDCard.state = BLACKBOX_SDCARD_WAITING;
+ 897              	 .loc 3 392 0 is_stmt 1
+ 898 005c 054B     	 ldr r3,.L72
+ 899 005e 0122     	 movs r2,#1
+ 900 0060 9A74     	 strb r2,[r3,#18]
+ 393:../cleanflight/src/main/blackbox/blackbox_io.c **** 
+ 394:../cleanflight/src/main/blackbox/blackbox_io.c ****     afatfs_fopen(filename, "as", blackboxLogFileCreated);
+ 901              	 .loc 3 394 0
+ 902 0062 3B46     	 mov r3,r7
+ 903 0064 1846     	 mov r0,r3
+ 904 0066 0649     	 ldr r1,.L72+12
+ 905 0068 064A     	 ldr r2,.L72+16
+ 906 006a FFF7FEFF 	 bl afatfs_fopen
+ 395:../cleanflight/src/main/blackbox/blackbox_io.c **** }
+ 907              	 .loc 3 395 0
+ 908 006e 1C37     	 adds r7,r7,#28
+ 909              	.LCFI50:
+ 910              	 .cfi_def_cfa_offset 12
+ 911 0070 BD46     	 mov sp,r7
+ 912              	.LCFI51:
+ 913              	 .cfi_def_cfa_register 13
+ 914              	 
+ 915 0072 90BD     	 pop {r4,r7,pc}
+ 916              	.L73:
+ 917              	 .align 2
+ 918              	.L72:
+ 919 0074 00000000 	 .word blackboxSDCard
+ 920 0078 04000000 	 .word .LC0
+ 921 007c CDCCCCCC 	 .word -858993459
+ 922 0080 00000000 	 .word .LC1
+ 923 0084 00000000 	 .word blackboxLogFileCreated
+ 924              	 .cfi_endproc
+ 925              	.LFE549:
+ 927              	 .section .rodata
+ 928 0011 000000   	 .align 2
+ 929              	.LC2:
+ 930 0014 6C6F6773 	 .ascii "logs\000"
+ 930      00
+ 931 0019 000000   	 .align 2
+ 932              	.LC3:
+ 933 001c 4C4F4700 	 .ascii "LOG\000"
+ 934              	 .align 2
+ 935              	.LC4:
+ 936 0020 42424C00 	 .ascii "BBL\000"
+ 937              	 .section .text.blackboxSDCardBeginLog,"ax",%progbits
+ 938              	 .align 2
+ 939              	 .thumb
+ 940              	 .thumb_func
+ 942              	blackboxSDCardBeginLog:
+ 943              	.LFB550:
+ 396:../cleanflight/src/main/blackbox/blackbox_io.c **** 
+ 397:../cleanflight/src/main/blackbox/blackbox_io.c **** /**
+ 398:../cleanflight/src/main/blackbox/blackbox_io.c ****  * Begin a new log on the SDCard.
+ 399:../cleanflight/src/main/blackbox/blackbox_io.c ****  *
+ 400:../cleanflight/src/main/blackbox/blackbox_io.c ****  * Keep calling until the function returns true (open is complete).
+ 401:../cleanflight/src/main/blackbox/blackbox_io.c ****  */
+ 402:../cleanflight/src/main/blackbox/blackbox_io.c **** static bool blackboxSDCardBeginLog(void)
+ 403:../cleanflight/src/main/blackbox/blackbox_io.c **** {
+ 944              	 .loc 3 403 0
+ 945              	 .cfi_startproc
+ 946              	 
+ 947              	 
+ 948 0000 80B5     	 push {r7,lr}
+ 949              	.LCFI52:
+ 950              	 .cfi_def_cfa_offset 8
+ 951              	 .cfi_offset 7,-8
+ 952              	 .cfi_offset 14,-4
+ 953 0002 86B0     	 sub sp,sp,#24
+ 954              	.LCFI53:
+ 955              	 .cfi_def_cfa_offset 32
+ 956 0004 00AF     	 add r7,sp,#0
+ 957              	.LCFI54:
+ 958              	 .cfi_def_cfa_register 7
+ 959              	.L75:
+ 404:../cleanflight/src/main/blackbox/blackbox_io.c ****     fatDirectoryEntry_t *directoryEntry;
+ 405:../cleanflight/src/main/blackbox/blackbox_io.c **** 
+ 406:../cleanflight/src/main/blackbox/blackbox_io.c ****     doMore:
+ 407:../cleanflight/src/main/blackbox/blackbox_io.c ****     switch (blackboxSDCard.state) {
+ 960              	 .loc 3 407 0
+ 961 0006 4B4B     	 ldr r3,.L92
+ 962 0008 9B7C     	 ldrb r3,[r3,#18]
+ 963 000a 052B     	 cmp r3,#5
+ 964 000c 00F28C80 	 bhi .L76
+ 965 0010 01A2     	 adr r2,.L78
+ 966 0012 52F823F0 	 ldr pc,[r2,r3,lsl#2]
+ 967 0016 00BF     	 .p2align 2
+ 968              	.L78:
+ 969 0018 31000000 	 .word .L77+1
+ 970 001c 29010000 	 .word .L76+1
+ 971 0020 D9000000 	 .word .L85+1
+ 972 0024 F3000000 	 .word .L81+1
+ 973 0028 1F010000 	 .word .L82+1
+ 974 002c 25010000 	 .word .L83+1
+ 975              	 .p2align 1
+ 976              	.L77:
+ 408:../cleanflight/src/main/blackbox/blackbox_io.c ****     case BLACKBOX_SDCARD_INITIAL:
+ 409:../cleanflight/src/main/blackbox/blackbox_io.c ****         if (afatfs_getFilesystemState() == AFATFS_FILESYSTEM_STATE_READY) {
+ 977              	 .loc 3 409 0
+ 978 0030 FFF7FEFF 	 bl afatfs_getFilesystemState
+ 979 0034 0346     	 mov r3,r0
+ 980 0036 032B     	 cmp r3,#3
+ 981 0038 07D1     	 bne .L84
+ 410:../cleanflight/src/main/blackbox/blackbox_io.c ****             blackboxSDCard.state = BLACKBOX_SDCARD_WAITING;
+ 982              	 .loc 3 410 0
+ 983 003a 3E4B     	 ldr r3,.L92
+ 984 003c 0122     	 movs r2,#1
+ 985 003e 9A74     	 strb r2,[r3,#18]
+ 411:../cleanflight/src/main/blackbox/blackbox_io.c **** 
+ 412:../cleanflight/src/main/blackbox/blackbox_io.c ****             afatfs_mkdir("logs", blackboxLogDirCreated);
+ 986              	 .loc 3 412 0
+ 987 0040 3D48     	 ldr r0,.L92+4
+ 988 0042 3E49     	 ldr r1,.L92+8
+ 989 0044 FFF7FEFF 	 bl afatfs_mkdir
+ 413:../cleanflight/src/main/blackbox/blackbox_io.c ****         }
+ 414:../cleanflight/src/main/blackbox/blackbox_io.c ****         break;
+ 990              	 .loc 3 414 0
+ 991 0048 6EE0     	 b .L76
+ 992              	.L84:
+ 993 004a 6DE0     	 b .L76
+ 994              	.L88:
+ 415:../cleanflight/src/main/blackbox/blackbox_io.c **** 
+ 416:../cleanflight/src/main/blackbox/blackbox_io.c ****     case BLACKBOX_SDCARD_WAITING:
+ 417:../cleanflight/src/main/blackbox/blackbox_io.c ****         // Waiting for directory entry to be created
+ 418:../cleanflight/src/main/blackbox/blackbox_io.c ****         break;
+ 419:../cleanflight/src/main/blackbox/blackbox_io.c **** 
+ 420:../cleanflight/src/main/blackbox/blackbox_io.c ****     case BLACKBOX_SDCARD_ENUMERATE_FILES:
+ 421:../cleanflight/src/main/blackbox/blackbox_io.c ****         while (afatfs_findNext(blackboxSDCard.logDirectory, &blackboxSDCard.logDirectoryFinder, &di
+ 422:../cleanflight/src/main/blackbox/blackbox_io.c ****             if (directoryEntry && !fat_isDirectoryEntryTerminator(directoryEntry)) {
+ 995              	 .loc 3 422 0
+ 996 004c FB68     	 ldr r3,[r7,#12]
+ 997 004e 002B     	 cmp r3,#0
+ 998 0050 39D0     	 beq .L86
+ 999              	 .loc 3 422 0 is_stmt 0 discriminator 1
+ 1000 0052 FB68     	 ldr r3,[r7,#12]
+ 1001 0054 1846     	 mov r0,r3
+ 1002 0056 FFF7FEFF 	 bl fat_isDirectoryEntryTerminator
+ 1003 005a 0346     	 mov r3,r0
+ 1004 005c 83F00103 	 eor r3,r3,#1
+ 1005 0060 DBB2     	 uxtb r3,r3
+ 1006 0062 002B     	 cmp r3,#0
+ 1007 0064 2FD0     	 beq .L86
+ 423:../cleanflight/src/main/blackbox/blackbox_io.c ****                 // If this is a log file, parse the log number from the filename
+ 424:../cleanflight/src/main/blackbox/blackbox_io.c ****                 if (strncmp(directoryEntry->filename, LOGFILE_PREFIX, strlen(LOGFILE_PREFIX)) == 0
+ 1008              	 .loc 3 424 0 is_stmt 1
+ 1009 0066 FB68     	 ldr r3,[r7,#12]
+ 1010 0068 1846     	 mov r0,r3
+ 1011 006a 3549     	 ldr r1,.L92+12
+ 1012 006c 0322     	 movs r2,#3
+ 1013 006e FFF7FEFF 	 bl strncmp
+ 1014 0072 0346     	 mov r3,r0
+ 1015 0074 002B     	 cmp r3,#0
+ 1016 0076 25D1     	 bne .L87
+ 425:../cleanflight/src/main/blackbox/blackbox_io.c ****                     && strncmp(directoryEntry->filename + 8, LOGFILE_SUFFIX, strlen(LOGFILE_SUFFIX)
+ 1017              	 .loc 3 425 0
+ 1018 0078 FB68     	 ldr r3,[r7,#12]
+ 1019 007a 0833     	 adds r3,r3,#8
+ 1020 007c 1846     	 mov r0,r3
+ 1021 007e 3149     	 ldr r1,.L92+16
+ 1022 0080 0322     	 movs r2,#3
+ 1023 0082 FFF7FEFF 	 bl strncmp
+ 1024 0086 0346     	 mov r3,r0
+ 1025 0088 002B     	 cmp r3,#0
+ 1026 008a 1BD1     	 bne .L87
+ 1027              	.LBB4:
+ 426:../cleanflight/src/main/blackbox/blackbox_io.c ****                     char logSequenceNumberString[6];
+ 427:../cleanflight/src/main/blackbox/blackbox_io.c **** 
+ 428:../cleanflight/src/main/blackbox/blackbox_io.c ****                     memcpy(logSequenceNumberString, directoryEntry->filename + 3, 5);
+ 1028              	 .loc 3 428 0
+ 1029 008c FB68     	 ldr r3,[r7,#12]
+ 1030 008e 0333     	 adds r3,r3,#3
+ 1031 0090 3A1D     	 adds r2,r7,#4
+ 1032 0092 1046     	 mov r0,r2
+ 1033 0094 1946     	 mov r1,r3
+ 1034 0096 0522     	 movs r2,#5
+ 1035 0098 FFF7FEFF 	 bl memcpy
+ 429:../cleanflight/src/main/blackbox/blackbox_io.c ****                     logSequenceNumberString[5] = '\0';
+ 1036              	 .loc 3 429 0
+ 1037 009c 0023     	 movs r3,#0
+ 1038 009e 7B72     	 strb r3,[r7,#9]
+ 1039              	.LBB5:
+ 430:../cleanflight/src/main/blackbox/blackbox_io.c **** 
+ 431:../cleanflight/src/main/blackbox/blackbox_io.c ****                     blackboxSDCard.largestLogFileNumber = MAX((uint32_t) atoi(logSequenceNumberStri
+ 1040              	 .loc 3 431 0
+ 1041 00a0 3B1D     	 adds r3,r7,#4
+ 1042 00a2 1846     	 mov r0,r3
+ 1043 00a4 FFF7FEFF 	 bl atoi
+ 1044 00a8 0346     	 mov r3,r0
+ 1045 00aa 7B61     	 str r3,[r7,#20]
+ 1046 00ac 214B     	 ldr r3,.L92
+ 1047 00ae D3F80E30 	 ldr r3,[r3,#14]
+ 1048 00b2 3B61     	 str r3,[r7,#16]
+ 1049 00b4 3A69     	 ldr r2,[r7,#16]
+ 1050 00b6 7B69     	 ldr r3,[r7,#20]
+ 1051 00b8 9342     	 cmp r3,r2
+ 1052 00ba 38BF     	 it cc
+ 1053 00bc 1346     	 movcc r3,r2
+ 1054              	.LBE5:
+ 1055 00be 1D4A     	 ldr r2,.L92
+ 1056 00c0 C2F80E30 	 str r3,[r2,#14]
+ 1057              	.L87:
+ 1058              	.LBE4:
+ 424:../cleanflight/src/main/blackbox/blackbox_io.c ****                     && strncmp(directoryEntry->filename + 8, LOGFILE_SUFFIX, strlen(LOGFILE_SUFFIX)
+ 1059              	 .loc 3 424 0 discriminator 1
+ 1060 00c4 08E0     	 b .L85
+ 1061              	.L86:
+ 432:../cleanflight/src/main/blackbox/blackbox_io.c ****                 }
+ 433:../cleanflight/src/main/blackbox/blackbox_io.c ****             } else {
+ 434:../cleanflight/src/main/blackbox/blackbox_io.c ****                 // We're done checking all the files on the card, now we can create a new log file
+ 435:../cleanflight/src/main/blackbox/blackbox_io.c ****                 afatfs_findLast(blackboxSDCard.logDirectory);
+ 1062              	 .loc 3 435 0
+ 1063 00c6 1B4B     	 ldr r3,.L92
+ 1064 00c8 5B68     	 ldr r3,[r3,#4]
+ 1065 00ca 1846     	 mov r0,r3
+ 1066 00cc FFF7FEFF 	 bl afatfs_findLast
+ 436:../cleanflight/src/main/blackbox/blackbox_io.c **** 
+ 437:../cleanflight/src/main/blackbox/blackbox_io.c ****                 blackboxSDCard.state = BLACKBOX_SDCARD_CHANGE_INTO_LOG_DIRECTORY;
+ 1067              	 .loc 3 437 0
+ 1068 00d0 184B     	 ldr r3,.L92
+ 1069 00d2 0322     	 movs r2,#3
+ 1070 00d4 9A74     	 strb r2,[r3,#18]
+ 438:../cleanflight/src/main/blackbox/blackbox_io.c ****                 goto doMore;
+ 1071              	 .loc 3 438 0
+ 1072 00d6 96E7     	 b .L75
+ 1073              	.L85:
+ 421:../cleanflight/src/main/blackbox/blackbox_io.c ****             if (directoryEntry && !fat_isDirectoryEntryTerminator(directoryEntry)) {
+ 1074              	 .loc 3 421 0
+ 1075 00d8 164B     	 ldr r3,.L92
+ 1076 00da 5A68     	 ldr r2,[r3,#4]
+ 1077 00dc 07F10C03 	 add r3,r7,#12
+ 1078 00e0 1046     	 mov r0,r2
+ 1079 00e2 1949     	 ldr r1,.L92+20
+ 1080 00e4 1A46     	 mov r2,r3
+ 1081 00e6 FFF7FEFF 	 bl afatfs_findNext
+ 1082 00ea 0346     	 mov r3,r0
+ 1083 00ec 012B     	 cmp r3,#1
+ 1084 00ee ADD0     	 beq .L88
+ 439:../cleanflight/src/main/blackbox/blackbox_io.c ****             }
+ 440:../cleanflight/src/main/blackbox/blackbox_io.c ****         }
+ 441:../cleanflight/src/main/blackbox/blackbox_io.c ****         break;
+ 1085              	 .loc 3 441 0
+ 1086 00f0 1AE0     	 b .L76
+ 1087              	.L81:
+ 442:../cleanflight/src/main/blackbox/blackbox_io.c **** 
+ 443:../cleanflight/src/main/blackbox/blackbox_io.c ****     case BLACKBOX_SDCARD_CHANGE_INTO_LOG_DIRECTORY:
+ 444:../cleanflight/src/main/blackbox/blackbox_io.c ****         // Change into the log directory:
+ 445:../cleanflight/src/main/blackbox/blackbox_io.c ****         if (afatfs_chdir(blackboxSDCard.logDirectory)) {
+ 1088              	 .loc 3 445 0
+ 1089 00f2 104B     	 ldr r3,.L92
+ 1090 00f4 5B68     	 ldr r3,[r3,#4]
+ 1091 00f6 1846     	 mov r0,r3
+ 1092 00f8 FFF7FEFF 	 bl afatfs_chdir
+ 1093 00fc 0346     	 mov r3,r0
+ 1094 00fe 002B     	 cmp r3,#0
+ 1095 0100 0CD0     	 beq .L89
+ 446:../cleanflight/src/main/blackbox/blackbox_io.c ****             // We no longer need our open handle on the log directory
+ 447:../cleanflight/src/main/blackbox/blackbox_io.c ****             afatfs_fclose(blackboxSDCard.logDirectory, NULL);
+ 1096              	 .loc 3 447 0
+ 1097 0102 0C4B     	 ldr r3,.L92
+ 1098 0104 5B68     	 ldr r3,[r3,#4]
+ 1099 0106 1846     	 mov r0,r3
+ 1100 0108 0021     	 movs r1,#0
+ 1101 010a FFF7FEFF 	 bl afatfs_fclose
+ 448:../cleanflight/src/main/blackbox/blackbox_io.c ****             blackboxSDCard.logDirectory = NULL;
+ 1102              	 .loc 3 448 0
+ 1103 010e 094B     	 ldr r3,.L92
+ 1104 0110 0022     	 movs r2,#0
+ 1105 0112 5A60     	 str r2,[r3,#4]
+ 449:../cleanflight/src/main/blackbox/blackbox_io.c **** 
+ 450:../cleanflight/src/main/blackbox/blackbox_io.c ****             blackboxSDCard.state = BLACKBOX_SDCARD_READY_TO_CREATE_LOG;
+ 1106              	 .loc 3 450 0
+ 1107 0114 074B     	 ldr r3,.L92
+ 1108 0116 0422     	 movs r2,#4
+ 1109 0118 9A74     	 strb r2,[r3,#18]
+ 451:../cleanflight/src/main/blackbox/blackbox_io.c ****             goto doMore;
+ 1110              	 .loc 3 451 0
+ 1111 011a 74E7     	 b .L75
+ 1112              	.L89:
+ 452:../cleanflight/src/main/blackbox/blackbox_io.c ****         }
+ 453:../cleanflight/src/main/blackbox/blackbox_io.c ****         break;
+ 1113              	 .loc 3 453 0
+ 1114 011c 04E0     	 b .L76
+ 1115              	.L82:
+ 454:../cleanflight/src/main/blackbox/blackbox_io.c **** 
+ 455:../cleanflight/src/main/blackbox/blackbox_io.c ****     case BLACKBOX_SDCARD_READY_TO_CREATE_LOG:
+ 456:../cleanflight/src/main/blackbox/blackbox_io.c ****         blackboxCreateLogFile();
+ 1116              	 .loc 3 456 0
+ 1117 011e FFF7FEFF 	 bl blackboxCreateLogFile
+ 457:../cleanflight/src/main/blackbox/blackbox_io.c ****         break;
+ 1118              	 .loc 3 457 0
+ 1119 0122 01E0     	 b .L76
+ 1120              	.L83:
+ 458:../cleanflight/src/main/blackbox/blackbox_io.c **** 
+ 459:../cleanflight/src/main/blackbox/blackbox_io.c ****     case BLACKBOX_SDCARD_READY_TO_LOG:
+ 460:../cleanflight/src/main/blackbox/blackbox_io.c ****         return true; // Log has been created!
+ 1121              	 .loc 3 460 0
+ 1122 0124 0123     	 movs r3,#1
+ 1123 0126 00E0     	 b .L91
+ 1124              	.L76:
+ 461:../cleanflight/src/main/blackbox/blackbox_io.c ****     }
+ 462:../cleanflight/src/main/blackbox/blackbox_io.c **** 
+ 463:../cleanflight/src/main/blackbox/blackbox_io.c ****     // Not finished init yet
+ 464:../cleanflight/src/main/blackbox/blackbox_io.c ****     return false;
+ 1125              	 .loc 3 464 0
+ 1126 0128 0023     	 movs r3,#0
+ 1127              	.L91:
+ 465:../cleanflight/src/main/blackbox/blackbox_io.c **** }
+ 1128              	 .loc 3 465 0 discriminator 2
+ 1129 012a 1846     	 mov r0,r3
+ 1130 012c 1837     	 adds r7,r7,#24
+ 1131              	.LCFI55:
+ 1132              	 .cfi_def_cfa_offset 8
+ 1133 012e BD46     	 mov sp,r7
+ 1134              	.LCFI56:
+ 1135              	 .cfi_def_cfa_register 13
+ 1136              	 
+ 1137 0130 80BD     	 pop {r7,pc}
+ 1138              	.L93:
+ 1139 0132 00BF     	 .align 2
+ 1140              	.L92:
+ 1141 0134 00000000 	 .word blackboxSDCard
+ 1142 0138 14000000 	 .word .LC2
+ 1143 013c 00000000 	 .word blackboxLogDirCreated
+ 1144 0140 1C000000 	 .word .LC3
+ 1145 0144 20000000 	 .word .LC4
+ 1146 0148 08000000 	 .word blackboxSDCard+8
+ 1147              	 .cfi_endproc
+ 1148              	.LFE550:
+ 1150              	 .section .text.blackboxDeviceBeginLog,"ax",%progbits
+ 1151              	 .align 2
+ 1152              	 .global blackboxDeviceBeginLog
+ 1153              	 .thumb
+ 1154              	 .thumb_func
+ 1156              	blackboxDeviceBeginLog:
+ 1157              	.LFB551:
+ 466:../cleanflight/src/main/blackbox/blackbox_io.c **** 
+ 467:../cleanflight/src/main/blackbox/blackbox_io.c **** #endif // USE_SDCARD
+ 468:../cleanflight/src/main/blackbox/blackbox_io.c **** 
+ 469:../cleanflight/src/main/blackbox/blackbox_io.c **** /**
+ 470:../cleanflight/src/main/blackbox/blackbox_io.c ****  * Begin a new log (for devices which support separations between the logs of multiple flights).
+ 471:../cleanflight/src/main/blackbox/blackbox_io.c ****  *
+ 472:../cleanflight/src/main/blackbox/blackbox_io.c ****  * Keep calling until the function returns true (open is complete).
+ 473:../cleanflight/src/main/blackbox/blackbox_io.c ****  */
+ 474:../cleanflight/src/main/blackbox/blackbox_io.c **** bool blackboxDeviceBeginLog(void)
+ 475:../cleanflight/src/main/blackbox/blackbox_io.c **** {
+ 1158              	 .loc 3 475 0
+ 1159              	 .cfi_startproc
+ 1160              	 
+ 1161              	 
+ 1162 0000 80B5     	 push {r7,lr}
+ 1163              	.LCFI57:
+ 1164              	 .cfi_def_cfa_offset 8
+ 1165              	 .cfi_offset 7,-8
+ 1166              	 .cfi_offset 14,-4
+ 1167 0002 00AF     	 add r7,sp,#0
+ 1168              	.LCFI58:
+ 1169              	 .cfi_def_cfa_register 7
+ 476:../cleanflight/src/main/blackbox/blackbox_io.c ****     switch (blackboxConfig()->device) {
+ 1170              	 .loc 3 476 0
+ 1171 0004 FFF7FEFF 	 bl blackboxConfig
+ 1172 0008 0346     	 mov r3,r0
+ 1173 000a 9B78     	 ldrb r3,[r3,#2]
+ 1174 000c 022B     	 cmp r3,#2
+ 1175 000e 03D1     	 bne .L98
+ 477:../cleanflight/src/main/blackbox/blackbox_io.c **** #ifdef USE_SDCARD
+ 478:../cleanflight/src/main/blackbox/blackbox_io.c ****     case BLACKBOX_DEVICE_SDCARD:
+ 479:../cleanflight/src/main/blackbox/blackbox_io.c ****         return blackboxSDCardBeginLog();
+ 1176              	 .loc 3 479 0
+ 1177 0010 FFF7FEFF 	 bl blackboxSDCardBeginLog
+ 1178 0014 0346     	 mov r3,r0
+ 1179 0016 00E0     	 b .L97
+ 1180              	.L98:
+ 480:../cleanflight/src/main/blackbox/blackbox_io.c **** #endif // USE_SDCARD
+ 481:../cleanflight/src/main/blackbox/blackbox_io.c ****     default:
+ 482:../cleanflight/src/main/blackbox/blackbox_io.c ****         return true;
+ 1181              	 .loc 3 482 0
+ 1182 0018 0123     	 movs r3,#1
+ 1183              	.L97:
+ 483:../cleanflight/src/main/blackbox/blackbox_io.c ****     }
+ 484:../cleanflight/src/main/blackbox/blackbox_io.c **** 
+ 485:../cleanflight/src/main/blackbox/blackbox_io.c **** }
+ 1184              	 .loc 3 485 0
+ 1185 001a 1846     	 mov r0,r3
+ 1186 001c 80BD     	 pop {r7,pc}
+ 1187              	 .cfi_endproc
+ 1188              	.LFE551:
+ 1190 001e 00BF     	 .section .text.blackboxDeviceEndLog,"ax",%progbits
+ 1191              	 .align 2
+ 1192              	 .global blackboxDeviceEndLog
+ 1193              	 .thumb
+ 1194              	 .thumb_func
+ 1196              	blackboxDeviceEndLog:
+ 1197              	.LFB552:
+ 486:../cleanflight/src/main/blackbox/blackbox_io.c **** 
+ 487:../cleanflight/src/main/blackbox/blackbox_io.c **** /**
+ 488:../cleanflight/src/main/blackbox/blackbox_io.c ****  * Terminate the current log (for devices which support separations between the logs of multiple fl
+ 489:../cleanflight/src/main/blackbox/blackbox_io.c ****  *
+ 490:../cleanflight/src/main/blackbox/blackbox_io.c ****  * retainLog - Pass true if the log should be kept, or false if the log should be discarded (if sup
+ 491:../cleanflight/src/main/blackbox/blackbox_io.c ****  *
+ 492:../cleanflight/src/main/blackbox/blackbox_io.c ****  * Keep calling until this returns true
+ 493:../cleanflight/src/main/blackbox/blackbox_io.c ****  */
+ 494:../cleanflight/src/main/blackbox/blackbox_io.c **** bool blackboxDeviceEndLog(bool retainLog)
+ 495:../cleanflight/src/main/blackbox/blackbox_io.c **** {
+ 1198              	 .loc 3 495 0
+ 1199              	 .cfi_startproc
+ 1200              	 
+ 1201              	 
+ 1202 0000 80B5     	 push {r7,lr}
+ 1203              	.LCFI59:
+ 1204              	 .cfi_def_cfa_offset 8
+ 1205              	 .cfi_offset 7,-8
+ 1206              	 .cfi_offset 14,-4
+ 1207 0002 82B0     	 sub sp,sp,#8
+ 1208              	.LCFI60:
+ 1209              	 .cfi_def_cfa_offset 16
+ 1210 0004 00AF     	 add r7,sp,#0
+ 1211              	.LCFI61:
+ 1212              	 .cfi_def_cfa_register 7
+ 1213 0006 0346     	 mov r3,r0
+ 1214 0008 FB71     	 strb r3,[r7,#7]
+ 496:../cleanflight/src/main/blackbox/blackbox_io.c **** #ifndef USE_SDCARD
+ 497:../cleanflight/src/main/blackbox/blackbox_io.c ****     UNUSED(retainLog);
+ 498:../cleanflight/src/main/blackbox/blackbox_io.c **** #endif
+ 499:../cleanflight/src/main/blackbox/blackbox_io.c **** 
+ 500:../cleanflight/src/main/blackbox/blackbox_io.c ****     switch (blackboxConfig()->device) {
+ 1215              	 .loc 3 500 0
+ 1216 000a FFF7FEFF 	 bl blackboxConfig
+ 1217 000e 0346     	 mov r3,r0
+ 1218 0010 9B78     	 ldrb r3,[r3,#2]
+ 1219 0012 022B     	 cmp r3,#2
+ 1220 0014 24D1     	 bne .L106
+ 501:../cleanflight/src/main/blackbox/blackbox_io.c **** #ifdef USE_SDCARD
+ 502:../cleanflight/src/main/blackbox/blackbox_io.c ****     case BLACKBOX_DEVICE_SDCARD:
+ 503:../cleanflight/src/main/blackbox/blackbox_io.c ****         // Keep retrying until the close operation queues
+ 504:../cleanflight/src/main/blackbox/blackbox_io.c ****         if (
+ 1221              	 .loc 3 504 0
+ 1222 0016 FB79     	 ldrb r3,[r7,#7]
+ 1223 0018 002B     	 cmp r3,#0
+ 1224 001a 08D0     	 beq .L102
+ 505:../cleanflight/src/main/blackbox/blackbox_io.c ****             (retainLog && afatfs_fclose(blackboxSDCard.logFile, NULL))
+ 1225              	 .loc 3 505 0
+ 1226 001c 134B     	 ldr r3,.L107
+ 1227 001e 1B68     	 ldr r3,[r3]
+ 1228 0020 1846     	 mov r0,r3
+ 1229 0022 0021     	 movs r1,#0
+ 1230 0024 FFF7FEFF 	 bl afatfs_fclose
+ 1231 0028 0346     	 mov r3,r0
+ 1232 002a 002B     	 cmp r3,#0
+ 1233 002c 0ED1     	 bne .L103
+ 1234              	.L102:
+ 506:../cleanflight/src/main/blackbox/blackbox_io.c ****             || (!retainLog && afatfs_funlink(blackboxSDCard.logFile, NULL))
+ 1235              	 .loc 3 506 0
+ 1236 002e FB79     	 ldrb r3,[r7,#7]
+ 1237 0030 83F00103 	 eor r3,r3,#1
+ 1238 0034 DBB2     	 uxtb r3,r3
+ 1239 0036 002B     	 cmp r3,#0
+ 1240 0038 10D0     	 beq .L104
+ 1241              	 .loc 3 506 0 is_stmt 0 discriminator 1
+ 1242 003a 0C4B     	 ldr r3,.L107
+ 1243 003c 1B68     	 ldr r3,[r3]
+ 1244 003e 1846     	 mov r0,r3
+ 1245 0040 0021     	 movs r1,#0
+ 1246 0042 FFF7FEFF 	 bl afatfs_funlink
+ 1247 0046 0346     	 mov r3,r0
+ 1248 0048 002B     	 cmp r3,#0
+ 1249 004a 07D0     	 beq .L104
+ 1250              	.L103:
+ 507:../cleanflight/src/main/blackbox/blackbox_io.c ****         ) {
+ 508:../cleanflight/src/main/blackbox/blackbox_io.c ****             // Don't bother waiting the for the close to complete, it's queued now and will complet
+ 509:../cleanflight/src/main/blackbox/blackbox_io.c ****             blackboxSDCard.logFile = NULL;
+ 1251              	 .loc 3 509 0 is_stmt 1
+ 1252 004c 074B     	 ldr r3,.L107
+ 1253 004e 0022     	 movs r2,#0
+ 1254 0050 1A60     	 str r2,[r3]
+ 510:../cleanflight/src/main/blackbox/blackbox_io.c ****             blackboxSDCard.state = BLACKBOX_SDCARD_READY_TO_CREATE_LOG;
+ 1255              	 .loc 3 510 0
+ 1256 0052 064B     	 ldr r3,.L107
+ 1257 0054 0422     	 movs r2,#4
+ 1258 0056 9A74     	 strb r2,[r3,#18]
+ 511:../cleanflight/src/main/blackbox/blackbox_io.c ****             return true;
+ 1259              	 .loc 3 511 0
+ 1260 0058 0123     	 movs r3,#1
+ 1261 005a 02E0     	 b .L105
+ 1262              	.L104:
+ 512:../cleanflight/src/main/blackbox/blackbox_io.c ****         }
+ 513:../cleanflight/src/main/blackbox/blackbox_io.c ****         return false;
+ 1263              	 .loc 3 513 0
+ 1264 005c 0023     	 movs r3,#0
+ 1265 005e 00E0     	 b .L105
+ 1266              	.L106:
+ 514:../cleanflight/src/main/blackbox/blackbox_io.c **** #endif // USE_SDCARD
+ 515:../cleanflight/src/main/blackbox/blackbox_io.c ****     default:
+ 516:../cleanflight/src/main/blackbox/blackbox_io.c ****         return true;
+ 1267              	 .loc 3 516 0
+ 1268 0060 0123     	 movs r3,#1
+ 1269              	.L105:
+ 517:../cleanflight/src/main/blackbox/blackbox_io.c ****     }
+ 518:../cleanflight/src/main/blackbox/blackbox_io.c **** }
+ 1270              	 .loc 3 518 0
+ 1271 0062 1846     	 mov r0,r3
+ 1272 0064 0837     	 adds r7,r7,#8
+ 1273              	.LCFI62:
+ 1274              	 .cfi_def_cfa_offset 8
+ 1275 0066 BD46     	 mov sp,r7
+ 1276              	.LCFI63:
+ 1277              	 .cfi_def_cfa_register 13
+ 1278              	 
+ 1279 0068 80BD     	 pop {r7,pc}
+ 1280              	.L108:
+ 1281 006a 00BF     	 .align 2
+ 1282              	.L107:
+ 1283 006c 00000000 	 .word blackboxSDCard
+ 1284              	 .cfi_endproc
+ 1285              	.LFE552:
+ 1287              	 .section .text.isBlackboxDeviceFull,"ax",%progbits
+ 1288              	 .align 2
+ 1289              	 .global isBlackboxDeviceFull
+ 1290              	 .thumb
+ 1291              	 .thumb_func
+ 1293              	isBlackboxDeviceFull:
+ 1294              	.LFB553:
+ 519:../cleanflight/src/main/blackbox/blackbox_io.c **** 
+ 520:../cleanflight/src/main/blackbox/blackbox_io.c **** bool isBlackboxDeviceFull(void)
+ 521:../cleanflight/src/main/blackbox/blackbox_io.c **** {
+ 1295              	 .loc 3 521 0
+ 1296              	 .cfi_startproc
+ 1297              	 
+ 1298              	 
+ 1299 0000 80B5     	 push {r7,lr}
+ 1300              	.LCFI64:
+ 1301              	 .cfi_def_cfa_offset 8
+ 1302              	 .cfi_offset 7,-8
+ 1303              	 .cfi_offset 14,-4
+ 1304 0002 00AF     	 add r7,sp,#0
+ 1305              	.LCFI65:
+ 1306              	 .cfi_def_cfa_register 7
+ 522:../cleanflight/src/main/blackbox/blackbox_io.c ****     switch (blackboxConfig()->device) {
+ 1307              	 .loc 3 522 0
+ 1308 0004 FFF7FEFF 	 bl blackboxConfig
+ 1309 0008 0346     	 mov r3,r0
+ 1310 000a 9B78     	 ldrb r3,[r3,#2]
+ 1311 000c 022B     	 cmp r3,#2
+ 1312 000e 03D0     	 beq .L111
+ 1313 0010 032B     	 cmp r3,#3
+ 1314 0012 05D1     	 bne .L114
+ 523:../cleanflight/src/main/blackbox/blackbox_io.c ****     case BLACKBOX_DEVICE_SERIAL:
+ 524:../cleanflight/src/main/blackbox/blackbox_io.c ****         return false;
+ 1315              	 .loc 3 524 0
+ 1316 0014 0023     	 movs r3,#0
+ 1317 0016 04E0     	 b .L113
+ 1318              	.L111:
+ 525:../cleanflight/src/main/blackbox/blackbox_io.c **** 
+ 526:../cleanflight/src/main/blackbox/blackbox_io.c **** #ifdef USE_FLASHFS
+ 527:../cleanflight/src/main/blackbox/blackbox_io.c ****     case BLACKBOX_DEVICE_FLASH:
+ 528:../cleanflight/src/main/blackbox/blackbox_io.c ****         return flashfsIsEOF();
+ 529:../cleanflight/src/main/blackbox/blackbox_io.c **** #endif // USE_FLASHFS
+ 530:../cleanflight/src/main/blackbox/blackbox_io.c **** 
+ 531:../cleanflight/src/main/blackbox/blackbox_io.c **** #ifdef USE_SDCARD
+ 532:../cleanflight/src/main/blackbox/blackbox_io.c ****     case BLACKBOX_DEVICE_SDCARD:
+ 533:../cleanflight/src/main/blackbox/blackbox_io.c ****         return afatfs_isFull();
+ 1319              	 .loc 3 533 0
+ 1320 0018 FFF7FEFF 	 bl afatfs_isFull
+ 1321 001c 0346     	 mov r3,r0
+ 1322 001e 00E0     	 b .L113
+ 1323              	.L114:
+ 534:../cleanflight/src/main/blackbox/blackbox_io.c **** #endif // USE_SDCARD
+ 535:../cleanflight/src/main/blackbox/blackbox_io.c **** 
+ 536:../cleanflight/src/main/blackbox/blackbox_io.c ****     default:
+ 537:../cleanflight/src/main/blackbox/blackbox_io.c ****         return false;
+ 1324              	 .loc 3 537 0
+ 1325 0020 0023     	 movs r3,#0
+ 1326              	.L113:
+ 538:../cleanflight/src/main/blackbox/blackbox_io.c ****     }
+ 539:../cleanflight/src/main/blackbox/blackbox_io.c **** }
+ 1327              	 .loc 3 539 0
+ 1328 0022 1846     	 mov r0,r3
+ 1329 0024 80BD     	 pop {r7,pc}
+ 1330              	 .cfi_endproc
+ 1331              	.LFE553:
+ 1333 0026 00BF     	 .section .text.blackboxGetLogNumber,"ax",%progbits
+ 1334              	 .align 2
+ 1335              	 .global blackboxGetLogNumber
+ 1336              	 .thumb
+ 1337              	 .thumb_func
+ 1339              	blackboxGetLogNumber:
+ 1340              	.LFB554:
+ 540:../cleanflight/src/main/blackbox/blackbox_io.c **** 
+ 541:../cleanflight/src/main/blackbox/blackbox_io.c **** unsigned int blackboxGetLogNumber(void)
+ 542:../cleanflight/src/main/blackbox/blackbox_io.c **** {
+ 1341              	 .loc 3 542 0
+ 1342              	 .cfi_startproc
+ 1343              	 
+ 1344              	 
+ 1345              	 
+ 1346 0000 80B4     	 push {r7}
+ 1347              	.LCFI66:
+ 1348              	 .cfi_def_cfa_offset 4
+ 1349              	 .cfi_offset 7,-4
+ 1350 0002 00AF     	 add r7,sp,#0
+ 1351              	.LCFI67:
+ 1352              	 .cfi_def_cfa_register 7
+ 543:../cleanflight/src/main/blackbox/blackbox_io.c **** #ifdef USE_SDCARD
+ 544:../cleanflight/src/main/blackbox/blackbox_io.c ****     return blackboxSDCard.largestLogFileNumber;
+ 1353              	 .loc 3 544 0
+ 1354 0004 034B     	 ldr r3,.L117
+ 1355 0006 D3F80E30 	 ldr r3,[r3,#14]
+ 545:../cleanflight/src/main/blackbox/blackbox_io.c **** #endif
+ 546:../cleanflight/src/main/blackbox/blackbox_io.c ****     return 0;
+ 547:../cleanflight/src/main/blackbox/blackbox_io.c **** }
+ 1356              	 .loc 3 547 0
+ 1357 000a 1846     	 mov r0,r3
+ 1358 000c BD46     	 mov sp,r7
+ 1359              	.LCFI68:
+ 1360              	 .cfi_def_cfa_register 13
+ 1361              	 
+ 1362 000e 5DF8047B 	 ldr r7,[sp],#4
+ 1363              	.LCFI69:
+ 1364              	 .cfi_restore 7
+ 1365              	 .cfi_def_cfa_offset 0
+ 1366 0012 7047     	 bx lr
+ 1367              	.L118:
+ 1368              	 .align 2
+ 1369              	.L117:
+ 1370 0014 00000000 	 .word blackboxSDCard
+ 1371              	 .cfi_endproc
+ 1372              	.LFE554:
+ 1374              	 .section .text.blackboxReplenishHeaderBudget,"ax",%progbits
+ 1375              	 .align 2
+ 1376              	 .global blackboxReplenishHeaderBudget
+ 1377              	 .thumb
+ 1378              	 .thumb_func
+ 1380              	blackboxReplenishHeaderBudget:
+ 1381              	.LFB555:
+ 548:../cleanflight/src/main/blackbox/blackbox_io.c **** 
+ 549:../cleanflight/src/main/blackbox/blackbox_io.c **** /**
+ 550:../cleanflight/src/main/blackbox/blackbox_io.c ****  * Call once every loop iteration in order to maintain the global blackboxHeaderBudget with the num
+ 551:../cleanflight/src/main/blackbox/blackbox_io.c ****  * transmit this iteration.
+ 552:../cleanflight/src/main/blackbox/blackbox_io.c ****  */
+ 553:../cleanflight/src/main/blackbox/blackbox_io.c **** void blackboxReplenishHeaderBudget(void)
+ 554:../cleanflight/src/main/blackbox/blackbox_io.c **** {
+ 1382              	 .loc 3 554 0
+ 1383              	 .cfi_startproc
+ 1384              	 
+ 1385              	 
+ 1386 0000 80B5     	 push {r7,lr}
+ 1387              	.LCFI70:
+ 1388              	 .cfi_def_cfa_offset 8
+ 1389              	 .cfi_offset 7,-8
+ 1390              	 .cfi_offset 14,-4
+ 1391 0002 86B0     	 sub sp,sp,#24
+ 1392              	.LCFI71:
+ 1393              	 .cfi_def_cfa_offset 32
+ 1394 0004 00AF     	 add r7,sp,#0
+ 1395              	.LCFI72:
+ 1396              	 .cfi_def_cfa_register 7
+ 555:../cleanflight/src/main/blackbox/blackbox_io.c ****     int32_t freeSpace;
+ 556:../cleanflight/src/main/blackbox/blackbox_io.c **** 
+ 557:../cleanflight/src/main/blackbox/blackbox_io.c ****     switch (blackboxConfig()->device) {
+ 1397              	 .loc 3 557 0
+ 1398 0006 FFF7FEFF 	 bl blackboxConfig
+ 1399 000a 0346     	 mov r3,r0
+ 1400 000c 9B78     	 ldrb r3,[r3,#2]
+ 1401 000e 022B     	 cmp r3,#2
+ 1402 0010 09D0     	 beq .L121
+ 1403 0012 032B     	 cmp r3,#3
+ 1404 0014 0CD1     	 bne .L124
+ 558:../cleanflight/src/main/blackbox/blackbox_io.c ****     case BLACKBOX_DEVICE_SERIAL:
+ 559:../cleanflight/src/main/blackbox/blackbox_io.c ****         freeSpace = serialTxBytesFree(blackboxPort);
+ 1405              	 .loc 3 559 0
+ 1406 0016 154B     	 ldr r3,.L125
+ 1407 0018 1B68     	 ldr r3,[r3]
+ 1408 001a 1846     	 mov r0,r3
+ 1409 001c FFF7FEFF 	 bl serialTxBytesFree
+ 1410 0020 0346     	 mov r3,r0
+ 1411 0022 7B61     	 str r3,[r7,#20]
+ 560:../cleanflight/src/main/blackbox/blackbox_io.c ****         break;
+ 1412              	 .loc 3 560 0
+ 1413 0024 06E0     	 b .L123
+ 1414              	.L121:
+ 561:../cleanflight/src/main/blackbox/blackbox_io.c **** #ifdef USE_FLASHFS
+ 562:../cleanflight/src/main/blackbox/blackbox_io.c ****     case BLACKBOX_DEVICE_FLASH:
+ 563:../cleanflight/src/main/blackbox/blackbox_io.c ****         freeSpace = flashfsGetWriteBufferFreeSpace();
+ 564:../cleanflight/src/main/blackbox/blackbox_io.c ****         break;
+ 565:../cleanflight/src/main/blackbox/blackbox_io.c **** #endif
+ 566:../cleanflight/src/main/blackbox/blackbox_io.c **** #ifdef USE_SDCARD
+ 567:../cleanflight/src/main/blackbox/blackbox_io.c ****     case BLACKBOX_DEVICE_SDCARD:
+ 568:../cleanflight/src/main/blackbox/blackbox_io.c ****         freeSpace = afatfs_getFreeBufferSpace();
+ 1415              	 .loc 3 568 0
+ 1416 0026 FFF7FEFF 	 bl afatfs_getFreeBufferSpace
+ 1417 002a 0346     	 mov r3,r0
+ 1418 002c 7B61     	 str r3,[r7,#20]
+ 569:../cleanflight/src/main/blackbox/blackbox_io.c ****         break;
+ 1419              	 .loc 3 569 0
+ 1420 002e 01E0     	 b .L123
+ 1421              	.L124:
+ 570:../cleanflight/src/main/blackbox/blackbox_io.c **** #endif
+ 571:../cleanflight/src/main/blackbox/blackbox_io.c ****     default:
+ 572:../cleanflight/src/main/blackbox/blackbox_io.c ****         freeSpace = 0;
+ 1422              	 .loc 3 572 0
+ 1423 0030 0023     	 movs r3,#0
+ 1424 0032 7B61     	 str r3,[r7,#20]
+ 1425              	.L123:
+ 1426              	.LBB6:
+ 1427              	.LBB7:
+ 573:../cleanflight/src/main/blackbox/blackbox_io.c ****     }
+ 574:../cleanflight/src/main/blackbox/blackbox_io.c ****     blackboxHeaderBudget = MIN(MIN(freeSpace, blackboxHeaderBudget + blackboxMaxHeaderBytesPerItera
+ 1428              	 .loc 3 574 0
+ 1429 0034 7B69     	 ldr r3,[r7,#20]
+ 1430 0036 3B61     	 str r3,[r7,#16]
+ 1431 0038 0D4B     	 ldr r3,.L125+4
+ 1432 003a 1B78     	 ldrb r3,[r3]
+ 1433 003c 1A46     	 mov r2,r3
+ 1434 003e 0D4B     	 ldr r3,.L125+8
+ 1435 0040 1B68     	 ldr r3,[r3]
+ 1436 0042 1344     	 add r3,r3,r2
+ 1437 0044 FB60     	 str r3,[r7,#12]
+ 1438 0046 FA68     	 ldr r2,[r7,#12]
+ 1439 0048 3B69     	 ldr r3,[r7,#16]
+ 1440 004a 9342     	 cmp r3,r2
+ 1441 004c A8BF     	 it ge
+ 1442 004e 1346     	 movge r3,r2
+ 1443              	.LBE7:
+ 1444 0050 BB60     	 str r3,[r7,#8]
+ 1445 0052 4FF48073 	 mov r3,#256
+ 1446 0056 7B60     	 str r3,[r7,#4]
+ 1447 0058 7A68     	 ldr r2,[r7,#4]
+ 1448 005a BB68     	 ldr r3,[r7,#8]
+ 1449 005c 9342     	 cmp r3,r2
+ 1450 005e A8BF     	 it ge
+ 1451 0060 1346     	 movge r3,r2
+ 1452              	.LBE6:
+ 1453 0062 044A     	 ldr r2,.L125+8
+ 1454 0064 1360     	 str r3,[r2]
+ 575:../cleanflight/src/main/blackbox/blackbox_io.c **** }
+ 1455              	 .loc 3 575 0
+ 1456 0066 1837     	 adds r7,r7,#24
+ 1457              	.LCFI73:
+ 1458              	 .cfi_def_cfa_offset 8
+ 1459 0068 BD46     	 mov sp,r7
+ 1460              	.LCFI74:
+ 1461              	 .cfi_def_cfa_register 13
+ 1462              	 
+ 1463 006a 80BD     	 pop {r7,pc}
+ 1464              	.L126:
+ 1465              	 .align 2
+ 1466              	.L125:
+ 1467 006c 00000000 	 .word blackboxPort
+ 1468 0070 00000000 	 .word blackboxMaxHeaderBytesPerIteration
+ 1469 0074 00000000 	 .word blackboxHeaderBudget
+ 1470              	 .cfi_endproc
+ 1471              	.LFE555:
+ 1473              	 .section .text.blackboxDeviceReserveBufferSpace,"ax",%progbits
+ 1474              	 .align 2
+ 1475              	 .global blackboxDeviceReserveBufferSpace
+ 1476              	 .thumb
+ 1477              	 .thumb_func
+ 1479              	blackboxDeviceReserveBufferSpace:
+ 1480              	.LFB556:
+ 576:../cleanflight/src/main/blackbox/blackbox_io.c **** 
+ 577:../cleanflight/src/main/blackbox/blackbox_io.c **** /**
+ 578:../cleanflight/src/main/blackbox/blackbox_io.c ****  * You must call this function before attempting to write Blackbox header bytes to ensure that the 
+ 579:../cleanflight/src/main/blackbox/blackbox_io.c ****  * cause buffers to overflow. The number of bytes you can write is capped by the blackboxHeaderBudg
+ 580:../cleanflight/src/main/blackbox/blackbox_io.c ****  * reservation function doesn't decrease blackboxHeaderBudget, so you must manually decrement that 
+ 581:../cleanflight/src/main/blackbox/blackbox_io.c ****  * number of bytes you actually wrote.
+ 582:../cleanflight/src/main/blackbox/blackbox_io.c ****  *
+ 583:../cleanflight/src/main/blackbox/blackbox_io.c ****  * When the Blackbox device is FlashFS, a successful return code guarantees that no data will be lo
+ 584:../cleanflight/src/main/blackbox/blackbox_io.c ****  * many bytes to the device (i.e. FlashFS's buffers won't overflow).
+ 585:../cleanflight/src/main/blackbox/blackbox_io.c ****  *
+ 586:../cleanflight/src/main/blackbox/blackbox_io.c ****  * When the device is a serial port, a successful return code guarantees that Cleanflight's serial 
+ 587:../cleanflight/src/main/blackbox/blackbox_io.c ****  * overflow, and the outgoing bandwidth is likely to be small enough to give the OpenLog time to ab
+ 588:../cleanflight/src/main/blackbox/blackbox_io.c ****  * latency. However the OpenLog could still end up silently dropping data.
+ 589:../cleanflight/src/main/blackbox/blackbox_io.c ****  *
+ 590:../cleanflight/src/main/blackbox/blackbox_io.c ****  * Returns:
+ 591:../cleanflight/src/main/blackbox/blackbox_io.c ****  *  BLACKBOX_RESERVE_SUCCESS - Upon success
+ 592:../cleanflight/src/main/blackbox/blackbox_io.c ****  *  BLACKBOX_RESERVE_TEMPORARY_FAILURE - The buffer is currently too full to service the request, t
+ 593:../cleanflight/src/main/blackbox/blackbox_io.c ****  *  BLACKBOX_RESERVE_PERMANENT_FAILURE - The buffer is too small to ever service this request
+ 594:../cleanflight/src/main/blackbox/blackbox_io.c ****  */
+ 595:../cleanflight/src/main/blackbox/blackbox_io.c **** blackboxBufferReserveStatus_e blackboxDeviceReserveBufferSpace(int32_t bytes)
+ 596:../cleanflight/src/main/blackbox/blackbox_io.c **** {
+ 1481              	 .loc 3 596 0
+ 1482              	 .cfi_startproc
+ 1483              	 
+ 1484              	 
+ 1485 0000 80B5     	 push {r7,lr}
+ 1486              	.LCFI75:
+ 1487              	 .cfi_def_cfa_offset 8
+ 1488              	 .cfi_offset 7,-8
+ 1489              	 .cfi_offset 14,-4
+ 1490 0002 82B0     	 sub sp,sp,#8
+ 1491              	.LCFI76:
+ 1492              	 .cfi_def_cfa_offset 16
+ 1493 0004 00AF     	 add r7,sp,#0
+ 1494              	.LCFI77:
+ 1495              	 .cfi_def_cfa_register 7
+ 1496 0006 7860     	 str r0,[r7,#4]
+ 597:../cleanflight/src/main/blackbox/blackbox_io.c ****     if (bytes <= blackboxHeaderBudget) {
+ 1497              	 .loc 3 597 0
+ 1498 0008 134B     	 ldr r3,.L135
+ 1499 000a 1B68     	 ldr r3,[r3]
+ 1500 000c 7A68     	 ldr r2,[r7,#4]
+ 1501 000e 9A42     	 cmp r2,r3
+ 1502 0010 01DC     	 bgt .L128
+ 598:../cleanflight/src/main/blackbox/blackbox_io.c ****         return BLACKBOX_RESERVE_SUCCESS;
+ 1503              	 .loc 3 598 0
+ 1504 0012 0023     	 movs r3,#0
+ 1505 0014 1CE0     	 b .L129
+ 1506              	.L128:
+ 599:../cleanflight/src/main/blackbox/blackbox_io.c ****     }
+ 600:../cleanflight/src/main/blackbox/blackbox_io.c **** 
+ 601:../cleanflight/src/main/blackbox/blackbox_io.c ****     // Handle failure:
+ 602:../cleanflight/src/main/blackbox/blackbox_io.c ****     switch (blackboxConfig()->device) {
+ 1507              	 .loc 3 602 0
+ 1508 0016 FFF7FEFF 	 bl blackboxConfig
+ 1509 001a 0346     	 mov r3,r0
+ 1510 001c 9B78     	 ldrb r3,[r3,#2]
+ 1511 001e 022B     	 cmp r3,#2
+ 1512 0020 13D0     	 beq .L131
+ 1513 0022 032B     	 cmp r3,#3
+ 1514 0024 13D1     	 bne .L134
+ 603:../cleanflight/src/main/blackbox/blackbox_io.c ****     case BLACKBOX_DEVICE_SERIAL:
+ 604:../cleanflight/src/main/blackbox/blackbox_io.c ****         /*
+ 605:../cleanflight/src/main/blackbox/blackbox_io.c ****          * One byte of the tx buffer isn't available for user data (due to its circular list implem
+ 606:../cleanflight/src/main/blackbox/blackbox_io.c ****          * hence the -1. Note that the USB VCP implementation doesn't use a buffer and has txBuffer
+ 607:../cleanflight/src/main/blackbox/blackbox_io.c ****          */
+ 608:../cleanflight/src/main/blackbox/blackbox_io.c ****         if (blackboxPort->txBufferSize && bytes > (int32_t) blackboxPort->txBufferSize - 1) {
+ 1515              	 .loc 3 608 0
+ 1516 0026 0D4B     	 ldr r3,.L135+4
+ 1517 0028 1B68     	 ldr r3,[r3]
+ 1518 002a D3F80E30 	 ldr r3,[r3,#14]
+ 1519 002e 002B     	 cmp r3,#0
+ 1520 0030 09D0     	 beq .L133
+ 1521              	 .loc 3 608 0 is_stmt 0 discriminator 1
+ 1522 0032 0A4B     	 ldr r3,.L135+4
+ 1523 0034 1B68     	 ldr r3,[r3]
+ 1524 0036 D3F80E30 	 ldr r3,[r3,#14]
+ 1525 003a 5A1E     	 subs r2,r3,#1
+ 1526 003c 7B68     	 ldr r3,[r7,#4]
+ 1527 003e 9A42     	 cmp r2,r3
+ 1528 0040 01DA     	 bge .L133
+ 609:../cleanflight/src/main/blackbox/blackbox_io.c ****             return BLACKBOX_RESERVE_PERMANENT_FAILURE;
+ 1529              	 .loc 3 609 0 is_stmt 1
+ 1530 0042 0223     	 movs r3,#2
+ 1531 0044 04E0     	 b .L129
+ 1532              	.L133:
+ 610:../cleanflight/src/main/blackbox/blackbox_io.c ****         }
+ 611:../cleanflight/src/main/blackbox/blackbox_io.c ****         return BLACKBOX_RESERVE_TEMPORARY_FAILURE;
+ 1533              	 .loc 3 611 0
+ 1534 0046 0123     	 movs r3,#1
+ 1535 0048 02E0     	 b .L129
+ 1536              	.L131:
+ 612:../cleanflight/src/main/blackbox/blackbox_io.c **** 
+ 613:../cleanflight/src/main/blackbox/blackbox_io.c **** #ifdef USE_FLASHFS
+ 614:../cleanflight/src/main/blackbox/blackbox_io.c ****     case BLACKBOX_DEVICE_FLASH:
+ 615:../cleanflight/src/main/blackbox/blackbox_io.c ****         if (bytes > (int32_t) flashfsGetWriteBufferSize()) {
+ 616:../cleanflight/src/main/blackbox/blackbox_io.c ****             return BLACKBOX_RESERVE_PERMANENT_FAILURE;
+ 617:../cleanflight/src/main/blackbox/blackbox_io.c ****         }
+ 618:../cleanflight/src/main/blackbox/blackbox_io.c **** 
+ 619:../cleanflight/src/main/blackbox/blackbox_io.c ****         if (bytes > (int32_t) flashfsGetWriteBufferFreeSpace()) {
+ 620:../cleanflight/src/main/blackbox/blackbox_io.c ****             /*
+ 621:../cleanflight/src/main/blackbox/blackbox_io.c ****              * The write doesn't currently fit in the buffer, so try to make room for it. Our flush
+ 622:../cleanflight/src/main/blackbox/blackbox_io.c ****              * that the Blackbox header writing code doesn't have to guess about the best time to a
+ 623:../cleanflight/src/main/blackbox/blackbox_io.c ****              * flush, and doesn't stall waiting for a flush that would otherwise not automatically 
+ 624:../cleanflight/src/main/blackbox/blackbox_io.c ****              */
+ 625:../cleanflight/src/main/blackbox/blackbox_io.c ****             flashfsFlushAsync();
+ 626:../cleanflight/src/main/blackbox/blackbox_io.c ****         }
+ 627:../cleanflight/src/main/blackbox/blackbox_io.c ****         return BLACKBOX_RESERVE_TEMPORARY_FAILURE;
+ 628:../cleanflight/src/main/blackbox/blackbox_io.c **** #endif // USE_FLASHFS
+ 629:../cleanflight/src/main/blackbox/blackbox_io.c **** 
+ 630:../cleanflight/src/main/blackbox/blackbox_io.c **** #ifdef USE_SDCARD
+ 631:../cleanflight/src/main/blackbox/blackbox_io.c ****     case BLACKBOX_DEVICE_SDCARD:
+ 632:../cleanflight/src/main/blackbox/blackbox_io.c ****         // Assume that all writes will fit in the SDCard's buffers
+ 633:../cleanflight/src/main/blackbox/blackbox_io.c ****         return BLACKBOX_RESERVE_TEMPORARY_FAILURE;
+ 1537              	 .loc 3 633 0
+ 1538 004a 0123     	 movs r3,#1
+ 1539 004c 00E0     	 b .L129
+ 1540              	.L134:
+ 634:../cleanflight/src/main/blackbox/blackbox_io.c **** #endif // USE_SDCARD
+ 635:../cleanflight/src/main/blackbox/blackbox_io.c **** 
+ 636:../cleanflight/src/main/blackbox/blackbox_io.c ****     default:
+ 637:../cleanflight/src/main/blackbox/blackbox_io.c ****         return BLACKBOX_RESERVE_PERMANENT_FAILURE;
+ 1541              	 .loc 3 637 0
+ 1542 004e 0223     	 movs r3,#2
+ 1543              	.L129:
+ 638:../cleanflight/src/main/blackbox/blackbox_io.c ****     }
+ 639:../cleanflight/src/main/blackbox/blackbox_io.c **** }
+ 1544              	 .loc 3 639 0
+ 1545 0050 1846     	 mov r0,r3
+ 1546 0052 0837     	 adds r7,r7,#8
+ 1547              	.LCFI78:
+ 1548              	 .cfi_def_cfa_offset 8
+ 1549 0054 BD46     	 mov sp,r7
+ 1550              	.LCFI79:
+ 1551              	 .cfi_def_cfa_register 13
+ 1552              	 
+ 1553 0056 80BD     	 pop {r7,pc}
+ 1554              	.L136:
+ 1555              	 .align 2
+ 1556              	.L135:
+ 1557 0058 00000000 	 .word blackboxHeaderBudget
+ 1558 005c 00000000 	 .word blackboxPort
+ 1559              	 .cfi_endproc
+ 1560              	.LFE556:
+ 1562              	 .text
+ 1563              	.Letext0:
+ 1564              	 .file 4 "d:\\xmc\\dave-ide-4.4.2-64bit\\eclipse\\arm-gcc-49\\arm-none-eabi\\include\\machine\\_default_types.h"
+ 1565              	 .file 5 "d:\\xmc\\dave-ide-4.4.2-64bit\\eclipse\\arm-gcc-49\\arm-none-eabi\\include\\stdint.h"
+ 1566              	 .file 6 "D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/lib/main/XMC4000/XMCLib/inc/xmc_usic.h"
+ 1567              	 .file 7 "D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/common/time.h"
+ 1568              	 .file 8 "../cleanflight/src/main/blackbox/blackbox_io.h"
+ 1569              	 .file 9 "D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/flight/pid.h"
+ 1570              	 .file 10 "D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/io/asyncfatfs/fat_standard.h"
+ 1571              	 .file 11 "D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/io/asyncfatfs/asyncfatfs.h"
+ 1572              	 .file 12 "D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/drivers/resource.h"
+ 1573              	 .file 13 "D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/drivers/io_types.h"
+ 1574              	 .file 14 "D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/drivers/serial.h"
+ 1575              	 .file 15 "D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/io/serial.h"
+ 1576              	 .file 16 "D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/lib/main/CMSIS/Core/Include/core_cm4.h"
+ 1577              	 .file 17 "D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/lib/main/XMC4000/system_XMC4700.h"
+DEFINED SYMBOLS
+                            *ABS*:00000000 blackbox_io.c
+    {standard input}:20     .text.blackboxConfig:00000000 $t
+    {standard input}:24     .text.blackboxConfig:00000000 blackboxConfig
+    {standard input}:54     .text.blackboxConfig:00000010 $d
+    {standard input}:59     .text.constrain:00000000 $t
+    {standard input}:63     .text.constrain:00000000 constrain
+    {standard input}:125    .bss.blackboxMaxHeaderBytesPerIteration:00000000 blackboxMaxHeaderBytesPerIteration
+    {standard input}:126    .bss.blackboxMaxHeaderBytesPerIteration:00000000 $d
+                            *COM*:00000004 blackboxHeaderBudget
+    {standard input}:129    .bss.blackboxPort:00000000 $d
+    {standard input}:132    .bss.blackboxPort:00000000 blackboxPort
+    {standard input}:137    .bss.blackboxPortSharing:00000000 blackboxPortSharing
+    {standard input}:138    .bss.blackboxPortSharing:00000000 $d
+    {standard input}:140    .bss.blackboxSDCard:00000000 $d
+    {standard input}:143    .bss.blackboxSDCard:00000000 blackboxSDCard
+    {standard input}:146    .text.blackboxOpen:00000000 $t
+    {standard input}:151    .text.blackboxOpen:00000000 blackboxOpen
+    {standard input}:195    .text.blackboxWrite:00000000 $t
+    {standard input}:200    .text.blackboxWrite:00000000 blackboxWrite
+    {standard input}:257    .text.blackboxWrite:0000003c $d
+    {standard input}:263    .text.blackboxWriteString:00000000 $t
+    {standard input}:268    .text.blackboxWriteString:00000000 blackboxWriteString
+    {standard input}:355    .text.blackboxWriteString:00000068 $d
+    {standard input}:361    .text.blackboxDeviceFlush:00000000 $t
+    {standard input}:366    .text.blackboxDeviceFlush:00000000 blackboxDeviceFlush
+    {standard input}:388    .text.blackboxDeviceFlushForce:00000000 $t
+    {standard input}:393    .text.blackboxDeviceFlushForce:00000000 blackboxDeviceFlushForce
+    {standard input}:437    .text.blackboxDeviceFlushForce:00000030 $d
+    {standard input}:442    .text.blackboxDeviceOpen:00000000 $t
+    {standard input}:447    .text.blackboxDeviceOpen:00000000 blackboxDeviceOpen
+    {standard input}:618    .text.blackboxDeviceOpen:00000100 $d
+    {standard input}:628    .text.blackboxDeviceClose:00000000 $t
+    {standard input}:633    .text.blackboxDeviceClose:00000000 blackboxDeviceClose
+    {standard input}:678    .text.blackboxDeviceClose:00000030 $d
+    {standard input}:684    .text.blackboxLogDirCreated:00000000 $t
+    {standard input}:688    .text.blackboxLogDirCreated:00000000 blackboxLogDirCreated
+    {standard input}:743    .text.blackboxLogDirCreated:00000034 $d
+    {standard input}:749    .text.blackboxLogFileCreated:00000000 $t
+    {standard input}:753    .text.blackboxLogFileCreated:00000000 blackboxLogFileCreated
+    {standard input}:812    .text.blackboxLogFileCreated:0000003c $d
+    {standard input}:817    .rodata:00000000 $d
+    {standard input}:824    .text.blackboxCreateLogFile:00000000 $t
+    {standard input}:828    .text.blackboxCreateLogFile:00000000 blackboxCreateLogFile
+    {standard input}:919    .text.blackboxCreateLogFile:00000074 $d
+    {standard input}:938    .text.blackboxSDCardBeginLog:00000000 $t
+    {standard input}:942    .text.blackboxSDCardBeginLog:00000000 blackboxSDCardBeginLog
+    {standard input}:969    .text.blackboxSDCardBeginLog:00000018 $d
+    {standard input}:975    .text.blackboxSDCardBeginLog:00000030 $t
+    {standard input}:1141   .text.blackboxSDCardBeginLog:00000134 $d
+    {standard input}:1151   .text.blackboxDeviceBeginLog:00000000 $t
+    {standard input}:1156   .text.blackboxDeviceBeginLog:00000000 blackboxDeviceBeginLog
+    {standard input}:1191   .text.blackboxDeviceEndLog:00000000 $t
+    {standard input}:1196   .text.blackboxDeviceEndLog:00000000 blackboxDeviceEndLog
+    {standard input}:1283   .text.blackboxDeviceEndLog:0000006c $d
+    {standard input}:1288   .text.isBlackboxDeviceFull:00000000 $t
+    {standard input}:1293   .text.isBlackboxDeviceFull:00000000 isBlackboxDeviceFull
+    {standard input}:1334   .text.blackboxGetLogNumber:00000000 $t
+    {standard input}:1339   .text.blackboxGetLogNumber:00000000 blackboxGetLogNumber
+    {standard input}:1370   .text.blackboxGetLogNumber:00000014 $d
+    {standard input}:1375   .text.blackboxReplenishHeaderBudget:00000000 $t
+    {standard input}:1380   .text.blackboxReplenishHeaderBudget:00000000 blackboxReplenishHeaderBudget
+    {standard input}:1467   .text.blackboxReplenishHeaderBudget:0000006c $d
+    {standard input}:1474   .text.blackboxDeviceReserveBufferSpace:00000000 $t
+    {standard input}:1479   .text.blackboxDeviceReserveBufferSpace:00000000 blackboxDeviceReserveBufferSpace
+    {standard input}:1557   .text.blackboxDeviceReserveBufferSpace:00000058 $d
+                     .debug_frame:00000010 $d
+
+UNDEFINED SYMBOLS
+blackboxConfig_System
+findSharedSerialPort
+mspSerialReleasePortIfAllocated
+afatfs_fputc
+serialWrite
+strlen
+afatfs_fwrite
+isSerialTransmitBufferEmpty
+afatfs_flush
+findSerialPortConfig
+determinePortSharing
+openSerialPort
+afatfs_getFilesystemState
+afatfs_isFull
+baudRates
+targetPidLooptime
+closeSerialPort
+mspSerialAllocatePorts
+afatfs_findFirst
+afatfs_fopen
+afatfs_mkdir
+fat_isDirectoryEntryTerminator
+strncmp
+memcpy
+atoi
+afatfs_findLast
+afatfs_findNext
+afatfs_chdir
+afatfs_fclose
+afatfs_funlink
+serialTxBytesFree
+afatfs_getFreeBufferSpace

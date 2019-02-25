@@ -1,0 +1,513 @@
+   1              	 .syntax unified
+   2              	 .cpu cortex-m4
+   3              	 .eabi_attribute 27,3
+   4              	 .fpu fpv4-sp-d16
+   5              	 .eabi_attribute 20,1
+   6              	 .eabi_attribute 21,1
+   7              	 .eabi_attribute 23,3
+   8              	 .eabi_attribute 24,1
+   9              	 .eabi_attribute 25,1
+  10              	 .eabi_attribute 26,1
+  11              	 .eabi_attribute 30,6
+  12              	 .eabi_attribute 34,1
+  13              	 .eabi_attribute 18,4
+  14              	 .thumb
+  15              	 .file "accgyro_mma845x.c"
+  16              	 .text
+  17              	.Ltext0:
+  18              	 .cfi_sections .debug_frame
+  19              	 .section .bss.device_id,"aw",%nobits
+  22              	device_id:
+  23 0000 00       	 .space 1
+  24              	 .section .text.mma8451ConfigureInterrupt,"ax",%progbits
+  25              	 .align 2
+  26              	 .thumb
+  27              	 .thumb_func
+  29              	mma8451ConfigureInterrupt:
+  30              	.LFB533:
+  31              	 .file 1 "../cleanflight/src/main/drivers/accgyro_legacy/accgyro_mma845x.c"
+   1:../cleanflight/src/main/drivers/accgyro_legacy/accgyro_mma845x.c **** /*
+   2:../cleanflight/src/main/drivers/accgyro_legacy/accgyro_mma845x.c ****  * This file is part of Cleanflight and Betaflight.
+   3:../cleanflight/src/main/drivers/accgyro_legacy/accgyro_mma845x.c ****  *
+   4:../cleanflight/src/main/drivers/accgyro_legacy/accgyro_mma845x.c ****  * Cleanflight and Betaflight are free software. You can redistribute
+   5:../cleanflight/src/main/drivers/accgyro_legacy/accgyro_mma845x.c ****  * this software and/or modify this software under the terms of the
+   6:../cleanflight/src/main/drivers/accgyro_legacy/accgyro_mma845x.c ****  * GNU General Public License as published by the Free Software
+   7:../cleanflight/src/main/drivers/accgyro_legacy/accgyro_mma845x.c ****  * Foundation, either version 3 of the License, or (at your option)
+   8:../cleanflight/src/main/drivers/accgyro_legacy/accgyro_mma845x.c ****  * any later version.
+   9:../cleanflight/src/main/drivers/accgyro_legacy/accgyro_mma845x.c ****  *
+  10:../cleanflight/src/main/drivers/accgyro_legacy/accgyro_mma845x.c ****  * Cleanflight and Betaflight are distributed in the hope that they
+  11:../cleanflight/src/main/drivers/accgyro_legacy/accgyro_mma845x.c ****  * will be useful, but WITHOUT ANY WARRANTY; without even the implied
+  12:../cleanflight/src/main/drivers/accgyro_legacy/accgyro_mma845x.c ****  * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+  13:../cleanflight/src/main/drivers/accgyro_legacy/accgyro_mma845x.c ****  * See the GNU General Public License for more details.
+  14:../cleanflight/src/main/drivers/accgyro_legacy/accgyro_mma845x.c ****  *
+  15:../cleanflight/src/main/drivers/accgyro_legacy/accgyro_mma845x.c ****  * You should have received a copy of the GNU General Public License
+  16:../cleanflight/src/main/drivers/accgyro_legacy/accgyro_mma845x.c ****  * along with this software.
+  17:../cleanflight/src/main/drivers/accgyro_legacy/accgyro_mma845x.c ****  *
+  18:../cleanflight/src/main/drivers/accgyro_legacy/accgyro_mma845x.c ****  * If not, see <http://www.gnu.org/licenses/>.
+  19:../cleanflight/src/main/drivers/accgyro_legacy/accgyro_mma845x.c ****  */
+  20:../cleanflight/src/main/drivers/accgyro_legacy/accgyro_mma845x.c **** 
+  21:../cleanflight/src/main/drivers/accgyro_legacy/accgyro_mma845x.c **** #include <stdbool.h>
+  22:../cleanflight/src/main/drivers/accgyro_legacy/accgyro_mma845x.c **** #include <stdint.h>
+  23:../cleanflight/src/main/drivers/accgyro_legacy/accgyro_mma845x.c **** 
+  24:../cleanflight/src/main/drivers/accgyro_legacy/accgyro_mma845x.c **** #include "platform.h"
+  25:../cleanflight/src/main/drivers/accgyro_legacy/accgyro_mma845x.c **** 
+  26:../cleanflight/src/main/drivers/accgyro_legacy/accgyro_mma845x.c **** #include "drivers/io.h"
+  27:../cleanflight/src/main/drivers/accgyro_legacy/accgyro_mma845x.c **** #include "drivers/bus_i2c.h"
+  28:../cleanflight/src/main/drivers/accgyro_legacy/accgyro_mma845x.c **** 
+  29:../cleanflight/src/main/drivers/accgyro_legacy/accgyro_mma845x.c **** #include "drivers/sensor.h"
+  30:../cleanflight/src/main/drivers/accgyro_legacy/accgyro_mma845x.c **** #include "drivers/accgyro/accgyro.h"
+  31:../cleanflight/src/main/drivers/accgyro_legacy/accgyro_mma845x.c **** #include "accgyro_mma845x.h"
+  32:../cleanflight/src/main/drivers/accgyro_legacy/accgyro_mma845x.c **** 
+  33:../cleanflight/src/main/drivers/accgyro_legacy/accgyro_mma845x.c **** #ifndef MMA8452_I2C_INSTANCE
+  34:../cleanflight/src/main/drivers/accgyro_legacy/accgyro_mma845x.c **** #define MMA8452_I2C_INSTANCE I2CDEV_1
+  35:../cleanflight/src/main/drivers/accgyro_legacy/accgyro_mma845x.c **** #endif
+  36:../cleanflight/src/main/drivers/accgyro_legacy/accgyro_mma845x.c **** 
+  37:../cleanflight/src/main/drivers/accgyro_legacy/accgyro_mma845x.c **** // MMA8452QT, Standard address 0x1C
+  38:../cleanflight/src/main/drivers/accgyro_legacy/accgyro_mma845x.c **** // ACC_INT2 routed to PA5
+  39:../cleanflight/src/main/drivers/accgyro_legacy/accgyro_mma845x.c **** 
+  40:../cleanflight/src/main/drivers/accgyro_legacy/accgyro_mma845x.c **** #define MMA8452_ADDRESS     0x1C
+  41:../cleanflight/src/main/drivers/accgyro_legacy/accgyro_mma845x.c **** 
+  42:../cleanflight/src/main/drivers/accgyro_legacy/accgyro_mma845x.c **** #define MMA8452_DEVICE_SIGNATURE    0x2A
+  43:../cleanflight/src/main/drivers/accgyro_legacy/accgyro_mma845x.c **** #define MMA8451_DEVICE_SIGNATURE    0x1A
+  44:../cleanflight/src/main/drivers/accgyro_legacy/accgyro_mma845x.c **** 
+  45:../cleanflight/src/main/drivers/accgyro_legacy/accgyro_mma845x.c **** #define MMA8452_STATUS              0x00
+  46:../cleanflight/src/main/drivers/accgyro_legacy/accgyro_mma845x.c **** #define MMA8452_OUT_X_MSB           0x01
+  47:../cleanflight/src/main/drivers/accgyro_legacy/accgyro_mma845x.c **** #define MMA8452_WHO_AM_I            0x0D
+  48:../cleanflight/src/main/drivers/accgyro_legacy/accgyro_mma845x.c **** #define MMA8452_XYZ_DATA_CFG        0x0E
+  49:../cleanflight/src/main/drivers/accgyro_legacy/accgyro_mma845x.c **** #define MMA8452_HP_FILTER_CUTOFF    0x0F
+  50:../cleanflight/src/main/drivers/accgyro_legacy/accgyro_mma845x.c **** #define MMA8452_CTRL_REG1           0x2A
+  51:../cleanflight/src/main/drivers/accgyro_legacy/accgyro_mma845x.c **** #define MMA8452_CTRL_REG2           0x2B
+  52:../cleanflight/src/main/drivers/accgyro_legacy/accgyro_mma845x.c **** #define MMA8452_CTRL_REG3           0x2C
+  53:../cleanflight/src/main/drivers/accgyro_legacy/accgyro_mma845x.c **** #define MMA8452_CTRL_REG4           0x2D
+  54:../cleanflight/src/main/drivers/accgyro_legacy/accgyro_mma845x.c **** #define MMA8452_CTRL_REG5           0x2E
+  55:../cleanflight/src/main/drivers/accgyro_legacy/accgyro_mma845x.c **** 
+  56:../cleanflight/src/main/drivers/accgyro_legacy/accgyro_mma845x.c **** #define MMA8452_FS_RANGE_8G         0x02
+  57:../cleanflight/src/main/drivers/accgyro_legacy/accgyro_mma845x.c **** #define MMA8452_FS_RANGE_4G         0x01
+  58:../cleanflight/src/main/drivers/accgyro_legacy/accgyro_mma845x.c **** #define MMA8452_FS_RANGE_2G         0x00
+  59:../cleanflight/src/main/drivers/accgyro_legacy/accgyro_mma845x.c **** 
+  60:../cleanflight/src/main/drivers/accgyro_legacy/accgyro_mma845x.c **** #define MMA8452_HPF_CUTOFF_LV1      0x00
+  61:../cleanflight/src/main/drivers/accgyro_legacy/accgyro_mma845x.c **** #define MMA8452_HPF_CUTOFF_LV2      0x01
+  62:../cleanflight/src/main/drivers/accgyro_legacy/accgyro_mma845x.c **** #define MMA8452_HPF_CUTOFF_LV3      0x02
+  63:../cleanflight/src/main/drivers/accgyro_legacy/accgyro_mma845x.c **** #define MMA8452_HPF_CUTOFF_LV4      0x03
+  64:../cleanflight/src/main/drivers/accgyro_legacy/accgyro_mma845x.c **** 
+  65:../cleanflight/src/main/drivers/accgyro_legacy/accgyro_mma845x.c **** #define MMA8452_CTRL_REG2_B7_ST     0x80
+  66:../cleanflight/src/main/drivers/accgyro_legacy/accgyro_mma845x.c **** #define MMA8452_CTRL_REG2_B6_RST    0x40
+  67:../cleanflight/src/main/drivers/accgyro_legacy/accgyro_mma845x.c **** #define MMA8452_CTRL_REG2_B4_SMODS1 0x10
+  68:../cleanflight/src/main/drivers/accgyro_legacy/accgyro_mma845x.c **** #define MMA8452_CTRL_REG2_B3_SMODS0 0x08
+  69:../cleanflight/src/main/drivers/accgyro_legacy/accgyro_mma845x.c **** #define MMA8452_CTRL_REG2_B2_SLPE   0x04
+  70:../cleanflight/src/main/drivers/accgyro_legacy/accgyro_mma845x.c **** #define MMA8452_CTRL_REG2_B1_MODS1  0x02
+  71:../cleanflight/src/main/drivers/accgyro_legacy/accgyro_mma845x.c **** #define MMA8452_CTRL_REG2_B0_MODS0  0x01
+  72:../cleanflight/src/main/drivers/accgyro_legacy/accgyro_mma845x.c **** 
+  73:../cleanflight/src/main/drivers/accgyro_legacy/accgyro_mma845x.c **** #define MMA8452_CTRL_REG2_MODS_LP   0x03
+  74:../cleanflight/src/main/drivers/accgyro_legacy/accgyro_mma845x.c **** #define MMA8452_CTRL_REG2_MODS_HR   0x02
+  75:../cleanflight/src/main/drivers/accgyro_legacy/accgyro_mma845x.c **** #define MMA8452_CTRL_REG2_MODS_LNLP 0x01
+  76:../cleanflight/src/main/drivers/accgyro_legacy/accgyro_mma845x.c **** #define MMA8452_CTRL_REG2_MODS_NOR  0x00
+  77:../cleanflight/src/main/drivers/accgyro_legacy/accgyro_mma845x.c **** 
+  78:../cleanflight/src/main/drivers/accgyro_legacy/accgyro_mma845x.c **** #define MMA8452_CTRL_REG3_IPOL          0x02
+  79:../cleanflight/src/main/drivers/accgyro_legacy/accgyro_mma845x.c **** #define MMA8452_CTRL_REG4_INT_EN_DRDY   0x01
+  80:../cleanflight/src/main/drivers/accgyro_legacy/accgyro_mma845x.c **** 
+  81:../cleanflight/src/main/drivers/accgyro_legacy/accgyro_mma845x.c **** #define MMA8452_CTRL_REG1_LNOISE        0x04
+  82:../cleanflight/src/main/drivers/accgyro_legacy/accgyro_mma845x.c **** #define MMA8452_CTRL_REG1_ACTIVE        0x01
+  83:../cleanflight/src/main/drivers/accgyro_legacy/accgyro_mma845x.c **** 
+  84:../cleanflight/src/main/drivers/accgyro_legacy/accgyro_mma845x.c **** static uint8_t device_id;
+  85:../cleanflight/src/main/drivers/accgyro_legacy/accgyro_mma845x.c **** 
+  86:../cleanflight/src/main/drivers/accgyro_legacy/accgyro_mma845x.c **** static inline void mma8451ConfigureInterrupt(void)
+  87:../cleanflight/src/main/drivers/accgyro_legacy/accgyro_mma845x.c **** {
+  32              	 .loc 1 87 0
+  33              	 .cfi_startproc
+  34              	 
+  35              	 
+  36 0000 80B5     	 push {r7,lr}
+  37              	.LCFI0:
+  38              	 .cfi_def_cfa_offset 8
+  39              	 .cfi_offset 7,-8
+  40              	 .cfi_offset 14,-4
+  41 0002 00AF     	 add r7,sp,#0
+  42              	.LCFI1:
+  43              	 .cfi_def_cfa_register 7
+  88:../cleanflight/src/main/drivers/accgyro_legacy/accgyro_mma845x.c **** #ifdef MMA8451_INT_PIN
+  89:../cleanflight/src/main/drivers/accgyro_legacy/accgyro_mma845x.c ****     IOInit(IOGetByTag(IO_TAG(MMA8451_INT_PIN)), OWNER_MPU_EXTI, 0);
+  90:../cleanflight/src/main/drivers/accgyro_legacy/accgyro_mma845x.c ****     // TODO - maybe pullup / pulldown ?
+  91:../cleanflight/src/main/drivers/accgyro_legacy/accgyro_mma845x.c ****     IOConfigGPIO(IOGetByTag(IO_TAG(MMA8451_INT_PIN)), IOCFG_IN_FLOATING);
+  92:../cleanflight/src/main/drivers/accgyro_legacy/accgyro_mma845x.c **** #endif
+  93:../cleanflight/src/main/drivers/accgyro_legacy/accgyro_mma845x.c **** 
+  94:../cleanflight/src/main/drivers/accgyro_legacy/accgyro_mma845x.c ****     i2cWrite(MPU_I2C_INSTANCE, MMA8452_ADDRESS, MMA8452_CTRL_REG3, MMA8452_CTRL_REG3_IPOL); // Inte
+  44              	 .loc 1 94 0
+  45 0004 0420     	 movs r0,#4
+  46 0006 1C21     	 movs r1,#28
+  47 0008 2C22     	 movs r2,#44
+  48 000a 0223     	 movs r3,#2
+  49 000c FFF7FEFF 	 bl i2cWrite
+  95:../cleanflight/src/main/drivers/accgyro_legacy/accgyro_mma845x.c ****     i2cWrite(MPU_I2C_INSTANCE, MMA8452_ADDRESS, MMA8452_CTRL_REG4, MMA8452_CTRL_REG4_INT_EN_DRDY); 
+  50              	 .loc 1 95 0
+  51 0010 0420     	 movs r0,#4
+  52 0012 1C21     	 movs r1,#28
+  53 0014 2D22     	 movs r2,#45
+  54 0016 0123     	 movs r3,#1
+  55 0018 FFF7FEFF 	 bl i2cWrite
+  96:../cleanflight/src/main/drivers/accgyro_legacy/accgyro_mma845x.c ****     i2cWrite(MPU_I2C_INSTANCE, MMA8452_ADDRESS, MMA8452_CTRL_REG5, 0); // DRDY routed to INT2
+  56              	 .loc 1 96 0
+  57 001c 0420     	 movs r0,#4
+  58 001e 1C21     	 movs r1,#28
+  59 0020 2E22     	 movs r2,#46
+  60 0022 0023     	 movs r3,#0
+  61 0024 FFF7FEFF 	 bl i2cWrite
+  97:../cleanflight/src/main/drivers/accgyro_legacy/accgyro_mma845x.c **** }
+  62              	 .loc 1 97 0
+  63 0028 80BD     	 pop {r7,pc}
+  64              	 .cfi_endproc
+  65              	.LFE533:
+  67 002a 00BF     	 .section .text.mma8452Init,"ax",%progbits
+  68              	 .align 2
+  69              	 .thumb
+  70              	 .thumb_func
+  72              	mma8452Init:
+  73              	.LFB534:
+  98:../cleanflight/src/main/drivers/accgyro_legacy/accgyro_mma845x.c **** 
+  99:../cleanflight/src/main/drivers/accgyro_legacy/accgyro_mma845x.c **** static void mma8452Init(accDev_t *acc)
+ 100:../cleanflight/src/main/drivers/accgyro_legacy/accgyro_mma845x.c **** {
+  74              	 .loc 1 100 0
+  75              	 .cfi_startproc
+  76              	 
+  77              	 
+  78 0000 80B5     	 push {r7,lr}
+  79              	.LCFI2:
+  80              	 .cfi_def_cfa_offset 8
+  81              	 .cfi_offset 7,-8
+  82              	 .cfi_offset 14,-4
+  83 0002 82B0     	 sub sp,sp,#8
+  84              	.LCFI3:
+  85              	 .cfi_def_cfa_offset 16
+  86 0004 00AF     	 add r7,sp,#0
+  87              	.LCFI4:
+  88              	 .cfi_def_cfa_register 7
+  89 0006 7860     	 str r0,[r7,#4]
+ 101:../cleanflight/src/main/drivers/accgyro_legacy/accgyro_mma845x.c **** 
+ 102:../cleanflight/src/main/drivers/accgyro_legacy/accgyro_mma845x.c ****     i2cWrite(MPU_I2C_INSTANCE, MMA8452_ADDRESS, MMA8452_CTRL_REG1, 0); // Put device in standby to 
+  90              	 .loc 1 102 0
+  91 0008 0420     	 movs r0,#4
+  92 000a 1C21     	 movs r1,#28
+  93 000c 2A22     	 movs r2,#42
+  94 000e 0023     	 movs r3,#0
+  95 0010 FFF7FEFF 	 bl i2cWrite
+ 103:../cleanflight/src/main/drivers/accgyro_legacy/accgyro_mma845x.c ****     i2cWrite(MPU_I2C_INSTANCE, MMA8452_ADDRESS, MMA8452_XYZ_DATA_CFG, MMA8452_FS_RANGE_8G);
+  96              	 .loc 1 103 0
+  97 0014 0420     	 movs r0,#4
+  98 0016 1C21     	 movs r1,#28
+  99 0018 0E22     	 movs r2,#14
+ 100 001a 0223     	 movs r3,#2
+ 101 001c FFF7FEFF 	 bl i2cWrite
+ 104:../cleanflight/src/main/drivers/accgyro_legacy/accgyro_mma845x.c ****     i2cWrite(MPU_I2C_INSTANCE, MMA8452_ADDRESS, MMA8452_HP_FILTER_CUTOFF, MMA8452_HPF_CUTOFF_LV4);
+ 102              	 .loc 1 104 0
+ 103 0020 0420     	 movs r0,#4
+ 104 0022 1C21     	 movs r1,#28
+ 105 0024 0F22     	 movs r2,#15
+ 106 0026 0323     	 movs r3,#3
+ 107 0028 FFF7FEFF 	 bl i2cWrite
+ 105:../cleanflight/src/main/drivers/accgyro_legacy/accgyro_mma845x.c ****     i2cWrite(MPU_I2C_INSTANCE, MMA8452_ADDRESS, MMA8452_CTRL_REG2, MMA8452_CTRL_REG2_MODS_HR | MMA8
+ 108              	 .loc 1 105 0
+ 109 002c 0420     	 movs r0,#4
+ 110 002e 1C21     	 movs r1,#28
+ 111 0030 2B22     	 movs r2,#43
+ 112 0032 1223     	 movs r3,#18
+ 113 0034 FFF7FEFF 	 bl i2cWrite
+ 106:../cleanflight/src/main/drivers/accgyro_legacy/accgyro_mma845x.c **** 
+ 107:../cleanflight/src/main/drivers/accgyro_legacy/accgyro_mma845x.c ****     mma8451ConfigureInterrupt();
+ 114              	 .loc 1 107 0
+ 115 0038 FFF7FEFF 	 bl mma8451ConfigureInterrupt
+ 108:../cleanflight/src/main/drivers/accgyro_legacy/accgyro_mma845x.c **** 
+ 109:../cleanflight/src/main/drivers/accgyro_legacy/accgyro_mma845x.c ****     i2cWrite(MPU_I2C_INSTANCE, MMA8452_ADDRESS, MMA8452_CTRL_REG1, MMA8452_CTRL_REG1_LNOISE | MMA84
+ 116              	 .loc 1 109 0
+ 117 003c 0420     	 movs r0,#4
+ 118 003e 1C21     	 movs r1,#28
+ 119 0040 2A22     	 movs r2,#42
+ 120 0042 0523     	 movs r3,#5
+ 121 0044 FFF7FEFF 	 bl i2cWrite
+ 110:../cleanflight/src/main/drivers/accgyro_legacy/accgyro_mma845x.c **** 
+ 111:../cleanflight/src/main/drivers/accgyro_legacy/accgyro_mma845x.c ****     acc->acc_1G = 256;
+ 122              	 .loc 1 111 0
+ 123 0048 7B68     	 ldr r3,[r7,#4]
+ 124 004a 0022     	 movs r2,#0
+ 125 004c 5A74     	 strb r2,[r3,#17]
+ 126 004e 0022     	 movs r2,#0
+ 127 0050 42F00102 	 orr r2,r2,#1
+ 128 0054 9A74     	 strb r2,[r3,#18]
+ 112:../cleanflight/src/main/drivers/accgyro_legacy/accgyro_mma845x.c **** }
+ 129              	 .loc 1 112 0
+ 130 0056 0837     	 adds r7,r7,#8
+ 131              	.LCFI5:
+ 132              	 .cfi_def_cfa_offset 8
+ 133 0058 BD46     	 mov sp,r7
+ 134              	.LCFI6:
+ 135              	 .cfi_def_cfa_register 13
+ 136              	 
+ 137 005a 80BD     	 pop {r7,pc}
+ 138              	 .cfi_endproc
+ 139              	.LFE534:
+ 141              	 .section .text.mma8452Read,"ax",%progbits
+ 142              	 .align 2
+ 143              	 .thumb
+ 144              	 .thumb_func
+ 146              	mma8452Read:
+ 147              	.LFB535:
+ 113:../cleanflight/src/main/drivers/accgyro_legacy/accgyro_mma845x.c **** 
+ 114:../cleanflight/src/main/drivers/accgyro_legacy/accgyro_mma845x.c **** static bool mma8452Read(accDev_t *acc)
+ 115:../cleanflight/src/main/drivers/accgyro_legacy/accgyro_mma845x.c **** {
+ 148              	 .loc 1 115 0
+ 149              	 .cfi_startproc
+ 150              	 
+ 151              	 
+ 152 0000 80B5     	 push {r7,lr}
+ 153              	.LCFI7:
+ 154              	 .cfi_def_cfa_offset 8
+ 155              	 .cfi_offset 7,-8
+ 156              	 .cfi_offset 14,-4
+ 157 0002 86B0     	 sub sp,sp,#24
+ 158              	.LCFI8:
+ 159              	 .cfi_def_cfa_offset 32
+ 160 0004 02AF     	 add r7,sp,#8
+ 161              	.LCFI9:
+ 162              	 .cfi_def_cfa 7,24
+ 163 0006 7860     	 str r0,[r7,#4]
+ 116:../cleanflight/src/main/drivers/accgyro_legacy/accgyro_mma845x.c ****     uint8_t buf[6];
+ 117:../cleanflight/src/main/drivers/accgyro_legacy/accgyro_mma845x.c **** 
+ 118:../cleanflight/src/main/drivers/accgyro_legacy/accgyro_mma845x.c ****     if (!i2cRead(MPU_I2C_INSTANCE, MMA8452_ADDRESS, MMA8452_OUT_X_MSB, 6, buf)) {
+ 164              	 .loc 1 118 0
+ 165 0008 07F10803 	 add r3,r7,#8
+ 166 000c 0093     	 str r3,[sp]
+ 167 000e 0420     	 movs r0,#4
+ 168 0010 1C21     	 movs r1,#28
+ 169 0012 0122     	 movs r2,#1
+ 170 0014 0623     	 movs r3,#6
+ 171 0016 FFF7FEFF 	 bl i2cRead
+ 172 001a 0346     	 mov r3,r0
+ 173 001c 83F00103 	 eor r3,r3,#1
+ 174 0020 DBB2     	 uxtb r3,r3
+ 175 0022 002B     	 cmp r3,#0
+ 176 0024 01D0     	 beq .L4
+ 119:../cleanflight/src/main/drivers/accgyro_legacy/accgyro_mma845x.c ****         return false;
+ 177              	 .loc 1 119 0
+ 178 0026 0023     	 movs r3,#0
+ 179 0028 39E0     	 b .L9
+ 180              	.L4:
+ 120:../cleanflight/src/main/drivers/accgyro_legacy/accgyro_mma845x.c ****     }
+ 121:../cleanflight/src/main/drivers/accgyro_legacy/accgyro_mma845x.c **** 
+ 122:../cleanflight/src/main/drivers/accgyro_legacy/accgyro_mma845x.c ****     acc->ADCRaw[0] = ((int16_t)((buf[0] << 8) | buf[1]) >> 2) / 4;
+ 181              	 .loc 1 122 0
+ 182 002a 3B7A     	 ldrb r3,[r7,#8]
+ 183 002c 1B02     	 lsls r3,r3,#8
+ 184 002e 9AB2     	 uxth r2,r3
+ 185 0030 7B7A     	 ldrb r3,[r7,#9]
+ 186 0032 9BB2     	 uxth r3,r3
+ 187 0034 1343     	 orrs r3,r3,r2
+ 188 0036 9BB2     	 uxth r3,r3
+ 189 0038 1BB2     	 sxth r3,r3
+ 190 003a 9B10     	 asrs r3,r3,#2
+ 191 003c 9BB2     	 uxth r3,r3
+ 192 003e 1BB2     	 sxth r3,r3
+ 193 0040 002B     	 cmp r3,#0
+ 194 0042 00DA     	 bge .L6
+ 195 0044 0333     	 adds r3,r3,#3
+ 196              	.L6:
+ 197 0046 9B10     	 asrs r3,r3,#2
+ 198 0048 9AB2     	 uxth r2,r3
+ 199 004a 7B68     	 ldr r3,[r7,#4]
+ 200 004c A3F81320 	 strh r2,[r3,#19]
+ 123:../cleanflight/src/main/drivers/accgyro_legacy/accgyro_mma845x.c ****     acc->ADCRaw[1] = ((int16_t)((buf[2] << 8) | buf[3]) >> 2) / 4;
+ 201              	 .loc 1 123 0
+ 202 0050 BB7A     	 ldrb r3,[r7,#10]
+ 203 0052 1B02     	 lsls r3,r3,#8
+ 204 0054 9AB2     	 uxth r2,r3
+ 205 0056 FB7A     	 ldrb r3,[r7,#11]
+ 206 0058 9BB2     	 uxth r3,r3
+ 207 005a 1343     	 orrs r3,r3,r2
+ 208 005c 9BB2     	 uxth r3,r3
+ 209 005e 1BB2     	 sxth r3,r3
+ 210 0060 9B10     	 asrs r3,r3,#2
+ 211 0062 9BB2     	 uxth r3,r3
+ 212 0064 1BB2     	 sxth r3,r3
+ 213 0066 002B     	 cmp r3,#0
+ 214 0068 00DA     	 bge .L7
+ 215 006a 0333     	 adds r3,r3,#3
+ 216              	.L7:
+ 217 006c 9B10     	 asrs r3,r3,#2
+ 218 006e 9AB2     	 uxth r2,r3
+ 219 0070 7B68     	 ldr r3,[r7,#4]
+ 220 0072 A3F81520 	 strh r2,[r3,#21]
+ 124:../cleanflight/src/main/drivers/accgyro_legacy/accgyro_mma845x.c ****     acc->ADCRaw[2] = ((int16_t)((buf[4] << 8) | buf[5]) >> 2) / 4;
+ 221              	 .loc 1 124 0
+ 222 0076 3B7B     	 ldrb r3,[r7,#12]
+ 223 0078 1B02     	 lsls r3,r3,#8
+ 224 007a 9AB2     	 uxth r2,r3
+ 225 007c 7B7B     	 ldrb r3,[r7,#13]
+ 226 007e 9BB2     	 uxth r3,r3
+ 227 0080 1343     	 orrs r3,r3,r2
+ 228 0082 9BB2     	 uxth r3,r3
+ 229 0084 1BB2     	 sxth r3,r3
+ 230 0086 9B10     	 asrs r3,r3,#2
+ 231 0088 9BB2     	 uxth r3,r3
+ 232 008a 1BB2     	 sxth r3,r3
+ 233 008c 002B     	 cmp r3,#0
+ 234 008e 00DA     	 bge .L8
+ 235 0090 0333     	 adds r3,r3,#3
+ 236              	.L8:
+ 237 0092 9B10     	 asrs r3,r3,#2
+ 238 0094 9AB2     	 uxth r2,r3
+ 239 0096 7B68     	 ldr r3,[r7,#4]
+ 240 0098 A3F81720 	 strh r2,[r3,#23]
+ 125:../cleanflight/src/main/drivers/accgyro_legacy/accgyro_mma845x.c **** 
+ 126:../cleanflight/src/main/drivers/accgyro_legacy/accgyro_mma845x.c ****     return true;
+ 241              	 .loc 1 126 0
+ 242 009c 0123     	 movs r3,#1
+ 243              	.L9:
+ 127:../cleanflight/src/main/drivers/accgyro_legacy/accgyro_mma845x.c **** }
+ 244              	 .loc 1 127 0 discriminator 1
+ 245 009e 1846     	 mov r0,r3
+ 246 00a0 1037     	 adds r7,r7,#16
+ 247              	.LCFI10:
+ 248              	 .cfi_def_cfa_offset 8
+ 249 00a2 BD46     	 mov sp,r7
+ 250              	.LCFI11:
+ 251              	 .cfi_def_cfa_register 13
+ 252              	 
+ 253 00a4 80BD     	 pop {r7,pc}
+ 254              	 .cfi_endproc
+ 255              	.LFE535:
+ 257 00a6 00BF     	 .section .text.mma8452Detect,"ax",%progbits
+ 258              	 .align 2
+ 259              	 .global mma8452Detect
+ 260              	 .thumb
+ 261              	 .thumb_func
+ 263              	mma8452Detect:
+ 264              	.LFB536:
+ 128:../cleanflight/src/main/drivers/accgyro_legacy/accgyro_mma845x.c **** 
+ 129:../cleanflight/src/main/drivers/accgyro_legacy/accgyro_mma845x.c **** bool mma8452Detect(accDev_t *acc)
+ 130:../cleanflight/src/main/drivers/accgyro_legacy/accgyro_mma845x.c **** {
+ 265              	 .loc 1 130 0
+ 266              	 .cfi_startproc
+ 267              	 
+ 268              	 
+ 269 0000 80B5     	 push {r7,lr}
+ 270              	.LCFI12:
+ 271              	 .cfi_def_cfa_offset 8
+ 272              	 .cfi_offset 7,-8
+ 273              	 .cfi_offset 14,-4
+ 274 0002 86B0     	 sub sp,sp,#24
+ 275              	.LCFI13:
+ 276              	 .cfi_def_cfa_offset 32
+ 277 0004 02AF     	 add r7,sp,#8
+ 278              	.LCFI14:
+ 279              	 .cfi_def_cfa 7,24
+ 280 0006 7860     	 str r0,[r7,#4]
+ 131:../cleanflight/src/main/drivers/accgyro_legacy/accgyro_mma845x.c ****     uint8_t sig = 0;
+ 281              	 .loc 1 131 0
+ 282 0008 0023     	 movs r3,#0
+ 283 000a BB73     	 strb r3,[r7,#14]
+ 132:../cleanflight/src/main/drivers/accgyro_legacy/accgyro_mma845x.c ****     bool ack = i2cRead(MPU_I2C_INSTANCE, MMA8452_ADDRESS, MMA8452_WHO_AM_I, 1, &sig);
+ 284              	 .loc 1 132 0
+ 285 000c 07F10E03 	 add r3,r7,#14
+ 286 0010 0093     	 str r3,[sp]
+ 287 0012 0420     	 movs r0,#4
+ 288 0014 1C21     	 movs r1,#28
+ 289 0016 0D22     	 movs r2,#13
+ 290 0018 0123     	 movs r3,#1
+ 291 001a FFF7FEFF 	 bl i2cRead
+ 292 001e 0346     	 mov r3,r0
+ 293 0020 FB73     	 strb r3,[r7,#15]
+ 133:../cleanflight/src/main/drivers/accgyro_legacy/accgyro_mma845x.c **** 
+ 134:../cleanflight/src/main/drivers/accgyro_legacy/accgyro_mma845x.c ****     if (!ack || (sig != MMA8452_DEVICE_SIGNATURE && sig != MMA8451_DEVICE_SIGNATURE))
+ 294              	 .loc 1 134 0
+ 295 0022 FB7B     	 ldrb r3,[r7,#15]
+ 296 0024 83F00103 	 eor r3,r3,#1
+ 297 0028 DBB2     	 uxtb r3,r3
+ 298 002a 002B     	 cmp r3,#0
+ 299 002c 05D1     	 bne .L11
+ 300              	 .loc 1 134 0 is_stmt 0 discriminator 1
+ 301 002e BB7B     	 ldrb r3,[r7,#14]
+ 302 0030 2A2B     	 cmp r3,#42
+ 303 0032 04D0     	 beq .L12
+ 304              	 .loc 1 134 0 discriminator 2
+ 305 0034 BB7B     	 ldrb r3,[r7,#14]
+ 306 0036 1A2B     	 cmp r3,#26
+ 307 0038 01D0     	 beq .L12
+ 308              	.L11:
+ 135:../cleanflight/src/main/drivers/accgyro_legacy/accgyro_mma845x.c ****         return false;
+ 309              	 .loc 1 135 0 is_stmt 1
+ 310 003a 0023     	 movs r3,#0
+ 311 003c 09E0     	 b .L14
+ 312              	.L12:
+ 136:../cleanflight/src/main/drivers/accgyro_legacy/accgyro_mma845x.c **** 
+ 137:../cleanflight/src/main/drivers/accgyro_legacy/accgyro_mma845x.c ****     acc->initFn = mma8452Init;
+ 313              	 .loc 1 137 0
+ 314 003e 7B68     	 ldr r3,[r7,#4]
+ 315 0040 064A     	 ldr r2,.L15
+ 316 0042 1A60     	 str r2,[r3]
+ 138:../cleanflight/src/main/drivers/accgyro_legacy/accgyro_mma845x.c ****     acc->readFn = mma8452Read;
+ 317              	 .loc 1 138 0
+ 318 0044 7B68     	 ldr r3,[r7,#4]
+ 319 0046 064A     	 ldr r2,.L15+4
+ 320 0048 5A60     	 str r2,[r3,#4]
+ 139:../cleanflight/src/main/drivers/accgyro_legacy/accgyro_mma845x.c ****     device_id = sig;
+ 321              	 .loc 1 139 0
+ 322 004a BA7B     	 ldrb r2,[r7,#14]
+ 323 004c 054B     	 ldr r3,.L15+8
+ 324 004e 1A70     	 strb r2,[r3]
+ 140:../cleanflight/src/main/drivers/accgyro_legacy/accgyro_mma845x.c ****     return true;
+ 325              	 .loc 1 140 0
+ 326 0050 0123     	 movs r3,#1
+ 327              	.L14:
+ 141:../cleanflight/src/main/drivers/accgyro_legacy/accgyro_mma845x.c **** }
+ 328              	 .loc 1 141 0 discriminator 1
+ 329 0052 1846     	 mov r0,r3
+ 330 0054 1037     	 adds r7,r7,#16
+ 331              	.LCFI15:
+ 332              	 .cfi_def_cfa_offset 8
+ 333 0056 BD46     	 mov sp,r7
+ 334              	.LCFI16:
+ 335              	 .cfi_def_cfa_register 13
+ 336              	 
+ 337 0058 80BD     	 pop {r7,pc}
+ 338              	.L16:
+ 339 005a 00BF     	 .align 2
+ 340              	.L15:
+ 341 005c 00000000 	 .word mma8452Init
+ 342 0060 00000000 	 .word mma8452Read
+ 343 0064 00000000 	 .word device_id
+ 344              	 .cfi_endproc
+ 345              	.LFE536:
+ 347              	 .text
+ 348              	.Letext0:
+ 349              	 .file 2 "d:\\xmc\\dave-ide-4.4.2-64bit\\eclipse\\arm-gcc-49\\arm-none-eabi\\include\\machine\\_default_types.h"
+ 350              	 .file 3 "d:\\xmc\\dave-ide-4.4.2-64bit\\eclipse\\arm-gcc-49\\arm-none-eabi\\include\\stdint.h"
+ 351              	 .file 4 "D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/lib/main/XMC4000/xmc4700.h"
+ 352              	 .file 5 "D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/lib/main/XMC4000/XMCLib/inc/xmc_usic.h"
+ 353              	 .file 6 "D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/platform.h"
+ 354              	 .file 7 "D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/drivers/io_types.h"
+ 355              	 .file 8 "D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/drivers/bus_i2c.h"
+ 356              	 .file 9 "D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/drivers/resource.h"
+ 357              	 .file 10 "D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/drivers/sensor.h"
+ 358              	 .file 11 "D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/drivers/accgyro/accgyro.h"
+ 359              	 .file 12 "D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/drivers/bus.h"
+ 360              	 .file 13 "D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/drivers/accgyro/accgyro_mpu.h"
+ 361              	 .file 14 "D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/common/time.h"
+ 362              	 .file 15 "D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/sensors/gyro.h"
+ 363              	 .file 16 "D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/lib/main/CMSIS/Core/Include/core_cm4.h"
+ 364              	 .file 17 "D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/lib/main/XMC4000/system_XMC4700.h"
+DEFINED SYMBOLS
+                            *ABS*:00000000 accgyro_mma845x.c
+    {standard input}:22     .bss.device_id:00000000 device_id
+    {standard input}:23     .bss.device_id:00000000 $d
+    {standard input}:25     .text.mma8451ConfigureInterrupt:00000000 $t
+    {standard input}:29     .text.mma8451ConfigureInterrupt:00000000 mma8451ConfigureInterrupt
+    {standard input}:68     .text.mma8452Init:00000000 $t
+    {standard input}:72     .text.mma8452Init:00000000 mma8452Init
+    {standard input}:142    .text.mma8452Read:00000000 $t
+    {standard input}:146    .text.mma8452Read:00000000 mma8452Read
+    {standard input}:258    .text.mma8452Detect:00000000 $t
+    {standard input}:263    .text.mma8452Detect:00000000 mma8452Detect
+    {standard input}:341    .text.mma8452Detect:0000005c $d
+                     .debug_frame:00000010 $d
+
+UNDEFINED SYMBOLS
+i2cWrite
+i2cRead

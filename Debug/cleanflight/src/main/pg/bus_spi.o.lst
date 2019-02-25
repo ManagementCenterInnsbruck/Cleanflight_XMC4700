@@ -1,0 +1,473 @@
+   1              	 .syntax unified
+   2              	 .cpu cortex-m4
+   3              	 .eabi_attribute 27,3
+   4              	 .fpu fpv4-sp-d16
+   5              	 .eabi_attribute 20,1
+   6              	 .eabi_attribute 21,1
+   7              	 .eabi_attribute 23,3
+   8              	 .eabi_attribute 24,1
+   9              	 .eabi_attribute 25,1
+  10              	 .eabi_attribute 26,1
+  11              	 .eabi_attribute 30,6
+  12              	 .eabi_attribute 34,1
+  13              	 .eabi_attribute 18,4
+  14              	 .thumb
+  15              	 .file "bus_spi.c"
+  16              	 .text
+  17              	.Ltext0:
+  18              	 .cfi_sections .debug_frame
+  19              	 .global spiDefaultConfig
+  20              	 .section .rodata.spiDefaultConfig,"a",%progbits
+  21              	 .align 2
+  24              	spiDefaultConfig:
+  25 0000 01       	 .byte 1
+  26 0001 46       	 .byte 70
+  27 0002 50       	 .byte 80
+  28 0003 45       	 .byte 69
+  29 0004 02       	 .byte 2
+  30 0005 1B       	 .byte 27
+  31 0006 15       	 .byte 21
+  32 0007 14       	 .byte 20
+  33              	 .comm spiPinConfig_SystemArray,24,4
+  34              	 .comm spiPinConfig_CopyArray,24,4
+  35              	 .global spiPinConfig_Registry
+  36              	 .section .pg_registry,"a",%progbits
+  37              	 .align 2
+  40              	spiPinConfig_Registry:
+  41 0000 0812     	 .short 4616
+  42 0002 1800     	 .short 24
+  43 0004 00000000 	 .word spiPinConfig_SystemArray
+  44 0008 00000000 	 .word spiPinConfig_CopyArray
+  45 000c 00000000 	 .word 0
+  46 0010 00000000 	 .word pgResetFn_spiPinConfig
+  47              	 .section .text.pgResetFn_spiPinConfig,"ax",%progbits
+  48              	 .align 2
+  49              	 .global pgResetFn_spiPinConfig
+  50              	 .thumb
+  51              	 .thumb_func
+  53              	pgResetFn_spiPinConfig:
+  54              	.LFB533:
+  55              	 .file 1 "../cleanflight/src/main/pg/bus_spi.c"
+   1:../cleanflight/src/main/pg/bus_spi.c **** /*
+   2:../cleanflight/src/main/pg/bus_spi.c ****  * This file is part of Cleanflight and Betaflight.
+   3:../cleanflight/src/main/pg/bus_spi.c ****  *
+   4:../cleanflight/src/main/pg/bus_spi.c ****  * Cleanflight and Betaflight are free software. You can redistribute
+   5:../cleanflight/src/main/pg/bus_spi.c ****  * this software and/or modify this software under the terms of the
+   6:../cleanflight/src/main/pg/bus_spi.c ****  * GNU General Public License as published by the Free Software
+   7:../cleanflight/src/main/pg/bus_spi.c ****  * Foundation, either version 3 of the License, or (at your option)
+   8:../cleanflight/src/main/pg/bus_spi.c ****  * any later version.
+   9:../cleanflight/src/main/pg/bus_spi.c ****  *
+  10:../cleanflight/src/main/pg/bus_spi.c ****  * Cleanflight and Betaflight are distributed in the hope that they
+  11:../cleanflight/src/main/pg/bus_spi.c ****  * will be useful, but WITHOUT ANY WARRANTY; without even the implied
+  12:../cleanflight/src/main/pg/bus_spi.c ****  * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+  13:../cleanflight/src/main/pg/bus_spi.c ****  * See the GNU General Public License for more details.
+  14:../cleanflight/src/main/pg/bus_spi.c ****  *
+  15:../cleanflight/src/main/pg/bus_spi.c ****  * You should have received a copy of the GNU General Public License
+  16:../cleanflight/src/main/pg/bus_spi.c ****  * along with this software.
+  17:../cleanflight/src/main/pg/bus_spi.c ****  *
+  18:../cleanflight/src/main/pg/bus_spi.c ****  * If not, see <http://www.gnu.org/licenses/>.
+  19:../cleanflight/src/main/pg/bus_spi.c ****  */
+  20:../cleanflight/src/main/pg/bus_spi.c **** 
+  21:../cleanflight/src/main/pg/bus_spi.c **** #include "platform.h"
+  22:../cleanflight/src/main/pg/bus_spi.c **** 
+  23:../cleanflight/src/main/pg/bus_spi.c **** #ifdef USE_SPI
+  24:../cleanflight/src/main/pg/bus_spi.c **** 
+  25:../cleanflight/src/main/pg/bus_spi.c **** #include "drivers/io.h"
+  26:../cleanflight/src/main/pg/bus_spi.c **** 
+  27:../cleanflight/src/main/pg/bus_spi.c **** #include "pg/pg.h"
+  28:../cleanflight/src/main/pg/bus_spi.c **** #include "pg/pg_ids.h"
+  29:../cleanflight/src/main/pg/bus_spi.c **** 
+  30:../cleanflight/src/main/pg/bus_spi.c **** #include "bus_spi.h"
+  31:../cleanflight/src/main/pg/bus_spi.c **** 
+  32:../cleanflight/src/main/pg/bus_spi.c **** typedef struct spiDefaultConfig_s {
+  33:../cleanflight/src/main/pg/bus_spi.c ****     SPIDevice device;
+  34:../cleanflight/src/main/pg/bus_spi.c ****     ioTag_t sck;
+  35:../cleanflight/src/main/pg/bus_spi.c ****     ioTag_t miso;
+  36:../cleanflight/src/main/pg/bus_spi.c ****     ioTag_t mosi;
+  37:../cleanflight/src/main/pg/bus_spi.c **** } spiDefaultConfig_t;
+  38:../cleanflight/src/main/pg/bus_spi.c **** 
+  39:../cleanflight/src/main/pg/bus_spi.c **** const spiDefaultConfig_t spiDefaultConfig[] = {
+  40:../cleanflight/src/main/pg/bus_spi.c **** #if defined(USE_SPI_DEVICE_1) || defined(USE_SPIS_DEVICE_1)
+  41:../cleanflight/src/main/pg/bus_spi.c ****     { SPIDEV_1, IO_TAG(SPI1_SCK_PIN), IO_TAG(SPI1_MISO_PIN), IO_TAG(SPI1_MOSI_PIN) },
+  42:../cleanflight/src/main/pg/bus_spi.c **** #endif
+  43:../cleanflight/src/main/pg/bus_spi.c **** #if defined(USE_SPI_DEVICE_2) || defined(USE_SPIS_DEVICE_2)
+  44:../cleanflight/src/main/pg/bus_spi.c ****     { SPIDEV_2, IO_TAG(SPI2_SCK_PIN), IO_TAG(SPI2_MISO_PIN), IO_TAG(SPI2_MOSI_PIN) },
+  45:../cleanflight/src/main/pg/bus_spi.c **** #endif
+  46:../cleanflight/src/main/pg/bus_spi.c **** #if defined(USE_SPI_DEVICE_3) || defined(USE_SPIS_DEVICE_3)
+  47:../cleanflight/src/main/pg/bus_spi.c ****     { SPIDEV_3, IO_TAG(SPI3_SCK_PIN), IO_TAG(SPI3_MISO_PIN), IO_TAG(SPI3_MOSI_PIN) },
+  48:../cleanflight/src/main/pg/bus_spi.c **** #endif
+  49:../cleanflight/src/main/pg/bus_spi.c **** #if defined(USE_SPI_DEVICE_4) || defined(USE_SPIS_DEVICE_4)
+  50:../cleanflight/src/main/pg/bus_spi.c ****     { SPIDEV_4, IO_TAG(SPI4_SCK_PIN), IO_TAG(SPI4_MISO_PIN), IO_TAG(SPI4_MOSI_PIN) },
+  51:../cleanflight/src/main/pg/bus_spi.c **** #endif
+  52:../cleanflight/src/main/pg/bus_spi.c **** #if defined(USE_SPI_DEVICE_5) || defined(USE_SPIS_DEVICE_5)
+  53:../cleanflight/src/main/pg/bus_spi.c ****     { SPIDEV_5, IO_TAG(SPI5_SCK_PIN), IO_TAG(SPI5_MISO_PIN), IO_TAG(SPI5_MOSI_PIN) },
+  54:../cleanflight/src/main/pg/bus_spi.c **** #endif
+  55:../cleanflight/src/main/pg/bus_spi.c **** #if defined(USE_SPI_DEVICE_6) || defined(USE_SPIS_DEVICE_6)
+  56:../cleanflight/src/main/pg/bus_spi.c ****     { SPIDEV_6, IO_TAG(SPI6_SCK_PIN), IO_TAG(SPI6_MISO_PIN), IO_TAG(SPI6_MOSI_PIN) },
+  57:../cleanflight/src/main/pg/bus_spi.c **** #endif
+  58:../cleanflight/src/main/pg/bus_spi.c **** };
+  59:../cleanflight/src/main/pg/bus_spi.c **** 
+  60:../cleanflight/src/main/pg/bus_spi.c **** PG_REGISTER_ARRAY_WITH_RESET_FN(spiPinConfig_t, SPIDEV_COUNT, spiPinConfig, PG_SPI_PIN_CONFIG, 1);
+  61:../cleanflight/src/main/pg/bus_spi.c **** 
+  62:../cleanflight/src/main/pg/bus_spi.c **** void pgResetFn_spiPinConfig(spiPinConfig_t *spiPinConfig)
+  63:../cleanflight/src/main/pg/bus_spi.c **** {
+  56              	 .loc 1 63 0
+  57              	 .cfi_startproc
+  58              	 
+  59              	 
+  60              	 
+  61 0000 80B4     	 push {r7}
+  62              	.LCFI0:
+  63              	 .cfi_def_cfa_offset 4
+  64              	 .cfi_offset 7,-4
+  65 0002 85B0     	 sub sp,sp,#20
+  66              	.LCFI1:
+  67              	 .cfi_def_cfa_offset 24
+  68 0004 00AF     	 add r7,sp,#0
+  69              	.LCFI2:
+  70              	 .cfi_def_cfa_register 7
+  71 0006 7860     	 str r0,[r7,#4]
+  72              	.LBB2:
+  64:../cleanflight/src/main/pg/bus_spi.c ****     for (size_t i = 0 ; i < ARRAYLEN(spiDefaultConfig) ; i++) {
+  73              	 .loc 1 64 0
+  74 0008 0023     	 movs r3,#0
+  75 000a FB60     	 str r3,[r7,#12]
+  76 000c 22E0     	 b .L2
+  77              	.L3:
+  78              	.LBB3:
+  65:../cleanflight/src/main/pg/bus_spi.c ****         const spiDefaultConfig_t *defconf = &spiDefaultConfig[i];
+  79              	 .loc 1 65 0 discriminator 3
+  80 000e FB68     	 ldr r3,[r7,#12]
+  81 0010 9B00     	 lsls r3,r3,#2
+  82 0012 144A     	 ldr r2,.L4
+  83 0014 1344     	 add r3,r3,r2
+  84 0016 BB60     	 str r3,[r7,#8]
+  66:../cleanflight/src/main/pg/bus_spi.c ****         spiPinConfig[defconf->device].ioTagSck = defconf->sck;
+  85              	 .loc 1 66 0 discriminator 3
+  86 0018 BB68     	 ldr r3,[r7,#8]
+  87 001a 1B78     	 ldrb r3,[r3]
+  88 001c 5BB2     	 sxtb r3,r3
+  89 001e 9B00     	 lsls r3,r3,#2
+  90 0020 7A68     	 ldr r2,[r7,#4]
+  91 0022 1344     	 add r3,r3,r2
+  92 0024 BA68     	 ldr r2,[r7,#8]
+  93 0026 5278     	 ldrb r2,[r2,#1]
+  94 0028 1A70     	 strb r2,[r3]
+  67:../cleanflight/src/main/pg/bus_spi.c ****         spiPinConfig[defconf->device].ioTagMiso = defconf->miso;
+  95              	 .loc 1 67 0 discriminator 3
+  96 002a BB68     	 ldr r3,[r7,#8]
+  97 002c 1B78     	 ldrb r3,[r3]
+  98 002e 5BB2     	 sxtb r3,r3
+  99 0030 9B00     	 lsls r3,r3,#2
+ 100 0032 7A68     	 ldr r2,[r7,#4]
+ 101 0034 1344     	 add r3,r3,r2
+ 102 0036 BA68     	 ldr r2,[r7,#8]
+ 103 0038 9278     	 ldrb r2,[r2,#2]
+ 104 003a 5A70     	 strb r2,[r3,#1]
+  68:../cleanflight/src/main/pg/bus_spi.c ****         spiPinConfig[defconf->device].ioTagMosi = defconf->mosi;
+ 105              	 .loc 1 68 0 discriminator 3
+ 106 003c BB68     	 ldr r3,[r7,#8]
+ 107 003e 1B78     	 ldrb r3,[r3]
+ 108 0040 5BB2     	 sxtb r3,r3
+ 109 0042 9B00     	 lsls r3,r3,#2
+ 110 0044 7A68     	 ldr r2,[r7,#4]
+ 111 0046 1344     	 add r3,r3,r2
+ 112 0048 BA68     	 ldr r2,[r7,#8]
+ 113 004a D278     	 ldrb r2,[r2,#3]
+ 114 004c 9A70     	 strb r2,[r3,#2]
+ 115              	.LBE3:
+  64:../cleanflight/src/main/pg/bus_spi.c ****         const spiDefaultConfig_t *defconf = &spiDefaultConfig[i];
+ 116              	 .loc 1 64 0 discriminator 3
+ 117 004e FB68     	 ldr r3,[r7,#12]
+ 118 0050 0133     	 adds r3,r3,#1
+ 119 0052 FB60     	 str r3,[r7,#12]
+ 120              	.L2:
+  64:../cleanflight/src/main/pg/bus_spi.c ****         const spiDefaultConfig_t *defconf = &spiDefaultConfig[i];
+ 121              	 .loc 1 64 0 is_stmt 0 discriminator 1
+ 122 0054 FB68     	 ldr r3,[r7,#12]
+ 123 0056 012B     	 cmp r3,#1
+ 124 0058 D9D9     	 bls .L3
+ 125              	.LBE2:
+  69:../cleanflight/src/main/pg/bus_spi.c ****     }
+  70:../cleanflight/src/main/pg/bus_spi.c **** }
+ 126              	 .loc 1 70 0 is_stmt 1
+ 127 005a 1437     	 adds r7,r7,#20
+ 128              	.LCFI3:
+ 129              	 .cfi_def_cfa_offset 4
+ 130 005c BD46     	 mov sp,r7
+ 131              	.LCFI4:
+ 132              	 .cfi_def_cfa_register 13
+ 133              	 
+ 134 005e 5DF8047B 	 ldr r7,[sp],#4
+ 135              	.LCFI5:
+ 136              	 .cfi_restore 7
+ 137              	 .cfi_def_cfa_offset 0
+ 138 0062 7047     	 bx lr
+ 139              	.L5:
+ 140              	 .align 2
+ 141              	.L4:
+ 142 0064 00000000 	 .word spiDefaultConfig
+ 143              	 .cfi_endproc
+ 144              	.LFE533:
+ 146              	 .comm spiPreinitIPUConfig_SystemArray,11,4
+ 147              	 .comm spiPreinitIPUConfig_CopyArray,11,4
+ 148              	 .global spiPreinitIPUConfig_Registry
+ 149              	 .section .pg_registry
+ 150              	 .align 2
+ 153              	spiPreinitIPUConfig_Registry:
+ 154 0014 1702     	 .short 535
+ 155 0016 0B00     	 .short 11
+ 156 0018 00000000 	 .word spiPreinitIPUConfig_SystemArray
+ 157 001c 00000000 	 .word spiPreinitIPUConfig_CopyArray
+ 158 0020 00000000 	 .word 0
+ 159 0024 00000000 	 .word pgResetFn_spiPreinitIPUConfig
+ 160              	 .comm spiPreinitOPUConfig_SystemArray,2,4
+ 161              	 .comm spiPreinitOPUConfig_CopyArray,2,4
+ 162              	 .global spiPreinitOPUConfig_Registry
+ 163              	 .align 2
+ 166              	spiPreinitOPUConfig_Registry:
+ 167 0028 1802     	 .short 536
+ 168 002a 0200     	 .short 2
+ 169 002c 00000000 	 .word spiPreinitOPUConfig_SystemArray
+ 170 0030 00000000 	 .word spiPreinitOPUConfig_CopyArray
+ 171 0034 00000000 	 .word 0
+ 172 0038 00000000 	 .word 0
+ 173              	 .global preinitIPUList
+ 174              	 .section .data.preinitIPUList,"aw",%progbits
+ 175              	 .align 2
+ 178              	preinitIPUList:
+ 179 0000 51       	 .byte 81
+ 180 0001 00       	 .byte 0
+ 181 0002 00000000 	 .space 9
+ 181      00000000 
+ 181      00
+ 182 000b 00       	 .section .text.pgResetFn_spiPreinitIPUConfig,"ax",%progbits
+ 183              	 .align 2
+ 184              	 .global pgResetFn_spiPreinitIPUConfig
+ 185              	 .thumb
+ 186              	 .thumb_func
+ 188              	pgResetFn_spiPreinitIPUConfig:
+ 189              	.LFB534:
+  71:../cleanflight/src/main/pg/bus_spi.c **** 
+  72:../cleanflight/src/main/pg/bus_spi.c **** PG_REGISTER_ARRAY_WITH_RESET_FN(spiCs_t, SPI_PREINIT_IPU_COUNT, spiPreinitIPUConfig, PG_SPI_PREINIT
+  73:../cleanflight/src/main/pg/bus_spi.c **** PG_REGISTER_ARRAY(spiCs_t, SPI_PREINIT_OPU_COUNT, spiPreinitOPUConfig, PG_SPI_PREINIT_OPU_CONFIG, 0
+  74:../cleanflight/src/main/pg/bus_spi.c **** 
+  75:../cleanflight/src/main/pg/bus_spi.c **** // Initialization values for input pull-up are listed here.
+  76:../cleanflight/src/main/pg/bus_spi.c **** // Explicit output with pull-up should handled in target dependent config.c.
+  77:../cleanflight/src/main/pg/bus_spi.c **** // Generic target will be specifying both values by resource commands.
+  78:../cleanflight/src/main/pg/bus_spi.c **** 
+  79:../cleanflight/src/main/pg/bus_spi.c **** ioTag_t preinitIPUList[SPI_PREINIT_IPU_COUNT] = {
+  80:../cleanflight/src/main/pg/bus_spi.c **** #ifdef GYRO_1_CS_PIN
+  81:../cleanflight/src/main/pg/bus_spi.c ****     IO_TAG(GYRO_1_CS_PIN),
+  82:../cleanflight/src/main/pg/bus_spi.c **** #endif
+  83:../cleanflight/src/main/pg/bus_spi.c **** #ifdef GYRO_2_CS_PIN
+  84:../cleanflight/src/main/pg/bus_spi.c ****     IO_TAG(GYRO_2_CS_PIN),
+  85:../cleanflight/src/main/pg/bus_spi.c **** #endif
+  86:../cleanflight/src/main/pg/bus_spi.c **** #ifdef MPU6000_CS_PIN
+  87:../cleanflight/src/main/pg/bus_spi.c ****     IO_TAG(MPU6000_CS_PIN),
+  88:../cleanflight/src/main/pg/bus_spi.c **** #endif
+  89:../cleanflight/src/main/pg/bus_spi.c **** #ifdef MPU6500_CS_PIN
+  90:../cleanflight/src/main/pg/bus_spi.c ****     IO_TAG(MPU6500_CS_PIN),
+  91:../cleanflight/src/main/pg/bus_spi.c **** #endif
+  92:../cleanflight/src/main/pg/bus_spi.c **** #ifdef MPU9250_CS_PIN
+  93:../cleanflight/src/main/pg/bus_spi.c ****     IO_TAG(MPU9250_CS_PIN),
+  94:../cleanflight/src/main/pg/bus_spi.c **** #endif
+  95:../cleanflight/src/main/pg/bus_spi.c **** #ifdef ICM20649_CS_PIN
+  96:../cleanflight/src/main/pg/bus_spi.c ****     IO_TAG(ICM20649_CS_PIN),
+  97:../cleanflight/src/main/pg/bus_spi.c **** #endif
+  98:../cleanflight/src/main/pg/bus_spi.c **** #ifdef ICM20689_CS_PIN
+  99:../cleanflight/src/main/pg/bus_spi.c ****     IO_TAG(ICM20689_CS_PIN),
+ 100:../cleanflight/src/main/pg/bus_spi.c **** #endif
+ 101:../cleanflight/src/main/pg/bus_spi.c **** #ifdef BMI160_CS_PIN
+ 102:../cleanflight/src/main/pg/bus_spi.c ****     IO_TAG(BMI160_CS_PIN),
+ 103:../cleanflight/src/main/pg/bus_spi.c **** #endif
+ 104:../cleanflight/src/main/pg/bus_spi.c **** #ifdef L3GD20_CS_PIN
+ 105:../cleanflight/src/main/pg/bus_spi.c ****     IO_TAG(L3GD20_CS_PIN),
+ 106:../cleanflight/src/main/pg/bus_spi.c **** #endif
+ 107:../cleanflight/src/main/pg/bus_spi.c **** #ifdef SDCARD_SPI_CS_PIN
+ 108:../cleanflight/src/main/pg/bus_spi.c ****     IO_TAG(SDCARD_SPI_CS_PIN),
+ 109:../cleanflight/src/main/pg/bus_spi.c **** #endif
+ 110:../cleanflight/src/main/pg/bus_spi.c **** #ifdef BMP280_CS_PIN
+ 111:../cleanflight/src/main/pg/bus_spi.c ****     IO_TAG(BMP280_CS_PIN),
+ 112:../cleanflight/src/main/pg/bus_spi.c **** #endif
+ 113:../cleanflight/src/main/pg/bus_spi.c **** #ifdef MS5611_CS_PIN
+ 114:../cleanflight/src/main/pg/bus_spi.c ****     IO_TAG(MS5611_CS_PIN),
+ 115:../cleanflight/src/main/pg/bus_spi.c **** #endif
+ 116:../cleanflight/src/main/pg/bus_spi.c **** #ifdef LPS_CS_PIN
+ 117:../cleanflight/src/main/pg/bus_spi.c ****     IO_TAG(LPS_CS_PIN),
+ 118:../cleanflight/src/main/pg/bus_spi.c **** #endif
+ 119:../cleanflight/src/main/pg/bus_spi.c **** #ifdef HMC5883_CS_PIN
+ 120:../cleanflight/src/main/pg/bus_spi.c ****     IO_TAG(HMC5883_CS_PIN),
+ 121:../cleanflight/src/main/pg/bus_spi.c **** #endif
+ 122:../cleanflight/src/main/pg/bus_spi.c **** #ifdef AK8963_CS_PIN
+ 123:../cleanflight/src/main/pg/bus_spi.c ****     IO_TAG(AK8963_CS_PIN),
+ 124:../cleanflight/src/main/pg/bus_spi.c **** #endif
+ 125:../cleanflight/src/main/pg/bus_spi.c **** #if defined(RTC6705_CS_PIN) && !defined(USE_VTX_RTC6705_SOFTSPI) // RTC6705 soft SPI initialisation
+ 126:../cleanflight/src/main/pg/bus_spi.c ****     IO_TAG(RTC6705_CS_PIN),
+ 127:../cleanflight/src/main/pg/bus_spi.c **** #endif
+ 128:../cleanflight/src/main/pg/bus_spi.c **** #ifdef FLASH_CS_PIN
+ 129:../cleanflight/src/main/pg/bus_spi.c ****     IO_TAG(FLASH_CS_PIN),
+ 130:../cleanflight/src/main/pg/bus_spi.c **** #endif
+ 131:../cleanflight/src/main/pg/bus_spi.c **** #if defined(USE_RX_SPI) && !defined(USE_RX_SOFTSPI)
+ 132:../cleanflight/src/main/pg/bus_spi.c ****     IO_TAG(RX_NSS_PIN),
+ 133:../cleanflight/src/main/pg/bus_spi.c **** #endif
+ 134:../cleanflight/src/main/pg/bus_spi.c **** #if defined(MAX7456_SPI_CS_PIN)
+ 135:../cleanflight/src/main/pg/bus_spi.c ****     IO_TAG(MAX7456_SPI_CS_PIN),
+ 136:../cleanflight/src/main/pg/bus_spi.c **** #endif
+ 137:../cleanflight/src/main/pg/bus_spi.c ****     IO_TAG(NONE)
+ 138:../cleanflight/src/main/pg/bus_spi.c **** };
+ 139:../cleanflight/src/main/pg/bus_spi.c **** 
+ 140:../cleanflight/src/main/pg/bus_spi.c **** void pgResetFn_spiPreinitIPUConfig(spiCs_t *config)
+ 141:../cleanflight/src/main/pg/bus_spi.c **** {
+ 190              	 .loc 1 141 0
+ 191              	 .cfi_startproc
+ 192              	 
+ 193              	 
+ 194              	 
+ 195 0000 80B4     	 push {r7}
+ 196              	.LCFI6:
+ 197              	 .cfi_def_cfa_offset 4
+ 198              	 .cfi_offset 7,-4
+ 199 0002 87B0     	 sub sp,sp,#28
+ 200              	.LCFI7:
+ 201              	 .cfi_def_cfa_offset 32
+ 202 0004 00AF     	 add r7,sp,#0
+ 203              	.LCFI8:
+ 204              	 .cfi_def_cfa_register 7
+ 205 0006 7860     	 str r0,[r7,#4]
+ 142:../cleanflight/src/main/pg/bus_spi.c ****     int puPins = 0;
+ 206              	 .loc 1 142 0
+ 207 0008 0023     	 movs r3,#0
+ 208 000a 7B61     	 str r3,[r7,#20]
+ 209              	.LBB4:
+ 143:../cleanflight/src/main/pg/bus_spi.c **** 
+ 144:../cleanflight/src/main/pg/bus_spi.c ****     for (int i = 0 ; i < SPI_PREINIT_IPU_COUNT ; i++) {
+ 210              	 .loc 1 144 0
+ 211 000c 0023     	 movs r3,#0
+ 212 000e 3B61     	 str r3,[r7,#16]
+ 213 0010 22E0     	 b .L7
+ 214              	.L12:
+ 215              	.LBB5:
+ 145:../cleanflight/src/main/pg/bus_spi.c ****         for (int j = 0 ; j < i ; j++) {
+ 216              	 .loc 1 145 0
+ 217 0012 0023     	 movs r3,#0
+ 218 0014 FB60     	 str r3,[r7,#12]
+ 219 0016 0DE0     	 b .L8
+ 220              	.L11:
+ 146:../cleanflight/src/main/pg/bus_spi.c ****             if (config[j].csnTag == preinitIPUList[i]) {
+ 221              	 .loc 1 146 0
+ 222 0018 FB68     	 ldr r3,[r7,#12]
+ 223 001a 7A68     	 ldr r2,[r7,#4]
+ 224 001c 1344     	 add r3,r3,r2
+ 225 001e 1A78     	 ldrb r2,[r3]
+ 226 0020 1149     	 ldr r1,.L13
+ 227 0022 3B69     	 ldr r3,[r7,#16]
+ 228 0024 0B44     	 add r3,r3,r1
+ 229 0026 1B78     	 ldrb r3,[r3]
+ 230 0028 9A42     	 cmp r2,r3
+ 231 002a 00D1     	 bne .L9
+ 147:../cleanflight/src/main/pg/bus_spi.c ****                 goto next;
+ 232              	 .loc 1 147 0
+ 233 002c 11E0     	 b .L10
+ 234              	.L9:
+ 145:../cleanflight/src/main/pg/bus_spi.c ****         for (int j = 0 ; j < i ; j++) {
+ 235              	 .loc 1 145 0 discriminator 2
+ 236 002e FB68     	 ldr r3,[r7,#12]
+ 237 0030 0133     	 adds r3,r3,#1
+ 238 0032 FB60     	 str r3,[r7,#12]
+ 239              	.L8:
+ 145:../cleanflight/src/main/pg/bus_spi.c ****         for (int j = 0 ; j < i ; j++) {
+ 240              	 .loc 1 145 0 is_stmt 0 discriminator 1
+ 241 0034 FA68     	 ldr r2,[r7,#12]
+ 242 0036 3B69     	 ldr r3,[r7,#16]
+ 243 0038 9A42     	 cmp r2,r3
+ 244 003a EDDB     	 blt .L11
+ 245              	.LBE5:
+ 148:../cleanflight/src/main/pg/bus_spi.c ****             }
+ 149:../cleanflight/src/main/pg/bus_spi.c ****         }
+ 150:../cleanflight/src/main/pg/bus_spi.c ****         config[puPins++].csnTag = preinitIPUList[i];
+ 246              	 .loc 1 150 0 is_stmt 1
+ 247 003c 7B69     	 ldr r3,[r7,#20]
+ 248 003e 5A1C     	 adds r2,r3,#1
+ 249 0040 7A61     	 str r2,[r7,#20]
+ 250 0042 1A46     	 mov r2,r3
+ 251 0044 7B68     	 ldr r3,[r7,#4]
+ 252 0046 1344     	 add r3,r3,r2
+ 253 0048 0749     	 ldr r1,.L13
+ 254 004a 3A69     	 ldr r2,[r7,#16]
+ 255 004c 0A44     	 add r2,r2,r1
+ 256 004e 1278     	 ldrb r2,[r2]
+ 257 0050 1A70     	 strb r2,[r3]
+ 258              	.L10:
+ 144:../cleanflight/src/main/pg/bus_spi.c ****         for (int j = 0 ; j < i ; j++) {
+ 259              	 .loc 1 144 0 discriminator 2
+ 260 0052 3B69     	 ldr r3,[r7,#16]
+ 261 0054 0133     	 adds r3,r3,#1
+ 262 0056 3B61     	 str r3,[r7,#16]
+ 263              	.L7:
+ 144:../cleanflight/src/main/pg/bus_spi.c ****         for (int j = 0 ; j < i ; j++) {
+ 264              	 .loc 1 144 0 is_stmt 0 discriminator 1
+ 265 0058 3B69     	 ldr r3,[r7,#16]
+ 266 005a 0A2B     	 cmp r3,#10
+ 267 005c D9DD     	 ble .L12
+ 268              	.LBE4:
+ 151:../cleanflight/src/main/pg/bus_spi.c ****     next:;
+ 152:../cleanflight/src/main/pg/bus_spi.c ****     }
+ 153:../cleanflight/src/main/pg/bus_spi.c **** }
+ 269              	 .loc 1 153 0 is_stmt 1
+ 270 005e 1C37     	 adds r7,r7,#28
+ 271              	.LCFI9:
+ 272              	 .cfi_def_cfa_offset 4
+ 273 0060 BD46     	 mov sp,r7
+ 274              	.LCFI10:
+ 275              	 .cfi_def_cfa_register 13
+ 276              	 
+ 277 0062 5DF8047B 	 ldr r7,[sp],#4
+ 278              	.LCFI11:
+ 279              	 .cfi_restore 7
+ 280              	 .cfi_def_cfa_offset 0
+ 281 0066 7047     	 bx lr
+ 282              	.L14:
+ 283              	 .align 2
+ 284              	.L13:
+ 285 0068 00000000 	 .word preinitIPUList
+ 286              	 .cfi_endproc
+ 287              	.LFE534:
+ 289              	 .text
+ 290              	.Letext0:
+ 291              	 .file 2 "d:\\xmc\\dave-ide-4.4.2-64bit\\eclipse\\arm-gcc-49\\arm-none-eabi\\include\\machine\\_default_types.h"
+ 292              	 .file 3 "d:\\xmc\\dave-ide-4.4.2-64bit\\eclipse\\arm-gcc-49\\arm-none-eabi\\include\\stdint.h"
+ 293              	 .file 4 "d:\\xmc\\dave-ide-4.4.2-64bit\\eclipse\\arm-gcc-49\\lib\\gcc\\arm-none-eabi\\4.9.3\\include\\stddef.h"
+ 294              	 .file 5 "D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/lib/main/XMC4000/XMCLib/inc/xmc_usic.h"
+ 295              	 .file 6 "D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/drivers/io_types.h"
+ 296              	 .file 7 "D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/pg/pg.h"
+ 297              	 .file 8 "D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/drivers/resource.h"
+ 298              	 .file 9 "D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/drivers/bus_spi.h"
+ 299              	 .file 10 "../cleanflight/src/main/pg/bus_spi.h"
+ 300              	 .file 11 "D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/lib/main/CMSIS/Core/Include/core_cm4.h"
+ 301              	 .file 12 "D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/lib/main/XMC4000/system_XMC4700.h"
+DEFINED SYMBOLS
+                            *ABS*:00000000 bus_spi.c
+    {standard input}:24     .rodata.spiDefaultConfig:00000000 spiDefaultConfig
+    {standard input}:21     .rodata.spiDefaultConfig:00000000 $d
+                            *COM*:00000018 spiPinConfig_SystemArray
+                            *COM*:00000018 spiPinConfig_CopyArray
+    {standard input}:40     .pg_registry:00000000 spiPinConfig_Registry
+    {standard input}:37     .pg_registry:00000000 $d
+    {standard input}:53     .text.pgResetFn_spiPinConfig:00000000 pgResetFn_spiPinConfig
+    {standard input}:48     .text.pgResetFn_spiPinConfig:00000000 $t
+    {standard input}:142    .text.pgResetFn_spiPinConfig:00000064 $d
+                            *COM*:0000000b spiPreinitIPUConfig_SystemArray
+                            *COM*:0000000b spiPreinitIPUConfig_CopyArray
+    {standard input}:153    .pg_registry:00000014 spiPreinitIPUConfig_Registry
+    {standard input}:188    .text.pgResetFn_spiPreinitIPUConfig:00000000 pgResetFn_spiPreinitIPUConfig
+                            *COM*:00000002 spiPreinitOPUConfig_SystemArray
+                            *COM*:00000002 spiPreinitOPUConfig_CopyArray
+    {standard input}:166    .pg_registry:00000028 spiPreinitOPUConfig_Registry
+    {standard input}:178    .data.preinitIPUList:00000000 preinitIPUList
+    {standard input}:175    .data.preinitIPUList:00000000 $d
+    {standard input}:183    .text.pgResetFn_spiPreinitIPUConfig:00000000 $t
+    {standard input}:285    .text.pgResetFn_spiPreinitIPUConfig:00000068 $d
+                     .debug_frame:00000010 $d
+
+NO UNDEFINED SYMBOLS

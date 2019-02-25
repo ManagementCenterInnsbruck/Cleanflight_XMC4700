@@ -1,0 +1,2573 @@
+   1              	 .syntax unified
+   2              	 .cpu cortex-m4
+   3              	 .eabi_attribute 27,3
+   4              	 .fpu fpv4-sp-d16
+   5              	 .eabi_attribute 20,1
+   6              	 .eabi_attribute 21,1
+   7              	 .eabi_attribute 23,3
+   8              	 .eabi_attribute 24,1
+   9              	 .eabi_attribute 25,1
+  10              	 .eabi_attribute 26,1
+  11              	 .eabi_attribute 30,6
+  12              	 .eabi_attribute 34,1
+  13              	 .eabi_attribute 18,4
+  14              	 .thumb
+  15              	 .file "flashfs.c"
+  16              	 .text
+  17              	.Ltext0:
+  18              	 .cfi_sections .debug_frame
+  19              	 .section .bss.flashWriteBuffer,"aw",%nobits
+  20              	 .align 2
+  23              	flashWriteBuffer:
+  24 0000 00000000 	 .space 128
+  24      00000000 
+  24      00000000 
+  24      00000000 
+  24      00000000 
+  25              	 .section .bss.bufferHead,"aw",%nobits
+  28              	bufferHead:
+  29 0000 00       	 .space 1
+  30              	 .section .bss.bufferTail,"aw",%nobits
+  33              	bufferTail:
+  34 0000 00       	 .space 1
+  35              	 .section .bss.tailAddress,"aw",%nobits
+  36              	 .align 2
+  39              	tailAddress:
+  40 0000 00000000 	 .space 4
+  41              	 .section .text.flashfsClearBuffer,"ax",%progbits
+  42              	 .align 2
+  43              	 .thumb
+  44              	 .thumb_func
+  46              	flashfsClearBuffer:
+  47              	.LFB526:
+  48              	 .file 1 "../cleanflight/src/main/io/flashfs.c"
+   1:../cleanflight/src/main/io/flashfs.c **** /*
+   2:../cleanflight/src/main/io/flashfs.c ****  * This file is part of Cleanflight and Betaflight.
+   3:../cleanflight/src/main/io/flashfs.c ****  *
+   4:../cleanflight/src/main/io/flashfs.c ****  * Cleanflight and Betaflight are free software. You can redistribute
+   5:../cleanflight/src/main/io/flashfs.c ****  * this software and/or modify this software under the terms of the
+   6:../cleanflight/src/main/io/flashfs.c ****  * GNU General Public License as published by the Free Software
+   7:../cleanflight/src/main/io/flashfs.c ****  * Foundation, either version 3 of the License, or (at your option)
+   8:../cleanflight/src/main/io/flashfs.c ****  * any later version.
+   9:../cleanflight/src/main/io/flashfs.c ****  *
+  10:../cleanflight/src/main/io/flashfs.c ****  * Cleanflight and Betaflight are distributed in the hope that they
+  11:../cleanflight/src/main/io/flashfs.c ****  * will be useful, but WITHOUT ANY WARRANTY; without even the implied
+  12:../cleanflight/src/main/io/flashfs.c ****  * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+  13:../cleanflight/src/main/io/flashfs.c ****  * See the GNU General Public License for more details.
+  14:../cleanflight/src/main/io/flashfs.c ****  *
+  15:../cleanflight/src/main/io/flashfs.c ****  * You should have received a copy of the GNU General Public License
+  16:../cleanflight/src/main/io/flashfs.c ****  * along with this software.
+  17:../cleanflight/src/main/io/flashfs.c ****  *
+  18:../cleanflight/src/main/io/flashfs.c ****  * If not, see <http://www.gnu.org/licenses/>.
+  19:../cleanflight/src/main/io/flashfs.c ****  */
+  20:../cleanflight/src/main/io/flashfs.c **** 
+  21:../cleanflight/src/main/io/flashfs.c **** /**
+  22:../cleanflight/src/main/io/flashfs.c ****  * This provides a stream interface to a flash chip if one is present.
+  23:../cleanflight/src/main/io/flashfs.c ****  *
+  24:../cleanflight/src/main/io/flashfs.c ****  * On statup, call flashfsInit() after initialising the flash chip in order to init the filesystem.
+  25:../cleanflight/src/main/io/flashfs.c ****  * result in the file pointer being pointed at the first free block found, or at the end of the dev
+  26:../cleanflight/src/main/io/flashfs.c ****  * flash chip is full.
+  27:../cleanflight/src/main/io/flashfs.c ****  *
+  28:../cleanflight/src/main/io/flashfs.c ****  * Note that bits can only be set to 0 when writing, not back to 1 from 0. You must erase sectors i
+  29:../cleanflight/src/main/io/flashfs.c ****  * to bring bits back to 1 again.
+  30:../cleanflight/src/main/io/flashfs.c ****  *
+  31:../cleanflight/src/main/io/flashfs.c ****  * In future, we can add support for multiple different flash chips by adding a flash device driver
+  32:../cleanflight/src/main/io/flashfs.c ****  * and make calls through that, at the moment flashfs just calls m25p16_* routines explicitly.
+  33:../cleanflight/src/main/io/flashfs.c ****  */
+  34:../cleanflight/src/main/io/flashfs.c **** 
+  35:../cleanflight/src/main/io/flashfs.c **** #include <stdint.h>
+  36:../cleanflight/src/main/io/flashfs.c **** #include <stdbool.h>
+  37:../cleanflight/src/main/io/flashfs.c **** #include <string.h>
+  38:../cleanflight/src/main/io/flashfs.c **** 
+  39:../cleanflight/src/main/io/flashfs.c **** #include "drivers/flash.h"
+  40:../cleanflight/src/main/io/flashfs.c **** 
+  41:../cleanflight/src/main/io/flashfs.c **** #include "io/flashfs.h"
+  42:../cleanflight/src/main/io/flashfs.c **** 
+  43:../cleanflight/src/main/io/flashfs.c **** static uint8_t flashWriteBuffer[FLASHFS_WRITE_BUFFER_SIZE];
+  44:../cleanflight/src/main/io/flashfs.c **** 
+  45:../cleanflight/src/main/io/flashfs.c **** /* The position of our head and tail in the circular flash write buffer.
+  46:../cleanflight/src/main/io/flashfs.c ****  *
+  47:../cleanflight/src/main/io/flashfs.c ****  * The head is the index that a byte would be inserted into on writing, while the tail is the index
+  48:../cleanflight/src/main/io/flashfs.c ****  * oldest byte that has yet to be written to flash.
+  49:../cleanflight/src/main/io/flashfs.c ****  *
+  50:../cleanflight/src/main/io/flashfs.c ****  * When the circular buffer is empty, head == tail
+  51:../cleanflight/src/main/io/flashfs.c ****  */
+  52:../cleanflight/src/main/io/flashfs.c **** static uint8_t bufferHead = 0, bufferTail = 0;
+  53:../cleanflight/src/main/io/flashfs.c **** 
+  54:../cleanflight/src/main/io/flashfs.c **** // The position of the buffer's tail in the overall flash address space:
+  55:../cleanflight/src/main/io/flashfs.c **** static uint32_t tailAddress = 0;
+  56:../cleanflight/src/main/io/flashfs.c **** 
+  57:../cleanflight/src/main/io/flashfs.c **** static void flashfsClearBuffer(void)
+  58:../cleanflight/src/main/io/flashfs.c **** {
+  49              	 .loc 1 58 0
+  50              	 .cfi_startproc
+  51              	 
+  52              	 
+  53              	 
+  54 0000 80B4     	 push {r7}
+  55              	.LCFI0:
+  56              	 .cfi_def_cfa_offset 4
+  57              	 .cfi_offset 7,-4
+  58 0002 00AF     	 add r7,sp,#0
+  59              	.LCFI1:
+  60              	 .cfi_def_cfa_register 7
+  59:../cleanflight/src/main/io/flashfs.c ****     bufferTail = bufferHead = 0;
+  61              	 .loc 1 59 0
+  62 0004 054B     	 ldr r3,.L2
+  63 0006 0022     	 movs r2,#0
+  64 0008 1A70     	 strb r2,[r3]
+  65 000a 044B     	 ldr r3,.L2
+  66 000c 1A78     	 ldrb r2,[r3]
+  67 000e 044B     	 ldr r3,.L2+4
+  68 0010 1A70     	 strb r2,[r3]
+  60:../cleanflight/src/main/io/flashfs.c **** }
+  69              	 .loc 1 60 0
+  70 0012 BD46     	 mov sp,r7
+  71              	.LCFI2:
+  72              	 .cfi_def_cfa_register 13
+  73              	 
+  74 0014 5DF8047B 	 ldr r7,[sp],#4
+  75              	.LCFI3:
+  76              	 .cfi_restore 7
+  77              	 .cfi_def_cfa_offset 0
+  78 0018 7047     	 bx lr
+  79              	.L3:
+  80 001a 00BF     	 .align 2
+  81              	.L2:
+  82 001c 00000000 	 .word bufferHead
+  83 0020 00000000 	 .word bufferTail
+  84              	 .cfi_endproc
+  85              	.LFE526:
+  87              	 .section .text.flashfsBufferIsEmpty,"ax",%progbits
+  88              	 .align 2
+  89              	 .thumb
+  90              	 .thumb_func
+  92              	flashfsBufferIsEmpty:
+  93              	.LFB527:
+  61:../cleanflight/src/main/io/flashfs.c **** 
+  62:../cleanflight/src/main/io/flashfs.c **** static bool flashfsBufferIsEmpty(void)
+  63:../cleanflight/src/main/io/flashfs.c **** {
+  94              	 .loc 1 63 0
+  95              	 .cfi_startproc
+  96              	 
+  97              	 
+  98              	 
+  99 0000 80B4     	 push {r7}
+ 100              	.LCFI4:
+ 101              	 .cfi_def_cfa_offset 4
+ 102              	 .cfi_offset 7,-4
+ 103 0002 00AF     	 add r7,sp,#0
+ 104              	.LCFI5:
+ 105              	 .cfi_def_cfa_register 7
+  64:../cleanflight/src/main/io/flashfs.c ****     return bufferTail == bufferHead;
+ 106              	 .loc 1 64 0
+ 107 0004 064B     	 ldr r3,.L6
+ 108 0006 1A78     	 ldrb r2,[r3]
+ 109 0008 064B     	 ldr r3,.L6+4
+ 110 000a 1B78     	 ldrb r3,[r3]
+ 111 000c 9A42     	 cmp r2,r3
+ 112 000e 0CBF     	 ite eq
+ 113 0010 0123     	 moveq r3,#1
+ 114 0012 0023     	 movne r3,#0
+ 115 0014 DBB2     	 uxtb r3,r3
+  65:../cleanflight/src/main/io/flashfs.c **** }
+ 116              	 .loc 1 65 0
+ 117 0016 1846     	 mov r0,r3
+ 118 0018 BD46     	 mov sp,r7
+ 119              	.LCFI6:
+ 120              	 .cfi_def_cfa_register 13
+ 121              	 
+ 122 001a 5DF8047B 	 ldr r7,[sp],#4
+ 123              	.LCFI7:
+ 124              	 .cfi_restore 7
+ 125              	 .cfi_def_cfa_offset 0
+ 126 001e 7047     	 bx lr
+ 127              	.L7:
+ 128              	 .align 2
+ 129              	.L6:
+ 130 0020 00000000 	 .word bufferTail
+ 131 0024 00000000 	 .word bufferHead
+ 132              	 .cfi_endproc
+ 133              	.LFE527:
+ 135              	 .section .text.flashfsSetTailAddress,"ax",%progbits
+ 136              	 .align 2
+ 137              	 .thumb
+ 138              	 .thumb_func
+ 140              	flashfsSetTailAddress:
+ 141              	.LFB528:
+  66:../cleanflight/src/main/io/flashfs.c **** 
+  67:../cleanflight/src/main/io/flashfs.c **** static void flashfsSetTailAddress(uint32_t address)
+  68:../cleanflight/src/main/io/flashfs.c **** {
+ 142              	 .loc 1 68 0
+ 143              	 .cfi_startproc
+ 144              	 
+ 145              	 
+ 146              	 
+ 147 0000 80B4     	 push {r7}
+ 148              	.LCFI8:
+ 149              	 .cfi_def_cfa_offset 4
+ 150              	 .cfi_offset 7,-4
+ 151 0002 83B0     	 sub sp,sp,#12
+ 152              	.LCFI9:
+ 153              	 .cfi_def_cfa_offset 16
+ 154 0004 00AF     	 add r7,sp,#0
+ 155              	.LCFI10:
+ 156              	 .cfi_def_cfa_register 7
+ 157 0006 7860     	 str r0,[r7,#4]
+  69:../cleanflight/src/main/io/flashfs.c ****     tailAddress = address;
+ 158              	 .loc 1 69 0
+ 159 0008 034A     	 ldr r2,.L9
+ 160 000a 7B68     	 ldr r3,[r7,#4]
+ 161 000c 1360     	 str r3,[r2]
+  70:../cleanflight/src/main/io/flashfs.c **** }
+ 162              	 .loc 1 70 0
+ 163 000e 0C37     	 adds r7,r7,#12
+ 164              	.LCFI11:
+ 165              	 .cfi_def_cfa_offset 4
+ 166 0010 BD46     	 mov sp,r7
+ 167              	.LCFI12:
+ 168              	 .cfi_def_cfa_register 13
+ 169              	 
+ 170 0012 5DF8047B 	 ldr r7,[sp],#4
+ 171              	.LCFI13:
+ 172              	 .cfi_restore 7
+ 173              	 .cfi_def_cfa_offset 0
+ 174 0016 7047     	 bx lr
+ 175              	.L10:
+ 176              	 .align 2
+ 177              	.L9:
+ 178 0018 00000000 	 .word tailAddress
+ 179              	 .cfi_endproc
+ 180              	.LFE528:
+ 182              	 .section .text.flashfsEraseCompletely,"ax",%progbits
+ 183              	 .align 2
+ 184              	 .global flashfsEraseCompletely
+ 185              	 .thumb
+ 186              	 .thumb_func
+ 188              	flashfsEraseCompletely:
+ 189              	.LFB529:
+  71:../cleanflight/src/main/io/flashfs.c **** 
+  72:../cleanflight/src/main/io/flashfs.c **** void flashfsEraseCompletely(void)
+  73:../cleanflight/src/main/io/flashfs.c **** {
+ 190              	 .loc 1 73 0
+ 191              	 .cfi_startproc
+ 192              	 
+ 193              	 
+ 194 0000 80B5     	 push {r7,lr}
+ 195              	.LCFI14:
+ 196              	 .cfi_def_cfa_offset 8
+ 197              	 .cfi_offset 7,-8
+ 198              	 .cfi_offset 14,-4
+ 199 0002 00AF     	 add r7,sp,#0
+ 200              	.LCFI15:
+ 201              	 .cfi_def_cfa_register 7
+  74:../cleanflight/src/main/io/flashfs.c ****     flashEraseCompletely();
+ 202              	 .loc 1 74 0
+ 203 0004 FFF7FEFF 	 bl flashEraseCompletely
+  75:../cleanflight/src/main/io/flashfs.c **** 
+  76:../cleanflight/src/main/io/flashfs.c ****     flashfsClearBuffer();
+ 204              	 .loc 1 76 0
+ 205 0008 FFF7FEFF 	 bl flashfsClearBuffer
+  77:../cleanflight/src/main/io/flashfs.c **** 
+  78:../cleanflight/src/main/io/flashfs.c ****     flashfsSetTailAddress(0);
+ 206              	 .loc 1 78 0
+ 207 000c 0020     	 movs r0,#0
+ 208 000e FFF7FEFF 	 bl flashfsSetTailAddress
+  79:../cleanflight/src/main/io/flashfs.c **** }
+ 209              	 .loc 1 79 0
+ 210 0012 80BD     	 pop {r7,pc}
+ 211              	 .cfi_endproc
+ 212              	.LFE529:
+ 214              	 .section .text.flashfsEraseRange,"ax",%progbits
+ 215              	 .align 2
+ 216              	 .global flashfsEraseRange
+ 217              	 .thumb
+ 218              	 .thumb_func
+ 220              	flashfsEraseRange:
+ 221              	.LFB530:
+  80:../cleanflight/src/main/io/flashfs.c **** 
+  81:../cleanflight/src/main/io/flashfs.c **** /**
+  82:../cleanflight/src/main/io/flashfs.c ****  * Start and end must lie on sector boundaries, or they will be rounded out to sector boundaries su
+  83:../cleanflight/src/main/io/flashfs.c ****  * all the bytes in the range [start...end) are erased.
+  84:../cleanflight/src/main/io/flashfs.c ****  */
+  85:../cleanflight/src/main/io/flashfs.c **** void flashfsEraseRange(uint32_t start, uint32_t end)
+  86:../cleanflight/src/main/io/flashfs.c **** {
+ 222              	 .loc 1 86 0
+ 223              	 .cfi_startproc
+ 224              	 
+ 225              	 
+ 226 0000 80B5     	 push {r7,lr}
+ 227              	.LCFI16:
+ 228              	 .cfi_def_cfa_offset 8
+ 229              	 .cfi_offset 7,-8
+ 230              	 .cfi_offset 14,-4
+ 231 0002 88B0     	 sub sp,sp,#32
+ 232              	.LCFI17:
+ 233              	 .cfi_def_cfa_offset 40
+ 234 0004 00AF     	 add r7,sp,#0
+ 235              	.LCFI18:
+ 236              	 .cfi_def_cfa_register 7
+ 237 0006 7860     	 str r0,[r7,#4]
+ 238 0008 3960     	 str r1,[r7]
+  87:../cleanflight/src/main/io/flashfs.c ****     const flashGeometry_t *geometry = flashGetGeometry();
+ 239              	 .loc 1 87 0
+ 240 000a FFF7FEFF 	 bl flashGetGeometry
+ 241 000e 7861     	 str r0,[r7,#20]
+  88:../cleanflight/src/main/io/flashfs.c **** 
+  89:../cleanflight/src/main/io/flashfs.c ****     if (geometry->sectorSize <= 0)
+ 242              	 .loc 1 89 0
+ 243 0010 7B69     	 ldr r3,[r7,#20]
+ 244 0012 5B68     	 ldr r3,[r3,#4]
+ 245 0014 002B     	 cmp r3,#0
+ 246 0016 00D1     	 bne .L13
+  90:../cleanflight/src/main/io/flashfs.c ****         return;
+ 247              	 .loc 1 90 0
+ 248 0018 2CE0     	 b .L12
+ 249              	.L13:
+  91:../cleanflight/src/main/io/flashfs.c **** 
+  92:../cleanflight/src/main/io/flashfs.c ****     // Round the start down to a sector boundary
+  93:../cleanflight/src/main/io/flashfs.c ****     int startSector = start / geometry->sectorSize;
+ 250              	 .loc 1 93 0
+ 251 001a 7B69     	 ldr r3,[r7,#20]
+ 252 001c 5B68     	 ldr r3,[r3,#4]
+ 253 001e 7A68     	 ldr r2,[r7,#4]
+ 254 0020 B2FBF3F3 	 udiv r3,r2,r3
+ 255 0024 3B61     	 str r3,[r7,#16]
+  94:../cleanflight/src/main/io/flashfs.c **** 
+  95:../cleanflight/src/main/io/flashfs.c ****     // And the end upward
+  96:../cleanflight/src/main/io/flashfs.c ****     int endSector = end / geometry->sectorSize;
+ 256              	 .loc 1 96 0
+ 257 0026 7B69     	 ldr r3,[r7,#20]
+ 258 0028 5B68     	 ldr r3,[r3,#4]
+ 259 002a 3A68     	 ldr r2,[r7]
+ 260 002c B2FBF3F3 	 udiv r3,r2,r3
+ 261 0030 FB61     	 str r3,[r7,#28]
+  97:../cleanflight/src/main/io/flashfs.c ****     int endRemainder = end % geometry->sectorSize;
+ 262              	 .loc 1 97 0
+ 263 0032 7B69     	 ldr r3,[r7,#20]
+ 264 0034 5A68     	 ldr r2,[r3,#4]
+ 265 0036 3B68     	 ldr r3,[r7]
+ 266 0038 B3FBF2F1 	 udiv r1,r3,r2
+ 267 003c 02FB01F2 	 mul r2,r2,r1
+ 268 0040 9B1A     	 subs r3,r3,r2
+ 269 0042 FB60     	 str r3,[r7,#12]
+  98:../cleanflight/src/main/io/flashfs.c **** 
+  99:../cleanflight/src/main/io/flashfs.c ****     if (endRemainder > 0) {
+ 270              	 .loc 1 99 0
+ 271 0044 FB68     	 ldr r3,[r7,#12]
+ 272 0046 002B     	 cmp r3,#0
+ 273 0048 02DD     	 ble .L15
+ 100:../cleanflight/src/main/io/flashfs.c ****         endSector++;
+ 274              	 .loc 1 100 0
+ 275 004a FB69     	 ldr r3,[r7,#28]
+ 276 004c 0133     	 adds r3,r3,#1
+ 277 004e FB61     	 str r3,[r7,#28]
+ 278              	.L15:
+ 279              	.LBB2:
+ 101:../cleanflight/src/main/io/flashfs.c ****     }
+ 102:../cleanflight/src/main/io/flashfs.c **** 
+ 103:../cleanflight/src/main/io/flashfs.c ****     for (int i = startSector; i < endSector; i++) {
+ 280              	 .loc 1 103 0
+ 281 0050 3B69     	 ldr r3,[r7,#16]
+ 282 0052 BB61     	 str r3,[r7,#24]
+ 283 0054 0AE0     	 b .L16
+ 284              	.L17:
+ 104:../cleanflight/src/main/io/flashfs.c ****         flashEraseSector(i * geometry->sectorSize);
+ 285              	 .loc 1 104 0 discriminator 3
+ 286 0056 7B69     	 ldr r3,[r7,#20]
+ 287 0058 5B68     	 ldr r3,[r3,#4]
+ 288 005a BA69     	 ldr r2,[r7,#24]
+ 289 005c 02FB03F3 	 mul r3,r2,r3
+ 290 0060 1846     	 mov r0,r3
+ 291 0062 FFF7FEFF 	 bl flashEraseSector
+ 103:../cleanflight/src/main/io/flashfs.c ****         flashEraseSector(i * geometry->sectorSize);
+ 292              	 .loc 1 103 0 discriminator 3
+ 293 0066 BB69     	 ldr r3,[r7,#24]
+ 294 0068 0133     	 adds r3,r3,#1
+ 295 006a BB61     	 str r3,[r7,#24]
+ 296              	.L16:
+ 103:../cleanflight/src/main/io/flashfs.c ****         flashEraseSector(i * geometry->sectorSize);
+ 297              	 .loc 1 103 0 is_stmt 0 discriminator 1
+ 298 006c BA69     	 ldr r2,[r7,#24]
+ 299 006e FB69     	 ldr r3,[r7,#28]
+ 300 0070 9A42     	 cmp r2,r3
+ 301 0072 F0DB     	 blt .L17
+ 302              	.L12:
+ 303              	.LBE2:
+ 105:../cleanflight/src/main/io/flashfs.c ****     }
+ 106:../cleanflight/src/main/io/flashfs.c **** }
+ 304              	 .loc 1 106 0 is_stmt 1
+ 305 0074 2037     	 adds r7,r7,#32
+ 306              	.LCFI19:
+ 307              	 .cfi_def_cfa_offset 8
+ 308 0076 BD46     	 mov sp,r7
+ 309              	.LCFI20:
+ 310              	 .cfi_def_cfa_register 13
+ 311              	 
+ 312 0078 80BD     	 pop {r7,pc}
+ 313              	 .cfi_endproc
+ 314              	.LFE530:
+ 316 007a 00BF     	 .section .text.flashfsIsReady,"ax",%progbits
+ 317              	 .align 2
+ 318              	 .global flashfsIsReady
+ 319              	 .thumb
+ 320              	 .thumb_func
+ 322              	flashfsIsReady:
+ 323              	.LFB531:
+ 107:../cleanflight/src/main/io/flashfs.c **** 
+ 108:../cleanflight/src/main/io/flashfs.c **** /**
+ 109:../cleanflight/src/main/io/flashfs.c ****  * Return true if the flash is not currently occupied with an operation.
+ 110:../cleanflight/src/main/io/flashfs.c ****  */
+ 111:../cleanflight/src/main/io/flashfs.c **** bool flashfsIsReady(void)
+ 112:../cleanflight/src/main/io/flashfs.c **** {
+ 324              	 .loc 1 112 0
+ 325              	 .cfi_startproc
+ 326              	 
+ 327              	 
+ 328 0000 80B5     	 push {r7,lr}
+ 329              	.LCFI21:
+ 330              	 .cfi_def_cfa_offset 8
+ 331              	 .cfi_offset 7,-8
+ 332              	 .cfi_offset 14,-4
+ 333 0002 00AF     	 add r7,sp,#0
+ 334              	.LCFI22:
+ 335              	 .cfi_def_cfa_register 7
+ 113:../cleanflight/src/main/io/flashfs.c ****     return flashIsReady();
+ 336              	 .loc 1 113 0
+ 337 0004 FFF7FEFF 	 bl flashIsReady
+ 338 0008 0346     	 mov r3,r0
+ 114:../cleanflight/src/main/io/flashfs.c **** }
+ 339              	 .loc 1 114 0
+ 340 000a 1846     	 mov r0,r3
+ 341 000c 80BD     	 pop {r7,pc}
+ 342              	 .cfi_endproc
+ 343              	.LFE531:
+ 345 000e 00BF     	 .section .text.flashfsIsSupported,"ax",%progbits
+ 346              	 .align 2
+ 347              	 .global flashfsIsSupported
+ 348              	 .thumb
+ 349              	 .thumb_func
+ 351              	flashfsIsSupported:
+ 352              	.LFB532:
+ 115:../cleanflight/src/main/io/flashfs.c **** 
+ 116:../cleanflight/src/main/io/flashfs.c **** bool flashfsIsSupported(void)
+ 117:../cleanflight/src/main/io/flashfs.c **** {
+ 353              	 .loc 1 117 0
+ 354              	 .cfi_startproc
+ 355              	 
+ 356              	 
+ 357 0000 80B5     	 push {r7,lr}
+ 358              	.LCFI23:
+ 359              	 .cfi_def_cfa_offset 8
+ 360              	 .cfi_offset 7,-8
+ 361              	 .cfi_offset 14,-4
+ 362 0002 00AF     	 add r7,sp,#0
+ 363              	.LCFI24:
+ 364              	 .cfi_def_cfa_register 7
+ 118:../cleanflight/src/main/io/flashfs.c ****     return flashfsGetSize() > 0;
+ 365              	 .loc 1 118 0
+ 366 0004 FFF7FEFF 	 bl flashfsGetSize
+ 367 0008 0346     	 mov r3,r0
+ 368 000a 002B     	 cmp r3,#0
+ 369 000c 14BF     	 ite ne
+ 370 000e 0123     	 movne r3,#1
+ 371 0010 0023     	 moveq r3,#0
+ 372 0012 DBB2     	 uxtb r3,r3
+ 119:../cleanflight/src/main/io/flashfs.c **** }
+ 373              	 .loc 1 119 0
+ 374 0014 1846     	 mov r0,r3
+ 375 0016 80BD     	 pop {r7,pc}
+ 376              	 .cfi_endproc
+ 377              	.LFE532:
+ 379              	 .section .text.flashfsGetSize,"ax",%progbits
+ 380              	 .align 2
+ 381              	 .global flashfsGetSize
+ 382              	 .thumb
+ 383              	 .thumb_func
+ 385              	flashfsGetSize:
+ 386              	.LFB533:
+ 120:../cleanflight/src/main/io/flashfs.c **** 
+ 121:../cleanflight/src/main/io/flashfs.c **** uint32_t flashfsGetSize(void)
+ 122:../cleanflight/src/main/io/flashfs.c **** {
+ 387              	 .loc 1 122 0
+ 388              	 .cfi_startproc
+ 389              	 
+ 390              	 
+ 391 0000 80B5     	 push {r7,lr}
+ 392              	.LCFI25:
+ 393              	 .cfi_def_cfa_offset 8
+ 394              	 .cfi_offset 7,-8
+ 395              	 .cfi_offset 14,-4
+ 396 0002 00AF     	 add r7,sp,#0
+ 397              	.LCFI26:
+ 398              	 .cfi_def_cfa_register 7
+ 123:../cleanflight/src/main/io/flashfs.c ****     return flashGetGeometry()->totalSize;
+ 399              	 .loc 1 123 0
+ 400 0004 FFF7FEFF 	 bl flashGetGeometry
+ 401 0008 0346     	 mov r3,r0
+ 402 000a 9B68     	 ldr r3,[r3,#8]
+ 124:../cleanflight/src/main/io/flashfs.c **** }
+ 403              	 .loc 1 124 0
+ 404 000c 1846     	 mov r0,r3
+ 405 000e 80BD     	 pop {r7,pc}
+ 406              	 .cfi_endproc
+ 407              	.LFE533:
+ 409              	 .section .text.flashfsTransmitBufferUsed,"ax",%progbits
+ 410              	 .align 2
+ 411              	 .thumb
+ 412              	 .thumb_func
+ 414              	flashfsTransmitBufferUsed:
+ 415              	.LFB534:
+ 125:../cleanflight/src/main/io/flashfs.c **** 
+ 126:../cleanflight/src/main/io/flashfs.c **** static uint32_t flashfsTransmitBufferUsed(void)
+ 127:../cleanflight/src/main/io/flashfs.c **** {
+ 416              	 .loc 1 127 0
+ 417              	 .cfi_startproc
+ 418              	 
+ 419              	 
+ 420              	 
+ 421 0000 80B4     	 push {r7}
+ 422              	.LCFI27:
+ 423              	 .cfi_def_cfa_offset 4
+ 424              	 .cfi_offset 7,-4
+ 425 0002 00AF     	 add r7,sp,#0
+ 426              	.LCFI28:
+ 427              	 .cfi_def_cfa_register 7
+ 128:../cleanflight/src/main/io/flashfs.c ****     if (bufferHead >= bufferTail)
+ 428              	 .loc 1 128 0
+ 429 0004 0C4B     	 ldr r3,.L27
+ 430 0006 1A78     	 ldrb r2,[r3]
+ 431 0008 0C4B     	 ldr r3,.L27+4
+ 432 000a 1B78     	 ldrb r3,[r3]
+ 433 000c 9A42     	 cmp r2,r3
+ 434 000e 06D3     	 bcc .L25
+ 129:../cleanflight/src/main/io/flashfs.c ****         return bufferHead - bufferTail;
+ 435              	 .loc 1 129 0
+ 436 0010 094B     	 ldr r3,.L27
+ 437 0012 1B78     	 ldrb r3,[r3]
+ 438 0014 1A46     	 mov r2,r3
+ 439 0016 094B     	 ldr r3,.L27+4
+ 440 0018 1B78     	 ldrb r3,[r3]
+ 441 001a D31A     	 subs r3,r2,r3
+ 442 001c 06E0     	 b .L26
+ 443              	.L25:
+ 130:../cleanflight/src/main/io/flashfs.c **** 
+ 131:../cleanflight/src/main/io/flashfs.c ****     return FLASHFS_WRITE_BUFFER_SIZE - bufferTail + bufferHead;
+ 444              	 .loc 1 131 0
+ 445 001e 074B     	 ldr r3,.L27+4
+ 446 0020 1B78     	 ldrb r3,[r3]
+ 447 0022 C3F18003 	 rsb r3,r3,#128
+ 448 0026 044A     	 ldr r2,.L27
+ 449 0028 1278     	 ldrb r2,[r2]
+ 450 002a 1344     	 add r3,r3,r2
+ 451              	.L26:
+ 132:../cleanflight/src/main/io/flashfs.c **** }
+ 452              	 .loc 1 132 0
+ 453 002c 1846     	 mov r0,r3
+ 454 002e BD46     	 mov sp,r7
+ 455              	.LCFI29:
+ 456              	 .cfi_def_cfa_register 13
+ 457              	 
+ 458 0030 5DF8047B 	 ldr r7,[sp],#4
+ 459              	.LCFI30:
+ 460              	 .cfi_restore 7
+ 461              	 .cfi_def_cfa_offset 0
+ 462 0034 7047     	 bx lr
+ 463              	.L28:
+ 464 0036 00BF     	 .align 2
+ 465              	.L27:
+ 466 0038 00000000 	 .word bufferHead
+ 467 003c 00000000 	 .word bufferTail
+ 468              	 .cfi_endproc
+ 469              	.LFE534:
+ 471              	 .section .text.flashfsGetWriteBufferSize,"ax",%progbits
+ 472              	 .align 2
+ 473              	 .global flashfsGetWriteBufferSize
+ 474              	 .thumb
+ 475              	 .thumb_func
+ 477              	flashfsGetWriteBufferSize:
+ 478              	.LFB535:
+ 133:../cleanflight/src/main/io/flashfs.c **** 
+ 134:../cleanflight/src/main/io/flashfs.c **** /**
+ 135:../cleanflight/src/main/io/flashfs.c ****  * Get the size of the largest single write that flashfs could ever accept without blocking or data
+ 136:../cleanflight/src/main/io/flashfs.c ****  */
+ 137:../cleanflight/src/main/io/flashfs.c **** uint32_t flashfsGetWriteBufferSize(void)
+ 138:../cleanflight/src/main/io/flashfs.c **** {
+ 479              	 .loc 1 138 0
+ 480              	 .cfi_startproc
+ 481              	 
+ 482              	 
+ 483              	 
+ 484 0000 80B4     	 push {r7}
+ 485              	.LCFI31:
+ 486              	 .cfi_def_cfa_offset 4
+ 487              	 .cfi_offset 7,-4
+ 488 0002 00AF     	 add r7,sp,#0
+ 489              	.LCFI32:
+ 490              	 .cfi_def_cfa_register 7
+ 139:../cleanflight/src/main/io/flashfs.c ****     return FLASHFS_WRITE_BUFFER_USABLE;
+ 491              	 .loc 1 139 0
+ 492 0004 7F23     	 movs r3,#127
+ 140:../cleanflight/src/main/io/flashfs.c **** }
+ 493              	 .loc 1 140 0
+ 494 0006 1846     	 mov r0,r3
+ 495 0008 BD46     	 mov sp,r7
+ 496              	.LCFI33:
+ 497              	 .cfi_def_cfa_register 13
+ 498              	 
+ 499 000a 5DF8047B 	 ldr r7,[sp],#4
+ 500              	.LCFI34:
+ 501              	 .cfi_restore 7
+ 502              	 .cfi_def_cfa_offset 0
+ 503 000e 7047     	 bx lr
+ 504              	 .cfi_endproc
+ 505              	.LFE535:
+ 507              	 .section .text.flashfsGetWriteBufferFreeSpace,"ax",%progbits
+ 508              	 .align 2
+ 509              	 .global flashfsGetWriteBufferFreeSpace
+ 510              	 .thumb
+ 511              	 .thumb_func
+ 513              	flashfsGetWriteBufferFreeSpace:
+ 514              	.LFB536:
+ 141:../cleanflight/src/main/io/flashfs.c **** 
+ 142:../cleanflight/src/main/io/flashfs.c **** /**
+ 143:../cleanflight/src/main/io/flashfs.c ****  * Get the number of bytes that can currently be written to flashfs without any blocking or data lo
+ 144:../cleanflight/src/main/io/flashfs.c ****  */
+ 145:../cleanflight/src/main/io/flashfs.c **** uint32_t flashfsGetWriteBufferFreeSpace(void)
+ 146:../cleanflight/src/main/io/flashfs.c **** {
+ 515              	 .loc 1 146 0
+ 516              	 .cfi_startproc
+ 517              	 
+ 518              	 
+ 519 0000 98B5     	 push {r3,r4,r7,lr}
+ 520              	.LCFI35:
+ 521              	 .cfi_def_cfa_offset 16
+ 522              	 .cfi_offset 3,-16
+ 523              	 .cfi_offset 4,-12
+ 524              	 .cfi_offset 7,-8
+ 525              	 .cfi_offset 14,-4
+ 526 0002 00AF     	 add r7,sp,#0
+ 527              	.LCFI36:
+ 528              	 .cfi_def_cfa_register 7
+ 147:../cleanflight/src/main/io/flashfs.c ****     return flashfsGetWriteBufferSize() - flashfsTransmitBufferUsed();
+ 529              	 .loc 1 147 0
+ 530 0004 FFF7FEFF 	 bl flashfsGetWriteBufferSize
+ 531 0008 0446     	 mov r4,r0
+ 532 000a FFF7FEFF 	 bl flashfsTransmitBufferUsed
+ 533 000e 0346     	 mov r3,r0
+ 534 0010 E31A     	 subs r3,r4,r3
+ 148:../cleanflight/src/main/io/flashfs.c **** }
+ 535              	 .loc 1 148 0
+ 536 0012 1846     	 mov r0,r3
+ 537 0014 98BD     	 pop {r3,r4,r7,pc}
+ 538              	 .cfi_endproc
+ 539              	.LFE536:
+ 541 0016 00BF     	 .section .text.flashfsGetGeometry,"ax",%progbits
+ 542              	 .align 2
+ 543              	 .global flashfsGetGeometry
+ 544              	 .thumb
+ 545              	 .thumb_func
+ 547              	flashfsGetGeometry:
+ 548              	.LFB537:
+ 149:../cleanflight/src/main/io/flashfs.c **** 
+ 150:../cleanflight/src/main/io/flashfs.c **** const flashGeometry_t* flashfsGetGeometry(void)
+ 151:../cleanflight/src/main/io/flashfs.c **** {
+ 549              	 .loc 1 151 0
+ 550              	 .cfi_startproc
+ 551              	 
+ 552              	 
+ 553 0000 80B5     	 push {r7,lr}
+ 554              	.LCFI37:
+ 555              	 .cfi_def_cfa_offset 8
+ 556              	 .cfi_offset 7,-8
+ 557              	 .cfi_offset 14,-4
+ 558 0002 00AF     	 add r7,sp,#0
+ 559              	.LCFI38:
+ 560              	 .cfi_def_cfa_register 7
+ 152:../cleanflight/src/main/io/flashfs.c ****     return flashGetGeometry();
+ 561              	 .loc 1 152 0
+ 562 0004 FFF7FEFF 	 bl flashGetGeometry
+ 563 0008 0346     	 mov r3,r0
+ 153:../cleanflight/src/main/io/flashfs.c **** }
+ 564              	 .loc 1 153 0
+ 565 000a 1846     	 mov r0,r3
+ 566 000c 80BD     	 pop {r7,pc}
+ 567              	 .cfi_endproc
+ 568              	.LFE537:
+ 570 000e 00BF     	 .section .text.flashfsWriteBuffers,"ax",%progbits
+ 571              	 .align 2
+ 572              	 .thumb
+ 573              	 .thumb_func
+ 575              	flashfsWriteBuffers:
+ 576              	.LFB538:
+ 154:../cleanflight/src/main/io/flashfs.c **** 
+ 155:../cleanflight/src/main/io/flashfs.c **** /**
+ 156:../cleanflight/src/main/io/flashfs.c ****  * Write the given buffers to flash sequentially at the current tail address, advancing the tail ad
+ 157:../cleanflight/src/main/io/flashfs.c ****  * each write.
+ 158:../cleanflight/src/main/io/flashfs.c ****  *
+ 159:../cleanflight/src/main/io/flashfs.c ****  * In synchronous mode, waits for the flash to become ready before writing so that every byte reque
+ 160:../cleanflight/src/main/io/flashfs.c ****  *
+ 161:../cleanflight/src/main/io/flashfs.c ****  * In asynchronous mode, if the flash is busy, then the write is aborted and the routine returns im
+ 162:../cleanflight/src/main/io/flashfs.c ****  * In this case the returned number of bytes written will be less than the total amount requested.
+ 163:../cleanflight/src/main/io/flashfs.c ****  *
+ 164:../cleanflight/src/main/io/flashfs.c ****  * Modifies the supplied buffer pointers and sizes to reflect how many bytes remain in each of them
+ 165:../cleanflight/src/main/io/flashfs.c ****  *
+ 166:../cleanflight/src/main/io/flashfs.c ****  * bufferCount: the number of buffers provided
+ 167:../cleanflight/src/main/io/flashfs.c ****  * buffers: an array of pointers to the beginning of buffers
+ 168:../cleanflight/src/main/io/flashfs.c ****  * bufferSizes: an array of the sizes of those buffers
+ 169:../cleanflight/src/main/io/flashfs.c ****  * sync: true if we should wait for the device to be idle before writes, otherwise if the device is
+ 170:../cleanflight/src/main/io/flashfs.c ****  *       write will be aborted and this routine will return immediately.
+ 171:../cleanflight/src/main/io/flashfs.c ****  *
+ 172:../cleanflight/src/main/io/flashfs.c ****  * Returns the number of bytes written
+ 173:../cleanflight/src/main/io/flashfs.c ****  */
+ 174:../cleanflight/src/main/io/flashfs.c **** static uint32_t flashfsWriteBuffers(uint8_t const **buffers, uint32_t *bufferSizes, int bufferCount
+ 175:../cleanflight/src/main/io/flashfs.c **** {
+ 577              	 .loc 1 175 0
+ 578              	 .cfi_startproc
+ 579              	 
+ 580              	 
+ 581 0000 80B5     	 push {r7,lr}
+ 582              	.LCFI39:
+ 583              	 .cfi_def_cfa_offset 8
+ 584              	 .cfi_offset 7,-8
+ 585              	 .cfi_offset 14,-4
+ 586 0002 8AB0     	 sub sp,sp,#40
+ 587              	.LCFI40:
+ 588              	 .cfi_def_cfa_offset 48
+ 589 0004 00AF     	 add r7,sp,#0
+ 590              	.LCFI41:
+ 591              	 .cfi_def_cfa_register 7
+ 592 0006 F860     	 str r0,[r7,#12]
+ 593 0008 B960     	 str r1,[r7,#8]
+ 594 000a 7A60     	 str r2,[r7,#4]
+ 595 000c FB70     	 strb r3,[r7,#3]
+ 176:../cleanflight/src/main/io/flashfs.c ****     uint32_t bytesTotal = 0;
+ 596              	 .loc 1 176 0
+ 597 000e 0023     	 movs r3,#0
+ 598 0010 7B62     	 str r3,[r7,#36]
+ 177:../cleanflight/src/main/io/flashfs.c **** 
+ 178:../cleanflight/src/main/io/flashfs.c ****     int i;
+ 179:../cleanflight/src/main/io/flashfs.c **** 
+ 180:../cleanflight/src/main/io/flashfs.c ****     for (i = 0; i < bufferCount; i++) {
+ 599              	 .loc 1 180 0
+ 600 0012 0023     	 movs r3,#0
+ 601 0014 3B62     	 str r3,[r7,#32]
+ 602 0016 0AE0     	 b .L36
+ 603              	.L37:
+ 181:../cleanflight/src/main/io/flashfs.c ****         bytesTotal += bufferSizes[i];
+ 604              	 .loc 1 181 0 discriminator 3
+ 605 0018 3B6A     	 ldr r3,[r7,#32]
+ 606 001a 9B00     	 lsls r3,r3,#2
+ 607 001c BA68     	 ldr r2,[r7,#8]
+ 608 001e 1344     	 add r3,r3,r2
+ 609 0020 1B68     	 ldr r3,[r3]
+ 610 0022 7A6A     	 ldr r2,[r7,#36]
+ 611 0024 1344     	 add r3,r3,r2
+ 612 0026 7B62     	 str r3,[r7,#36]
+ 180:../cleanflight/src/main/io/flashfs.c ****         bytesTotal += bufferSizes[i];
+ 613              	 .loc 1 180 0 discriminator 3
+ 614 0028 3B6A     	 ldr r3,[r7,#32]
+ 615 002a 0133     	 adds r3,r3,#1
+ 616 002c 3B62     	 str r3,[r7,#32]
+ 617              	.L36:
+ 180:../cleanflight/src/main/io/flashfs.c ****         bytesTotal += bufferSizes[i];
+ 618              	 .loc 1 180 0 is_stmt 0 discriminator 1
+ 619 002e 3A6A     	 ldr r2,[r7,#32]
+ 620 0030 7B68     	 ldr r3,[r7,#4]
+ 621 0032 9A42     	 cmp r2,r3
+ 622 0034 F0DB     	 blt .L37
+ 182:../cleanflight/src/main/io/flashfs.c ****     }
+ 183:../cleanflight/src/main/io/flashfs.c **** 
+ 184:../cleanflight/src/main/io/flashfs.c ****     if (!sync && !flashIsReady()) {
+ 623              	 .loc 1 184 0 is_stmt 1
+ 624 0036 FB78     	 ldrb r3,[r7,#3]
+ 625 0038 83F00103 	 eor r3,r3,#1
+ 626 003c DBB2     	 uxtb r3,r3
+ 627 003e 002B     	 cmp r3,#0
+ 628 0040 09D0     	 beq .L38
+ 629              	 .loc 1 184 0 is_stmt 0 discriminator 1
+ 630 0042 FFF7FEFF 	 bl flashIsReady
+ 631 0046 0346     	 mov r3,r0
+ 632 0048 83F00103 	 eor r3,r3,#1
+ 633 004c DBB2     	 uxtb r3,r3
+ 634 004e 002B     	 cmp r3,#0
+ 635 0050 01D0     	 beq .L38
+ 185:../cleanflight/src/main/io/flashfs.c ****         return 0;
+ 636              	 .loc 1 185 0 is_stmt 1
+ 637 0052 0023     	 movs r3,#0
+ 638 0054 B9E0     	 b .L39
+ 639              	.L38:
+ 186:../cleanflight/src/main/io/flashfs.c ****     }
+ 187:../cleanflight/src/main/io/flashfs.c **** 
+ 188:../cleanflight/src/main/io/flashfs.c ****     uint32_t bytesTotalRemaining = bytesTotal;
+ 640              	 .loc 1 188 0
+ 641 0056 7B6A     	 ldr r3,[r7,#36]
+ 642 0058 FB61     	 str r3,[r7,#28]
+ 189:../cleanflight/src/main/io/flashfs.c **** 
+ 190:../cleanflight/src/main/io/flashfs.c ****     uint16_t pageSize = flashfsGetGeometry()->pageSize;
+ 643              	 .loc 1 190 0
+ 644 005a FFF7FEFF 	 bl flashfsGetGeometry
+ 645 005e 0346     	 mov r3,r0
+ 646 0060 9A78     	 ldrb r2,[r3,#2]
+ 647 0062 DB78     	 ldrb r3,[r3,#3]
+ 648 0064 1B02     	 lsls r3,r3,#8
+ 649 0066 1343     	 orrs r3,r3,r2
+ 650 0068 7B82     	 strh r3,[r7,#18]
+ 191:../cleanflight/src/main/io/flashfs.c **** 
+ 192:../cleanflight/src/main/io/flashfs.c ****     while (bytesTotalRemaining > 0) {
+ 651              	 .loc 1 192 0
+ 652 006a A7E0     	 b .L40
+ 653              	.L50:
+ 654              	.LBB3:
+ 193:../cleanflight/src/main/io/flashfs.c ****         uint32_t bytesTotalThisIteration;
+ 194:../cleanflight/src/main/io/flashfs.c ****         uint32_t bytesRemainThisIteration;
+ 195:../cleanflight/src/main/io/flashfs.c **** 
+ 196:../cleanflight/src/main/io/flashfs.c ****         /*
+ 197:../cleanflight/src/main/io/flashfs.c ****          * Each page needs to be saved in a separate program operation, so
+ 198:../cleanflight/src/main/io/flashfs.c ****          * if we would cross a page boundary, only write up to the boundary in this iteration:
+ 199:../cleanflight/src/main/io/flashfs.c ****          */
+ 200:../cleanflight/src/main/io/flashfs.c ****         if (tailAddress % pageSize + bytesTotalRemaining > pageSize) {
+ 655              	 .loc 1 200 0
+ 656 006c 594B     	 ldr r3,.L51
+ 657 006e 1B68     	 ldr r3,[r3]
+ 658 0070 7A8A     	 ldrh r2,[r7,#18]
+ 659 0072 B3FBF2F1 	 udiv r1,r3,r2
+ 660 0076 02FB01F2 	 mul r2,r2,r1
+ 661 007a 9A1A     	 subs r2,r3,r2
+ 662 007c FB69     	 ldr r3,[r7,#28]
+ 663 007e 1A44     	 add r2,r2,r3
+ 664 0080 7B8A     	 ldrh r3,[r7,#18]
+ 665 0082 9A42     	 cmp r2,r3
+ 666 0084 0BD9     	 bls .L41
+ 201:../cleanflight/src/main/io/flashfs.c ****             bytesTotalThisIteration = pageSize - tailAddress % pageSize;
+ 667              	 .loc 1 201 0
+ 668 0086 798A     	 ldrh r1,[r7,#18]
+ 669 0088 524B     	 ldr r3,.L51
+ 670 008a 1B68     	 ldr r3,[r3]
+ 671 008c 7A8A     	 ldrh r2,[r7,#18]
+ 672 008e B3FBF2F0 	 udiv r0,r3,r2
+ 673 0092 02FB00F2 	 mul r2,r2,r0
+ 674 0096 9B1A     	 subs r3,r3,r2
+ 675 0098 CB1A     	 subs r3,r1,r3
+ 676 009a BB61     	 str r3,[r7,#24]
+ 677 009c 01E0     	 b .L42
+ 678              	.L41:
+ 202:../cleanflight/src/main/io/flashfs.c ****         } else {
+ 203:../cleanflight/src/main/io/flashfs.c ****             bytesTotalThisIteration = bytesTotalRemaining;
+ 679              	 .loc 1 203 0
+ 680 009e FB69     	 ldr r3,[r7,#28]
+ 681 00a0 BB61     	 str r3,[r7,#24]
+ 682              	.L42:
+ 204:../cleanflight/src/main/io/flashfs.c ****         }
+ 205:../cleanflight/src/main/io/flashfs.c **** 
+ 206:../cleanflight/src/main/io/flashfs.c ****         // Are we at EOF already? Abort.
+ 207:../cleanflight/src/main/io/flashfs.c ****         if (flashfsIsEOF()) {
+ 683              	 .loc 1 207 0
+ 684 00a2 FFF7FEFF 	 bl flashfsIsEOF
+ 685 00a6 0346     	 mov r3,r0
+ 686 00a8 002B     	 cmp r3,#0
+ 687 00aa 02D0     	 beq .L43
+ 208:../cleanflight/src/main/io/flashfs.c ****             // May as well throw away any buffered data
+ 209:../cleanflight/src/main/io/flashfs.c ****             flashfsClearBuffer();
+ 688              	 .loc 1 209 0
+ 689 00ac FFF7FEFF 	 bl flashfsClearBuffer
+ 210:../cleanflight/src/main/io/flashfs.c **** 
+ 211:../cleanflight/src/main/io/flashfs.c ****             break;
+ 690              	 .loc 1 211 0
+ 691 00b0 88E0     	 b .L44
+ 692              	.L43:
+ 212:../cleanflight/src/main/io/flashfs.c ****         }
+ 213:../cleanflight/src/main/io/flashfs.c **** 
+ 214:../cleanflight/src/main/io/flashfs.c ****         flashPageProgramBegin(tailAddress);
+ 693              	 .loc 1 214 0
+ 694 00b2 484B     	 ldr r3,.L51
+ 695 00b4 1B68     	 ldr r3,[r3]
+ 696 00b6 1846     	 mov r0,r3
+ 697 00b8 FFF7FEFF 	 bl flashPageProgramBegin
+ 215:../cleanflight/src/main/io/flashfs.c **** 
+ 216:../cleanflight/src/main/io/flashfs.c ****         bytesRemainThisIteration = bytesTotalThisIteration;
+ 698              	 .loc 1 216 0
+ 699 00bc BB69     	 ldr r3,[r7,#24]
+ 700 00be 7B61     	 str r3,[r7,#20]
+ 217:../cleanflight/src/main/io/flashfs.c **** 
+ 218:../cleanflight/src/main/io/flashfs.c ****         for (i = 0; i < bufferCount; i++) {
+ 701              	 .loc 1 218 0
+ 702 00c0 0023     	 movs r3,#0
+ 703 00c2 3B62     	 str r3,[r7,#32]
+ 704 00c4 62E0     	 b .L45
+ 705              	.L49:
+ 219:../cleanflight/src/main/io/flashfs.c ****             if (bufferSizes[i] > 0) {
+ 706              	 .loc 1 219 0
+ 707 00c6 3B6A     	 ldr r3,[r7,#32]
+ 708 00c8 9B00     	 lsls r3,r3,#2
+ 709 00ca BA68     	 ldr r2,[r7,#8]
+ 710 00cc 1344     	 add r3,r3,r2
+ 711 00ce 1B68     	 ldr r3,[r3]
+ 712 00d0 002B     	 cmp r3,#0
+ 713 00d2 58D0     	 beq .L46
+ 220:../cleanflight/src/main/io/flashfs.c ****                 // Is buffer larger than our write limit? Write our limit out of it
+ 221:../cleanflight/src/main/io/flashfs.c ****                 if (bufferSizes[i] >= bytesRemainThisIteration) {
+ 714              	 .loc 1 221 0
+ 715 00d4 3B6A     	 ldr r3,[r7,#32]
+ 716 00d6 9B00     	 lsls r3,r3,#2
+ 717 00d8 BA68     	 ldr r2,[r7,#8]
+ 718 00da 1344     	 add r3,r3,r2
+ 719 00dc 1A68     	 ldr r2,[r3]
+ 720 00de 7B69     	 ldr r3,[r7,#20]
+ 721 00e0 9A42     	 cmp r2,r3
+ 722 00e2 24D3     	 bcc .L47
+ 222:../cleanflight/src/main/io/flashfs.c ****                     flashPageProgramContinue(buffers[i], bytesRemainThisIteration);
+ 723              	 .loc 1 222 0
+ 724 00e4 3B6A     	 ldr r3,[r7,#32]
+ 725 00e6 9B00     	 lsls r3,r3,#2
+ 726 00e8 FA68     	 ldr r2,[r7,#12]
+ 727 00ea 1344     	 add r3,r3,r2
+ 728 00ec 1A68     	 ldr r2,[r3]
+ 729 00ee 7B69     	 ldr r3,[r7,#20]
+ 730 00f0 1046     	 mov r0,r2
+ 731 00f2 1946     	 mov r1,r3
+ 732 00f4 FFF7FEFF 	 bl flashPageProgramContinue
+ 223:../cleanflight/src/main/io/flashfs.c **** 
+ 224:../cleanflight/src/main/io/flashfs.c ****                     buffers[i] += bytesRemainThisIteration;
+ 733              	 .loc 1 224 0
+ 734 00f8 3B6A     	 ldr r3,[r7,#32]
+ 735 00fa 9B00     	 lsls r3,r3,#2
+ 736 00fc FA68     	 ldr r2,[r7,#12]
+ 737 00fe 1344     	 add r3,r3,r2
+ 738 0100 3A6A     	 ldr r2,[r7,#32]
+ 739 0102 9200     	 lsls r2,r2,#2
+ 740 0104 F968     	 ldr r1,[r7,#12]
+ 741 0106 0A44     	 add r2,r2,r1
+ 742 0108 1168     	 ldr r1,[r2]
+ 743 010a 7A69     	 ldr r2,[r7,#20]
+ 744 010c 0A44     	 add r2,r2,r1
+ 745 010e 1A60     	 str r2,[r3]
+ 225:../cleanflight/src/main/io/flashfs.c ****                     bufferSizes[i] -= bytesRemainThisIteration;
+ 746              	 .loc 1 225 0
+ 747 0110 3B6A     	 ldr r3,[r7,#32]
+ 748 0112 9B00     	 lsls r3,r3,#2
+ 749 0114 BA68     	 ldr r2,[r7,#8]
+ 750 0116 1344     	 add r3,r3,r2
+ 751 0118 3A6A     	 ldr r2,[r7,#32]
+ 752 011a 9200     	 lsls r2,r2,#2
+ 753 011c B968     	 ldr r1,[r7,#8]
+ 754 011e 0A44     	 add r2,r2,r1
+ 755 0120 1168     	 ldr r1,[r2]
+ 756 0122 7A69     	 ldr r2,[r7,#20]
+ 757 0124 8A1A     	 subs r2,r1,r2
+ 758 0126 1A60     	 str r2,[r3]
+ 226:../cleanflight/src/main/io/flashfs.c **** 
+ 227:../cleanflight/src/main/io/flashfs.c ****                     bytesRemainThisIteration = 0;
+ 759              	 .loc 1 227 0
+ 760 0128 0023     	 movs r3,#0
+ 761 012a 7B61     	 str r3,[r7,#20]
+ 228:../cleanflight/src/main/io/flashfs.c ****                     break;
+ 762              	 .loc 1 228 0
+ 763 012c 32E0     	 b .L48
+ 764              	.L47:
+ 229:../cleanflight/src/main/io/flashfs.c ****                 } else {
+ 230:../cleanflight/src/main/io/flashfs.c ****                     // We'll still have more to write after finishing this buffer off
+ 231:../cleanflight/src/main/io/flashfs.c ****                     flashPageProgramContinue(buffers[i], bufferSizes[i]);
+ 765              	 .loc 1 231 0
+ 766 012e 3B6A     	 ldr r3,[r7,#32]
+ 767 0130 9B00     	 lsls r3,r3,#2
+ 768 0132 FA68     	 ldr r2,[r7,#12]
+ 769 0134 1344     	 add r3,r3,r2
+ 770 0136 1968     	 ldr r1,[r3]
+ 771 0138 3B6A     	 ldr r3,[r7,#32]
+ 772 013a 9B00     	 lsls r3,r3,#2
+ 773 013c BA68     	 ldr r2,[r7,#8]
+ 774 013e 1344     	 add r3,r3,r2
+ 775 0140 1B68     	 ldr r3,[r3]
+ 776 0142 0846     	 mov r0,r1
+ 777 0144 1946     	 mov r1,r3
+ 778 0146 FFF7FEFF 	 bl flashPageProgramContinue
+ 232:../cleanflight/src/main/io/flashfs.c **** 
+ 233:../cleanflight/src/main/io/flashfs.c ****                     bytesRemainThisIteration -= bufferSizes[i];
+ 779              	 .loc 1 233 0
+ 780 014a 3B6A     	 ldr r3,[r7,#32]
+ 781 014c 9B00     	 lsls r3,r3,#2
+ 782 014e BA68     	 ldr r2,[r7,#8]
+ 783 0150 1344     	 add r3,r3,r2
+ 784 0152 1B68     	 ldr r3,[r3]
+ 785 0154 7A69     	 ldr r2,[r7,#20]
+ 786 0156 D31A     	 subs r3,r2,r3
+ 787 0158 7B61     	 str r3,[r7,#20]
+ 234:../cleanflight/src/main/io/flashfs.c **** 
+ 235:../cleanflight/src/main/io/flashfs.c ****                     buffers[i] += bufferSizes[i];
+ 788              	 .loc 1 235 0
+ 789 015a 3B6A     	 ldr r3,[r7,#32]
+ 790 015c 9B00     	 lsls r3,r3,#2
+ 791 015e FA68     	 ldr r2,[r7,#12]
+ 792 0160 1344     	 add r3,r3,r2
+ 793 0162 3A6A     	 ldr r2,[r7,#32]
+ 794 0164 9200     	 lsls r2,r2,#2
+ 795 0166 F968     	 ldr r1,[r7,#12]
+ 796 0168 0A44     	 add r2,r2,r1
+ 797 016a 1168     	 ldr r1,[r2]
+ 798 016c 3A6A     	 ldr r2,[r7,#32]
+ 799 016e 9200     	 lsls r2,r2,#2
+ 800 0170 B868     	 ldr r0,[r7,#8]
+ 801 0172 0244     	 add r2,r2,r0
+ 802 0174 1268     	 ldr r2,[r2]
+ 803 0176 0A44     	 add r2,r2,r1
+ 804 0178 1A60     	 str r2,[r3]
+ 236:../cleanflight/src/main/io/flashfs.c ****                     bufferSizes[i] = 0;
+ 805              	 .loc 1 236 0
+ 806 017a 3B6A     	 ldr r3,[r7,#32]
+ 807 017c 9B00     	 lsls r3,r3,#2
+ 808 017e BA68     	 ldr r2,[r7,#8]
+ 809 0180 1344     	 add r3,r3,r2
+ 810 0182 0022     	 movs r2,#0
+ 811 0184 1A60     	 str r2,[r3]
+ 812              	.L46:
+ 218:../cleanflight/src/main/io/flashfs.c ****             if (bufferSizes[i] > 0) {
+ 813              	 .loc 1 218 0 discriminator 2
+ 814 0186 3B6A     	 ldr r3,[r7,#32]
+ 815 0188 0133     	 adds r3,r3,#1
+ 816 018a 3B62     	 str r3,[r7,#32]
+ 817              	.L45:
+ 218:../cleanflight/src/main/io/flashfs.c ****             if (bufferSizes[i] > 0) {
+ 818              	 .loc 1 218 0 is_stmt 0 discriminator 1
+ 819 018c 3A6A     	 ldr r2,[r7,#32]
+ 820 018e 7B68     	 ldr r3,[r7,#4]
+ 821 0190 9A42     	 cmp r2,r3
+ 822 0192 98DB     	 blt .L49
+ 823              	.L48:
+ 237:../cleanflight/src/main/io/flashfs.c ****                 }
+ 238:../cleanflight/src/main/io/flashfs.c ****             }
+ 239:../cleanflight/src/main/io/flashfs.c ****         }
+ 240:../cleanflight/src/main/io/flashfs.c **** 
+ 241:../cleanflight/src/main/io/flashfs.c ****         flashPageProgramFinish();
+ 824              	 .loc 1 241 0 is_stmt 1
+ 825 0194 FFF7FEFF 	 bl flashPageProgramFinish
+ 242:../cleanflight/src/main/io/flashfs.c **** 
+ 243:../cleanflight/src/main/io/flashfs.c ****         bytesTotalRemaining -= bytesTotalThisIteration;
+ 826              	 .loc 1 243 0
+ 827 0198 FA69     	 ldr r2,[r7,#28]
+ 828 019a BB69     	 ldr r3,[r7,#24]
+ 829 019c D31A     	 subs r3,r2,r3
+ 830 019e FB61     	 str r3,[r7,#28]
+ 244:../cleanflight/src/main/io/flashfs.c **** 
+ 245:../cleanflight/src/main/io/flashfs.c ****         // Advance the cursor in the file system to match the bytes we wrote
+ 246:../cleanflight/src/main/io/flashfs.c ****         flashfsSetTailAddress(tailAddress + bytesTotalThisIteration);
+ 831              	 .loc 1 246 0
+ 832 01a0 0C4B     	 ldr r3,.L51
+ 833 01a2 1A68     	 ldr r2,[r3]
+ 834 01a4 BB69     	 ldr r3,[r7,#24]
+ 835 01a6 1344     	 add r3,r3,r2
+ 836 01a8 1846     	 mov r0,r3
+ 837 01aa FFF7FEFF 	 bl flashfsSetTailAddress
+ 247:../cleanflight/src/main/io/flashfs.c **** 
+ 248:../cleanflight/src/main/io/flashfs.c ****         /*
+ 249:../cleanflight/src/main/io/flashfs.c ****          * We'll have to wait for that write to complete before we can issue the next one, so if
+ 250:../cleanflight/src/main/io/flashfs.c ****          * the user requested asynchronous writes, break now.
+ 251:../cleanflight/src/main/io/flashfs.c ****          */
+ 252:../cleanflight/src/main/io/flashfs.c ****         if (!sync)
+ 838              	 .loc 1 252 0
+ 839 01ae FB78     	 ldrb r3,[r7,#3]
+ 840 01b0 83F00103 	 eor r3,r3,#1
+ 841 01b4 DBB2     	 uxtb r3,r3
+ 842 01b6 002B     	 cmp r3,#0
+ 843 01b8 00D0     	 beq .L40
+ 253:../cleanflight/src/main/io/flashfs.c ****             break;
+ 844              	 .loc 1 253 0
+ 845 01ba 03E0     	 b .L44
+ 846              	.L40:
+ 847              	.LBE3:
+ 192:../cleanflight/src/main/io/flashfs.c ****         uint32_t bytesTotalThisIteration;
+ 848              	 .loc 1 192 0
+ 849 01bc FB69     	 ldr r3,[r7,#28]
+ 850 01be 002B     	 cmp r3,#0
+ 851 01c0 7FF454AF 	 bne .L50
+ 852              	.L44:
+ 254:../cleanflight/src/main/io/flashfs.c ****     }
+ 255:../cleanflight/src/main/io/flashfs.c **** 
+ 256:../cleanflight/src/main/io/flashfs.c ****     return bytesTotal - bytesTotalRemaining;
+ 853              	 .loc 1 256 0
+ 854 01c4 7A6A     	 ldr r2,[r7,#36]
+ 855 01c6 FB69     	 ldr r3,[r7,#28]
+ 856 01c8 D31A     	 subs r3,r2,r3
+ 857              	.L39:
+ 257:../cleanflight/src/main/io/flashfs.c **** }
+ 858              	 .loc 1 257 0
+ 859 01ca 1846     	 mov r0,r3
+ 860 01cc 2837     	 adds r7,r7,#40
+ 861              	.LCFI42:
+ 862              	 .cfi_def_cfa_offset 8
+ 863 01ce BD46     	 mov sp,r7
+ 864              	.LCFI43:
+ 865              	 .cfi_def_cfa_register 13
+ 866              	 
+ 867 01d0 80BD     	 pop {r7,pc}
+ 868              	.L52:
+ 869 01d2 00BF     	 .align 2
+ 870              	.L51:
+ 871 01d4 00000000 	 .word tailAddress
+ 872              	 .cfi_endproc
+ 873              	.LFE538:
+ 875              	 .section .text.flashfsGetDirtyDataBuffers,"ax",%progbits
+ 876              	 .align 2
+ 877              	 .thumb
+ 878              	 .thumb_func
+ 880              	flashfsGetDirtyDataBuffers:
+ 881              	.LFB539:
+ 258:../cleanflight/src/main/io/flashfs.c **** 
+ 259:../cleanflight/src/main/io/flashfs.c **** /*
+ 260:../cleanflight/src/main/io/flashfs.c ****  * Since the buffered data might wrap around the end of the circular buffer, we can have two segmen
+ 261:../cleanflight/src/main/io/flashfs.c ****  * an initial portion and a possible wrapped portion.
+ 262:../cleanflight/src/main/io/flashfs.c ****  *
+ 263:../cleanflight/src/main/io/flashfs.c ****  * This routine will fill the details of those buffers into the provided arrays, which must be at l
+ 264:../cleanflight/src/main/io/flashfs.c ****  */
+ 265:../cleanflight/src/main/io/flashfs.c **** static void flashfsGetDirtyDataBuffers(uint8_t const *buffers[], uint32_t bufferSizes[])
+ 266:../cleanflight/src/main/io/flashfs.c **** {
+ 882              	 .loc 1 266 0
+ 883              	 .cfi_startproc
+ 884              	 
+ 885              	 
+ 886              	 
+ 887 0000 80B4     	 push {r7}
+ 888              	.LCFI44:
+ 889              	 .cfi_def_cfa_offset 4
+ 890              	 .cfi_offset 7,-4
+ 891 0002 83B0     	 sub sp,sp,#12
+ 892              	.LCFI45:
+ 893              	 .cfi_def_cfa_offset 16
+ 894 0004 00AF     	 add r7,sp,#0
+ 895              	.LCFI46:
+ 896              	 .cfi_def_cfa_register 7
+ 897 0006 7860     	 str r0,[r7,#4]
+ 898 0008 3960     	 str r1,[r7]
+ 267:../cleanflight/src/main/io/flashfs.c ****     buffers[0] = flashWriteBuffer + bufferTail;
+ 899              	 .loc 1 267 0
+ 900 000a 184B     	 ldr r3,.L56
+ 901 000c 1B78     	 ldrb r3,[r3]
+ 902 000e 1A46     	 mov r2,r3
+ 903 0010 174B     	 ldr r3,.L56+4
+ 904 0012 1A44     	 add r2,r2,r3
+ 905 0014 7B68     	 ldr r3,[r7,#4]
+ 906 0016 1A60     	 str r2,[r3]
+ 268:../cleanflight/src/main/io/flashfs.c ****     buffers[1] = flashWriteBuffer + 0;
+ 907              	 .loc 1 268 0
+ 908 0018 7B68     	 ldr r3,[r7,#4]
+ 909 001a 0433     	 adds r3,r3,#4
+ 910 001c 144A     	 ldr r2,.L56+4
+ 911 001e 1A60     	 str r2,[r3]
+ 269:../cleanflight/src/main/io/flashfs.c **** 
+ 270:../cleanflight/src/main/io/flashfs.c ****     if (bufferHead >= bufferTail) {
+ 912              	 .loc 1 270 0
+ 913 0020 144B     	 ldr r3,.L56+8
+ 914 0022 1A78     	 ldrb r2,[r3]
+ 915 0024 114B     	 ldr r3,.L56
+ 916 0026 1B78     	 ldrb r3,[r3]
+ 917 0028 9A42     	 cmp r2,r3
+ 918 002a 0DD3     	 bcc .L54
+ 271:../cleanflight/src/main/io/flashfs.c ****         bufferSizes[0] = bufferHead - bufferTail;
+ 919              	 .loc 1 271 0
+ 920 002c 114B     	 ldr r3,.L56+8
+ 921 002e 1B78     	 ldrb r3,[r3]
+ 922 0030 1A46     	 mov r2,r3
+ 923 0032 0E4B     	 ldr r3,.L56
+ 924 0034 1B78     	 ldrb r3,[r3]
+ 925 0036 D31A     	 subs r3,r2,r3
+ 926 0038 1A46     	 mov r2,r3
+ 927 003a 3B68     	 ldr r3,[r7]
+ 928 003c 1A60     	 str r2,[r3]
+ 272:../cleanflight/src/main/io/flashfs.c ****         bufferSizes[1] = 0;
+ 929              	 .loc 1 272 0
+ 930 003e 3B68     	 ldr r3,[r7]
+ 931 0040 0433     	 adds r3,r3,#4
+ 932 0042 0022     	 movs r2,#0
+ 933 0044 1A60     	 str r2,[r3]
+ 934 0046 0BE0     	 b .L53
+ 935              	.L54:
+ 273:../cleanflight/src/main/io/flashfs.c ****     } else {
+ 274:../cleanflight/src/main/io/flashfs.c ****         bufferSizes[0] = FLASHFS_WRITE_BUFFER_SIZE - bufferTail;
+ 936              	 .loc 1 274 0
+ 937 0048 084B     	 ldr r3,.L56
+ 938 004a 1B78     	 ldrb r3,[r3]
+ 939 004c C3F18003 	 rsb r3,r3,#128
+ 940 0050 1A46     	 mov r2,r3
+ 941 0052 3B68     	 ldr r3,[r7]
+ 942 0054 1A60     	 str r2,[r3]
+ 275:../cleanflight/src/main/io/flashfs.c ****         bufferSizes[1] = bufferHead;
+ 943              	 .loc 1 275 0
+ 944 0056 3B68     	 ldr r3,[r7]
+ 945 0058 0433     	 adds r3,r3,#4
+ 946 005a 064A     	 ldr r2,.L56+8
+ 947 005c 1278     	 ldrb r2,[r2]
+ 948 005e 1A60     	 str r2,[r3]
+ 949              	.L53:
+ 276:../cleanflight/src/main/io/flashfs.c ****     }
+ 277:../cleanflight/src/main/io/flashfs.c **** }
+ 950              	 .loc 1 277 0
+ 951 0060 0C37     	 adds r7,r7,#12
+ 952              	.LCFI47:
+ 953              	 .cfi_def_cfa_offset 4
+ 954 0062 BD46     	 mov sp,r7
+ 955              	.LCFI48:
+ 956              	 .cfi_def_cfa_register 13
+ 957              	 
+ 958 0064 5DF8047B 	 ldr r7,[sp],#4
+ 959              	.LCFI49:
+ 960              	 .cfi_restore 7
+ 961              	 .cfi_def_cfa_offset 0
+ 962 0068 7047     	 bx lr
+ 963              	.L57:
+ 964 006a 00BF     	 .align 2
+ 965              	.L56:
+ 966 006c 00000000 	 .word bufferTail
+ 967 0070 00000000 	 .word flashWriteBuffer
+ 968 0074 00000000 	 .word bufferHead
+ 969              	 .cfi_endproc
+ 970              	.LFE539:
+ 972              	 .section .text.flashfsGetOffset,"ax",%progbits
+ 973              	 .align 2
+ 974              	 .global flashfsGetOffset
+ 975              	 .thumb
+ 976              	 .thumb_func
+ 978              	flashfsGetOffset:
+ 979              	.LFB540:
+ 278:../cleanflight/src/main/io/flashfs.c **** 
+ 279:../cleanflight/src/main/io/flashfs.c **** /**
+ 280:../cleanflight/src/main/io/flashfs.c ****  * Get the current offset of the file pointer within the volume.
+ 281:../cleanflight/src/main/io/flashfs.c ****  */
+ 282:../cleanflight/src/main/io/flashfs.c **** uint32_t flashfsGetOffset(void)
+ 283:../cleanflight/src/main/io/flashfs.c **** {
+ 980              	 .loc 1 283 0
+ 981              	 .cfi_startproc
+ 982              	 
+ 983              	 
+ 984 0000 80B5     	 push {r7,lr}
+ 985              	.LCFI50:
+ 986              	 .cfi_def_cfa_offset 8
+ 987              	 .cfi_offset 7,-8
+ 988              	 .cfi_offset 14,-4
+ 989 0002 84B0     	 sub sp,sp,#16
+ 990              	.LCFI51:
+ 991              	 .cfi_def_cfa_offset 24
+ 992 0004 00AF     	 add r7,sp,#0
+ 993              	.LCFI52:
+ 994              	 .cfi_def_cfa_register 7
+ 284:../cleanflight/src/main/io/flashfs.c ****     uint8_t const * buffers[2];
+ 285:../cleanflight/src/main/io/flashfs.c ****     uint32_t bufferSizes[2];
+ 286:../cleanflight/src/main/io/flashfs.c **** 
+ 287:../cleanflight/src/main/io/flashfs.c ****     // Dirty data in the buffers contributes to the offset
+ 288:../cleanflight/src/main/io/flashfs.c **** 
+ 289:../cleanflight/src/main/io/flashfs.c ****     flashfsGetDirtyDataBuffers(buffers, bufferSizes);
+ 995              	 .loc 1 289 0
+ 996 0006 07F10802 	 add r2,r7,#8
+ 997 000a 3B46     	 mov r3,r7
+ 998 000c 1046     	 mov r0,r2
+ 999 000e 1946     	 mov r1,r3
+ 1000 0010 FFF7FEFF 	 bl flashfsGetDirtyDataBuffers
+ 290:../cleanflight/src/main/io/flashfs.c **** 
+ 291:../cleanflight/src/main/io/flashfs.c ****     return tailAddress + bufferSizes[0] + bufferSizes[1];
+ 1001              	 .loc 1 291 0
+ 1002 0014 3A68     	 ldr r2,[r7]
+ 1003 0016 044B     	 ldr r3,.L60
+ 1004 0018 1B68     	 ldr r3,[r3]
+ 1005 001a 1A44     	 add r2,r2,r3
+ 1006 001c 7B68     	 ldr r3,[r7,#4]
+ 1007 001e 1344     	 add r3,r3,r2
+ 292:../cleanflight/src/main/io/flashfs.c **** }
+ 1008              	 .loc 1 292 0
+ 1009 0020 1846     	 mov r0,r3
+ 1010 0022 1037     	 adds r7,r7,#16
+ 1011              	.LCFI53:
+ 1012              	 .cfi_def_cfa_offset 8
+ 1013 0024 BD46     	 mov sp,r7
+ 1014              	.LCFI54:
+ 1015              	 .cfi_def_cfa_register 13
+ 1016              	 
+ 1017 0026 80BD     	 pop {r7,pc}
+ 1018              	.L61:
+ 1019              	 .align 2
+ 1020              	.L60:
+ 1021 0028 00000000 	 .word tailAddress
+ 1022              	 .cfi_endproc
+ 1023              	.LFE540:
+ 1025              	 .section .text.flashfsAdvanceTailInBuffer,"ax",%progbits
+ 1026              	 .align 2
+ 1027              	 .thumb
+ 1028              	 .thumb_func
+ 1030              	flashfsAdvanceTailInBuffer:
+ 1031              	.LFB541:
+ 293:../cleanflight/src/main/io/flashfs.c **** 
+ 294:../cleanflight/src/main/io/flashfs.c **** /**
+ 295:../cleanflight/src/main/io/flashfs.c ****  * Called after bytes have been written from the buffer to advance the position of the tail by the 
+ 296:../cleanflight/src/main/io/flashfs.c ****  */
+ 297:../cleanflight/src/main/io/flashfs.c **** static void flashfsAdvanceTailInBuffer(uint32_t delta)
+ 298:../cleanflight/src/main/io/flashfs.c **** {
+ 1032              	 .loc 1 298 0
+ 1033              	 .cfi_startproc
+ 1034              	 
+ 1035              	 
+ 1036 0000 80B5     	 push {r7,lr}
+ 1037              	.LCFI55:
+ 1038              	 .cfi_def_cfa_offset 8
+ 1039              	 .cfi_offset 7,-8
+ 1040              	 .cfi_offset 14,-4
+ 1041 0002 82B0     	 sub sp,sp,#8
+ 1042              	.LCFI56:
+ 1043              	 .cfi_def_cfa_offset 16
+ 1044 0004 00AF     	 add r7,sp,#0
+ 1045              	.LCFI57:
+ 1046              	 .cfi_def_cfa_register 7
+ 1047 0006 7860     	 str r0,[r7,#4]
+ 299:../cleanflight/src/main/io/flashfs.c ****     bufferTail += delta;
+ 1048              	 .loc 1 299 0
+ 1049 0008 7B68     	 ldr r3,[r7,#4]
+ 1050 000a DAB2     	 uxtb r2,r3
+ 1051 000c 0D4B     	 ldr r3,.L65
+ 1052 000e 1B78     	 ldrb r3,[r3]
+ 1053 0010 1344     	 add r3,r3,r2
+ 1054 0012 DAB2     	 uxtb r2,r3
+ 1055 0014 0B4B     	 ldr r3,.L65
+ 1056 0016 1A70     	 strb r2,[r3]
+ 300:../cleanflight/src/main/io/flashfs.c **** 
+ 301:../cleanflight/src/main/io/flashfs.c ****     // Wrap tail around the end of the buffer
+ 302:../cleanflight/src/main/io/flashfs.c ****     if (bufferTail >= FLASHFS_WRITE_BUFFER_SIZE) {
+ 1057              	 .loc 1 302 0
+ 1058 0018 0A4B     	 ldr r3,.L65
+ 1059 001a 1B78     	 ldrb r3,[r3]
+ 1060 001c DBB2     	 uxtb r3,r3
+ 1061 001e 5BB2     	 sxtb r3,r3
+ 1062 0020 002B     	 cmp r3,#0
+ 1063 0022 05DA     	 bge .L63
+ 303:../cleanflight/src/main/io/flashfs.c ****         bufferTail -= FLASHFS_WRITE_BUFFER_SIZE;
+ 1064              	 .loc 1 303 0
+ 1065 0024 074B     	 ldr r3,.L65
+ 1066 0026 1B78     	 ldrb r3,[r3]
+ 1067 0028 803B     	 subs r3,r3,#128
+ 1068 002a DAB2     	 uxtb r2,r3
+ 1069 002c 054B     	 ldr r3,.L65
+ 1070 002e 1A70     	 strb r2,[r3]
+ 1071              	.L63:
+ 304:../cleanflight/src/main/io/flashfs.c ****     }
+ 305:../cleanflight/src/main/io/flashfs.c **** 
+ 306:../cleanflight/src/main/io/flashfs.c ****     if (flashfsBufferIsEmpty()) {
+ 1072              	 .loc 1 306 0
+ 1073 0030 FFF7FEFF 	 bl flashfsBufferIsEmpty
+ 1074 0034 0346     	 mov r3,r0
+ 1075 0036 002B     	 cmp r3,#0
+ 1076 0038 01D0     	 beq .L62
+ 307:../cleanflight/src/main/io/flashfs.c ****         flashfsClearBuffer(); // Bring buffer pointers back to the start to be tidier
+ 1077              	 .loc 1 307 0
+ 1078 003a FFF7FEFF 	 bl flashfsClearBuffer
+ 1079              	.L62:
+ 308:../cleanflight/src/main/io/flashfs.c ****     }
+ 309:../cleanflight/src/main/io/flashfs.c **** }
+ 1080              	 .loc 1 309 0
+ 1081 003e 0837     	 adds r7,r7,#8
+ 1082              	.LCFI58:
+ 1083              	 .cfi_def_cfa_offset 8
+ 1084 0040 BD46     	 mov sp,r7
+ 1085              	.LCFI59:
+ 1086              	 .cfi_def_cfa_register 13
+ 1087              	 
+ 1088 0042 80BD     	 pop {r7,pc}
+ 1089              	.L66:
+ 1090              	 .align 2
+ 1091              	.L65:
+ 1092 0044 00000000 	 .word bufferTail
+ 1093              	 .cfi_endproc
+ 1094              	.LFE541:
+ 1096              	 .section .text.flashfsFlushAsync,"ax",%progbits
+ 1097              	 .align 2
+ 1098              	 .global flashfsFlushAsync
+ 1099              	 .thumb
+ 1100              	 .thumb_func
+ 1102              	flashfsFlushAsync:
+ 1103              	.LFB542:
+ 310:../cleanflight/src/main/io/flashfs.c **** 
+ 311:../cleanflight/src/main/io/flashfs.c **** /**
+ 312:../cleanflight/src/main/io/flashfs.c ****  * If the flash is ready to accept writes, flush the buffer to it.
+ 313:../cleanflight/src/main/io/flashfs.c ****  *
+ 314:../cleanflight/src/main/io/flashfs.c ****  * Returns true if all data in the buffer has been flushed to the device, or false if
+ 315:../cleanflight/src/main/io/flashfs.c ****  * there is still data to be written (call flush again later).
+ 316:../cleanflight/src/main/io/flashfs.c ****  */
+ 317:../cleanflight/src/main/io/flashfs.c **** bool flashfsFlushAsync(void)
+ 318:../cleanflight/src/main/io/flashfs.c **** {
+ 1104              	 .loc 1 318 0
+ 1105              	 .cfi_startproc
+ 1106              	 
+ 1107              	 
+ 1108 0000 80B5     	 push {r7,lr}
+ 1109              	.LCFI60:
+ 1110              	 .cfi_def_cfa_offset 8
+ 1111              	 .cfi_offset 7,-8
+ 1112              	 .cfi_offset 14,-4
+ 1113 0002 86B0     	 sub sp,sp,#24
+ 1114              	.LCFI61:
+ 1115              	 .cfi_def_cfa_offset 32
+ 1116 0004 00AF     	 add r7,sp,#0
+ 1117              	.LCFI62:
+ 1118              	 .cfi_def_cfa_register 7
+ 319:../cleanflight/src/main/io/flashfs.c ****     if (flashfsBufferIsEmpty()) {
+ 1119              	 .loc 1 319 0
+ 1120 0006 FFF7FEFF 	 bl flashfsBufferIsEmpty
+ 1121 000a 0346     	 mov r3,r0
+ 1122 000c 002B     	 cmp r3,#0
+ 1123 000e 01D0     	 beq .L68
+ 320:../cleanflight/src/main/io/flashfs.c ****         return true; // Nothing to flush
+ 1124              	 .loc 1 320 0
+ 1125 0010 0123     	 movs r3,#1
+ 1126 0012 16E0     	 b .L70
+ 1127              	.L68:
+ 321:../cleanflight/src/main/io/flashfs.c ****     }
+ 322:../cleanflight/src/main/io/flashfs.c **** 
+ 323:../cleanflight/src/main/io/flashfs.c ****     uint8_t const * buffers[2];
+ 324:../cleanflight/src/main/io/flashfs.c ****     uint32_t bufferSizes[2];
+ 325:../cleanflight/src/main/io/flashfs.c ****     uint32_t bytesWritten;
+ 326:../cleanflight/src/main/io/flashfs.c **** 
+ 327:../cleanflight/src/main/io/flashfs.c ****     flashfsGetDirtyDataBuffers(buffers, bufferSizes);
+ 1128              	 .loc 1 327 0
+ 1129 0014 07F10C02 	 add r2,r7,#12
+ 1130 0018 3B1D     	 adds r3,r7,#4
+ 1131 001a 1046     	 mov r0,r2
+ 1132 001c 1946     	 mov r1,r3
+ 1133 001e FFF7FEFF 	 bl flashfsGetDirtyDataBuffers
+ 328:../cleanflight/src/main/io/flashfs.c ****     bytesWritten = flashfsWriteBuffers(buffers, bufferSizes, 2, false);
+ 1134              	 .loc 1 328 0
+ 1135 0022 07F10C02 	 add r2,r7,#12
+ 1136 0026 3B1D     	 adds r3,r7,#4
+ 1137 0028 1046     	 mov r0,r2
+ 1138 002a 1946     	 mov r1,r3
+ 1139 002c 0222     	 movs r2,#2
+ 1140 002e 0023     	 movs r3,#0
+ 1141 0030 FFF7FEFF 	 bl flashfsWriteBuffers
+ 1142 0034 7861     	 str r0,[r7,#20]
+ 329:../cleanflight/src/main/io/flashfs.c ****     flashfsAdvanceTailInBuffer(bytesWritten);
+ 1143              	 .loc 1 329 0
+ 1144 0036 7869     	 ldr r0,[r7,#20]
+ 1145 0038 FFF7FEFF 	 bl flashfsAdvanceTailInBuffer
+ 330:../cleanflight/src/main/io/flashfs.c **** 
+ 331:../cleanflight/src/main/io/flashfs.c ****     return flashfsBufferIsEmpty();
+ 1146              	 .loc 1 331 0
+ 1147 003c FFF7FEFF 	 bl flashfsBufferIsEmpty
+ 1148 0040 0346     	 mov r3,r0
+ 1149              	.L70:
+ 332:../cleanflight/src/main/io/flashfs.c **** }
+ 1150              	 .loc 1 332 0 discriminator 1
+ 1151 0042 1846     	 mov r0,r3
+ 1152 0044 1837     	 adds r7,r7,#24
+ 1153              	.LCFI63:
+ 1154              	 .cfi_def_cfa_offset 8
+ 1155 0046 BD46     	 mov sp,r7
+ 1156              	.LCFI64:
+ 1157              	 .cfi_def_cfa_register 13
+ 1158              	 
+ 1159 0048 80BD     	 pop {r7,pc}
+ 1160              	 .cfi_endproc
+ 1161              	.LFE542:
+ 1163 004a 00BF     	 .section .text.flashfsFlushSync,"ax",%progbits
+ 1164              	 .align 2
+ 1165              	 .global flashfsFlushSync
+ 1166              	 .thumb
+ 1167              	 .thumb_func
+ 1169              	flashfsFlushSync:
+ 1170              	.LFB543:
+ 333:../cleanflight/src/main/io/flashfs.c **** 
+ 334:../cleanflight/src/main/io/flashfs.c **** /**
+ 335:../cleanflight/src/main/io/flashfs.c ****  * Wait for the flash to become ready and begin flushing any buffered data to flash.
+ 336:../cleanflight/src/main/io/flashfs.c ****  *
+ 337:../cleanflight/src/main/io/flashfs.c ****  * The flash will still be busy some time after this sync completes, but space will
+ 338:../cleanflight/src/main/io/flashfs.c ****  * be freed up to accept more writes in the write buffer.
+ 339:../cleanflight/src/main/io/flashfs.c ****  */
+ 340:../cleanflight/src/main/io/flashfs.c **** void flashfsFlushSync(void)
+ 341:../cleanflight/src/main/io/flashfs.c **** {
+ 1171              	 .loc 1 341 0
+ 1172              	 .cfi_startproc
+ 1173              	 
+ 1174              	 
+ 1175 0000 80B5     	 push {r7,lr}
+ 1176              	.LCFI65:
+ 1177              	 .cfi_def_cfa_offset 8
+ 1178              	 .cfi_offset 7,-8
+ 1179              	 .cfi_offset 14,-4
+ 1180 0002 84B0     	 sub sp,sp,#16
+ 1181              	.LCFI66:
+ 1182              	 .cfi_def_cfa_offset 24
+ 1183 0004 00AF     	 add r7,sp,#0
+ 1184              	.LCFI67:
+ 1185              	 .cfi_def_cfa_register 7
+ 342:../cleanflight/src/main/io/flashfs.c ****     if (flashfsBufferIsEmpty()) {
+ 1186              	 .loc 1 342 0
+ 1187 0006 FFF7FEFF 	 bl flashfsBufferIsEmpty
+ 1188 000a 0346     	 mov r3,r0
+ 1189 000c 002B     	 cmp r3,#0
+ 1190 000e 11D1     	 bne .L71
+ 343:../cleanflight/src/main/io/flashfs.c ****         return; // Nothing to flush
+ 344:../cleanflight/src/main/io/flashfs.c ****     }
+ 345:../cleanflight/src/main/io/flashfs.c **** 
+ 346:../cleanflight/src/main/io/flashfs.c ****     uint8_t const * buffers[2];
+ 347:../cleanflight/src/main/io/flashfs.c ****     uint32_t bufferSizes[2];
+ 348:../cleanflight/src/main/io/flashfs.c **** 
+ 349:../cleanflight/src/main/io/flashfs.c ****     flashfsGetDirtyDataBuffers(buffers, bufferSizes);
+ 1191              	 .loc 1 349 0
+ 1192 0010 07F10802 	 add r2,r7,#8
+ 1193 0014 3B46     	 mov r3,r7
+ 1194 0016 1046     	 mov r0,r2
+ 1195 0018 1946     	 mov r1,r3
+ 1196 001a FFF7FEFF 	 bl flashfsGetDirtyDataBuffers
+ 350:../cleanflight/src/main/io/flashfs.c ****     flashfsWriteBuffers(buffers, bufferSizes, 2, true);
+ 1197              	 .loc 1 350 0
+ 1198 001e 07F10802 	 add r2,r7,#8
+ 1199 0022 3B46     	 mov r3,r7
+ 1200 0024 1046     	 mov r0,r2
+ 1201 0026 1946     	 mov r1,r3
+ 1202 0028 0222     	 movs r2,#2
+ 1203 002a 0123     	 movs r3,#1
+ 1204 002c FFF7FEFF 	 bl flashfsWriteBuffers
+ 351:../cleanflight/src/main/io/flashfs.c **** 
+ 352:../cleanflight/src/main/io/flashfs.c ****     // We've written our entire buffer now:
+ 353:../cleanflight/src/main/io/flashfs.c ****     flashfsClearBuffer();
+ 1205              	 .loc 1 353 0
+ 1206 0030 FFF7FEFF 	 bl flashfsClearBuffer
+ 1207              	.L71:
+ 354:../cleanflight/src/main/io/flashfs.c **** }
+ 1208              	 .loc 1 354 0
+ 1209 0034 1037     	 adds r7,r7,#16
+ 1210              	.LCFI68:
+ 1211              	 .cfi_def_cfa_offset 8
+ 1212 0036 BD46     	 mov sp,r7
+ 1213              	.LCFI69:
+ 1214              	 .cfi_def_cfa_register 13
+ 1215              	 
+ 1216 0038 80BD     	 pop {r7,pc}
+ 1217              	 .cfi_endproc
+ 1218              	.LFE543:
+ 1220 003a 00BF     	 .section .text.flashfsSeekAbs,"ax",%progbits
+ 1221              	 .align 2
+ 1222              	 .global flashfsSeekAbs
+ 1223              	 .thumb
+ 1224              	 .thumb_func
+ 1226              	flashfsSeekAbs:
+ 1227              	.LFB544:
+ 355:../cleanflight/src/main/io/flashfs.c **** 
+ 356:../cleanflight/src/main/io/flashfs.c **** void flashfsSeekAbs(uint32_t offset)
+ 357:../cleanflight/src/main/io/flashfs.c **** {
+ 1228              	 .loc 1 357 0
+ 1229              	 .cfi_startproc
+ 1230              	 
+ 1231              	 
+ 1232 0000 80B5     	 push {r7,lr}
+ 1233              	.LCFI70:
+ 1234              	 .cfi_def_cfa_offset 8
+ 1235              	 .cfi_offset 7,-8
+ 1236              	 .cfi_offset 14,-4
+ 1237 0002 82B0     	 sub sp,sp,#8
+ 1238              	.LCFI71:
+ 1239              	 .cfi_def_cfa_offset 16
+ 1240 0004 00AF     	 add r7,sp,#0
+ 1241              	.LCFI72:
+ 1242              	 .cfi_def_cfa_register 7
+ 1243 0006 7860     	 str r0,[r7,#4]
+ 358:../cleanflight/src/main/io/flashfs.c ****     flashfsFlushSync();
+ 1244              	 .loc 1 358 0
+ 1245 0008 FFF7FEFF 	 bl flashfsFlushSync
+ 359:../cleanflight/src/main/io/flashfs.c **** 
+ 360:../cleanflight/src/main/io/flashfs.c ****     flashfsSetTailAddress(offset);
+ 1246              	 .loc 1 360 0
+ 1247 000c 7868     	 ldr r0,[r7,#4]
+ 1248 000e FFF7FEFF 	 bl flashfsSetTailAddress
+ 361:../cleanflight/src/main/io/flashfs.c **** }
+ 1249              	 .loc 1 361 0
+ 1250 0012 0837     	 adds r7,r7,#8
+ 1251              	.LCFI73:
+ 1252              	 .cfi_def_cfa_offset 8
+ 1253 0014 BD46     	 mov sp,r7
+ 1254              	.LCFI74:
+ 1255              	 .cfi_def_cfa_register 13
+ 1256              	 
+ 1257 0016 80BD     	 pop {r7,pc}
+ 1258              	 .cfi_endproc
+ 1259              	.LFE544:
+ 1261              	 .section .text.flashfsSeekRel,"ax",%progbits
+ 1262              	 .align 2
+ 1263              	 .global flashfsSeekRel
+ 1264              	 .thumb
+ 1265              	 .thumb_func
+ 1267              	flashfsSeekRel:
+ 1268              	.LFB545:
+ 362:../cleanflight/src/main/io/flashfs.c **** 
+ 363:../cleanflight/src/main/io/flashfs.c **** void flashfsSeekRel(int32_t offset)
+ 364:../cleanflight/src/main/io/flashfs.c **** {
+ 1269              	 .loc 1 364 0
+ 1270              	 .cfi_startproc
+ 1271              	 
+ 1272              	 
+ 1273 0000 80B5     	 push {r7,lr}
+ 1274              	.LCFI75:
+ 1275              	 .cfi_def_cfa_offset 8
+ 1276              	 .cfi_offset 7,-8
+ 1277              	 .cfi_offset 14,-4
+ 1278 0002 82B0     	 sub sp,sp,#8
+ 1279              	.LCFI76:
+ 1280              	 .cfi_def_cfa_offset 16
+ 1281 0004 00AF     	 add r7,sp,#0
+ 1282              	.LCFI77:
+ 1283              	 .cfi_def_cfa_register 7
+ 1284 0006 7860     	 str r0,[r7,#4]
+ 365:../cleanflight/src/main/io/flashfs.c ****     flashfsFlushSync();
+ 1285              	 .loc 1 365 0
+ 1286 0008 FFF7FEFF 	 bl flashfsFlushSync
+ 366:../cleanflight/src/main/io/flashfs.c **** 
+ 367:../cleanflight/src/main/io/flashfs.c ****     flashfsSetTailAddress(tailAddress + offset);
+ 1287              	 .loc 1 367 0
+ 1288 000c 044B     	 ldr r3,.L76
+ 1289 000e 1A68     	 ldr r2,[r3]
+ 1290 0010 7B68     	 ldr r3,[r7,#4]
+ 1291 0012 1344     	 add r3,r3,r2
+ 1292 0014 1846     	 mov r0,r3
+ 1293 0016 FFF7FEFF 	 bl flashfsSetTailAddress
+ 368:../cleanflight/src/main/io/flashfs.c **** }
+ 1294              	 .loc 1 368 0
+ 1295 001a 0837     	 adds r7,r7,#8
+ 1296              	.LCFI78:
+ 1297              	 .cfi_def_cfa_offset 8
+ 1298 001c BD46     	 mov sp,r7
+ 1299              	.LCFI79:
+ 1300              	 .cfi_def_cfa_register 13
+ 1301              	 
+ 1302 001e 80BD     	 pop {r7,pc}
+ 1303              	.L77:
+ 1304              	 .align 2
+ 1305              	.L76:
+ 1306 0020 00000000 	 .word tailAddress
+ 1307              	 .cfi_endproc
+ 1308              	.LFE545:
+ 1310              	 .section .text.flashfsWriteByte,"ax",%progbits
+ 1311              	 .align 2
+ 1312              	 .global flashfsWriteByte
+ 1313              	 .thumb
+ 1314              	 .thumb_func
+ 1316              	flashfsWriteByte:
+ 1317              	.LFB546:
+ 369:../cleanflight/src/main/io/flashfs.c **** 
+ 370:../cleanflight/src/main/io/flashfs.c **** /**
+ 371:../cleanflight/src/main/io/flashfs.c ****  * Write the given byte asynchronously to the flash. If the buffer overflows, data is silently disc
+ 372:../cleanflight/src/main/io/flashfs.c ****  */
+ 373:../cleanflight/src/main/io/flashfs.c **** void flashfsWriteByte(uint8_t byte)
+ 374:../cleanflight/src/main/io/flashfs.c **** {
+ 1318              	 .loc 1 374 0
+ 1319              	 .cfi_startproc
+ 1320              	 
+ 1321              	 
+ 1322 0000 80B5     	 push {r7,lr}
+ 1323              	.LCFI80:
+ 1324              	 .cfi_def_cfa_offset 8
+ 1325              	 .cfi_offset 7,-8
+ 1326              	 .cfi_offset 14,-4
+ 1327 0002 82B0     	 sub sp,sp,#8
+ 1328              	.LCFI81:
+ 1329              	 .cfi_def_cfa_offset 16
+ 1330 0004 00AF     	 add r7,sp,#0
+ 1331              	.LCFI82:
+ 1332              	 .cfi_def_cfa_register 7
+ 1333 0006 0346     	 mov r3,r0
+ 1334 0008 FB71     	 strb r3,[r7,#7]
+ 375:../cleanflight/src/main/io/flashfs.c ****     flashWriteBuffer[bufferHead++] = byte;
+ 1335              	 .loc 1 375 0
+ 1336 000a 0E4B     	 ldr r3,.L81
+ 1337 000c 1B78     	 ldrb r3,[r3]
+ 1338 000e 5A1C     	 adds r2,r3,#1
+ 1339 0010 D1B2     	 uxtb r1,r2
+ 1340 0012 0C4A     	 ldr r2,.L81
+ 1341 0014 1170     	 strb r1,[r2]
+ 1342 0016 1946     	 mov r1,r3
+ 1343 0018 0B4A     	 ldr r2,.L81+4
+ 1344 001a FB79     	 ldrb r3,[r7,#7]
+ 1345 001c 5354     	 strb r3,[r2,r1]
+ 376:../cleanflight/src/main/io/flashfs.c **** 
+ 377:../cleanflight/src/main/io/flashfs.c ****     if (bufferHead >= FLASHFS_WRITE_BUFFER_SIZE) {
+ 1346              	 .loc 1 377 0
+ 1347 001e 094B     	 ldr r3,.L81
+ 1348 0020 1B78     	 ldrb r3,[r3]
+ 1349 0022 DBB2     	 uxtb r3,r3
+ 1350 0024 5BB2     	 sxtb r3,r3
+ 1351 0026 002B     	 cmp r3,#0
+ 1352 0028 02DA     	 bge .L79
+ 378:../cleanflight/src/main/io/flashfs.c ****         bufferHead = 0;
+ 1353              	 .loc 1 378 0
+ 1354 002a 064B     	 ldr r3,.L81
+ 1355 002c 0022     	 movs r2,#0
+ 1356 002e 1A70     	 strb r2,[r3]
+ 1357              	.L79:
+ 379:../cleanflight/src/main/io/flashfs.c ****     }
+ 380:../cleanflight/src/main/io/flashfs.c **** 
+ 381:../cleanflight/src/main/io/flashfs.c ****     if (flashfsTransmitBufferUsed() >= FLASHFS_WRITE_BUFFER_AUTO_FLUSH_LEN) {
+ 1358              	 .loc 1 381 0
+ 1359 0030 FFF7FEFF 	 bl flashfsTransmitBufferUsed
+ 1360 0034 0346     	 mov r3,r0
+ 1361 0036 3F2B     	 cmp r3,#63
+ 1362 0038 01D9     	 bls .L78
+ 382:../cleanflight/src/main/io/flashfs.c ****         flashfsFlushAsync();
+ 1363              	 .loc 1 382 0
+ 1364 003a FFF7FEFF 	 bl flashfsFlushAsync
+ 1365              	.L78:
+ 383:../cleanflight/src/main/io/flashfs.c ****     }
+ 384:../cleanflight/src/main/io/flashfs.c **** }
+ 1366              	 .loc 1 384 0
+ 1367 003e 0837     	 adds r7,r7,#8
+ 1368              	.LCFI83:
+ 1369              	 .cfi_def_cfa_offset 8
+ 1370 0040 BD46     	 mov sp,r7
+ 1371              	.LCFI84:
+ 1372              	 .cfi_def_cfa_register 13
+ 1373              	 
+ 1374 0042 80BD     	 pop {r7,pc}
+ 1375              	.L82:
+ 1376              	 .align 2
+ 1377              	.L81:
+ 1378 0044 00000000 	 .word bufferHead
+ 1379 0048 00000000 	 .word flashWriteBuffer
+ 1380              	 .cfi_endproc
+ 1381              	.LFE546:
+ 1383              	 .section .text.flashfsWrite,"ax",%progbits
+ 1384              	 .align 2
+ 1385              	 .global flashfsWrite
+ 1386              	 .thumb
+ 1387              	 .thumb_func
+ 1389              	flashfsWrite:
+ 1390              	.LFB547:
+ 385:../cleanflight/src/main/io/flashfs.c **** 
+ 386:../cleanflight/src/main/io/flashfs.c **** /**
+ 387:../cleanflight/src/main/io/flashfs.c ****  * Write the given buffer to the flash either synchronously or asynchronously depending on the 'syn
+ 388:../cleanflight/src/main/io/flashfs.c ****  *
+ 389:../cleanflight/src/main/io/flashfs.c ****  * If writing asynchronously, data will be silently discarded if the buffer overflows.
+ 390:../cleanflight/src/main/io/flashfs.c ****  * If writing synchronously, the routine will block waiting for the flash to become ready so will n
+ 391:../cleanflight/src/main/io/flashfs.c ****  */
+ 392:../cleanflight/src/main/io/flashfs.c **** void flashfsWrite(const uint8_t *data, unsigned int len, bool sync)
+ 393:../cleanflight/src/main/io/flashfs.c **** {
+ 1391              	 .loc 1 393 0
+ 1392              	 .cfi_startproc
+ 1393              	 
+ 1394              	 
+ 1395 0000 80B5     	 push {r7,lr}
+ 1396              	.LCFI85:
+ 1397              	 .cfi_def_cfa_offset 8
+ 1398              	 .cfi_offset 7,-8
+ 1399              	 .cfi_offset 14,-4
+ 1400 0002 8EB0     	 sub sp,sp,#56
+ 1401              	.LCFI86:
+ 1402              	 .cfi_def_cfa_offset 64
+ 1403 0004 00AF     	 add r7,sp,#0
+ 1404              	.LCFI87:
+ 1405              	 .cfi_def_cfa_register 7
+ 1406 0006 F860     	 str r0,[r7,#12]
+ 1407 0008 B960     	 str r1,[r7,#8]
+ 1408 000a 1346     	 mov r3,r2
+ 1409 000c FB71     	 strb r3,[r7,#7]
+ 394:../cleanflight/src/main/io/flashfs.c ****     uint8_t const * buffers[3];
+ 395:../cleanflight/src/main/io/flashfs.c ****     uint32_t bufferSizes[3];
+ 396:../cleanflight/src/main/io/flashfs.c **** 
+ 397:../cleanflight/src/main/io/flashfs.c ****     // There could be two dirty buffers to write out already:
+ 398:../cleanflight/src/main/io/flashfs.c ****     flashfsGetDirtyDataBuffers(buffers, bufferSizes);
+ 1410              	 .loc 1 398 0
+ 1411 000e 07F12002 	 add r2,r7,#32
+ 1412 0012 07F11403 	 add r3,r7,#20
+ 1413 0016 1046     	 mov r0,r2
+ 1414 0018 1946     	 mov r1,r3
+ 1415 001a FFF7FEFF 	 bl flashfsGetDirtyDataBuffers
+ 399:../cleanflight/src/main/io/flashfs.c **** 
+ 400:../cleanflight/src/main/io/flashfs.c ****     // Plus the buffer the user supplied:
+ 401:../cleanflight/src/main/io/flashfs.c ****     buffers[2] = data;
+ 1416              	 .loc 1 401 0
+ 1417 001e FB68     	 ldr r3,[r7,#12]
+ 1418 0020 BB62     	 str r3,[r7,#40]
+ 402:../cleanflight/src/main/io/flashfs.c ****     bufferSizes[2] = len;
+ 1419              	 .loc 1 402 0
+ 1420 0022 BB68     	 ldr r3,[r7,#8]
+ 1421 0024 FB61     	 str r3,[r7,#28]
+ 403:../cleanflight/src/main/io/flashfs.c **** 
+ 404:../cleanflight/src/main/io/flashfs.c ****     /*
+ 405:../cleanflight/src/main/io/flashfs.c ****      * Would writing this data to our buffer cause our buffer to reach the flush threshold? If so t
+ 406:../cleanflight/src/main/io/flashfs.c ****      * to the flash now
+ 407:../cleanflight/src/main/io/flashfs.c ****      */
+ 408:../cleanflight/src/main/io/flashfs.c ****     if (bufferSizes[0] + bufferSizes[1] + bufferSizes[2] >= FLASHFS_WRITE_BUFFER_AUTO_FLUSH_LEN) {
+ 1422              	 .loc 1 408 0
+ 1423 0026 7A69     	 ldr r2,[r7,#20]
+ 1424 0028 BB69     	 ldr r3,[r7,#24]
+ 1425 002a 1A44     	 add r2,r2,r3
+ 1426 002c FB69     	 ldr r3,[r7,#28]
+ 1427 002e 1344     	 add r3,r3,r2
+ 1428 0030 3F2B     	 cmp r3,#63
+ 1429 0032 35D9     	 bls .L84
+ 1430              	.LBB4:
+ 409:../cleanflight/src/main/io/flashfs.c ****         uint32_t bytesWritten;
+ 410:../cleanflight/src/main/io/flashfs.c **** 
+ 411:../cleanflight/src/main/io/flashfs.c ****         // Attempt to write all three buffers through to the flash asynchronously
+ 412:../cleanflight/src/main/io/flashfs.c ****         bytesWritten = flashfsWriteBuffers(buffers, bufferSizes, 3, false);
+ 1431              	 .loc 1 412 0
+ 1432 0034 07F12002 	 add r2,r7,#32
+ 1433 0038 07F11403 	 add r3,r7,#20
+ 1434 003c 1046     	 mov r0,r2
+ 1435 003e 1946     	 mov r1,r3
+ 1436 0040 0322     	 movs r2,#3
+ 1437 0042 0023     	 movs r3,#0
+ 1438 0044 FFF7FEFF 	 bl flashfsWriteBuffers
+ 1439 0048 7863     	 str r0,[r7,#52]
+ 413:../cleanflight/src/main/io/flashfs.c **** 
+ 414:../cleanflight/src/main/io/flashfs.c ****         if (bufferSizes[0] == 0 && bufferSizes[1] == 0) {
+ 1440              	 .loc 1 414 0
+ 1441 004a 7B69     	 ldr r3,[r7,#20]
+ 1442 004c 002B     	 cmp r3,#0
+ 1443 004e 09D1     	 bne .L85
+ 1444              	 .loc 1 414 0 is_stmt 0 discriminator 1
+ 1445 0050 BB69     	 ldr r3,[r7,#24]
+ 1446 0052 002B     	 cmp r3,#0
+ 1447 0054 06D1     	 bne .L85
+ 415:../cleanflight/src/main/io/flashfs.c ****             // We wrote all the data that was previously buffered
+ 416:../cleanflight/src/main/io/flashfs.c ****             flashfsClearBuffer();
+ 1448              	 .loc 1 416 0 is_stmt 1
+ 1449 0056 FFF7FEFF 	 bl flashfsClearBuffer
+ 417:../cleanflight/src/main/io/flashfs.c **** 
+ 418:../cleanflight/src/main/io/flashfs.c ****             if (bufferSizes[2] == 0) {
+ 1450              	 .loc 1 418 0
+ 1451 005a FB69     	 ldr r3,[r7,#28]
+ 1452 005c 002B     	 cmp r3,#0
+ 1453 005e 00D1     	 bne .L86
+ 419:../cleanflight/src/main/io/flashfs.c ****                 // And we wrote all the data the user supplied! Job done!
+ 420:../cleanflight/src/main/io/flashfs.c ****                 return;
+ 1454              	 .loc 1 420 0
+ 1455 0060 50E0     	 b .L83
+ 1456              	.L86:
+ 418:../cleanflight/src/main/io/flashfs.c ****                 // And we wrote all the data the user supplied! Job done!
+ 1457              	 .loc 1 418 0
+ 1458 0062 02E0     	 b .L88
+ 1459              	.L85:
+ 421:../cleanflight/src/main/io/flashfs.c ****             }
+ 422:../cleanflight/src/main/io/flashfs.c ****         } else {
+ 423:../cleanflight/src/main/io/flashfs.c ****             // We only wrote a portion of the old data, so advance the tail to remove the bytes we 
+ 424:../cleanflight/src/main/io/flashfs.c ****             flashfsAdvanceTailInBuffer(bytesWritten);
+ 1460              	 .loc 1 424 0
+ 1461 0064 786B     	 ldr r0,[r7,#52]
+ 1462 0066 FFF7FEFF 	 bl flashfsAdvanceTailInBuffer
+ 1463              	.L88:
+ 425:../cleanflight/src/main/io/flashfs.c ****         }
+ 426:../cleanflight/src/main/io/flashfs.c **** 
+ 427:../cleanflight/src/main/io/flashfs.c ****         // Is the remainder of the data to be written too big to fit in the buffers?
+ 428:../cleanflight/src/main/io/flashfs.c ****         if (bufferSizes[0] + bufferSizes[1] + bufferSizes[2] > FLASHFS_WRITE_BUFFER_USABLE) {
+ 1464              	 .loc 1 428 0
+ 1465 006a 7A69     	 ldr r2,[r7,#20]
+ 1466 006c BB69     	 ldr r3,[r7,#24]
+ 1467 006e 1A44     	 add r2,r2,r3
+ 1468 0070 FB69     	 ldr r3,[r7,#28]
+ 1469 0072 1344     	 add r3,r3,r2
+ 1470 0074 7F2B     	 cmp r3,#127
+ 1471 0076 0FD9     	 bls .L89
+ 429:../cleanflight/src/main/io/flashfs.c ****             if (sync) {
+ 1472              	 .loc 1 429 0
+ 1473 0078 FB79     	 ldrb r3,[r7,#7]
+ 1474 007a 002B     	 cmp r3,#0
+ 1475 007c 0BD0     	 beq .L90
+ 430:../cleanflight/src/main/io/flashfs.c ****                 // Write it through synchronously
+ 431:../cleanflight/src/main/io/flashfs.c ****                 flashfsWriteBuffers(buffers, bufferSizes, 3, true);
+ 1476              	 .loc 1 431 0
+ 1477 007e 07F12002 	 add r2,r7,#32
+ 1478 0082 07F11403 	 add r3,r7,#20
+ 1479 0086 1046     	 mov r0,r2
+ 1480 0088 1946     	 mov r1,r3
+ 1481 008a 0322     	 movs r2,#3
+ 1482 008c 0123     	 movs r3,#1
+ 1483 008e FFF7FEFF 	 bl flashfsWriteBuffers
+ 432:../cleanflight/src/main/io/flashfs.c ****                 flashfsClearBuffer();
+ 1484              	 .loc 1 432 0
+ 1485 0092 FFF7FEFF 	 bl flashfsClearBuffer
+ 1486              	.L90:
+ 433:../cleanflight/src/main/io/flashfs.c ****             } else {
+ 434:../cleanflight/src/main/io/flashfs.c ****                 /*
+ 435:../cleanflight/src/main/io/flashfs.c ****                  * Silently drop the data the user asked to write (i.e. no-op) since we can't buffe
+ 436:../cleanflight/src/main/io/flashfs.c ****                  * requested async.
+ 437:../cleanflight/src/main/io/flashfs.c ****                  */
+ 438:../cleanflight/src/main/io/flashfs.c ****             }
+ 439:../cleanflight/src/main/io/flashfs.c **** 
+ 440:../cleanflight/src/main/io/flashfs.c ****             return;
+ 1487              	 .loc 1 440 0
+ 1488 0096 35E0     	 b .L83
+ 1489              	.L89:
+ 441:../cleanflight/src/main/io/flashfs.c ****         }
+ 442:../cleanflight/src/main/io/flashfs.c **** 
+ 443:../cleanflight/src/main/io/flashfs.c ****         // Fall through and add the remainder of the incoming data to our buffer
+ 444:../cleanflight/src/main/io/flashfs.c ****         data = buffers[2];
+ 1490              	 .loc 1 444 0
+ 1491 0098 BB6A     	 ldr r3,[r7,#40]
+ 1492 009a FB60     	 str r3,[r7,#12]
+ 445:../cleanflight/src/main/io/flashfs.c ****         len = bufferSizes[2];
+ 1493              	 .loc 1 445 0
+ 1494 009c FB69     	 ldr r3,[r7,#28]
+ 1495 009e BB60     	 str r3,[r7,#8]
+ 1496              	.L84:
+ 1497              	.LBE4:
+ 446:../cleanflight/src/main/io/flashfs.c ****     }
+ 447:../cleanflight/src/main/io/flashfs.c **** 
+ 448:../cleanflight/src/main/io/flashfs.c ****     // Buffer up the data the user supplied instead of writing it right away
+ 449:../cleanflight/src/main/io/flashfs.c **** 
+ 450:../cleanflight/src/main/io/flashfs.c ****     // First write the portion before we wrap around the end of the circular buffer
+ 451:../cleanflight/src/main/io/flashfs.c ****     unsigned int bufferBytesBeforeWrap = FLASHFS_WRITE_BUFFER_SIZE - bufferHead;
+ 1498              	 .loc 1 451 0
+ 1499 00a0 1A4B     	 ldr r3,.L93
+ 1500 00a2 1B78     	 ldrb r3,[r3]
+ 1501 00a4 C3F18003 	 rsb r3,r3,#128
+ 1502 00a8 3B63     	 str r3,[r7,#48]
+ 452:../cleanflight/src/main/io/flashfs.c **** 
+ 453:../cleanflight/src/main/io/flashfs.c ****     unsigned int firstPortion = len < bufferBytesBeforeWrap ? len : bufferBytesBeforeWrap;
+ 1503              	 .loc 1 453 0
+ 1504 00aa 3A6B     	 ldr r2,[r7,#48]
+ 1505 00ac BB68     	 ldr r3,[r7,#8]
+ 1506 00ae 9342     	 cmp r3,r2
+ 1507 00b0 28BF     	 it cs
+ 1508 00b2 1346     	 movcs r3,r2
+ 1509 00b4 FB62     	 str r3,[r7,#44]
+ 454:../cleanflight/src/main/io/flashfs.c **** 
+ 455:../cleanflight/src/main/io/flashfs.c ****     memcpy(flashWriteBuffer + bufferHead, data, firstPortion);
+ 1510              	 .loc 1 455 0
+ 1511 00b6 154B     	 ldr r3,.L93
+ 1512 00b8 1B78     	 ldrb r3,[r3]
+ 1513 00ba 1A46     	 mov r2,r3
+ 1514 00bc 144B     	 ldr r3,.L93+4
+ 1515 00be 1344     	 add r3,r3,r2
+ 1516 00c0 1846     	 mov r0,r3
+ 1517 00c2 F968     	 ldr r1,[r7,#12]
+ 1518 00c4 FA6A     	 ldr r2,[r7,#44]
+ 1519 00c6 FFF7FEFF 	 bl memcpy
+ 456:../cleanflight/src/main/io/flashfs.c **** 
+ 457:../cleanflight/src/main/io/flashfs.c ****     bufferHead += firstPortion;
+ 1520              	 .loc 1 457 0
+ 1521 00ca FB6A     	 ldr r3,[r7,#44]
+ 1522 00cc DAB2     	 uxtb r2,r3
+ 1523 00ce 0F4B     	 ldr r3,.L93
+ 1524 00d0 1B78     	 ldrb r3,[r3]
+ 1525 00d2 1344     	 add r3,r3,r2
+ 1526 00d4 DAB2     	 uxtb r2,r3
+ 1527 00d6 0D4B     	 ldr r3,.L93
+ 1528 00d8 1A70     	 strb r2,[r3]
+ 458:../cleanflight/src/main/io/flashfs.c **** 
+ 459:../cleanflight/src/main/io/flashfs.c ****     data += firstPortion;
+ 1529              	 .loc 1 459 0
+ 1530 00da FA68     	 ldr r2,[r7,#12]
+ 1531 00dc FB6A     	 ldr r3,[r7,#44]
+ 1532 00de 1344     	 add r3,r3,r2
+ 1533 00e0 FB60     	 str r3,[r7,#12]
+ 460:../cleanflight/src/main/io/flashfs.c ****     len -= firstPortion;
+ 1534              	 .loc 1 460 0
+ 1535 00e2 BA68     	 ldr r2,[r7,#8]
+ 1536 00e4 FB6A     	 ldr r3,[r7,#44]
+ 1537 00e6 D31A     	 subs r3,r2,r3
+ 1538 00e8 BB60     	 str r3,[r7,#8]
+ 461:../cleanflight/src/main/io/flashfs.c **** 
+ 462:../cleanflight/src/main/io/flashfs.c ****     // If we wrap the head around, write the remainder to the start of the buffer (if any)
+ 463:../cleanflight/src/main/io/flashfs.c ****     if (bufferHead == FLASHFS_WRITE_BUFFER_SIZE) {
+ 1539              	 .loc 1 463 0
+ 1540 00ea 084B     	 ldr r3,.L93
+ 1541 00ec 1B78     	 ldrb r3,[r3]
+ 1542 00ee 802B     	 cmp r3,#128
+ 1543 00f0 08D1     	 bne .L83
+ 464:../cleanflight/src/main/io/flashfs.c ****         memcpy(flashWriteBuffer + 0, data, len);
+ 1544              	 .loc 1 464 0
+ 1545 00f2 0748     	 ldr r0,.L93+4
+ 1546 00f4 F968     	 ldr r1,[r7,#12]
+ 1547 00f6 BA68     	 ldr r2,[r7,#8]
+ 1548 00f8 FFF7FEFF 	 bl memcpy
+ 465:../cleanflight/src/main/io/flashfs.c **** 
+ 466:../cleanflight/src/main/io/flashfs.c ****         bufferHead = len;
+ 1549              	 .loc 1 466 0
+ 1550 00fc BB68     	 ldr r3,[r7,#8]
+ 1551 00fe DAB2     	 uxtb r2,r3
+ 1552 0100 024B     	 ldr r3,.L93
+ 1553 0102 1A70     	 strb r2,[r3]
+ 1554              	.L83:
+ 467:../cleanflight/src/main/io/flashfs.c ****     }
+ 468:../cleanflight/src/main/io/flashfs.c **** }
+ 1555              	 .loc 1 468 0
+ 1556 0104 3837     	 adds r7,r7,#56
+ 1557              	.LCFI88:
+ 1558              	 .cfi_def_cfa_offset 8
+ 1559 0106 BD46     	 mov sp,r7
+ 1560              	.LCFI89:
+ 1561              	 .cfi_def_cfa_register 13
+ 1562              	 
+ 1563 0108 80BD     	 pop {r7,pc}
+ 1564              	.L94:
+ 1565 010a 00BF     	 .align 2
+ 1566              	.L93:
+ 1567 010c 00000000 	 .word bufferHead
+ 1568 0110 00000000 	 .word flashWriteBuffer
+ 1569              	 .cfi_endproc
+ 1570              	.LFE547:
+ 1572              	 .section .text.flashfsReadAbs,"ax",%progbits
+ 1573              	 .align 2
+ 1574              	 .global flashfsReadAbs
+ 1575              	 .thumb
+ 1576              	 .thumb_func
+ 1578              	flashfsReadAbs:
+ 1579              	.LFB548:
+ 469:../cleanflight/src/main/io/flashfs.c **** 
+ 470:../cleanflight/src/main/io/flashfs.c **** /**
+ 471:../cleanflight/src/main/io/flashfs.c ****  * Read `len` bytes from the given address into the supplied buffer.
+ 472:../cleanflight/src/main/io/flashfs.c ****  *
+ 473:../cleanflight/src/main/io/flashfs.c ****  * Returns the number of bytes actually read which may be less than that requested.
+ 474:../cleanflight/src/main/io/flashfs.c ****  */
+ 475:../cleanflight/src/main/io/flashfs.c **** int flashfsReadAbs(uint32_t address, uint8_t *buffer, unsigned int len)
+ 476:../cleanflight/src/main/io/flashfs.c **** {
+ 1580              	 .loc 1 476 0
+ 1581              	 .cfi_startproc
+ 1582              	 
+ 1583              	 
+ 1584 0000 90B5     	 push {r4,r7,lr}
+ 1585              	.LCFI90:
+ 1586              	 .cfi_def_cfa_offset 12
+ 1587              	 .cfi_offset 4,-12
+ 1588              	 .cfi_offset 7,-8
+ 1589              	 .cfi_offset 14,-4
+ 1590 0002 87B0     	 sub sp,sp,#28
+ 1591              	.LCFI91:
+ 1592              	 .cfi_def_cfa_offset 40
+ 1593 0004 00AF     	 add r7,sp,#0
+ 1594              	.LCFI92:
+ 1595              	 .cfi_def_cfa_register 7
+ 1596 0006 F860     	 str r0,[r7,#12]
+ 1597 0008 B960     	 str r1,[r7,#8]
+ 1598 000a 7A60     	 str r2,[r7,#4]
+ 477:../cleanflight/src/main/io/flashfs.c ****     int bytesRead;
+ 478:../cleanflight/src/main/io/flashfs.c **** 
+ 479:../cleanflight/src/main/io/flashfs.c ****     // Did caller try to read past the end of the volume?
+ 480:../cleanflight/src/main/io/flashfs.c ****     if (address + len > flashfsGetSize()) {
+ 1599              	 .loc 1 480 0
+ 1600 000c FA68     	 ldr r2,[r7,#12]
+ 1601 000e 7B68     	 ldr r3,[r7,#4]
+ 1602 0010 D418     	 adds r4,r2,r3
+ 1603 0012 FFF7FEFF 	 bl flashfsGetSize
+ 1604 0016 0346     	 mov r3,r0
+ 1605 0018 9C42     	 cmp r4,r3
+ 1606 001a 05D9     	 bls .L96
+ 481:../cleanflight/src/main/io/flashfs.c ****         // Truncate their request
+ 482:../cleanflight/src/main/io/flashfs.c ****         len = flashfsGetSize() - address;
+ 1607              	 .loc 1 482 0
+ 1608 001c FFF7FEFF 	 bl flashfsGetSize
+ 1609 0020 0246     	 mov r2,r0
+ 1610 0022 FB68     	 ldr r3,[r7,#12]
+ 1611 0024 D31A     	 subs r3,r2,r3
+ 1612 0026 7B60     	 str r3,[r7,#4]
+ 1613              	.L96:
+ 483:../cleanflight/src/main/io/flashfs.c ****     }
+ 484:../cleanflight/src/main/io/flashfs.c **** 
+ 485:../cleanflight/src/main/io/flashfs.c ****     // Since the read could overlap data in our dirty buffers, force a sync to clear those first
+ 486:../cleanflight/src/main/io/flashfs.c ****     flashfsFlushSync();
+ 1614              	 .loc 1 486 0
+ 1615 0028 FFF7FEFF 	 bl flashfsFlushSync
+ 487:../cleanflight/src/main/io/flashfs.c **** 
+ 488:../cleanflight/src/main/io/flashfs.c ****     bytesRead = flashReadBytes(address, buffer, len);
+ 1616              	 .loc 1 488 0
+ 1617 002c 7B68     	 ldr r3,[r7,#4]
+ 1618 002e F868     	 ldr r0,[r7,#12]
+ 1619 0030 B968     	 ldr r1,[r7,#8]
+ 1620 0032 1A46     	 mov r2,r3
+ 1621 0034 FFF7FEFF 	 bl flashReadBytes
+ 1622 0038 7861     	 str r0,[r7,#20]
+ 489:../cleanflight/src/main/io/flashfs.c **** 
+ 490:../cleanflight/src/main/io/flashfs.c ****     return bytesRead;
+ 1623              	 .loc 1 490 0
+ 1624 003a 7B69     	 ldr r3,[r7,#20]
+ 491:../cleanflight/src/main/io/flashfs.c **** }
+ 1625              	 .loc 1 491 0
+ 1626 003c 1846     	 mov r0,r3
+ 1627 003e 1C37     	 adds r7,r7,#28
+ 1628              	.LCFI93:
+ 1629              	 .cfi_def_cfa_offset 12
+ 1630 0040 BD46     	 mov sp,r7
+ 1631              	.LCFI94:
+ 1632              	 .cfi_def_cfa_register 13
+ 1633              	 
+ 1634 0042 90BD     	 pop {r4,r7,pc}
+ 1635              	 .cfi_endproc
+ 1636              	.LFE548:
+ 1638              	 .section .text.flashfsIdentifyStartOfFreeSpace,"ax",%progbits
+ 1639              	 .align 2
+ 1640              	 .global flashfsIdentifyStartOfFreeSpace
+ 1641              	 .thumb
+ 1642              	 .thumb_func
+ 1644              	flashfsIdentifyStartOfFreeSpace:
+ 1645              	.LFB549:
+ 492:../cleanflight/src/main/io/flashfs.c **** 
+ 493:../cleanflight/src/main/io/flashfs.c **** /**
+ 494:../cleanflight/src/main/io/flashfs.c ****  * Find the offset of the start of the free space on the device (or the size of the device if it is
+ 495:../cleanflight/src/main/io/flashfs.c ****  */
+ 496:../cleanflight/src/main/io/flashfs.c **** int flashfsIdentifyStartOfFreeSpace(void)
+ 497:../cleanflight/src/main/io/flashfs.c **** {
+ 1646              	 .loc 1 497 0
+ 1647              	 .cfi_startproc
+ 1648              	 
+ 1649              	 
+ 1650 0000 80B5     	 push {r7,lr}
+ 1651              	.LCFI95:
+ 1652              	 .cfi_def_cfa_offset 8
+ 1653              	 .cfi_offset 7,-8
+ 1654              	 .cfi_offset 14,-4
+ 1655 0002 8AB0     	 sub sp,sp,#40
+ 1656              	.LCFI96:
+ 1657              	 .cfi_def_cfa_offset 48
+ 1658 0004 00AF     	 add r7,sp,#0
+ 1659              	.LCFI97:
+ 1660              	 .cfi_def_cfa_register 7
+ 498:../cleanflight/src/main/io/flashfs.c ****     /* Find the start of the free space on the device by examining the beginning of blocks with a b
+ 499:../cleanflight/src/main/io/flashfs.c ****      * looking for ones that appear to be erased. We can achieve this with good accuracy because an
+ 500:../cleanflight/src/main/io/flashfs.c ****      * is all bits set to 1, which pretty much never appears in reasonable size substrings of black
+ 501:../cleanflight/src/main/io/flashfs.c ****      *
+ 502:../cleanflight/src/main/io/flashfs.c ****      * To do better we might write a volume header instead, which would mark how much free space re
+ 503:../cleanflight/src/main/io/flashfs.c ****      * a header up to date while logging would incur more writes to the flash, which would consume 
+ 504:../cleanflight/src/main/io/flashfs.c ****      * bandwidth and block more often.
+ 505:../cleanflight/src/main/io/flashfs.c ****      */
+ 506:../cleanflight/src/main/io/flashfs.c **** 
+ 507:../cleanflight/src/main/io/flashfs.c ****     enum {
+ 508:../cleanflight/src/main/io/flashfs.c ****         /* We can choose whatever power of 2 size we like, which determines how much wastage of fre
+ 509:../cleanflight/src/main/io/flashfs.c ****          * at the end of the last written data. But smaller blocksizes will require more searching.
+ 510:../cleanflight/src/main/io/flashfs.c ****          */
+ 511:../cleanflight/src/main/io/flashfs.c ****         FREE_BLOCK_SIZE = 2048, // XXX This can't be smaller than page size for underlying flash de
+ 512:../cleanflight/src/main/io/flashfs.c **** 
+ 513:../cleanflight/src/main/io/flashfs.c ****         /* We don't expect valid data to ever contain this many consecutive uint32_t's of all 1 bit
+ 514:../cleanflight/src/main/io/flashfs.c ****         FREE_BLOCK_TEST_SIZE_INTS = 4, // i.e. 16 bytes
+ 515:../cleanflight/src/main/io/flashfs.c ****         FREE_BLOCK_TEST_SIZE_BYTES = FREE_BLOCK_TEST_SIZE_INTS * sizeof(uint32_t)
+ 516:../cleanflight/src/main/io/flashfs.c ****     };
+ 517:../cleanflight/src/main/io/flashfs.c **** 
+ 518:../cleanflight/src/main/io/flashfs.c ****     STATIC_ASSERT(FREE_BLOCK_SIZE >= FLASH_MAX_PAGE_SIZE, FREE_BLOCK_SIZE_too_small);
+ 519:../cleanflight/src/main/io/flashfs.c **** 
+ 520:../cleanflight/src/main/io/flashfs.c ****     union {
+ 521:../cleanflight/src/main/io/flashfs.c ****         uint8_t bytes[FREE_BLOCK_TEST_SIZE_BYTES];
+ 522:../cleanflight/src/main/io/flashfs.c ****         uint32_t ints[FREE_BLOCK_TEST_SIZE_INTS];
+ 523:../cleanflight/src/main/io/flashfs.c ****     } testBuffer;
+ 524:../cleanflight/src/main/io/flashfs.c **** 
+ 525:../cleanflight/src/main/io/flashfs.c ****     int left = 0; // Smallest block index in the search region
+ 1661              	 .loc 1 525 0
+ 1662 0006 0023     	 movs r3,#0
+ 1663 0008 7B62     	 str r3,[r7,#36]
+ 526:../cleanflight/src/main/io/flashfs.c ****     int right = flashfsGetSize() / FREE_BLOCK_SIZE; // One past the largest block index in the sear
+ 1664              	 .loc 1 526 0
+ 1665 000a FFF7FEFF 	 bl flashfsGetSize
+ 1666 000e 0346     	 mov r3,r0
+ 1667 0010 DB0A     	 lsrs r3,r3,#11
+ 1668 0012 3B62     	 str r3,[r7,#32]
+ 527:../cleanflight/src/main/io/flashfs.c ****     int mid;
+ 528:../cleanflight/src/main/io/flashfs.c ****     int result = right;
+ 1669              	 .loc 1 528 0
+ 1670 0014 3B6A     	 ldr r3,[r7,#32]
+ 1671 0016 FB61     	 str r3,[r7,#28]
+ 529:../cleanflight/src/main/io/flashfs.c ****     int i;
+ 530:../cleanflight/src/main/io/flashfs.c ****     bool blockErased;
+ 531:../cleanflight/src/main/io/flashfs.c **** 
+ 532:../cleanflight/src/main/io/flashfs.c ****     while (left < right) {
+ 1672              	 .loc 1 532 0
+ 1673 0018 36E0     	 b .L99
+ 1674              	.L107:
+ 533:../cleanflight/src/main/io/flashfs.c ****         mid = (left + right) / 2;
+ 1675              	 .loc 1 533 0
+ 1676 001a 7A6A     	 ldr r2,[r7,#36]
+ 1677 001c 3B6A     	 ldr r3,[r7,#32]
+ 1678 001e 1344     	 add r3,r3,r2
+ 1679 0020 DA0F     	 lsrs r2,r3,#31
+ 1680 0022 1344     	 add r3,r3,r2
+ 1681 0024 5B10     	 asrs r3,r3,#1
+ 1682 0026 3B61     	 str r3,[r7,#16]
+ 534:../cleanflight/src/main/io/flashfs.c **** 
+ 535:../cleanflight/src/main/io/flashfs.c ****         if (flashReadBytes(mid * FREE_BLOCK_SIZE, testBuffer.bytes, FREE_BLOCK_TEST_SIZE_BYTES) < F
+ 1683              	 .loc 1 535 0
+ 1684 0028 3B69     	 ldr r3,[r7,#16]
+ 1685 002a DB02     	 lsls r3,r3,#11
+ 1686 002c 1A46     	 mov r2,r3
+ 1687 002e 3B46     	 mov r3,r7
+ 1688 0030 1046     	 mov r0,r2
+ 1689 0032 1946     	 mov r1,r3
+ 1690 0034 1022     	 movs r2,#16
+ 1691 0036 FFF7FEFF 	 bl flashReadBytes
+ 1692 003a 0346     	 mov r3,r0
+ 1693 003c 0F2B     	 cmp r3,#15
+ 1694 003e 00DC     	 bgt .L100
+ 536:../cleanflight/src/main/io/flashfs.c ****             // Unexpected timeout from flash, so bail early (reporting the device fuller than it re
+ 537:../cleanflight/src/main/io/flashfs.c ****             break;
+ 1695              	 .loc 1 537 0
+ 1696 0040 26E0     	 b .L101
+ 1697              	.L100:
+ 538:../cleanflight/src/main/io/flashfs.c ****         }
+ 539:../cleanflight/src/main/io/flashfs.c **** 
+ 540:../cleanflight/src/main/io/flashfs.c ****         // Checking the buffer 4 bytes at a time like this is probably faster than byte-by-byte, bu
+ 541:../cleanflight/src/main/io/flashfs.c ****         blockErased = true;
+ 1698              	 .loc 1 541 0
+ 1699 0042 0123     	 movs r3,#1
+ 1700 0044 FB75     	 strb r3,[r7,#23]
+ 542:../cleanflight/src/main/io/flashfs.c ****         for (i = 0; i < FREE_BLOCK_TEST_SIZE_INTS; i++) {
+ 1701              	 .loc 1 542 0
+ 1702 0046 0023     	 movs r3,#0
+ 1703 0048 BB61     	 str r3,[r7,#24]
+ 1704 004a 0FE0     	 b .L102
+ 1705              	.L105:
+ 543:../cleanflight/src/main/io/flashfs.c ****             if (testBuffer.ints[i] != 0xFFFFFFFF) {
+ 1706              	 .loc 1 543 0
+ 1707 004c BB69     	 ldr r3,[r7,#24]
+ 1708 004e 9B00     	 lsls r3,r3,#2
+ 1709 0050 07F12802 	 add r2,r7,#40
+ 1710 0054 1344     	 add r3,r3,r2
+ 1711 0056 53F8283C 	 ldr r3,[r3,#-40]
+ 1712 005a B3F1FF3F 	 cmp r3,#-1
+ 1713 005e 02D0     	 beq .L103
+ 544:../cleanflight/src/main/io/flashfs.c ****                 blockErased = false;
+ 1714              	 .loc 1 544 0
+ 1715 0060 0023     	 movs r3,#0
+ 1716 0062 FB75     	 strb r3,[r7,#23]
+ 545:../cleanflight/src/main/io/flashfs.c ****                 break;
+ 1717              	 .loc 1 545 0
+ 1718 0064 05E0     	 b .L104
+ 1719              	.L103:
+ 542:../cleanflight/src/main/io/flashfs.c ****             if (testBuffer.ints[i] != 0xFFFFFFFF) {
+ 1720              	 .loc 1 542 0 discriminator 2
+ 1721 0066 BB69     	 ldr r3,[r7,#24]
+ 1722 0068 0133     	 adds r3,r3,#1
+ 1723 006a BB61     	 str r3,[r7,#24]
+ 1724              	.L102:
+ 542:../cleanflight/src/main/io/flashfs.c ****             if (testBuffer.ints[i] != 0xFFFFFFFF) {
+ 1725              	 .loc 1 542 0 is_stmt 0 discriminator 1
+ 1726 006c BB69     	 ldr r3,[r7,#24]
+ 1727 006e 032B     	 cmp r3,#3
+ 1728 0070 ECDD     	 ble .L105
+ 1729              	.L104:
+ 546:../cleanflight/src/main/io/flashfs.c ****             }
+ 547:../cleanflight/src/main/io/flashfs.c ****         }
+ 548:../cleanflight/src/main/io/flashfs.c **** 
+ 549:../cleanflight/src/main/io/flashfs.c ****         if (blockErased) {
+ 1730              	 .loc 1 549 0 is_stmt 1
+ 1731 0072 FB7D     	 ldrb r3,[r7,#23]
+ 1732 0074 002B     	 cmp r3,#0
+ 1733 0076 04D0     	 beq .L106
+ 550:../cleanflight/src/main/io/flashfs.c ****             /* This erased block might be the leftmost erased block in the volume, but we'll need t
+ 551:../cleanflight/src/main/io/flashfs.c ****              * search leftwards to find out:
+ 552:../cleanflight/src/main/io/flashfs.c ****              */
+ 553:../cleanflight/src/main/io/flashfs.c ****             result = mid;
+ 1734              	 .loc 1 553 0
+ 1735 0078 3B69     	 ldr r3,[r7,#16]
+ 1736 007a FB61     	 str r3,[r7,#28]
+ 554:../cleanflight/src/main/io/flashfs.c **** 
+ 555:../cleanflight/src/main/io/flashfs.c ****             right = mid;
+ 1737              	 .loc 1 555 0
+ 1738 007c 3B69     	 ldr r3,[r7,#16]
+ 1739 007e 3B62     	 str r3,[r7,#32]
+ 1740 0080 02E0     	 b .L99
+ 1741              	.L106:
+ 556:../cleanflight/src/main/io/flashfs.c ****         } else {
+ 557:../cleanflight/src/main/io/flashfs.c ****             left = mid + 1;
+ 1742              	 .loc 1 557 0
+ 1743 0082 3B69     	 ldr r3,[r7,#16]
+ 1744 0084 0133     	 adds r3,r3,#1
+ 1745 0086 7B62     	 str r3,[r7,#36]
+ 1746              	.L99:
+ 532:../cleanflight/src/main/io/flashfs.c ****         mid = (left + right) / 2;
+ 1747              	 .loc 1 532 0
+ 1748 0088 7A6A     	 ldr r2,[r7,#36]
+ 1749 008a 3B6A     	 ldr r3,[r7,#32]
+ 1750 008c 9A42     	 cmp r2,r3
+ 1751 008e C4DB     	 blt .L107
+ 1752              	.L101:
+ 558:../cleanflight/src/main/io/flashfs.c ****         }
+ 559:../cleanflight/src/main/io/flashfs.c ****     }
+ 560:../cleanflight/src/main/io/flashfs.c **** 
+ 561:../cleanflight/src/main/io/flashfs.c ****     return result * FREE_BLOCK_SIZE;
+ 1753              	 .loc 1 561 0
+ 1754 0090 FB69     	 ldr r3,[r7,#28]
+ 1755 0092 DB02     	 lsls r3,r3,#11
+ 562:../cleanflight/src/main/io/flashfs.c **** }
+ 1756              	 .loc 1 562 0
+ 1757 0094 1846     	 mov r0,r3
+ 1758 0096 2837     	 adds r7,r7,#40
+ 1759              	.LCFI98:
+ 1760              	 .cfi_def_cfa_offset 8
+ 1761 0098 BD46     	 mov sp,r7
+ 1762              	.LCFI99:
+ 1763              	 .cfi_def_cfa_register 13
+ 1764              	 
+ 1765 009a 80BD     	 pop {r7,pc}
+ 1766              	 .cfi_endproc
+ 1767              	.LFE549:
+ 1769              	 .section .text.flashfsIsEOF,"ax",%progbits
+ 1770              	 .align 2
+ 1771              	 .global flashfsIsEOF
+ 1772              	 .thumb
+ 1773              	 .thumb_func
+ 1775              	flashfsIsEOF:
+ 1776              	.LFB550:
+ 563:../cleanflight/src/main/io/flashfs.c **** 
+ 564:../cleanflight/src/main/io/flashfs.c **** /**
+ 565:../cleanflight/src/main/io/flashfs.c ****  * Returns true if the file pointer is at the end of the device.
+ 566:../cleanflight/src/main/io/flashfs.c ****  */
+ 567:../cleanflight/src/main/io/flashfs.c **** bool flashfsIsEOF(void)
+ 568:../cleanflight/src/main/io/flashfs.c **** {
+ 1777              	 .loc 1 568 0
+ 1778              	 .cfi_startproc
+ 1779              	 
+ 1780              	 
+ 1781 0000 80B5     	 push {r7,lr}
+ 1782              	.LCFI100:
+ 1783              	 .cfi_def_cfa_offset 8
+ 1784              	 .cfi_offset 7,-8
+ 1785              	 .cfi_offset 14,-4
+ 1786 0002 00AF     	 add r7,sp,#0
+ 1787              	.LCFI101:
+ 1788              	 .cfi_def_cfa_register 7
+ 569:../cleanflight/src/main/io/flashfs.c ****     return tailAddress >= flashfsGetSize();
+ 1789              	 .loc 1 569 0
+ 1790 0004 FFF7FEFF 	 bl flashfsGetSize
+ 1791 0008 0246     	 mov r2,r0
+ 1792 000a 044B     	 ldr r3,.L111
+ 1793 000c 1B68     	 ldr r3,[r3]
+ 1794 000e 9A42     	 cmp r2,r3
+ 1795 0010 94BF     	 ite ls
+ 1796 0012 0123     	 movls r3,#1
+ 1797 0014 0023     	 movhi r3,#0
+ 1798 0016 DBB2     	 uxtb r3,r3
+ 570:../cleanflight/src/main/io/flashfs.c **** }
+ 1799              	 .loc 1 570 0
+ 1800 0018 1846     	 mov r0,r3
+ 1801 001a 80BD     	 pop {r7,pc}
+ 1802              	.L112:
+ 1803              	 .align 2
+ 1804              	.L111:
+ 1805 001c 00000000 	 .word tailAddress
+ 1806              	 .cfi_endproc
+ 1807              	.LFE550:
+ 1809              	 .section .text.flashfsClose,"ax",%progbits
+ 1810              	 .align 2
+ 1811              	 .global flashfsClose
+ 1812              	 .thumb
+ 1813              	 .thumb_func
+ 1815              	flashfsClose:
+ 1816              	.LFB551:
+ 571:../cleanflight/src/main/io/flashfs.c **** 
+ 572:../cleanflight/src/main/io/flashfs.c **** void flashfsClose(void)
+ 573:../cleanflight/src/main/io/flashfs.c **** {
+ 1817              	 .loc 1 573 0
+ 1818              	 .cfi_startproc
+ 1819              	 
+ 1820              	 
+ 1821 0000 80B5     	 push {r7,lr}
+ 1822              	.LCFI102:
+ 1823              	 .cfi_def_cfa_offset 8
+ 1824              	 .cfi_offset 7,-8
+ 1825              	 .cfi_offset 14,-4
+ 1826 0002 82B0     	 sub sp,sp,#8
+ 1827              	.LCFI103:
+ 1828              	 .cfi_def_cfa_offset 16
+ 1829 0004 00AF     	 add r7,sp,#0
+ 1830              	.LCFI104:
+ 1831              	 .cfi_def_cfa_register 7
+ 574:../cleanflight/src/main/io/flashfs.c ****     switch(flashfsGetGeometry()->flashType) {
+ 1832              	 .loc 1 574 0
+ 1833 0006 FFF7FEFF 	 bl flashfsGetGeometry
+ 1834 000a 0346     	 mov r3,r0
+ 1835 000c 9B7B     	 ldrb r3,[r3,#14]
+ 1836 000e 002B     	 cmp r3,#0
+ 1837 0010 16D0     	 beq .L117
+ 1838 0012 012B     	 cmp r3,#1
+ 1839 0014 15D1     	 bne .L113
+ 1840              	.LBB5:
+ 575:../cleanflight/src/main/io/flashfs.c ****     case FLASH_TYPE_NOR:
+ 576:../cleanflight/src/main/io/flashfs.c ****         break;
+ 577:../cleanflight/src/main/io/flashfs.c **** 
+ 578:../cleanflight/src/main/io/flashfs.c ****     case FLASH_TYPE_NAND:
+ 579:../cleanflight/src/main/io/flashfs.c ****         flashFlush();
+ 1841              	 .loc 1 579 0
+ 1842 0016 FFF7FEFF 	 bl flashFlush
+ 580:../cleanflight/src/main/io/flashfs.c **** 
+ 581:../cleanflight/src/main/io/flashfs.c ****         // Advance tailAddress to next page boundary.
+ 582:../cleanflight/src/main/io/flashfs.c ****         uint32_t pageSize = flashfsGetGeometry()->pageSize;
+ 1843              	 .loc 1 582 0
+ 1844 001a FFF7FEFF 	 bl flashfsGetGeometry
+ 1845 001e 0346     	 mov r3,r0
+ 1846 0020 5B88     	 ldrh r3,[r3,#2]
+ 1847 0022 9BB2     	 uxth r3,r3
+ 1848 0024 7B60     	 str r3,[r7,#4]
+ 583:../cleanflight/src/main/io/flashfs.c ****         flashfsSetTailAddress((tailAddress + pageSize - 1) & ~(pageSize - 1));
+ 1849              	 .loc 1 583 0
+ 1850 0026 084B     	 ldr r3,.L118
+ 1851 0028 1A68     	 ldr r2,[r3]
+ 1852 002a 7B68     	 ldr r3,[r7,#4]
+ 1853 002c 1344     	 add r3,r3,r2
+ 1854 002e 5A1E     	 subs r2,r3,#1
+ 1855 0030 7B68     	 ldr r3,[r7,#4]
+ 1856 0032 5B42     	 negs r3,r3
+ 1857 0034 1340     	 ands r3,r3,r2
+ 1858 0036 1846     	 mov r0,r3
+ 1859 0038 FFF7FEFF 	 bl flashfsSetTailAddress
+ 584:../cleanflight/src/main/io/flashfs.c **** 
+ 585:../cleanflight/src/main/io/flashfs.c ****         break;
+ 1860              	 .loc 1 585 0
+ 1861 003c 00BF     	 nop
+ 1862 003e 00E0     	 b .L113
+ 1863              	.L117:
+ 576:../cleanflight/src/main/io/flashfs.c **** 
+ 1864              	 .loc 1 576 0
+ 1865 0040 00BF     	 nop
+ 1866              	.L113:
+ 1867              	.LBE5:
+ 586:../cleanflight/src/main/io/flashfs.c ****     }
+ 587:../cleanflight/src/main/io/flashfs.c **** }
+ 1868              	 .loc 1 587 0
+ 1869 0042 0837     	 adds r7,r7,#8
+ 1870              	.LCFI105:
+ 1871              	 .cfi_def_cfa_offset 8
+ 1872 0044 BD46     	 mov sp,r7
+ 1873              	.LCFI106:
+ 1874              	 .cfi_def_cfa_register 13
+ 1875              	 
+ 1876 0046 80BD     	 pop {r7,pc}
+ 1877              	.L119:
+ 1878              	 .align 2
+ 1879              	.L118:
+ 1880 0048 00000000 	 .word tailAddress
+ 1881              	 .cfi_endproc
+ 1882              	.LFE551:
+ 1884              	 .section .text.flashfsInit,"ax",%progbits
+ 1885              	 .align 2
+ 1886              	 .global flashfsInit
+ 1887              	 .thumb
+ 1888              	 .thumb_func
+ 1890              	flashfsInit:
+ 1891              	.LFB552:
+ 588:../cleanflight/src/main/io/flashfs.c **** 
+ 589:../cleanflight/src/main/io/flashfs.c **** /**
+ 590:../cleanflight/src/main/io/flashfs.c ****  * Call after initializing the flash chip in order to set up the filesystem.
+ 591:../cleanflight/src/main/io/flashfs.c ****  */
+ 592:../cleanflight/src/main/io/flashfs.c **** void flashfsInit(void)
+ 593:../cleanflight/src/main/io/flashfs.c **** {
+ 1892              	 .loc 1 593 0
+ 1893              	 .cfi_startproc
+ 1894              	 
+ 1895              	 
+ 1896 0000 80B5     	 push {r7,lr}
+ 1897              	.LCFI107:
+ 1898              	 .cfi_def_cfa_offset 8
+ 1899              	 .cfi_offset 7,-8
+ 1900              	 .cfi_offset 14,-4
+ 1901 0002 00AF     	 add r7,sp,#0
+ 1902              	.LCFI108:
+ 1903              	 .cfi_def_cfa_register 7
+ 594:../cleanflight/src/main/io/flashfs.c ****     // If we have a flash chip present at all
+ 595:../cleanflight/src/main/io/flashfs.c ****     if (flashfsGetSize() > 0) {
+ 1904              	 .loc 1 595 0
+ 1905 0004 FFF7FEFF 	 bl flashfsGetSize
+ 1906 0008 0346     	 mov r3,r0
+ 1907 000a 002B     	 cmp r3,#0
+ 1908 000c 05D0     	 beq .L120
+ 596:../cleanflight/src/main/io/flashfs.c ****         // Start the file pointer off at the beginning of free space so caller can start writing im
+ 597:../cleanflight/src/main/io/flashfs.c ****         flashfsSeekAbs(flashfsIdentifyStartOfFreeSpace());
+ 1909              	 .loc 1 597 0
+ 1910 000e FFF7FEFF 	 bl flashfsIdentifyStartOfFreeSpace
+ 1911 0012 0346     	 mov r3,r0
+ 1912 0014 1846     	 mov r0,r3
+ 1913 0016 FFF7FEFF 	 bl flashfsSeekAbs
+ 1914              	.L120:
+ 598:../cleanflight/src/main/io/flashfs.c ****     }
+ 599:../cleanflight/src/main/io/flashfs.c **** }
+ 1915              	 .loc 1 599 0
+ 1916 001a 80BD     	 pop {r7,pc}
+ 1917              	 .cfi_endproc
+ 1918              	.LFE552:
+ 1920              	 .text
+ 1921              	.Letext0:
+ 1922              	 .file 2 "d:\\xmc\\dave-ide-4.4.2-64bit\\eclipse\\arm-gcc-49\\arm-none-eabi\\include\\machine\\_default_types.h"
+ 1923              	 .file 3 "d:\\xmc\\dave-ide-4.4.2-64bit\\eclipse\\arm-gcc-49\\arm-none-eabi\\include\\stdint.h"
+ 1924              	 .file 4 "D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/drivers/io_types.h"
+ 1925              	 .file 5 "D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/pg/flash.h"
+ 1926              	 .file 6 "D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/lib/main/XMC4000/XMCLib/inc/xmc_usic.h"
+ 1927              	 .file 7 "D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/drivers/resource.h"
+ 1928              	 .file 8 "D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/drivers/flash.h"
+ 1929              	 .file 9 "D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/lib/main/CMSIS/Core/Include/core_cm4.h"
+ 1930              	 .file 10 "D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/lib/main/XMC4000/system_XMC4700.h"
+DEFINED SYMBOLS
+                            *ABS*:00000000 flashfs.c
+    {standard input}:20     .bss.flashWriteBuffer:00000000 $d
+    {standard input}:23     .bss.flashWriteBuffer:00000000 flashWriteBuffer
+    {standard input}:28     .bss.bufferHead:00000000 bufferHead
+    {standard input}:29     .bss.bufferHead:00000000 $d
+    {standard input}:33     .bss.bufferTail:00000000 bufferTail
+    {standard input}:34     .bss.bufferTail:00000000 $d
+    {standard input}:36     .bss.tailAddress:00000000 $d
+    {standard input}:39     .bss.tailAddress:00000000 tailAddress
+    {standard input}:42     .text.flashfsClearBuffer:00000000 $t
+    {standard input}:46     .text.flashfsClearBuffer:00000000 flashfsClearBuffer
+    {standard input}:82     .text.flashfsClearBuffer:0000001c $d
+    {standard input}:88     .text.flashfsBufferIsEmpty:00000000 $t
+    {standard input}:92     .text.flashfsBufferIsEmpty:00000000 flashfsBufferIsEmpty
+    {standard input}:130    .text.flashfsBufferIsEmpty:00000020 $d
+    {standard input}:136    .text.flashfsSetTailAddress:00000000 $t
+    {standard input}:140    .text.flashfsSetTailAddress:00000000 flashfsSetTailAddress
+    {standard input}:178    .text.flashfsSetTailAddress:00000018 $d
+    {standard input}:183    .text.flashfsEraseCompletely:00000000 $t
+    {standard input}:188    .text.flashfsEraseCompletely:00000000 flashfsEraseCompletely
+    {standard input}:215    .text.flashfsEraseRange:00000000 $t
+    {standard input}:220    .text.flashfsEraseRange:00000000 flashfsEraseRange
+    {standard input}:317    .text.flashfsIsReady:00000000 $t
+    {standard input}:322    .text.flashfsIsReady:00000000 flashfsIsReady
+    {standard input}:346    .text.flashfsIsSupported:00000000 $t
+    {standard input}:351    .text.flashfsIsSupported:00000000 flashfsIsSupported
+    {standard input}:385    .text.flashfsGetSize:00000000 flashfsGetSize
+    {standard input}:380    .text.flashfsGetSize:00000000 $t
+    {standard input}:410    .text.flashfsTransmitBufferUsed:00000000 $t
+    {standard input}:414    .text.flashfsTransmitBufferUsed:00000000 flashfsTransmitBufferUsed
+    {standard input}:466    .text.flashfsTransmitBufferUsed:00000038 $d
+    {standard input}:472    .text.flashfsGetWriteBufferSize:00000000 $t
+    {standard input}:477    .text.flashfsGetWriteBufferSize:00000000 flashfsGetWriteBufferSize
+    {standard input}:508    .text.flashfsGetWriteBufferFreeSpace:00000000 $t
+    {standard input}:513    .text.flashfsGetWriteBufferFreeSpace:00000000 flashfsGetWriteBufferFreeSpace
+    {standard input}:542    .text.flashfsGetGeometry:00000000 $t
+    {standard input}:547    .text.flashfsGetGeometry:00000000 flashfsGetGeometry
+    {standard input}:571    .text.flashfsWriteBuffers:00000000 $t
+    {standard input}:575    .text.flashfsWriteBuffers:00000000 flashfsWriteBuffers
+    {standard input}:1775   .text.flashfsIsEOF:00000000 flashfsIsEOF
+    {standard input}:871    .text.flashfsWriteBuffers:000001d4 $d
+    {standard input}:876    .text.flashfsGetDirtyDataBuffers:00000000 $t
+    {standard input}:880    .text.flashfsGetDirtyDataBuffers:00000000 flashfsGetDirtyDataBuffers
+    {standard input}:966    .text.flashfsGetDirtyDataBuffers:0000006c $d
+    {standard input}:973    .text.flashfsGetOffset:00000000 $t
+    {standard input}:978    .text.flashfsGetOffset:00000000 flashfsGetOffset
+    {standard input}:1021   .text.flashfsGetOffset:00000028 $d
+    {standard input}:1026   .text.flashfsAdvanceTailInBuffer:00000000 $t
+    {standard input}:1030   .text.flashfsAdvanceTailInBuffer:00000000 flashfsAdvanceTailInBuffer
+    {standard input}:1092   .text.flashfsAdvanceTailInBuffer:00000044 $d
+    {standard input}:1097   .text.flashfsFlushAsync:00000000 $t
+    {standard input}:1102   .text.flashfsFlushAsync:00000000 flashfsFlushAsync
+    {standard input}:1164   .text.flashfsFlushSync:00000000 $t
+    {standard input}:1169   .text.flashfsFlushSync:00000000 flashfsFlushSync
+    {standard input}:1221   .text.flashfsSeekAbs:00000000 $t
+    {standard input}:1226   .text.flashfsSeekAbs:00000000 flashfsSeekAbs
+    {standard input}:1262   .text.flashfsSeekRel:00000000 $t
+    {standard input}:1267   .text.flashfsSeekRel:00000000 flashfsSeekRel
+    {standard input}:1306   .text.flashfsSeekRel:00000020 $d
+    {standard input}:1311   .text.flashfsWriteByte:00000000 $t
+    {standard input}:1316   .text.flashfsWriteByte:00000000 flashfsWriteByte
+    {standard input}:1378   .text.flashfsWriteByte:00000044 $d
+    {standard input}:1384   .text.flashfsWrite:00000000 $t
+    {standard input}:1389   .text.flashfsWrite:00000000 flashfsWrite
+    {standard input}:1567   .text.flashfsWrite:0000010c $d
+    {standard input}:1573   .text.flashfsReadAbs:00000000 $t
+    {standard input}:1578   .text.flashfsReadAbs:00000000 flashfsReadAbs
+    {standard input}:1639   .text.flashfsIdentifyStartOfFreeSpace:00000000 $t
+    {standard input}:1644   .text.flashfsIdentifyStartOfFreeSpace:00000000 flashfsIdentifyStartOfFreeSpace
+    {standard input}:1770   .text.flashfsIsEOF:00000000 $t
+    {standard input}:1805   .text.flashfsIsEOF:0000001c $d
+    {standard input}:1810   .text.flashfsClose:00000000 $t
+    {standard input}:1815   .text.flashfsClose:00000000 flashfsClose
+    {standard input}:1880   .text.flashfsClose:00000048 $d
+    {standard input}:1885   .text.flashfsInit:00000000 $t
+    {standard input}:1890   .text.flashfsInit:00000000 flashfsInit
+                     .debug_frame:00000010 $d
+
+UNDEFINED SYMBOLS
+flashEraseCompletely
+flashGetGeometry
+flashEraseSector
+flashIsReady
+flashPageProgramBegin
+flashPageProgramContinue
+flashPageProgramFinish
+memcpy
+flashReadBytes
+flashFlush

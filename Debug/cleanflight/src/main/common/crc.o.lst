@@ -1,0 +1,779 @@
+   1              	 .syntax unified
+   2              	 .cpu cortex-m4
+   3              	 .eabi_attribute 27,3
+   4              	 .fpu fpv4-sp-d16
+   5              	 .eabi_attribute 20,1
+   6              	 .eabi_attribute 21,1
+   7              	 .eabi_attribute 23,3
+   8              	 .eabi_attribute 24,1
+   9              	 .eabi_attribute 25,1
+  10              	 .eabi_attribute 26,1
+  11              	 .eabi_attribute 30,6
+  12              	 .eabi_attribute 34,1
+  13              	 .eabi_attribute 18,4
+  14              	 .thumb
+  15              	 .file "crc.c"
+  16              	 .text
+  17              	.Ltext0:
+  18              	 .cfi_sections .debug_frame
+  19              	 .section .text.crc16_ccitt,"ax",%progbits
+  20              	 .align 2
+  21              	 .global crc16_ccitt
+  22              	 .thumb
+  23              	 .thumb_func
+  25              	crc16_ccitt:
+  26              	.LFB0:
+  27              	 .file 1 "../cleanflight/src/main/common/crc.c"
+   1:../cleanflight/src/main/common/crc.c **** /*
+   2:../cleanflight/src/main/common/crc.c ****  * This file is part of Cleanflight and Betaflight.
+   3:../cleanflight/src/main/common/crc.c ****  *
+   4:../cleanflight/src/main/common/crc.c ****  * Cleanflight and Betaflight are free software. You can redistribute
+   5:../cleanflight/src/main/common/crc.c ****  * this software and/or modify this software under the terms of the
+   6:../cleanflight/src/main/common/crc.c ****  * GNU General Public License as published by the Free Software
+   7:../cleanflight/src/main/common/crc.c ****  * Foundation, either version 3 of the License, or (at your option)
+   8:../cleanflight/src/main/common/crc.c ****  * any later version.
+   9:../cleanflight/src/main/common/crc.c ****  *
+  10:../cleanflight/src/main/common/crc.c ****  * Cleanflight and Betaflight are distributed in the hope that they
+  11:../cleanflight/src/main/common/crc.c ****  * will be useful, but WITHOUT ANY WARRANTY; without even the implied
+  12:../cleanflight/src/main/common/crc.c ****  * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+  13:../cleanflight/src/main/common/crc.c ****  * See the GNU General Public License for more details.
+  14:../cleanflight/src/main/common/crc.c ****  *
+  15:../cleanflight/src/main/common/crc.c ****  * You should have received a copy of the GNU General Public License
+  16:../cleanflight/src/main/common/crc.c ****  * along with this software.
+  17:../cleanflight/src/main/common/crc.c ****  *
+  18:../cleanflight/src/main/common/crc.c ****  * If not, see <http://www.gnu.org/licenses/>.
+  19:../cleanflight/src/main/common/crc.c ****  */
+  20:../cleanflight/src/main/common/crc.c **** 
+  21:../cleanflight/src/main/common/crc.c **** #include <stdint.h>
+  22:../cleanflight/src/main/common/crc.c **** 
+  23:../cleanflight/src/main/common/crc.c **** #include "streambuf.h"
+  24:../cleanflight/src/main/common/crc.c **** 
+  25:../cleanflight/src/main/common/crc.c **** 
+  26:../cleanflight/src/main/common/crc.c **** uint16_t crc16_ccitt(uint16_t crc, unsigned char a)
+  27:../cleanflight/src/main/common/crc.c **** {
+  28              	 .loc 1 27 0
+  29              	 .cfi_startproc
+  30              	 
+  31              	 
+  32              	 
+  33 0000 80B4     	 push {r7}
+  34              	.LCFI0:
+  35              	 .cfi_def_cfa_offset 4
+  36              	 .cfi_offset 7,-4
+  37 0002 85B0     	 sub sp,sp,#20
+  38              	.LCFI1:
+  39              	 .cfi_def_cfa_offset 24
+  40 0004 00AF     	 add r7,sp,#0
+  41              	.LCFI2:
+  42              	 .cfi_def_cfa_register 7
+  43 0006 0346     	 mov r3,r0
+  44 0008 0A46     	 mov r2,r1
+  45 000a FB80     	 strh r3,[r7,#6]
+  46 000c 1346     	 mov r3,r2
+  47 000e 7B71     	 strb r3,[r7,#5]
+  28:../cleanflight/src/main/common/crc.c ****     crc ^= (uint16_t)a << 8;
+  48              	 .loc 1 28 0
+  49 0010 7B79     	 ldrb r3,[r7,#5]
+  50 0012 1B02     	 lsls r3,r3,#8
+  51 0014 9AB2     	 uxth r2,r3
+  52 0016 FB88     	 ldrh r3,[r7,#6]
+  53 0018 5340     	 eors r3,r3,r2
+  54 001a 9BB2     	 uxth r3,r3
+  55 001c FB80     	 strh r3,[r7,#6]
+  56              	.LBB2:
+  29:../cleanflight/src/main/common/crc.c ****     for (int ii = 0; ii < 8; ++ii) {
+  57              	 .loc 1 29 0
+  58 001e 0023     	 movs r3,#0
+  59 0020 FB60     	 str r3,[r7,#12]
+  60 0022 13E0     	 b .L2
+  61              	.L5:
+  30:../cleanflight/src/main/common/crc.c ****         if (crc & 0x8000) {
+  62              	 .loc 1 30 0
+  63 0024 FB88     	 ldrh r3,[r7,#6]
+  64 0026 1BB2     	 sxth r3,r3
+  65 0028 002B     	 cmp r3,#0
+  66 002a 09DA     	 bge .L3
+  31:../cleanflight/src/main/common/crc.c ****             crc = (crc << 1) ^ 0x1021;
+  67              	 .loc 1 31 0
+  68 002c FB88     	 ldrh r3,[r7,#6]
+  69 002e 5B00     	 lsls r3,r3,#1
+  70 0030 9BB2     	 uxth r3,r3
+  71 0032 83F48153 	 eor r3,r3,#4128
+  72 0036 83F00103 	 eor r3,r3,#1
+  73 003a 9BB2     	 uxth r3,r3
+  74 003c FB80     	 strh r3,[r7,#6]
+  75 003e 02E0     	 b .L4
+  76              	.L3:
+  32:../cleanflight/src/main/common/crc.c ****         } else {
+  33:../cleanflight/src/main/common/crc.c ****             crc = crc << 1;
+  77              	 .loc 1 33 0
+  78 0040 FB88     	 ldrh r3,[r7,#6]
+  79 0042 5B00     	 lsls r3,r3,#1
+  80 0044 FB80     	 strh r3,[r7,#6]
+  81              	.L4:
+  29:../cleanflight/src/main/common/crc.c ****         if (crc & 0x8000) {
+  82              	 .loc 1 29 0 discriminator 2
+  83 0046 FB68     	 ldr r3,[r7,#12]
+  84 0048 0133     	 adds r3,r3,#1
+  85 004a FB60     	 str r3,[r7,#12]
+  86              	.L2:
+  29:../cleanflight/src/main/common/crc.c ****         if (crc & 0x8000) {
+  87              	 .loc 1 29 0 is_stmt 0 discriminator 1
+  88 004c FB68     	 ldr r3,[r7,#12]
+  89 004e 072B     	 cmp r3,#7
+  90 0050 E8DD     	 ble .L5
+  91              	.LBE2:
+  34:../cleanflight/src/main/common/crc.c ****         }
+  35:../cleanflight/src/main/common/crc.c ****     }
+  36:../cleanflight/src/main/common/crc.c ****     return crc;
+  92              	 .loc 1 36 0 is_stmt 1
+  93 0052 FB88     	 ldrh r3,[r7,#6]
+  37:../cleanflight/src/main/common/crc.c **** }
+  94              	 .loc 1 37 0
+  95 0054 1846     	 mov r0,r3
+  96 0056 1437     	 adds r7,r7,#20
+  97              	.LCFI3:
+  98              	 .cfi_def_cfa_offset 4
+  99 0058 BD46     	 mov sp,r7
+ 100              	.LCFI4:
+ 101              	 .cfi_def_cfa_register 13
+ 102              	 
+ 103 005a 5DF8047B 	 ldr r7,[sp],#4
+ 104              	.LCFI5:
+ 105              	 .cfi_restore 7
+ 106              	 .cfi_def_cfa_offset 0
+ 107 005e 7047     	 bx lr
+ 108              	 .cfi_endproc
+ 109              	.LFE0:
+ 111              	 .section .text.crc16_ccitt_update,"ax",%progbits
+ 112              	 .align 2
+ 113              	 .global crc16_ccitt_update
+ 114              	 .thumb
+ 115              	 .thumb_func
+ 117              	crc16_ccitt_update:
+ 118              	.LFB1:
+  38:../cleanflight/src/main/common/crc.c **** 
+  39:../cleanflight/src/main/common/crc.c **** uint16_t crc16_ccitt_update(uint16_t crc, const void *data, uint32_t length)
+  40:../cleanflight/src/main/common/crc.c **** {
+ 119              	 .loc 1 40 0
+ 120              	 .cfi_startproc
+ 121              	 
+ 122              	 
+ 123 0000 80B5     	 push {r7,lr}
+ 124              	.LCFI6:
+ 125              	 .cfi_def_cfa_offset 8
+ 126              	 .cfi_offset 7,-8
+ 127              	 .cfi_offset 14,-4
+ 128 0002 86B0     	 sub sp,sp,#24
+ 129              	.LCFI7:
+ 130              	 .cfi_def_cfa_offset 32
+ 131 0004 00AF     	 add r7,sp,#0
+ 132              	.LCFI8:
+ 133              	 .cfi_def_cfa_register 7
+ 134 0006 0346     	 mov r3,r0
+ 135 0008 B960     	 str r1,[r7,#8]
+ 136 000a 7A60     	 str r2,[r7,#4]
+ 137 000c FB81     	 strh r3,[r7,#14]
+  41:../cleanflight/src/main/common/crc.c ****     const uint8_t *p = (const uint8_t *)data;
+ 138              	 .loc 1 41 0
+ 139 000e BB68     	 ldr r3,[r7,#8]
+ 140 0010 7B61     	 str r3,[r7,#20]
+  42:../cleanflight/src/main/common/crc.c ****     const uint8_t *pend = p + length;
+ 141              	 .loc 1 42 0
+ 142 0012 7A69     	 ldr r2,[r7,#20]
+ 143 0014 7B68     	 ldr r3,[r7,#4]
+ 144 0016 1344     	 add r3,r3,r2
+ 145 0018 3B61     	 str r3,[r7,#16]
+  43:../cleanflight/src/main/common/crc.c **** 
+  44:../cleanflight/src/main/common/crc.c ****     for (; p != pend; p++) {
+ 146              	 .loc 1 44 0
+ 147 001a 0BE0     	 b .L8
+ 148              	.L9:
+  45:../cleanflight/src/main/common/crc.c ****         crc = crc16_ccitt(crc, *p);
+ 149              	 .loc 1 45 0 discriminator 2
+ 150 001c 7B69     	 ldr r3,[r7,#20]
+ 151 001e 1B78     	 ldrb r3,[r3]
+ 152 0020 FA89     	 ldrh r2,[r7,#14]
+ 153 0022 1046     	 mov r0,r2
+ 154 0024 1946     	 mov r1,r3
+ 155 0026 FFF7FEFF 	 bl crc16_ccitt
+ 156 002a 0346     	 mov r3,r0
+ 157 002c FB81     	 strh r3,[r7,#14]
+  44:../cleanflight/src/main/common/crc.c ****         crc = crc16_ccitt(crc, *p);
+ 158              	 .loc 1 44 0 discriminator 2
+ 159 002e 7B69     	 ldr r3,[r7,#20]
+ 160 0030 0133     	 adds r3,r3,#1
+ 161 0032 7B61     	 str r3,[r7,#20]
+ 162              	.L8:
+  44:../cleanflight/src/main/common/crc.c ****         crc = crc16_ccitt(crc, *p);
+ 163              	 .loc 1 44 0 is_stmt 0 discriminator 1
+ 164 0034 7A69     	 ldr r2,[r7,#20]
+ 165 0036 3B69     	 ldr r3,[r7,#16]
+ 166 0038 9A42     	 cmp r2,r3
+ 167 003a EFD1     	 bne .L9
+  46:../cleanflight/src/main/common/crc.c ****     }
+  47:../cleanflight/src/main/common/crc.c ****     return crc;
+ 168              	 .loc 1 47 0 is_stmt 1
+ 169 003c FB89     	 ldrh r3,[r7,#14]
+  48:../cleanflight/src/main/common/crc.c **** }
+ 170              	 .loc 1 48 0
+ 171 003e 1846     	 mov r0,r3
+ 172 0040 1837     	 adds r7,r7,#24
+ 173              	.LCFI9:
+ 174              	 .cfi_def_cfa_offset 8
+ 175 0042 BD46     	 mov sp,r7
+ 176              	.LCFI10:
+ 177              	 .cfi_def_cfa_register 13
+ 178              	 
+ 179 0044 80BD     	 pop {r7,pc}
+ 180              	 .cfi_endproc
+ 181              	.LFE1:
+ 183 0046 00BF     	 .section .text.crc16_ccitt_sbuf_append,"ax",%progbits
+ 184              	 .align 2
+ 185              	 .global crc16_ccitt_sbuf_append
+ 186              	 .thumb
+ 187              	 .thumb_func
+ 189              	crc16_ccitt_sbuf_append:
+ 190              	.LFB2:
+  49:../cleanflight/src/main/common/crc.c **** 
+  50:../cleanflight/src/main/common/crc.c **** void crc16_ccitt_sbuf_append(sbuf_t *dst, uint8_t *start)
+  51:../cleanflight/src/main/common/crc.c **** {
+ 191              	 .loc 1 51 0
+ 192              	 .cfi_startproc
+ 193              	 
+ 194              	 
+ 195 0000 80B5     	 push {r7,lr}
+ 196              	.LCFI11:
+ 197              	 .cfi_def_cfa_offset 8
+ 198              	 .cfi_offset 7,-8
+ 199              	 .cfi_offset 14,-4
+ 200 0002 86B0     	 sub sp,sp,#24
+ 201              	.LCFI12:
+ 202              	 .cfi_def_cfa_offset 32
+ 203 0004 00AF     	 add r7,sp,#0
+ 204              	.LCFI13:
+ 205              	 .cfi_def_cfa_register 7
+ 206 0006 7860     	 str r0,[r7,#4]
+ 207 0008 3960     	 str r1,[r7]
+  52:../cleanflight/src/main/common/crc.c ****     uint16_t crc = 0;
+ 208              	 .loc 1 52 0
+ 209 000a 0023     	 movs r3,#0
+ 210 000c FB82     	 strh r3,[r7,#22]
+  53:../cleanflight/src/main/common/crc.c ****     const uint8_t * const end = sbufPtr(dst);
+ 211              	 .loc 1 53 0
+ 212 000e 7868     	 ldr r0,[r7,#4]
+ 213 0010 FFF7FEFF 	 bl sbufPtr
+ 214 0014 F860     	 str r0,[r7,#12]
+ 215              	.LBB3:
+  54:../cleanflight/src/main/common/crc.c ****     for (const uint8_t *ptr = start; ptr < end; ++ptr) {
+ 216              	 .loc 1 54 0
+ 217 0016 3B68     	 ldr r3,[r7]
+ 218 0018 3B61     	 str r3,[r7,#16]
+ 219 001a 0BE0     	 b .L12
+ 220              	.L13:
+  55:../cleanflight/src/main/common/crc.c ****         crc = crc16_ccitt(crc, *ptr);
+ 221              	 .loc 1 55 0 discriminator 3
+ 222 001c 3B69     	 ldr r3,[r7,#16]
+ 223 001e 1B78     	 ldrb r3,[r3]
+ 224 0020 FA8A     	 ldrh r2,[r7,#22]
+ 225 0022 1046     	 mov r0,r2
+ 226 0024 1946     	 mov r1,r3
+ 227 0026 FFF7FEFF 	 bl crc16_ccitt
+ 228 002a 0346     	 mov r3,r0
+ 229 002c FB82     	 strh r3,[r7,#22]
+  54:../cleanflight/src/main/common/crc.c ****     for (const uint8_t *ptr = start; ptr < end; ++ptr) {
+ 230              	 .loc 1 54 0 discriminator 3
+ 231 002e 3B69     	 ldr r3,[r7,#16]
+ 232 0030 0133     	 adds r3,r3,#1
+ 233 0032 3B61     	 str r3,[r7,#16]
+ 234              	.L12:
+  54:../cleanflight/src/main/common/crc.c ****     for (const uint8_t *ptr = start; ptr < end; ++ptr) {
+ 235              	 .loc 1 54 0 is_stmt 0 discriminator 1
+ 236 0034 3A69     	 ldr r2,[r7,#16]
+ 237 0036 FB68     	 ldr r3,[r7,#12]
+ 238 0038 9A42     	 cmp r2,r3
+ 239 003a EFD3     	 bcc .L13
+ 240              	.LBE3:
+  56:../cleanflight/src/main/common/crc.c ****     }
+  57:../cleanflight/src/main/common/crc.c ****     sbufWriteU16(dst, crc);
+ 241              	 .loc 1 57 0 is_stmt 1
+ 242 003c FB8A     	 ldrh r3,[r7,#22]
+ 243 003e 7868     	 ldr r0,[r7,#4]
+ 244 0040 1946     	 mov r1,r3
+ 245 0042 FFF7FEFF 	 bl sbufWriteU16
+  58:../cleanflight/src/main/common/crc.c **** }
+ 246              	 .loc 1 58 0
+ 247 0046 1837     	 adds r7,r7,#24
+ 248              	.LCFI14:
+ 249              	 .cfi_def_cfa_offset 8
+ 250 0048 BD46     	 mov sp,r7
+ 251              	.LCFI15:
+ 252              	 .cfi_def_cfa_register 13
+ 253              	 
+ 254 004a 80BD     	 pop {r7,pc}
+ 255              	 .cfi_endproc
+ 256              	.LFE2:
+ 258              	 .section .text.crc8_dvb_s2,"ax",%progbits
+ 259              	 .align 2
+ 260              	 .global crc8_dvb_s2
+ 261              	 .thumb
+ 262              	 .thumb_func
+ 264              	crc8_dvb_s2:
+ 265              	.LFB3:
+  59:../cleanflight/src/main/common/crc.c **** 
+  60:../cleanflight/src/main/common/crc.c **** uint8_t crc8_dvb_s2(uint8_t crc, unsigned char a)
+  61:../cleanflight/src/main/common/crc.c **** {
+ 266              	 .loc 1 61 0
+ 267              	 .cfi_startproc
+ 268              	 
+ 269              	 
+ 270              	 
+ 271 0000 80B4     	 push {r7}
+ 272              	.LCFI16:
+ 273              	 .cfi_def_cfa_offset 4
+ 274              	 .cfi_offset 7,-4
+ 275 0002 85B0     	 sub sp,sp,#20
+ 276              	.LCFI17:
+ 277              	 .cfi_def_cfa_offset 24
+ 278 0004 00AF     	 add r7,sp,#0
+ 279              	.LCFI18:
+ 280              	 .cfi_def_cfa_register 7
+ 281 0006 0346     	 mov r3,r0
+ 282 0008 0A46     	 mov r2,r1
+ 283 000a FB71     	 strb r3,[r7,#7]
+ 284 000c 1346     	 mov r3,r2
+ 285 000e BB71     	 strb r3,[r7,#6]
+  62:../cleanflight/src/main/common/crc.c ****     crc ^= a;
+ 286              	 .loc 1 62 0
+ 287 0010 FA79     	 ldrb r2,[r7,#7]
+ 288 0012 BB79     	 ldrb r3,[r7,#6]
+ 289 0014 5340     	 eors r3,r3,r2
+ 290 0016 FB71     	 strb r3,[r7,#7]
+ 291              	.LBB4:
+  63:../cleanflight/src/main/common/crc.c ****     for (int ii = 0; ii < 8; ++ii) {
+ 292              	 .loc 1 63 0
+ 293 0018 0023     	 movs r3,#0
+ 294 001a FB60     	 str r3,[r7,#12]
+ 295 001c 12E0     	 b .L15
+ 296              	.L18:
+  64:../cleanflight/src/main/common/crc.c ****         if (crc & 0x80) {
+ 297              	 .loc 1 64 0
+ 298 001e FB79     	 ldrb r3,[r7,#7]
+ 299 0020 5BB2     	 sxtb r3,r3
+ 300 0022 002B     	 cmp r3,#0
+ 301 0024 08DA     	 bge .L16
+  65:../cleanflight/src/main/common/crc.c ****             crc = (crc << 1) ^ 0xD5;
+ 302              	 .loc 1 65 0
+ 303 0026 FB79     	 ldrb r3,[r7,#7]
+ 304 0028 5B00     	 lsls r3,r3,#1
+ 305 002a DBB2     	 uxtb r3,r3
+ 306 002c 83F02A03 	 eor r3,r3,#42
+ 307 0030 DB43     	 mvns r3,r3
+ 308 0032 DBB2     	 uxtb r3,r3
+ 309 0034 FB71     	 strb r3,[r7,#7]
+ 310 0036 02E0     	 b .L17
+ 311              	.L16:
+  66:../cleanflight/src/main/common/crc.c ****         } else {
+  67:../cleanflight/src/main/common/crc.c ****             crc = crc << 1;
+ 312              	 .loc 1 67 0
+ 313 0038 FB79     	 ldrb r3,[r7,#7]
+ 314 003a 5B00     	 lsls r3,r3,#1
+ 315 003c FB71     	 strb r3,[r7,#7]
+ 316              	.L17:
+  63:../cleanflight/src/main/common/crc.c ****         if (crc & 0x80) {
+ 317              	 .loc 1 63 0 discriminator 2
+ 318 003e FB68     	 ldr r3,[r7,#12]
+ 319 0040 0133     	 adds r3,r3,#1
+ 320 0042 FB60     	 str r3,[r7,#12]
+ 321              	.L15:
+  63:../cleanflight/src/main/common/crc.c ****         if (crc & 0x80) {
+ 322              	 .loc 1 63 0 is_stmt 0 discriminator 1
+ 323 0044 FB68     	 ldr r3,[r7,#12]
+ 324 0046 072B     	 cmp r3,#7
+ 325 0048 E9DD     	 ble .L18
+ 326              	.LBE4:
+  68:../cleanflight/src/main/common/crc.c ****         }
+  69:../cleanflight/src/main/common/crc.c ****     }
+  70:../cleanflight/src/main/common/crc.c ****     return crc;
+ 327              	 .loc 1 70 0 is_stmt 1
+ 328 004a FB79     	 ldrb r3,[r7,#7]
+  71:../cleanflight/src/main/common/crc.c **** }
+ 329              	 .loc 1 71 0
+ 330 004c 1846     	 mov r0,r3
+ 331 004e 1437     	 adds r7,r7,#20
+ 332              	.LCFI19:
+ 333              	 .cfi_def_cfa_offset 4
+ 334 0050 BD46     	 mov sp,r7
+ 335              	.LCFI20:
+ 336              	 .cfi_def_cfa_register 13
+ 337              	 
+ 338 0052 5DF8047B 	 ldr r7,[sp],#4
+ 339              	.LCFI21:
+ 340              	 .cfi_restore 7
+ 341              	 .cfi_def_cfa_offset 0
+ 342 0056 7047     	 bx lr
+ 343              	 .cfi_endproc
+ 344              	.LFE3:
+ 346              	 .section .text.crc8_dvb_s2_update,"ax",%progbits
+ 347              	 .align 2
+ 348              	 .global crc8_dvb_s2_update
+ 349              	 .thumb
+ 350              	 .thumb_func
+ 352              	crc8_dvb_s2_update:
+ 353              	.LFB4:
+  72:../cleanflight/src/main/common/crc.c **** 
+  73:../cleanflight/src/main/common/crc.c **** uint8_t crc8_dvb_s2_update(uint8_t crc, const void *data, uint32_t length)
+  74:../cleanflight/src/main/common/crc.c **** {
+ 354              	 .loc 1 74 0
+ 355              	 .cfi_startproc
+ 356              	 
+ 357              	 
+ 358 0000 80B5     	 push {r7,lr}
+ 359              	.LCFI22:
+ 360              	 .cfi_def_cfa_offset 8
+ 361              	 .cfi_offset 7,-8
+ 362              	 .cfi_offset 14,-4
+ 363 0002 86B0     	 sub sp,sp,#24
+ 364              	.LCFI23:
+ 365              	 .cfi_def_cfa_offset 32
+ 366 0004 00AF     	 add r7,sp,#0
+ 367              	.LCFI24:
+ 368              	 .cfi_def_cfa_register 7
+ 369 0006 0346     	 mov r3,r0
+ 370 0008 B960     	 str r1,[r7,#8]
+ 371 000a 7A60     	 str r2,[r7,#4]
+ 372 000c FB73     	 strb r3,[r7,#15]
+  75:../cleanflight/src/main/common/crc.c ****     const uint8_t *p = (const uint8_t *)data;
+ 373              	 .loc 1 75 0
+ 374 000e BB68     	 ldr r3,[r7,#8]
+ 375 0010 7B61     	 str r3,[r7,#20]
+  76:../cleanflight/src/main/common/crc.c ****     const uint8_t *pend = p + length;
+ 376              	 .loc 1 76 0
+ 377 0012 7A69     	 ldr r2,[r7,#20]
+ 378 0014 7B68     	 ldr r3,[r7,#4]
+ 379 0016 1344     	 add r3,r3,r2
+ 380 0018 3B61     	 str r3,[r7,#16]
+  77:../cleanflight/src/main/common/crc.c **** 
+  78:../cleanflight/src/main/common/crc.c ****     for (; p != pend; p++) {
+ 381              	 .loc 1 78 0
+ 382 001a 0BE0     	 b .L21
+ 383              	.L22:
+  79:../cleanflight/src/main/common/crc.c ****         crc = crc8_dvb_s2(crc, *p);
+ 384              	 .loc 1 79 0 discriminator 2
+ 385 001c 7B69     	 ldr r3,[r7,#20]
+ 386 001e 1B78     	 ldrb r3,[r3]
+ 387 0020 FA7B     	 ldrb r2,[r7,#15]
+ 388 0022 1046     	 mov r0,r2
+ 389 0024 1946     	 mov r1,r3
+ 390 0026 FFF7FEFF 	 bl crc8_dvb_s2
+ 391 002a 0346     	 mov r3,r0
+ 392 002c FB73     	 strb r3,[r7,#15]
+  78:../cleanflight/src/main/common/crc.c ****         crc = crc8_dvb_s2(crc, *p);
+ 393              	 .loc 1 78 0 discriminator 2
+ 394 002e 7B69     	 ldr r3,[r7,#20]
+ 395 0030 0133     	 adds r3,r3,#1
+ 396 0032 7B61     	 str r3,[r7,#20]
+ 397              	.L21:
+  78:../cleanflight/src/main/common/crc.c ****         crc = crc8_dvb_s2(crc, *p);
+ 398              	 .loc 1 78 0 is_stmt 0 discriminator 1
+ 399 0034 7A69     	 ldr r2,[r7,#20]
+ 400 0036 3B69     	 ldr r3,[r7,#16]
+ 401 0038 9A42     	 cmp r2,r3
+ 402 003a EFD1     	 bne .L22
+  80:../cleanflight/src/main/common/crc.c ****     }
+  81:../cleanflight/src/main/common/crc.c ****     return crc;
+ 403              	 .loc 1 81 0 is_stmt 1
+ 404 003c FB7B     	 ldrb r3,[r7,#15]
+  82:../cleanflight/src/main/common/crc.c **** }
+ 405              	 .loc 1 82 0
+ 406 003e 1846     	 mov r0,r3
+ 407 0040 1837     	 adds r7,r7,#24
+ 408              	.LCFI25:
+ 409              	 .cfi_def_cfa_offset 8
+ 410 0042 BD46     	 mov sp,r7
+ 411              	.LCFI26:
+ 412              	 .cfi_def_cfa_register 13
+ 413              	 
+ 414 0044 80BD     	 pop {r7,pc}
+ 415              	 .cfi_endproc
+ 416              	.LFE4:
+ 418 0046 00BF     	 .section .text.crc8_dvb_s2_sbuf_append,"ax",%progbits
+ 419              	 .align 2
+ 420              	 .global crc8_dvb_s2_sbuf_append
+ 421              	 .thumb
+ 422              	 .thumb_func
+ 424              	crc8_dvb_s2_sbuf_append:
+ 425              	.LFB5:
+  83:../cleanflight/src/main/common/crc.c **** 
+  84:../cleanflight/src/main/common/crc.c **** void crc8_dvb_s2_sbuf_append(sbuf_t *dst, uint8_t *start)
+  85:../cleanflight/src/main/common/crc.c **** {
+ 426              	 .loc 1 85 0
+ 427              	 .cfi_startproc
+ 428              	 
+ 429              	 
+ 430 0000 80B5     	 push {r7,lr}
+ 431              	.LCFI27:
+ 432              	 .cfi_def_cfa_offset 8
+ 433              	 .cfi_offset 7,-8
+ 434              	 .cfi_offset 14,-4
+ 435 0002 86B0     	 sub sp,sp,#24
+ 436              	.LCFI28:
+ 437              	 .cfi_def_cfa_offset 32
+ 438 0004 00AF     	 add r7,sp,#0
+ 439              	.LCFI29:
+ 440              	 .cfi_def_cfa_register 7
+ 441 0006 7860     	 str r0,[r7,#4]
+ 442 0008 3960     	 str r1,[r7]
+  86:../cleanflight/src/main/common/crc.c ****     uint8_t crc = 0;
+ 443              	 .loc 1 86 0
+ 444 000a 0023     	 movs r3,#0
+ 445 000c FB75     	 strb r3,[r7,#23]
+  87:../cleanflight/src/main/common/crc.c ****     const uint8_t * const end = dst->ptr;
+ 446              	 .loc 1 87 0
+ 447 000e 7B68     	 ldr r3,[r7,#4]
+ 448 0010 1B68     	 ldr r3,[r3]
+ 449 0012 FB60     	 str r3,[r7,#12]
+ 450              	.LBB5:
+  88:../cleanflight/src/main/common/crc.c ****     for (const uint8_t *ptr = start; ptr < end; ++ptr) {
+ 451              	 .loc 1 88 0
+ 452 0014 3B68     	 ldr r3,[r7]
+ 453 0016 3B61     	 str r3,[r7,#16]
+ 454 0018 0BE0     	 b .L25
+ 455              	.L26:
+  89:../cleanflight/src/main/common/crc.c ****         crc = crc8_dvb_s2(crc, *ptr);
+ 456              	 .loc 1 89 0 discriminator 3
+ 457 001a 3B69     	 ldr r3,[r7,#16]
+ 458 001c 1B78     	 ldrb r3,[r3]
+ 459 001e FA7D     	 ldrb r2,[r7,#23]
+ 460 0020 1046     	 mov r0,r2
+ 461 0022 1946     	 mov r1,r3
+ 462 0024 FFF7FEFF 	 bl crc8_dvb_s2
+ 463 0028 0346     	 mov r3,r0
+ 464 002a FB75     	 strb r3,[r7,#23]
+  88:../cleanflight/src/main/common/crc.c ****     for (const uint8_t *ptr = start; ptr < end; ++ptr) {
+ 465              	 .loc 1 88 0 discriminator 3
+ 466 002c 3B69     	 ldr r3,[r7,#16]
+ 467 002e 0133     	 adds r3,r3,#1
+ 468 0030 3B61     	 str r3,[r7,#16]
+ 469              	.L25:
+  88:../cleanflight/src/main/common/crc.c ****     for (const uint8_t *ptr = start; ptr < end; ++ptr) {
+ 470              	 .loc 1 88 0 is_stmt 0 discriminator 1
+ 471 0032 3A69     	 ldr r2,[r7,#16]
+ 472 0034 FB68     	 ldr r3,[r7,#12]
+ 473 0036 9A42     	 cmp r2,r3
+ 474 0038 EFD3     	 bcc .L26
+ 475              	.LBE5:
+  90:../cleanflight/src/main/common/crc.c ****     }
+  91:../cleanflight/src/main/common/crc.c ****     sbufWriteU8(dst, crc);
+ 476              	 .loc 1 91 0 is_stmt 1
+ 477 003a FB7D     	 ldrb r3,[r7,#23]
+ 478 003c 7868     	 ldr r0,[r7,#4]
+ 479 003e 1946     	 mov r1,r3
+ 480 0040 FFF7FEFF 	 bl sbufWriteU8
+  92:../cleanflight/src/main/common/crc.c **** }
+ 481              	 .loc 1 92 0
+ 482 0044 1837     	 adds r7,r7,#24
+ 483              	.LCFI30:
+ 484              	 .cfi_def_cfa_offset 8
+ 485 0046 BD46     	 mov sp,r7
+ 486              	.LCFI31:
+ 487              	 .cfi_def_cfa_register 13
+ 488              	 
+ 489 0048 80BD     	 pop {r7,pc}
+ 490              	 .cfi_endproc
+ 491              	.LFE5:
+ 493 004a 00BF     	 .section .text.crc8_xor_update,"ax",%progbits
+ 494              	 .align 2
+ 495              	 .global crc8_xor_update
+ 496              	 .thumb
+ 497              	 .thumb_func
+ 499              	crc8_xor_update:
+ 500              	.LFB6:
+  93:../cleanflight/src/main/common/crc.c **** 
+  94:../cleanflight/src/main/common/crc.c **** uint8_t crc8_xor_update(uint8_t crc, const void *data, uint32_t length)
+  95:../cleanflight/src/main/common/crc.c **** {
+ 501              	 .loc 1 95 0
+ 502              	 .cfi_startproc
+ 503              	 
+ 504              	 
+ 505              	 
+ 506 0000 80B4     	 push {r7}
+ 507              	.LCFI32:
+ 508              	 .cfi_def_cfa_offset 4
+ 509              	 .cfi_offset 7,-4
+ 510 0002 87B0     	 sub sp,sp,#28
+ 511              	.LCFI33:
+ 512              	 .cfi_def_cfa_offset 32
+ 513 0004 00AF     	 add r7,sp,#0
+ 514              	.LCFI34:
+ 515              	 .cfi_def_cfa_register 7
+ 516 0006 0346     	 mov r3,r0
+ 517 0008 B960     	 str r1,[r7,#8]
+ 518 000a 7A60     	 str r2,[r7,#4]
+ 519 000c FB73     	 strb r3,[r7,#15]
+  96:../cleanflight/src/main/common/crc.c ****     const uint8_t *p = (const uint8_t *)data;
+ 520              	 .loc 1 96 0
+ 521 000e BB68     	 ldr r3,[r7,#8]
+ 522 0010 7B61     	 str r3,[r7,#20]
+  97:../cleanflight/src/main/common/crc.c ****     const uint8_t *pend = p + length;
+ 523              	 .loc 1 97 0
+ 524 0012 7A69     	 ldr r2,[r7,#20]
+ 525 0014 7B68     	 ldr r3,[r7,#4]
+ 526 0016 1344     	 add r3,r3,r2
+ 527 0018 3B61     	 str r3,[r7,#16]
+  98:../cleanflight/src/main/common/crc.c **** 
+  99:../cleanflight/src/main/common/crc.c ****     for (; p != pend; p++) {
+ 528              	 .loc 1 99 0
+ 529 001a 07E0     	 b .L28
+ 530              	.L29:
+ 100:../cleanflight/src/main/common/crc.c ****         crc ^= *p;
+ 531              	 .loc 1 100 0 discriminator 2
+ 532 001c 7B69     	 ldr r3,[r7,#20]
+ 533 001e 1A78     	 ldrb r2,[r3]
+ 534 0020 FB7B     	 ldrb r3,[r7,#15]
+ 535 0022 5340     	 eors r3,r3,r2
+ 536 0024 FB73     	 strb r3,[r7,#15]
+  99:../cleanflight/src/main/common/crc.c ****         crc ^= *p;
+ 537              	 .loc 1 99 0 discriminator 2
+ 538 0026 7B69     	 ldr r3,[r7,#20]
+ 539 0028 0133     	 adds r3,r3,#1
+ 540 002a 7B61     	 str r3,[r7,#20]
+ 541              	.L28:
+  99:../cleanflight/src/main/common/crc.c ****         crc ^= *p;
+ 542              	 .loc 1 99 0 is_stmt 0 discriminator 1
+ 543 002c 7A69     	 ldr r2,[r7,#20]
+ 544 002e 3B69     	 ldr r3,[r7,#16]
+ 545 0030 9A42     	 cmp r2,r3
+ 546 0032 F3D1     	 bne .L29
+ 101:../cleanflight/src/main/common/crc.c ****     }
+ 102:../cleanflight/src/main/common/crc.c ****     return crc;
+ 547              	 .loc 1 102 0 is_stmt 1
+ 548 0034 FB7B     	 ldrb r3,[r7,#15]
+ 103:../cleanflight/src/main/common/crc.c **** }
+ 549              	 .loc 1 103 0
+ 550 0036 1846     	 mov r0,r3
+ 551 0038 1C37     	 adds r7,r7,#28
+ 552              	.LCFI35:
+ 553              	 .cfi_def_cfa_offset 4
+ 554 003a BD46     	 mov sp,r7
+ 555              	.LCFI36:
+ 556              	 .cfi_def_cfa_register 13
+ 557              	 
+ 558 003c 5DF8047B 	 ldr r7,[sp],#4
+ 559              	.LCFI37:
+ 560              	 .cfi_restore 7
+ 561              	 .cfi_def_cfa_offset 0
+ 562 0040 7047     	 bx lr
+ 563              	 .cfi_endproc
+ 564              	.LFE6:
+ 566 0042 00BF     	 .section .text.crc8_xor_sbuf_append,"ax",%progbits
+ 567              	 .align 2
+ 568              	 .global crc8_xor_sbuf_append
+ 569              	 .thumb
+ 570              	 .thumb_func
+ 572              	crc8_xor_sbuf_append:
+ 573              	.LFB7:
+ 104:../cleanflight/src/main/common/crc.c **** 
+ 105:../cleanflight/src/main/common/crc.c **** void crc8_xor_sbuf_append(sbuf_t *dst, uint8_t *start)
+ 106:../cleanflight/src/main/common/crc.c **** {
+ 574              	 .loc 1 106 0
+ 575              	 .cfi_startproc
+ 576              	 
+ 577              	 
+ 578 0000 80B5     	 push {r7,lr}
+ 579              	.LCFI38:
+ 580              	 .cfi_def_cfa_offset 8
+ 581              	 .cfi_offset 7,-8
+ 582              	 .cfi_offset 14,-4
+ 583 0002 86B0     	 sub sp,sp,#24
+ 584              	.LCFI39:
+ 585              	 .cfi_def_cfa_offset 32
+ 586 0004 00AF     	 add r7,sp,#0
+ 587              	.LCFI40:
+ 588              	 .cfi_def_cfa_register 7
+ 589 0006 7860     	 str r0,[r7,#4]
+ 590 0008 3960     	 str r1,[r7]
+ 107:../cleanflight/src/main/common/crc.c ****     uint8_t crc = 0;
+ 591              	 .loc 1 107 0
+ 592 000a 0023     	 movs r3,#0
+ 593 000c FB75     	 strb r3,[r7,#23]
+ 108:../cleanflight/src/main/common/crc.c ****     const uint8_t *end = dst->ptr;
+ 594              	 .loc 1 108 0
+ 595 000e 7B68     	 ldr r3,[r7,#4]
+ 596 0010 1B68     	 ldr r3,[r3]
+ 597 0012 FB60     	 str r3,[r7,#12]
+ 598              	.LBB6:
+ 109:../cleanflight/src/main/common/crc.c ****     for (uint8_t *ptr = start; ptr < end; ++ptr) {
+ 599              	 .loc 1 109 0
+ 600 0014 3B68     	 ldr r3,[r7]
+ 601 0016 3B61     	 str r3,[r7,#16]
+ 602 0018 07E0     	 b .L32
+ 603              	.L33:
+ 110:../cleanflight/src/main/common/crc.c ****         crc ^= *ptr;
+ 604              	 .loc 1 110 0 discriminator 3
+ 605 001a 3B69     	 ldr r3,[r7,#16]
+ 606 001c 1A78     	 ldrb r2,[r3]
+ 607 001e FB7D     	 ldrb r3,[r7,#23]
+ 608 0020 5340     	 eors r3,r3,r2
+ 609 0022 FB75     	 strb r3,[r7,#23]
+ 109:../cleanflight/src/main/common/crc.c ****     for (uint8_t *ptr = start; ptr < end; ++ptr) {
+ 610              	 .loc 1 109 0 discriminator 3
+ 611 0024 3B69     	 ldr r3,[r7,#16]
+ 612 0026 0133     	 adds r3,r3,#1
+ 613 0028 3B61     	 str r3,[r7,#16]
+ 614              	.L32:
+ 109:../cleanflight/src/main/common/crc.c ****     for (uint8_t *ptr = start; ptr < end; ++ptr) {
+ 615              	 .loc 1 109 0 is_stmt 0 discriminator 1
+ 616 002a 3A69     	 ldr r2,[r7,#16]
+ 617 002c FB68     	 ldr r3,[r7,#12]
+ 618 002e 9A42     	 cmp r2,r3
+ 619 0030 F3D3     	 bcc .L33
+ 620              	.LBE6:
+ 111:../cleanflight/src/main/common/crc.c ****     }
+ 112:../cleanflight/src/main/common/crc.c ****     sbufWriteU8(dst, crc);
+ 621              	 .loc 1 112 0 is_stmt 1
+ 622 0032 FB7D     	 ldrb r3,[r7,#23]
+ 623 0034 7868     	 ldr r0,[r7,#4]
+ 624 0036 1946     	 mov r1,r3
+ 625 0038 FFF7FEFF 	 bl sbufWriteU8
+ 113:../cleanflight/src/main/common/crc.c **** }
+ 626              	 .loc 1 113 0
+ 627 003c 1837     	 adds r7,r7,#24
+ 628              	.LCFI41:
+ 629              	 .cfi_def_cfa_offset 8
+ 630 003e BD46     	 mov sp,r7
+ 631              	.LCFI42:
+ 632              	 .cfi_def_cfa_register 13
+ 633              	 
+ 634 0040 80BD     	 pop {r7,pc}
+ 635              	 .cfi_endproc
+ 636              	.LFE7:
+ 638 0042 00BF     	 .text
+ 639              	.Letext0:
+ 640              	 .file 2 "d:\\xmc\\dave-ide-4.4.2-64bit\\eclipse\\arm-gcc-49\\arm-none-eabi\\include\\machine\\_default_types.h"
+ 641              	 .file 3 "d:\\xmc\\dave-ide-4.4.2-64bit\\eclipse\\arm-gcc-49\\arm-none-eabi\\include\\stdint.h"
+ 642              	 .file 4 "../cleanflight/src/main/common/streambuf.h"
+DEFINED SYMBOLS
+                            *ABS*:00000000 crc.c
+    {standard input}:20     .text.crc16_ccitt:00000000 $t
+    {standard input}:25     .text.crc16_ccitt:00000000 crc16_ccitt
+    {standard input}:112    .text.crc16_ccitt_update:00000000 $t
+    {standard input}:117    .text.crc16_ccitt_update:00000000 crc16_ccitt_update
+    {standard input}:184    .text.crc16_ccitt_sbuf_append:00000000 $t
+    {standard input}:189    .text.crc16_ccitt_sbuf_append:00000000 crc16_ccitt_sbuf_append
+    {standard input}:259    .text.crc8_dvb_s2:00000000 $t
+    {standard input}:264    .text.crc8_dvb_s2:00000000 crc8_dvb_s2
+    {standard input}:347    .text.crc8_dvb_s2_update:00000000 $t
+    {standard input}:352    .text.crc8_dvb_s2_update:00000000 crc8_dvb_s2_update
+    {standard input}:419    .text.crc8_dvb_s2_sbuf_append:00000000 $t
+    {standard input}:424    .text.crc8_dvb_s2_sbuf_append:00000000 crc8_dvb_s2_sbuf_append
+    {standard input}:494    .text.crc8_xor_update:00000000 $t
+    {standard input}:499    .text.crc8_xor_update:00000000 crc8_xor_update
+    {standard input}:567    .text.crc8_xor_sbuf_append:00000000 $t
+    {standard input}:572    .text.crc8_xor_sbuf_append:00000000 crc8_xor_sbuf_append
+                     .debug_frame:00000010 $d
+
+UNDEFINED SYMBOLS
+sbufPtr
+sbufWriteU16
+sbufWriteU8

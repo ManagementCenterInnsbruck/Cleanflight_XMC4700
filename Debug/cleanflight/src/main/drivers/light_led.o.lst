@@ -1,0 +1,476 @@
+   1              	 .syntax unified
+   2              	 .cpu cortex-m4
+   3              	 .eabi_attribute 27,3
+   4              	 .fpu fpv4-sp-d16
+   5              	 .eabi_attribute 20,1
+   6              	 .eabi_attribute 21,1
+   7              	 .eabi_attribute 23,3
+   8              	 .eabi_attribute 24,1
+   9              	 .eabi_attribute 25,1
+  10              	 .eabi_attribute 26,1
+  11              	 .eabi_attribute 30,6
+  12              	 .eabi_attribute 34,1
+  13              	 .eabi_attribute 18,4
+  14              	 .thumb
+  15              	 .file "light_led.c"
+  16              	 .text
+  17              	.Ltext0:
+  18              	 .cfi_sections .debug_frame
+  19              	 .comm statusLedConfig_System,4,4
+  20              	 .comm statusLedConfig_Copy,4,4
+  21              	 .global statusLedConfig_Registry
+  22              	 .section .pg_registry,"a",%progbits
+  23              	 .align 2
+  26              	statusLedConfig_Registry:
+  27 0000 F901     	 .short 505
+  28 0002 0400     	 .short 4
+  29 0004 00000000 	 .word statusLedConfig_System
+  30 0008 00000000 	 .word statusLedConfig_Copy
+  31 000c 00000000 	 .word 0
+  32 0010 00000000 	 .word pgResetFn_statusLedConfig
+  33              	 .section .bss.leds,"aw",%nobits
+  34              	 .align 2
+  37              	leds:
+  38 0000 00000000 	 .space 12
+  38      00000000 
+  38      00000000 
+  39              	 .section .bss.ledInversion,"aw",%nobits
+  42              	ledInversion:
+  43 0000 00       	 .space 1
+  44              	 .section .text.pgResetFn_statusLedConfig,"ax",%progbits
+  45              	 .align 2
+  46              	 .global pgResetFn_statusLedConfig
+  47              	 .thumb
+  48              	 .thumb_func
+  50              	pgResetFn_statusLedConfig:
+  51              	.LFB526:
+  52              	 .file 1 "../cleanflight/src/main/drivers/light_led.c"
+   1:../cleanflight/src/main/drivers/light_led.c **** /*
+   2:../cleanflight/src/main/drivers/light_led.c ****  * This file is part of Cleanflight and Betaflight.
+   3:../cleanflight/src/main/drivers/light_led.c ****  *
+   4:../cleanflight/src/main/drivers/light_led.c ****  * Cleanflight and Betaflight are free software. You can redistribute
+   5:../cleanflight/src/main/drivers/light_led.c ****  * this software and/or modify this software under the terms of the
+   6:../cleanflight/src/main/drivers/light_led.c ****  * GNU General Public License as published by the Free Software
+   7:../cleanflight/src/main/drivers/light_led.c ****  * Foundation, either version 3 of the License, or (at your option)
+   8:../cleanflight/src/main/drivers/light_led.c ****  * any later version.
+   9:../cleanflight/src/main/drivers/light_led.c ****  *
+  10:../cleanflight/src/main/drivers/light_led.c ****  * Cleanflight and Betaflight are distributed in the hope that they
+  11:../cleanflight/src/main/drivers/light_led.c ****  * will be useful, but WITHOUT ANY WARRANTY; without even the implied
+  12:../cleanflight/src/main/drivers/light_led.c ****  * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+  13:../cleanflight/src/main/drivers/light_led.c ****  * See the GNU General Public License for more details.
+  14:../cleanflight/src/main/drivers/light_led.c ****  *
+  15:../cleanflight/src/main/drivers/light_led.c ****  * You should have received a copy of the GNU General Public License
+  16:../cleanflight/src/main/drivers/light_led.c ****  * along with this software.
+  17:../cleanflight/src/main/drivers/light_led.c ****  *
+  18:../cleanflight/src/main/drivers/light_led.c ****  * If not, see <http://www.gnu.org/licenses/>.
+  19:../cleanflight/src/main/drivers/light_led.c ****  */
+  20:../cleanflight/src/main/drivers/light_led.c **** 
+  21:../cleanflight/src/main/drivers/light_led.c **** #include "platform.h"
+  22:../cleanflight/src/main/drivers/light_led.c **** 
+  23:../cleanflight/src/main/drivers/light_led.c **** #include "pg/pg_ids.h"
+  24:../cleanflight/src/main/drivers/light_led.c **** 
+  25:../cleanflight/src/main/drivers/light_led.c **** #include "drivers/io.h"
+  26:../cleanflight/src/main/drivers/light_led.c **** #include "io_impl.h"
+  27:../cleanflight/src/main/drivers/light_led.c **** 
+  28:../cleanflight/src/main/drivers/light_led.c **** #include "light_led.h"
+  29:../cleanflight/src/main/drivers/light_led.c **** 
+  30:../cleanflight/src/main/drivers/light_led.c **** PG_REGISTER_WITH_RESET_FN(statusLedConfig_t, statusLedConfig, PG_STATUS_LED_CONFIG, 0);
+  31:../cleanflight/src/main/drivers/light_led.c **** 
+  32:../cleanflight/src/main/drivers/light_led.c **** static IO_t leds[STATUS_LED_NUMBER];
+  33:../cleanflight/src/main/drivers/light_led.c **** static uint8_t ledInversion = 0;
+  34:../cleanflight/src/main/drivers/light_led.c **** 
+  35:../cleanflight/src/main/drivers/light_led.c **** #ifndef LED0_PIN
+  36:../cleanflight/src/main/drivers/light_led.c **** #define LED0_PIN NONE
+  37:../cleanflight/src/main/drivers/light_led.c **** #endif
+  38:../cleanflight/src/main/drivers/light_led.c **** 
+  39:../cleanflight/src/main/drivers/light_led.c **** #ifndef LED1_PIN
+  40:../cleanflight/src/main/drivers/light_led.c **** #define LED1_PIN NONE
+  41:../cleanflight/src/main/drivers/light_led.c **** #endif
+  42:../cleanflight/src/main/drivers/light_led.c **** 
+  43:../cleanflight/src/main/drivers/light_led.c **** #ifndef LED2_PIN
+  44:../cleanflight/src/main/drivers/light_led.c **** #define LED2_PIN NONE
+  45:../cleanflight/src/main/drivers/light_led.c **** #endif
+  46:../cleanflight/src/main/drivers/light_led.c **** 
+  47:../cleanflight/src/main/drivers/light_led.c **** void pgResetFn_statusLedConfig(statusLedConfig_t *statusLedConfig)
+  48:../cleanflight/src/main/drivers/light_led.c **** {
+  53              	 .loc 1 48 0
+  54              	 .cfi_startproc
+  55              	 
+  56              	 
+  57              	 
+  58 0000 80B4     	 push {r7}
+  59              	.LCFI0:
+  60              	 .cfi_def_cfa_offset 4
+  61              	 .cfi_offset 7,-4
+  62 0002 83B0     	 sub sp,sp,#12
+  63              	.LCFI1:
+  64              	 .cfi_def_cfa_offset 16
+  65 0004 00AF     	 add r7,sp,#0
+  66              	.LCFI2:
+  67              	 .cfi_def_cfa_register 7
+  68 0006 7860     	 str r0,[r7,#4]
+  49:../cleanflight/src/main/drivers/light_led.c ****     statusLedConfig->ioTags[0] = IO_TAG(LED0_PIN);
+  69              	 .loc 1 49 0
+  70 0008 7B68     	 ldr r3,[r7,#4]
+  71 000a 2022     	 movs r2,#32
+  72 000c 1A70     	 strb r2,[r3]
+  50:../cleanflight/src/main/drivers/light_led.c ****     statusLedConfig->ioTags[1] = IO_TAG(LED1_PIN);
+  73              	 .loc 1 50 0
+  74 000e 7B68     	 ldr r3,[r7,#4]
+  75 0010 2122     	 movs r2,#33
+  76 0012 5A70     	 strb r2,[r3,#1]
+  51:../cleanflight/src/main/drivers/light_led.c ****     statusLedConfig->ioTags[2] = IO_TAG(LED2_PIN);
+  77              	 .loc 1 51 0
+  78 0014 7B68     	 ldr r3,[r7,#4]
+  79 0016 2222     	 movs r2,#34
+  80 0018 9A70     	 strb r2,[r3,#2]
+  52:../cleanflight/src/main/drivers/light_led.c **** 
+  53:../cleanflight/src/main/drivers/light_led.c ****     statusLedConfig->inversion = 0
+  81              	 .loc 1 53 0
+  82 001a 7B68     	 ldr r3,[r7,#4]
+  83 001c 0722     	 movs r2,#7
+  84 001e DA70     	 strb r2,[r3,#3]
+  54:../cleanflight/src/main/drivers/light_led.c **** #ifdef LED0_INVERTED
+  55:../cleanflight/src/main/drivers/light_led.c ****     | BIT(0)
+  56:../cleanflight/src/main/drivers/light_led.c **** #endif
+  57:../cleanflight/src/main/drivers/light_led.c **** #ifdef LED1_INVERTED
+  58:../cleanflight/src/main/drivers/light_led.c ****     | BIT(1)
+  59:../cleanflight/src/main/drivers/light_led.c **** #endif
+  60:../cleanflight/src/main/drivers/light_led.c **** #ifdef LED2_INVERTED
+  61:../cleanflight/src/main/drivers/light_led.c ****     | BIT(2)
+  62:../cleanflight/src/main/drivers/light_led.c **** #endif
+  63:../cleanflight/src/main/drivers/light_led.c ****     ;
+  64:../cleanflight/src/main/drivers/light_led.c **** }
+  85              	 .loc 1 64 0
+  86 0020 0C37     	 adds r7,r7,#12
+  87              	.LCFI3:
+  88              	 .cfi_def_cfa_offset 4
+  89 0022 BD46     	 mov sp,r7
+  90              	.LCFI4:
+  91              	 .cfi_def_cfa_register 13
+  92              	 
+  93 0024 5DF8047B 	 ldr r7,[sp],#4
+  94              	.LCFI5:
+  95              	 .cfi_restore 7
+  96              	 .cfi_def_cfa_offset 0
+  97 0028 7047     	 bx lr
+  98              	 .cfi_endproc
+  99              	.LFE526:
+ 101 002a 00BF     	 .section .text.ledInit,"ax",%progbits
+ 102              	 .align 2
+ 103              	 .global ledInit
+ 104              	 .thumb
+ 105              	 .thumb_func
+ 107              	ledInit:
+ 108              	.LFB527:
+  65:../cleanflight/src/main/drivers/light_led.c **** 
+  66:../cleanflight/src/main/drivers/light_led.c **** void ledInit(const statusLedConfig_t *statusLedConfig)
+  67:../cleanflight/src/main/drivers/light_led.c **** {
+ 109              	 .loc 1 67 0
+ 110              	 .cfi_startproc
+ 111              	 
+ 112              	 
+ 113 0000 80B5     	 push {r7,lr}
+ 114              	.LCFI6:
+ 115              	 .cfi_def_cfa_offset 8
+ 116              	 .cfi_offset 7,-8
+ 117              	 .cfi_offset 14,-4
+ 118 0002 84B0     	 sub sp,sp,#16
+ 119              	.LCFI7:
+ 120              	 .cfi_def_cfa_offset 24
+ 121 0004 00AF     	 add r7,sp,#0
+ 122              	.LCFI8:
+ 123              	 .cfi_def_cfa_register 7
+ 124 0006 7860     	 str r0,[r7,#4]
+  68:../cleanflight/src/main/drivers/light_led.c ****     ledInversion = statusLedConfig->inversion;
+ 125              	 .loc 1 68 0
+ 126 0008 7B68     	 ldr r3,[r7,#4]
+ 127 000a DA78     	 ldrb r2,[r3,#3]
+ 128 000c 234B     	 ldr r3,.L7
+ 129 000e 1A70     	 strb r2,[r3]
+ 130              	.LBB2:
+  69:../cleanflight/src/main/drivers/light_led.c ****     for (int i = 0; i < STATUS_LED_NUMBER; i++) {
+ 131              	 .loc 1 69 0
+ 132 0010 0023     	 movs r3,#0
+ 133 0012 FB60     	 str r3,[r7,#12]
+ 134 0014 2FE0     	 b .L3
+ 135              	.L6:
+  70:../cleanflight/src/main/drivers/light_led.c ****         if (statusLedConfig->ioTags[i]) {
+ 136              	 .loc 1 70 0
+ 137 0016 7A68     	 ldr r2,[r7,#4]
+ 138 0018 FB68     	 ldr r3,[r7,#12]
+ 139 001a 1344     	 add r3,r3,r2
+ 140 001c 1B78     	 ldrb r3,[r3]
+ 141 001e 002B     	 cmp r3,#0
+ 142 0020 21D0     	 beq .L4
+  71:../cleanflight/src/main/drivers/light_led.c ****             leds[i] = IOGetByTag(statusLedConfig->ioTags[i]);
+ 143              	 .loc 1 71 0
+ 144 0022 7A68     	 ldr r2,[r7,#4]
+ 145 0024 FB68     	 ldr r3,[r7,#12]
+ 146 0026 1344     	 add r3,r3,r2
+ 147 0028 1B78     	 ldrb r3,[r3]
+ 148 002a 1846     	 mov r0,r3
+ 149 002c FFF7FEFF 	 bl IOGetByTag
+ 150 0030 0146     	 mov r1,r0
+ 151 0032 1B4A     	 ldr r2,.L7+4
+ 152 0034 FB68     	 ldr r3,[r7,#12]
+ 153 0036 42F82310 	 str r1,[r2,r3,lsl#2]
+  72:../cleanflight/src/main/drivers/light_led.c ****             IOInit(leds[i], OWNER_LED, RESOURCE_INDEX(i));
+ 154              	 .loc 1 72 0
+ 155 003a 194A     	 ldr r2,.L7+4
+ 156 003c FB68     	 ldr r3,[r7,#12]
+ 157 003e 52F82320 	 ldr r2,[r2,r3,lsl#2]
+ 158 0042 FB68     	 ldr r3,[r7,#12]
+ 159 0044 DBB2     	 uxtb r3,r3
+ 160 0046 0133     	 adds r3,r3,#1
+ 161 0048 DBB2     	 uxtb r3,r3
+ 162 004a 1046     	 mov r0,r2
+ 163 004c 0521     	 movs r1,#5
+ 164 004e 1A46     	 mov r2,r3
+ 165 0050 FFF7FEFF 	 bl IOInit
+  73:../cleanflight/src/main/drivers/light_led.c ****             IOConfigGPIO(leds[i], IOCFG_OUT_PP);
+ 166              	 .loc 1 73 0
+ 167 0054 124A     	 ldr r2,.L7+4
+ 168 0056 FB68     	 ldr r3,[r7,#12]
+ 169 0058 52F82330 	 ldr r3,[r2,r3,lsl#2]
+ 170 005c 1846     	 mov r0,r3
+ 171 005e 8021     	 movs r1,#128
+ 172 0060 FFF7FEFF 	 bl IOConfigGPIO
+ 173 0064 04E0     	 b .L5
+ 174              	.L4:
+  74:../cleanflight/src/main/drivers/light_led.c ****         } else {
+  75:../cleanflight/src/main/drivers/light_led.c ****             leds[i] = IO_NONE;
+ 175              	 .loc 1 75 0
+ 176 0066 0E4A     	 ldr r2,.L7+4
+ 177 0068 FB68     	 ldr r3,[r7,#12]
+ 178 006a 0021     	 movs r1,#0
+ 179 006c 42F82310 	 str r1,[r2,r3,lsl#2]
+ 180              	.L5:
+  69:../cleanflight/src/main/drivers/light_led.c ****         if (statusLedConfig->ioTags[i]) {
+ 181              	 .loc 1 69 0 discriminator 2
+ 182 0070 FB68     	 ldr r3,[r7,#12]
+ 183 0072 0133     	 adds r3,r3,#1
+ 184 0074 FB60     	 str r3,[r7,#12]
+ 185              	.L3:
+  69:../cleanflight/src/main/drivers/light_led.c ****         if (statusLedConfig->ioTags[i]) {
+ 186              	 .loc 1 69 0 is_stmt 0 discriminator 1
+ 187 0076 FB68     	 ldr r3,[r7,#12]
+ 188 0078 022B     	 cmp r3,#2
+ 189 007a CCDD     	 ble .L6
+ 190              	.LBE2:
+  76:../cleanflight/src/main/drivers/light_led.c ****         }
+  77:../cleanflight/src/main/drivers/light_led.c ****     }
+  78:../cleanflight/src/main/drivers/light_led.c **** 
+  79:../cleanflight/src/main/drivers/light_led.c ****     LED0_OFF;
+ 191              	 .loc 1 79 0 is_stmt 1
+ 192 007c 0020     	 movs r0,#0
+ 193 007e 0021     	 movs r1,#0
+ 194 0080 FFF7FEFF 	 bl ledSet
+  80:../cleanflight/src/main/drivers/light_led.c ****     LED1_OFF;
+ 195              	 .loc 1 80 0
+ 196 0084 0120     	 movs r0,#1
+ 197 0086 0021     	 movs r1,#0
+ 198 0088 FFF7FEFF 	 bl ledSet
+  81:../cleanflight/src/main/drivers/light_led.c ****     LED2_OFF;
+ 199              	 .loc 1 81 0
+ 200 008c 0220     	 movs r0,#2
+ 201 008e 0021     	 movs r1,#0
+ 202 0090 FFF7FEFF 	 bl ledSet
+  82:../cleanflight/src/main/drivers/light_led.c **** }
+ 203              	 .loc 1 82 0
+ 204 0094 1037     	 adds r7,r7,#16
+ 205              	.LCFI9:
+ 206              	 .cfi_def_cfa_offset 8
+ 207 0096 BD46     	 mov sp,r7
+ 208              	.LCFI10:
+ 209              	 .cfi_def_cfa_register 13
+ 210              	 
+ 211 0098 80BD     	 pop {r7,pc}
+ 212              	.L8:
+ 213 009a 00BF     	 .align 2
+ 214              	.L7:
+ 215 009c 00000000 	 .word ledInversion
+ 216 00a0 00000000 	 .word leds
+ 217              	 .cfi_endproc
+ 218              	.LFE527:
+ 220              	 .section .text.ledToggle,"ax",%progbits
+ 221              	 .align 2
+ 222              	 .global ledToggle
+ 223              	 .thumb
+ 224              	 .thumb_func
+ 226              	ledToggle:
+ 227              	.LFB528:
+  83:../cleanflight/src/main/drivers/light_led.c **** 
+  84:../cleanflight/src/main/drivers/light_led.c **** void ledToggle(int led)
+  85:../cleanflight/src/main/drivers/light_led.c **** {
+ 228              	 .loc 1 85 0
+ 229              	 .cfi_startproc
+ 230              	 
+ 231              	 
+ 232 0000 80B5     	 push {r7,lr}
+ 233              	.LCFI11:
+ 234              	 .cfi_def_cfa_offset 8
+ 235              	 .cfi_offset 7,-8
+ 236              	 .cfi_offset 14,-4
+ 237 0002 82B0     	 sub sp,sp,#8
+ 238              	.LCFI12:
+ 239              	 .cfi_def_cfa_offset 16
+ 240 0004 00AF     	 add r7,sp,#0
+ 241              	.LCFI13:
+ 242              	 .cfi_def_cfa_register 7
+ 243 0006 7860     	 str r0,[r7,#4]
+  86:../cleanflight/src/main/drivers/light_led.c ****     IOToggle(leds[led]);
+ 244              	 .loc 1 86 0
+ 245 0008 044A     	 ldr r2,.L10
+ 246 000a 7B68     	 ldr r3,[r7,#4]
+ 247 000c 52F82330 	 ldr r3,[r2,r3,lsl#2]
+ 248 0010 1846     	 mov r0,r3
+ 249 0012 FFF7FEFF 	 bl IOToggle
+  87:../cleanflight/src/main/drivers/light_led.c **** }
+ 250              	 .loc 1 87 0
+ 251 0016 0837     	 adds r7,r7,#8
+ 252              	.LCFI14:
+ 253              	 .cfi_def_cfa_offset 8
+ 254 0018 BD46     	 mov sp,r7
+ 255              	.LCFI15:
+ 256              	 .cfi_def_cfa_register 13
+ 257              	 
+ 258 001a 80BD     	 pop {r7,pc}
+ 259              	.L11:
+ 260              	 .align 2
+ 261              	.L10:
+ 262 001c 00000000 	 .word leds
+ 263              	 .cfi_endproc
+ 264              	.LFE528:
+ 266              	 .section .text.ledSet,"ax",%progbits
+ 267              	 .align 2
+ 268              	 .global ledSet
+ 269              	 .thumb
+ 270              	 .thumb_func
+ 272              	ledSet:
+ 273              	.LFB529:
+  88:../cleanflight/src/main/drivers/light_led.c **** 
+  89:../cleanflight/src/main/drivers/light_led.c **** void ledSet(int led, bool on)
+  90:../cleanflight/src/main/drivers/light_led.c **** {
+ 274              	 .loc 1 90 0
+ 275              	 .cfi_startproc
+ 276              	 
+ 277              	 
+ 278 0000 80B5     	 push {r7,lr}
+ 279              	.LCFI16:
+ 280              	 .cfi_def_cfa_offset 8
+ 281              	 .cfi_offset 7,-8
+ 282              	 .cfi_offset 14,-4
+ 283 0002 84B0     	 sub sp,sp,#16
+ 284              	.LCFI17:
+ 285              	 .cfi_def_cfa_offset 24
+ 286 0004 00AF     	 add r7,sp,#0
+ 287              	.LCFI18:
+ 288              	 .cfi_def_cfa_register 7
+ 289 0006 7860     	 str r0,[r7,#4]
+ 290 0008 0B46     	 mov r3,r1
+ 291 000a FB70     	 strb r3,[r7,#3]
+  91:../cleanflight/src/main/drivers/light_led.c ****     const bool inverted = (1 << (led)) & ledInversion;
+ 292              	 .loc 1 91 0
+ 293 000c 0122     	 movs r2,#1
+ 294 000e 7B68     	 ldr r3,[r7,#4]
+ 295 0010 02FA03F3 	 lsl r3,r2,r3
+ 296 0014 144A     	 ldr r2,.L15
+ 297 0016 1278     	 ldrb r2,[r2]
+ 298 0018 1340     	 ands r3,r3,r2
+ 299 001a 002B     	 cmp r3,#0
+ 300 001c 14BF     	 ite ne
+ 301 001e 0123     	 movne r3,#1
+ 302 0020 0023     	 moveq r3,#0
+ 303 0022 FB73     	 strb r3,[r7,#15]
+  92:../cleanflight/src/main/drivers/light_led.c ****     IOWrite(leds[led], on ? inverted : !inverted);
+ 304              	 .loc 1 92 0
+ 305 0024 114A     	 ldr r2,.L15+4
+ 306 0026 7B68     	 ldr r3,[r7,#4]
+ 307 0028 52F82320 	 ldr r2,[r2,r3,lsl#2]
+ 308 002c FB78     	 ldrb r3,[r7,#3]
+ 309 002e 002B     	 cmp r3,#0
+ 310 0030 06D0     	 beq .L13
+ 311              	 .loc 1 92 0 is_stmt 0 discriminator 1
+ 312 0032 FB7B     	 ldrb r3,[r7,#15]
+ 313 0034 002B     	 cmp r3,#0
+ 314 0036 14BF     	 ite ne
+ 315 0038 0123     	 movne r3,#1
+ 316 003a 0023     	 moveq r3,#0
+ 317 003c DBB2     	 uxtb r3,r3
+ 318 003e 0BE0     	 b .L14
+ 319              	.L13:
+ 320              	 .loc 1 92 0 discriminator 2
+ 321 0040 FB7B     	 ldrb r3,[r7,#15]
+ 322 0042 002B     	 cmp r3,#0
+ 323 0044 14BF     	 ite ne
+ 324 0046 0123     	 movne r3,#1
+ 325 0048 0023     	 moveq r3,#0
+ 326 004a DBB2     	 uxtb r3,r3
+ 327 004c 83F00103 	 eor r3,r3,#1
+ 328 0050 DBB2     	 uxtb r3,r3
+ 329 0052 03F00103 	 and r3,r3,#1
+ 330 0056 DBB2     	 uxtb r3,r3
+ 331              	.L14:
+ 332              	 .loc 1 92 0 discriminator 4
+ 333 0058 1046     	 mov r0,r2
+ 334 005a 1946     	 mov r1,r3
+ 335 005c FFF7FEFF 	 bl IOWrite
+  93:../cleanflight/src/main/drivers/light_led.c **** }
+ 336              	 .loc 1 93 0 is_stmt 1 discriminator 4
+ 337 0060 1037     	 adds r7,r7,#16
+ 338              	.LCFI19:
+ 339              	 .cfi_def_cfa_offset 8
+ 340 0062 BD46     	 mov sp,r7
+ 341              	.LCFI20:
+ 342              	 .cfi_def_cfa_register 13
+ 343              	 
+ 344 0064 80BD     	 pop {r7,pc}
+ 345              	.L16:
+ 346 0066 00BF     	 .align 2
+ 347              	.L15:
+ 348 0068 00000000 	 .word ledInversion
+ 349 006c 00000000 	 .word leds
+ 350              	 .cfi_endproc
+ 351              	.LFE529:
+ 353              	 .text
+ 354              	.Letext0:
+ 355              	 .file 2 "d:\\xmc\\dave-ide-4.4.2-64bit\\eclipse\\arm-gcc-49\\arm-none-eabi\\include\\machine\\_default_types.h"
+ 356              	 .file 3 "d:\\xmc\\dave-ide-4.4.2-64bit\\eclipse\\arm-gcc-49\\arm-none-eabi\\include\\stdint.h"
+ 357              	 .file 4 "D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/lib/main/XMC4000/XMCLib/inc/xmc4_gpio.h"
+ 358              	 .file 5 "D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/lib/main/XMC4000/XMCLib/inc/xmc_usic.h"
+ 359              	 .file 6 "D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/drivers/io_types.h"
+ 360              	 .file 7 "D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/pg/pg.h"
+ 361              	 .file 8 "D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/drivers/resource.h"
+ 362              	 .file 9 "../cleanflight/src/main/drivers/light_led.h"
+ 363              	 .file 10 "D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/lib/main/CMSIS/Core/Include/core_cm4.h"
+ 364              	 .file 11 "D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/lib/main/XMC4000/system_XMC4700.h"
+DEFINED SYMBOLS
+                            *ABS*:00000000 light_led.c
+                            *COM*:00000004 statusLedConfig_System
+                            *COM*:00000004 statusLedConfig_Copy
+    {standard input}:26     .pg_registry:00000000 statusLedConfig_Registry
+    {standard input}:23     .pg_registry:00000000 $d
+    {standard input}:50     .text.pgResetFn_statusLedConfig:00000000 pgResetFn_statusLedConfig
+    {standard input}:34     .bss.leds:00000000 $d
+    {standard input}:37     .bss.leds:00000000 leds
+    {standard input}:42     .bss.ledInversion:00000000 ledInversion
+    {standard input}:43     .bss.ledInversion:00000000 $d
+    {standard input}:45     .text.pgResetFn_statusLedConfig:00000000 $t
+    {standard input}:102    .text.ledInit:00000000 $t
+    {standard input}:107    .text.ledInit:00000000 ledInit
+    {standard input}:272    .text.ledSet:00000000 ledSet
+    {standard input}:215    .text.ledInit:0000009c $d
+    {standard input}:221    .text.ledToggle:00000000 $t
+    {standard input}:226    .text.ledToggle:00000000 ledToggle
+    {standard input}:262    .text.ledToggle:0000001c $d
+    {standard input}:267    .text.ledSet:00000000 $t
+    {standard input}:348    .text.ledSet:00000068 $d
+                     .debug_frame:00000010 $d
+
+UNDEFINED SYMBOLS
+IOGetByTag
+IOInit
+IOConfigGPIO
+IOToggle
+IOWrite

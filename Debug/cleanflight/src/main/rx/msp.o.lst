@@ -1,0 +1,417 @@
+   1              	 .syntax unified
+   2              	 .cpu cortex-m4
+   3              	 .eabi_attribute 27,3
+   4              	 .fpu fpv4-sp-d16
+   5              	 .eabi_attribute 20,1
+   6              	 .eabi_attribute 21,1
+   7              	 .eabi_attribute 23,3
+   8              	 .eabi_attribute 24,1
+   9              	 .eabi_attribute 25,1
+  10              	 .eabi_attribute 26,1
+  11              	 .eabi_attribute 30,6
+  12              	 .eabi_attribute 34,1
+  13              	 .eabi_attribute 18,4
+  14              	 .thumb
+  15              	 .file "msp.c"
+  16              	 .text
+  17              	.Ltext0:
+  18              	 .cfi_sections .debug_frame
+  19              	 .section .bss.mspFrame,"aw",%nobits
+  20              	 .align 2
+  23              	mspFrame:
+  24 0000 00000000 	 .space 36
+  24      00000000 
+  24      00000000 
+  24      00000000 
+  24      00000000 
+  25              	 .section .bss.rxMspFrameDone,"aw",%nobits
+  28              	rxMspFrameDone:
+  29 0000 00       	 .space 1
+  30              	 .section .text.rxMspReadRawRC,"ax",%progbits
+  31              	 .align 2
+  32              	 .thumb
+  33              	 .thumb_func
+  35              	rxMspReadRawRC:
+  36              	.LFB535:
+  37              	 .file 1 "../cleanflight/src/main/rx/msp.c"
+   1:../cleanflight/src/main/rx/msp.c **** /*
+   2:../cleanflight/src/main/rx/msp.c ****  * This file is part of Cleanflight and Betaflight.
+   3:../cleanflight/src/main/rx/msp.c ****  *
+   4:../cleanflight/src/main/rx/msp.c ****  * Cleanflight and Betaflight are free software. You can redistribute
+   5:../cleanflight/src/main/rx/msp.c ****  * this software and/or modify this software under the terms of the
+   6:../cleanflight/src/main/rx/msp.c ****  * GNU General Public License as published by the Free Software
+   7:../cleanflight/src/main/rx/msp.c ****  * Foundation, either version 3 of the License, or (at your option)
+   8:../cleanflight/src/main/rx/msp.c ****  * any later version.
+   9:../cleanflight/src/main/rx/msp.c ****  *
+  10:../cleanflight/src/main/rx/msp.c ****  * Cleanflight and Betaflight are distributed in the hope that they
+  11:../cleanflight/src/main/rx/msp.c ****  * will be useful, but WITHOUT ANY WARRANTY; without even the implied
+  12:../cleanflight/src/main/rx/msp.c ****  * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+  13:../cleanflight/src/main/rx/msp.c ****  * See the GNU General Public License for more details.
+  14:../cleanflight/src/main/rx/msp.c ****  *
+  15:../cleanflight/src/main/rx/msp.c ****  * You should have received a copy of the GNU General Public License
+  16:../cleanflight/src/main/rx/msp.c ****  * along with this software.
+  17:../cleanflight/src/main/rx/msp.c ****  *
+  18:../cleanflight/src/main/rx/msp.c ****  * If not, see <http://www.gnu.org/licenses/>.
+  19:../cleanflight/src/main/rx/msp.c ****  */
+  20:../cleanflight/src/main/rx/msp.c **** 
+  21:../cleanflight/src/main/rx/msp.c **** #include <stdbool.h>
+  22:../cleanflight/src/main/rx/msp.c **** #include <stdint.h>
+  23:../cleanflight/src/main/rx/msp.c **** 
+  24:../cleanflight/src/main/rx/msp.c **** #include "platform.h"
+  25:../cleanflight/src/main/rx/msp.c **** 
+  26:../cleanflight/src/main/rx/msp.c **** #ifdef USE_RX_MSP
+  27:../cleanflight/src/main/rx/msp.c **** 
+  28:../cleanflight/src/main/rx/msp.c **** #include "common/utils.h"
+  29:../cleanflight/src/main/rx/msp.c **** 
+  30:../cleanflight/src/main/rx/msp.c **** #include "drivers/io.h"
+  31:../cleanflight/src/main/rx/msp.c **** #include "pg/rx.h"
+  32:../cleanflight/src/main/rx/msp.c **** #include "rx/rx.h"
+  33:../cleanflight/src/main/rx/msp.c **** #include "rx/msp.h"
+  34:../cleanflight/src/main/rx/msp.c **** 
+  35:../cleanflight/src/main/rx/msp.c **** 
+  36:../cleanflight/src/main/rx/msp.c **** static uint16_t mspFrame[MAX_SUPPORTED_RC_CHANNEL_COUNT];
+  37:../cleanflight/src/main/rx/msp.c **** static bool rxMspFrameDone = false;
+  38:../cleanflight/src/main/rx/msp.c **** 
+  39:../cleanflight/src/main/rx/msp.c **** static uint16_t rxMspReadRawRC(const rxRuntimeConfig_t *rxRuntimeConfig, uint8_t chan)
+  40:../cleanflight/src/main/rx/msp.c **** {
+  38              	 .loc 1 40 0
+  39              	 .cfi_startproc
+  40              	 
+  41              	 
+  42              	 
+  43 0000 80B4     	 push {r7}
+  44              	.LCFI0:
+  45              	 .cfi_def_cfa_offset 4
+  46              	 .cfi_offset 7,-4
+  47 0002 83B0     	 sub sp,sp,#12
+  48              	.LCFI1:
+  49              	 .cfi_def_cfa_offset 16
+  50 0004 00AF     	 add r7,sp,#0
+  51              	.LCFI2:
+  52              	 .cfi_def_cfa_register 7
+  53 0006 7860     	 str r0,[r7,#4]
+  54 0008 0B46     	 mov r3,r1
+  55 000a FB70     	 strb r3,[r7,#3]
+  41:../cleanflight/src/main/rx/msp.c ****     UNUSED(rxRuntimeConfig);
+  42:../cleanflight/src/main/rx/msp.c ****     return mspFrame[chan];
+  56              	 .loc 1 42 0
+  57 000c FB78     	 ldrb r3,[r7,#3]
+  58 000e 044A     	 ldr r2,.L3
+  59 0010 32F81330 	 ldrh r3,[r2,r3,lsl#1]
+  43:../cleanflight/src/main/rx/msp.c **** }
+  60              	 .loc 1 43 0
+  61 0014 1846     	 mov r0,r3
+  62 0016 0C37     	 adds r7,r7,#12
+  63              	.LCFI3:
+  64              	 .cfi_def_cfa_offset 4
+  65 0018 BD46     	 mov sp,r7
+  66              	.LCFI4:
+  67              	 .cfi_def_cfa_register 13
+  68              	 
+  69 001a 5DF8047B 	 ldr r7,[sp],#4
+  70              	.LCFI5:
+  71              	 .cfi_restore 7
+  72              	 .cfi_def_cfa_offset 0
+  73 001e 7047     	 bx lr
+  74              	.L4:
+  75              	 .align 2
+  76              	.L3:
+  77 0020 00000000 	 .word mspFrame
+  78              	 .cfi_endproc
+  79              	.LFE535:
+  81              	 .section .text.rxMspFrameReceive,"ax",%progbits
+  82              	 .align 2
+  83              	 .global rxMspFrameReceive
+  84              	 .thumb
+  85              	 .thumb_func
+  87              	rxMspFrameReceive:
+  88              	.LFB536:
+  44:../cleanflight/src/main/rx/msp.c **** 
+  45:../cleanflight/src/main/rx/msp.c **** /*
+  46:../cleanflight/src/main/rx/msp.c ****  * Called from MSP command handler - mspFcProcessCommand
+  47:../cleanflight/src/main/rx/msp.c ****  */
+  48:../cleanflight/src/main/rx/msp.c **** void rxMspFrameReceive(uint16_t *frame, int channelCount)
+  49:../cleanflight/src/main/rx/msp.c **** {
+  89              	 .loc 1 49 0
+  90              	 .cfi_startproc
+  91              	 
+  92              	 
+  93              	 
+  94 0000 80B4     	 push {r7}
+  95              	.LCFI6:
+  96              	 .cfi_def_cfa_offset 4
+  97              	 .cfi_offset 7,-4
+  98 0002 85B0     	 sub sp,sp,#20
+  99              	.LCFI7:
+ 100              	 .cfi_def_cfa_offset 24
+ 101 0004 00AF     	 add r7,sp,#0
+ 102              	.LCFI8:
+ 103              	 .cfi_def_cfa_register 7
+ 104 0006 7860     	 str r0,[r7,#4]
+ 105 0008 3960     	 str r1,[r7]
+ 106              	.LBB2:
+  50:../cleanflight/src/main/rx/msp.c ****     for (int i = 0; i < channelCount; i++) {
+ 107              	 .loc 1 50 0
+ 108 000a 0023     	 movs r3,#0
+ 109 000c FB60     	 str r3,[r7,#12]
+ 110 000e 0BE0     	 b .L6
+ 111              	.L7:
+  51:../cleanflight/src/main/rx/msp.c ****         mspFrame[i] = frame[i];
+ 112              	 .loc 1 51 0 discriminator 3
+ 113 0010 FB68     	 ldr r3,[r7,#12]
+ 114 0012 5B00     	 lsls r3,r3,#1
+ 115 0014 7A68     	 ldr r2,[r7,#4]
+ 116 0016 1344     	 add r3,r3,r2
+ 117 0018 1988     	 ldrh r1,[r3]
+ 118 001a 104A     	 ldr r2,.L10
+ 119 001c FB68     	 ldr r3,[r7,#12]
+ 120 001e 22F81310 	 strh r1,[r2,r3,lsl#1]
+  50:../cleanflight/src/main/rx/msp.c ****     for (int i = 0; i < channelCount; i++) {
+ 121              	 .loc 1 50 0 discriminator 3
+ 122 0022 FB68     	 ldr r3,[r7,#12]
+ 123 0024 0133     	 adds r3,r3,#1
+ 124 0026 FB60     	 str r3,[r7,#12]
+ 125              	.L6:
+  50:../cleanflight/src/main/rx/msp.c ****     for (int i = 0; i < channelCount; i++) {
+ 126              	 .loc 1 50 0 is_stmt 0 discriminator 1
+ 127 0028 FA68     	 ldr r2,[r7,#12]
+ 128 002a 3B68     	 ldr r3,[r7]
+ 129 002c 9A42     	 cmp r2,r3
+ 130 002e EFDB     	 blt .L7
+ 131              	.LBE2:
+ 132              	.LBB3:
+  52:../cleanflight/src/main/rx/msp.c ****     }
+  53:../cleanflight/src/main/rx/msp.c **** 
+  54:../cleanflight/src/main/rx/msp.c ****     // Any channels not provided will be reset to zero
+  55:../cleanflight/src/main/rx/msp.c ****     for (int i = channelCount; i < MAX_SUPPORTED_RC_CHANNEL_COUNT; i++) {
+ 133              	 .loc 1 55 0 is_stmt 1
+ 134 0030 3B68     	 ldr r3,[r7]
+ 135 0032 BB60     	 str r3,[r7,#8]
+ 136 0034 07E0     	 b .L8
+ 137              	.L9:
+  56:../cleanflight/src/main/rx/msp.c ****         mspFrame[i] = 0;
+ 138              	 .loc 1 56 0 discriminator 3
+ 139 0036 094A     	 ldr r2,.L10
+ 140 0038 BB68     	 ldr r3,[r7,#8]
+ 141 003a 0021     	 movs r1,#0
+ 142 003c 22F81310 	 strh r1,[r2,r3,lsl#1]
+  55:../cleanflight/src/main/rx/msp.c ****         mspFrame[i] = 0;
+ 143              	 .loc 1 55 0 discriminator 3
+ 144 0040 BB68     	 ldr r3,[r7,#8]
+ 145 0042 0133     	 adds r3,r3,#1
+ 146 0044 BB60     	 str r3,[r7,#8]
+ 147              	.L8:
+  55:../cleanflight/src/main/rx/msp.c ****         mspFrame[i] = 0;
+ 148              	 .loc 1 55 0 is_stmt 0 discriminator 1
+ 149 0046 BB68     	 ldr r3,[r7,#8]
+ 150 0048 112B     	 cmp r3,#17
+ 151 004a F4DD     	 ble .L9
+ 152              	.LBE3:
+  57:../cleanflight/src/main/rx/msp.c ****     }
+  58:../cleanflight/src/main/rx/msp.c **** 
+  59:../cleanflight/src/main/rx/msp.c ****     rxMspFrameDone = true;
+ 153              	 .loc 1 59 0 is_stmt 1
+ 154 004c 044B     	 ldr r3,.L10+4
+ 155 004e 0122     	 movs r2,#1
+ 156 0050 1A70     	 strb r2,[r3]
+  60:../cleanflight/src/main/rx/msp.c **** }
+ 157              	 .loc 1 60 0
+ 158 0052 1437     	 adds r7,r7,#20
+ 159              	.LCFI9:
+ 160              	 .cfi_def_cfa_offset 4
+ 161 0054 BD46     	 mov sp,r7
+ 162              	.LCFI10:
+ 163              	 .cfi_def_cfa_register 13
+ 164              	 
+ 165 0056 5DF8047B 	 ldr r7,[sp],#4
+ 166              	.LCFI11:
+ 167              	 .cfi_restore 7
+ 168              	 .cfi_def_cfa_offset 0
+ 169 005a 7047     	 bx lr
+ 170              	.L11:
+ 171              	 .align 2
+ 172              	.L10:
+ 173 005c 00000000 	 .word mspFrame
+ 174 0060 00000000 	 .word rxMspFrameDone
+ 175              	 .cfi_endproc
+ 176              	.LFE536:
+ 178              	 .section .text.rxMspFrameStatus,"ax",%progbits
+ 179              	 .align 2
+ 180              	 .thumb
+ 181              	 .thumb_func
+ 183              	rxMspFrameStatus:
+ 184              	.LFB537:
+  61:../cleanflight/src/main/rx/msp.c **** 
+  62:../cleanflight/src/main/rx/msp.c **** static uint8_t rxMspFrameStatus(rxRuntimeConfig_t *rxRuntimeConfig)
+  63:../cleanflight/src/main/rx/msp.c **** {
+ 185              	 .loc 1 63 0
+ 186              	 .cfi_startproc
+ 187              	 
+ 188              	 
+ 189              	 
+ 190 0000 80B4     	 push {r7}
+ 191              	.LCFI12:
+ 192              	 .cfi_def_cfa_offset 4
+ 193              	 .cfi_offset 7,-4
+ 194 0002 83B0     	 sub sp,sp,#12
+ 195              	.LCFI13:
+ 196              	 .cfi_def_cfa_offset 16
+ 197 0004 00AF     	 add r7,sp,#0
+ 198              	.LCFI14:
+ 199              	 .cfi_def_cfa_register 7
+ 200 0006 7860     	 str r0,[r7,#4]
+  64:../cleanflight/src/main/rx/msp.c ****     UNUSED(rxRuntimeConfig);
+  65:../cleanflight/src/main/rx/msp.c **** 
+  66:../cleanflight/src/main/rx/msp.c ****     if (!rxMspFrameDone) {
+ 201              	 .loc 1 66 0
+ 202 0008 094B     	 ldr r3,.L15
+ 203 000a 1B78     	 ldrb r3,[r3]
+ 204 000c 83F00103 	 eor r3,r3,#1
+ 205 0010 DBB2     	 uxtb r3,r3
+ 206 0012 002B     	 cmp r3,#0
+ 207 0014 01D0     	 beq .L13
+  67:../cleanflight/src/main/rx/msp.c ****         return RX_FRAME_PENDING;
+ 208              	 .loc 1 67 0
+ 209 0016 0023     	 movs r3,#0
+ 210 0018 03E0     	 b .L14
+ 211              	.L13:
+  68:../cleanflight/src/main/rx/msp.c ****     }
+  69:../cleanflight/src/main/rx/msp.c **** 
+  70:../cleanflight/src/main/rx/msp.c ****     rxMspFrameDone = false;
+ 212              	 .loc 1 70 0
+ 213 001a 054B     	 ldr r3,.L15
+ 214 001c 0022     	 movs r2,#0
+ 215 001e 1A70     	 strb r2,[r3]
+  71:../cleanflight/src/main/rx/msp.c ****     return RX_FRAME_COMPLETE;
+ 216              	 .loc 1 71 0
+ 217 0020 0123     	 movs r3,#1
+ 218              	.L14:
+  72:../cleanflight/src/main/rx/msp.c **** }
+ 219              	 .loc 1 72 0
+ 220 0022 1846     	 mov r0,r3
+ 221 0024 0C37     	 adds r7,r7,#12
+ 222              	.LCFI15:
+ 223              	 .cfi_def_cfa_offset 4
+ 224 0026 BD46     	 mov sp,r7
+ 225              	.LCFI16:
+ 226              	 .cfi_def_cfa_register 13
+ 227              	 
+ 228 0028 5DF8047B 	 ldr r7,[sp],#4
+ 229              	.LCFI17:
+ 230              	 .cfi_restore 7
+ 231              	 .cfi_def_cfa_offset 0
+ 232 002c 7047     	 bx lr
+ 233              	.L16:
+ 234 002e 00BF     	 .align 2
+ 235              	.L15:
+ 236 0030 00000000 	 .word rxMspFrameDone
+ 237              	 .cfi_endproc
+ 238              	.LFE537:
+ 240              	 .section .text.rxMspInit,"ax",%progbits
+ 241              	 .align 2
+ 242              	 .global rxMspInit
+ 243              	 .thumb
+ 244              	 .thumb_func
+ 246              	rxMspInit:
+ 247              	.LFB538:
+  73:../cleanflight/src/main/rx/msp.c **** 
+  74:../cleanflight/src/main/rx/msp.c **** void rxMspInit(const rxConfig_t *rxConfig, rxRuntimeConfig_t *rxRuntimeConfig)
+  75:../cleanflight/src/main/rx/msp.c **** {
+ 248              	 .loc 1 75 0
+ 249              	 .cfi_startproc
+ 250              	 
+ 251              	 
+ 252              	 
+ 253 0000 80B4     	 push {r7}
+ 254              	.LCFI18:
+ 255              	 .cfi_def_cfa_offset 4
+ 256              	 .cfi_offset 7,-4
+ 257 0002 83B0     	 sub sp,sp,#12
+ 258              	.LCFI19:
+ 259              	 .cfi_def_cfa_offset 16
+ 260 0004 00AF     	 add r7,sp,#0
+ 261              	.LCFI20:
+ 262              	 .cfi_def_cfa_register 7
+ 263 0006 7860     	 str r0,[r7,#4]
+ 264 0008 3960     	 str r1,[r7]
+  76:../cleanflight/src/main/rx/msp.c ****     UNUSED(rxConfig);
+  77:../cleanflight/src/main/rx/msp.c **** 
+  78:../cleanflight/src/main/rx/msp.c ****     rxRuntimeConfig->channelCount = MAX_SUPPORTED_RC_CHANNEL_COUNT;
+ 265              	 .loc 1 78 0
+ 266 000a 3B68     	 ldr r3,[r7]
+ 267 000c 1222     	 movs r2,#18
+ 268 000e 1A70     	 strb r2,[r3]
+  79:../cleanflight/src/main/rx/msp.c ****     rxRuntimeConfig->rxRefreshRate = 20000;
+ 269              	 .loc 1 79 0
+ 270 0010 3B68     	 ldr r3,[r7]
+ 271 0012 0022     	 movs r2,#0
+ 272 0014 42F02002 	 orr r2,r2,#32
+ 273 0018 5A70     	 strb r2,[r3,#1]
+ 274 001a 0022     	 movs r2,#0
+ 275 001c 42F04E02 	 orr r2,r2,#78
+ 276 0020 9A70     	 strb r2,[r3,#2]
+  80:../cleanflight/src/main/rx/msp.c **** 
+  81:../cleanflight/src/main/rx/msp.c ****     rxRuntimeConfig->rcReadRawFn = rxMspReadRawRC;
+ 277              	 .loc 1 81 0
+ 278 0022 3B68     	 ldr r3,[r7]
+ 279 0024 054A     	 ldr r2,.L18
+ 280 0026 C3F80320 	 str r2,[r3,#3]
+  82:../cleanflight/src/main/rx/msp.c ****     rxRuntimeConfig->rcFrameStatusFn = rxMspFrameStatus;
+ 281              	 .loc 1 82 0
+ 282 002a 3B68     	 ldr r3,[r7]
+ 283 002c 044A     	 ldr r2,.L18+4
+ 284 002e C3F80720 	 str r2,[r3,#7]
+  83:../cleanflight/src/main/rx/msp.c **** }
+ 285              	 .loc 1 83 0
+ 286 0032 0C37     	 adds r7,r7,#12
+ 287              	.LCFI21:
+ 288              	 .cfi_def_cfa_offset 4
+ 289 0034 BD46     	 mov sp,r7
+ 290              	.LCFI22:
+ 291              	 .cfi_def_cfa_register 13
+ 292              	 
+ 293 0036 5DF8047B 	 ldr r7,[sp],#4
+ 294              	.LCFI23:
+ 295              	 .cfi_restore 7
+ 296              	 .cfi_def_cfa_offset 0
+ 297 003a 7047     	 bx lr
+ 298              	.L19:
+ 299              	 .align 2
+ 300              	.L18:
+ 301 003c 00000000 	 .word rxMspReadRawRC
+ 302 0040 00000000 	 .word rxMspFrameStatus
+ 303              	 .cfi_endproc
+ 304              	.LFE538:
+ 306              	 .text
+ 307              	.Letext0:
+ 308              	 .file 2 "d:\\xmc\\dave-ide-4.4.2-64bit\\eclipse\\arm-gcc-49\\arm-none-eabi\\include\\machine\\_default_types.h"
+ 309              	 .file 3 "d:\\xmc\\dave-ide-4.4.2-64bit\\eclipse\\arm-gcc-49\\arm-none-eabi\\include\\stdint.h"
+ 310              	 .file 4 "D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/lib/main/XMC4000/XMCLib/inc/xmc_usic.h"
+ 311              	 .file 5 "D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/drivers/io_types.h"
+ 312              	 .file 6 "D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/pg/rx.h"
+ 313              	 .file 7 "D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/common/time.h"
+ 314              	 .file 8 "D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/drivers/resource.h"
+ 315              	 .file 9 "D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/rx/rx.h"
+ 316              	 .file 10 "D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/lib/main/CMSIS/Core/Include/core_cm4.h"
+ 317              	 .file 11 "D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/lib/main/XMC4000/system_XMC4700.h"
+DEFINED SYMBOLS
+                            *ABS*:00000000 msp.c
+    {standard input}:20     .bss.mspFrame:00000000 $d
+    {standard input}:23     .bss.mspFrame:00000000 mspFrame
+    {standard input}:28     .bss.rxMspFrameDone:00000000 rxMspFrameDone
+    {standard input}:29     .bss.rxMspFrameDone:00000000 $d
+    {standard input}:31     .text.rxMspReadRawRC:00000000 $t
+    {standard input}:35     .text.rxMspReadRawRC:00000000 rxMspReadRawRC
+    {standard input}:77     .text.rxMspReadRawRC:00000020 $d
+    {standard input}:82     .text.rxMspFrameReceive:00000000 $t
+    {standard input}:87     .text.rxMspFrameReceive:00000000 rxMspFrameReceive
+    {standard input}:173    .text.rxMspFrameReceive:0000005c $d
+    {standard input}:179    .text.rxMspFrameStatus:00000000 $t
+    {standard input}:183    .text.rxMspFrameStatus:00000000 rxMspFrameStatus
+    {standard input}:236    .text.rxMspFrameStatus:00000030 $d
+    {standard input}:241    .text.rxMspInit:00000000 $t
+    {standard input}:246    .text.rxMspInit:00000000 rxMspInit
+    {standard input}:301    .text.rxMspInit:0000003c $d
+                     .debug_frame:00000010 $d
+
+NO UNDEFINED SYMBOLS

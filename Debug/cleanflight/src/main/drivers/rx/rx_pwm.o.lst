@@ -1,0 +1,2028 @@
+   1              	 .syntax unified
+   2              	 .cpu cortex-m4
+   3              	 .eabi_attribute 27,3
+   4              	 .fpu fpv4-sp-d16
+   5              	 .eabi_attribute 20,1
+   6              	 .eabi_attribute 21,1
+   7              	 .eabi_attribute 23,3
+   8              	 .eabi_attribute 24,1
+   9              	 .eabi_attribute 25,1
+  10              	 .eabi_attribute 26,1
+  11              	 .eabi_attribute 30,6
+  12              	 .eabi_attribute 34,1
+  13              	 .eabi_attribute 18,4
+  14              	 .thumb
+  15              	 .file "rx_pwm.c"
+  16              	 .text
+  17              	.Ltext0:
+  18              	 .cfi_sections .debug_frame
+  19              	 .section .bss.inputFilteringMode,"aw",%nobits
+  22              	inputFilteringMode:
+  23 0000 00       	 .space 1
+  24              	 .section .bss.pwmInputPorts,"aw",%nobits
+  25              	 .align 2
+  28              	pwmInputPorts:
+  29 0000 00000000 	 .space 208
+  29      00000000 
+  29      00000000 
+  29      00000000 
+  29      00000000 
+  30              	 .section .bss.captures,"aw",%nobits
+  31              	 .align 2
+  34              	captures:
+  35 0000 00000000 	 .space 24
+  35      00000000 
+  35      00000000 
+  35      00000000 
+  35      00000000 
+  36              	 .section .bss.ppmFrameCount,"aw",%nobits
+  39              	ppmFrameCount:
+  40 0000 00       	 .space 1
+  41              	 .section .bss.lastPPMFrameCount,"aw",%nobits
+  44              	lastPPMFrameCount:
+  45 0000 00       	 .space 1
+  46              	 .section .data.ppmCountDivisor,"aw",%progbits
+  49              	ppmCountDivisor:
+  50 0000 01       	 .byte 1
+  51              	 .section .bss.ppmDev,"aw",%nobits
+  52              	 .align 2
+  55              	ppmDev:
+  56 0000 00000000 	 .space 70
+  56      00000000 
+  56      00000000 
+  56      00000000 
+  56      00000000 
+  57 0046 0000     	 .section .text.isPPMDataBeingReceived,"ax",%progbits
+  58              	 .align 2
+  59              	 .global isPPMDataBeingReceived
+  60              	 .thumb
+  61              	 .thumb_func
+  63              	isPPMDataBeingReceived:
+  64              	.LFB528:
+  65              	 .file 1 "../cleanflight/src/main/drivers/rx/rx_pwm.c"
+   1:../cleanflight/src/main/drivers/rx/rx_pwm.c **** /*
+   2:../cleanflight/src/main/drivers/rx/rx_pwm.c ****  * This file is part of Cleanflight and Betaflight.
+   3:../cleanflight/src/main/drivers/rx/rx_pwm.c ****  *
+   4:../cleanflight/src/main/drivers/rx/rx_pwm.c ****  * Cleanflight and Betaflight are free software. You can redistribute
+   5:../cleanflight/src/main/drivers/rx/rx_pwm.c ****  * this software and/or modify this software under the terms of the
+   6:../cleanflight/src/main/drivers/rx/rx_pwm.c ****  * GNU General Public License as published by the Free Software
+   7:../cleanflight/src/main/drivers/rx/rx_pwm.c ****  * Foundation, either version 3 of the License, or (at your option)
+   8:../cleanflight/src/main/drivers/rx/rx_pwm.c ****  * any later version.
+   9:../cleanflight/src/main/drivers/rx/rx_pwm.c ****  *
+  10:../cleanflight/src/main/drivers/rx/rx_pwm.c ****  * Cleanflight and Betaflight are distributed in the hope that they
+  11:../cleanflight/src/main/drivers/rx/rx_pwm.c ****  * will be useful, but WITHOUT ANY WARRANTY; without even the implied
+  12:../cleanflight/src/main/drivers/rx/rx_pwm.c ****  * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+  13:../cleanflight/src/main/drivers/rx/rx_pwm.c ****  * See the GNU General Public License for more details.
+  14:../cleanflight/src/main/drivers/rx/rx_pwm.c ****  *
+  15:../cleanflight/src/main/drivers/rx/rx_pwm.c ****  * You should have received a copy of the GNU General Public License
+  16:../cleanflight/src/main/drivers/rx/rx_pwm.c ****  * along with this software.
+  17:../cleanflight/src/main/drivers/rx/rx_pwm.c ****  *
+  18:../cleanflight/src/main/drivers/rx/rx_pwm.c ****  * If not, see <http://www.gnu.org/licenses/>.
+  19:../cleanflight/src/main/drivers/rx/rx_pwm.c ****  */
+  20:../cleanflight/src/main/drivers/rx/rx_pwm.c **** 
+  21:../cleanflight/src/main/drivers/rx/rx_pwm.c **** #include <stdbool.h>
+  22:../cleanflight/src/main/drivers/rx/rx_pwm.c **** #include <stdint.h>
+  23:../cleanflight/src/main/drivers/rx/rx_pwm.c **** 
+  24:../cleanflight/src/main/drivers/rx/rx_pwm.c **** #include "platform.h"
+  25:../cleanflight/src/main/drivers/rx/rx_pwm.c **** 
+  26:../cleanflight/src/main/drivers/rx/rx_pwm.c **** #if defined(USE_PWM) || defined(USE_PPM)
+  27:../cleanflight/src/main/drivers/rx/rx_pwm.c **** 
+  28:../cleanflight/src/main/drivers/rx/rx_pwm.c **** #include "build/build_config.h"
+  29:../cleanflight/src/main/drivers/rx/rx_pwm.c **** #include "build/debug.h"
+  30:../cleanflight/src/main/drivers/rx/rx_pwm.c **** 
+  31:../cleanflight/src/main/drivers/rx/rx_pwm.c **** #include "common/utils.h"
+  32:../cleanflight/src/main/drivers/rx/rx_pwm.c **** 
+  33:../cleanflight/src/main/drivers/rx/rx_pwm.c **** #include "drivers/io.h"
+  34:../cleanflight/src/main/drivers/rx/rx_pwm.c **** #include "drivers/nvic.h"
+  35:../cleanflight/src/main/drivers/rx/rx_pwm.c **** #include "drivers/pwm_output.h"
+  36:../cleanflight/src/main/drivers/rx/rx_pwm.c **** #include "drivers/timer.h"
+  37:../cleanflight/src/main/drivers/rx/rx_pwm.c **** 
+  38:../cleanflight/src/main/drivers/rx/rx_pwm.c **** #include "pg/rx_pwm.h"
+  39:../cleanflight/src/main/drivers/rx/rx_pwm.c **** 
+  40:../cleanflight/src/main/drivers/rx/rx_pwm.c **** #include "rx_pwm.h"
+  41:../cleanflight/src/main/drivers/rx/rx_pwm.c **** 
+  42:../cleanflight/src/main/drivers/rx/rx_pwm.c **** #define DEBUG_PPM_ISR
+  43:../cleanflight/src/main/drivers/rx/rx_pwm.c **** 
+  44:../cleanflight/src/main/drivers/rx/rx_pwm.c **** #define PPM_CAPTURE_COUNT 12
+  45:../cleanflight/src/main/drivers/rx/rx_pwm.c **** 
+  46:../cleanflight/src/main/drivers/rx/rx_pwm.c **** #if PPM_CAPTURE_COUNT > PWM_INPUT_PORT_COUNT
+  47:../cleanflight/src/main/drivers/rx/rx_pwm.c **** #define PWM_PORTS_OR_PPM_CAPTURE_COUNT PPM_CAPTURE_COUNT
+  48:../cleanflight/src/main/drivers/rx/rx_pwm.c **** #else
+  49:../cleanflight/src/main/drivers/rx/rx_pwm.c **** #define PWM_PORTS_OR_PPM_CAPTURE_COUNT PWM_INPUT_PORT_COUNT
+  50:../cleanflight/src/main/drivers/rx/rx_pwm.c **** #endif
+  51:../cleanflight/src/main/drivers/rx/rx_pwm.c **** 
+  52:../cleanflight/src/main/drivers/rx/rx_pwm.c **** // TODO - change to timer clocks ticks
+  53:../cleanflight/src/main/drivers/rx/rx_pwm.c **** #define INPUT_FILTER_TO_HELP_WITH_NOISE_FROM_OPENLRS_TELEMETRY_RX 0x03
+  54:../cleanflight/src/main/drivers/rx/rx_pwm.c **** 
+  55:../cleanflight/src/main/drivers/rx/rx_pwm.c **** static inputFilteringMode_e inputFilteringMode;
+  56:../cleanflight/src/main/drivers/rx/rx_pwm.c **** 
+  57:../cleanflight/src/main/drivers/rx/rx_pwm.c **** void pwmICConfig(TIM_TypeDef *tim, uint8_t channel, uint16_t polarity);
+  58:../cleanflight/src/main/drivers/rx/rx_pwm.c **** 
+  59:../cleanflight/src/main/drivers/rx/rx_pwm.c **** typedef enum {
+  60:../cleanflight/src/main/drivers/rx/rx_pwm.c ****     INPUT_MODE_PPM,
+  61:../cleanflight/src/main/drivers/rx/rx_pwm.c ****     INPUT_MODE_PWM
+  62:../cleanflight/src/main/drivers/rx/rx_pwm.c **** } pwmInputMode_e;
+  63:../cleanflight/src/main/drivers/rx/rx_pwm.c **** 
+  64:../cleanflight/src/main/drivers/rx/rx_pwm.c **** typedef struct {
+  65:../cleanflight/src/main/drivers/rx/rx_pwm.c ****     pwmInputMode_e mode;
+  66:../cleanflight/src/main/drivers/rx/rx_pwm.c ****     uint8_t channel; // only used for pwm, ignored by ppm
+  67:../cleanflight/src/main/drivers/rx/rx_pwm.c **** 
+  68:../cleanflight/src/main/drivers/rx/rx_pwm.c ****     uint8_t state;
+  69:../cleanflight/src/main/drivers/rx/rx_pwm.c ****     uint8_t missedEvents;
+  70:../cleanflight/src/main/drivers/rx/rx_pwm.c **** 
+  71:../cleanflight/src/main/drivers/rx/rx_pwm.c ****     captureCompare_t rise;
+  72:../cleanflight/src/main/drivers/rx/rx_pwm.c ****     captureCompare_t fall;
+  73:../cleanflight/src/main/drivers/rx/rx_pwm.c ****     captureCompare_t capture;
+  74:../cleanflight/src/main/drivers/rx/rx_pwm.c **** 
+  75:../cleanflight/src/main/drivers/rx/rx_pwm.c ****     const timerHardware_t *timerHardware;
+  76:../cleanflight/src/main/drivers/rx/rx_pwm.c ****     timerCCHandlerRec_t edgeCb;
+  77:../cleanflight/src/main/drivers/rx/rx_pwm.c ****     timerOvrHandlerRec_t overflowCb;
+  78:../cleanflight/src/main/drivers/rx/rx_pwm.c **** } pwmInputPort_t;
+  79:../cleanflight/src/main/drivers/rx/rx_pwm.c **** 
+  80:../cleanflight/src/main/drivers/rx/rx_pwm.c **** static pwmInputPort_t pwmInputPorts[PWM_INPUT_PORT_COUNT];
+  81:../cleanflight/src/main/drivers/rx/rx_pwm.c **** 
+  82:../cleanflight/src/main/drivers/rx/rx_pwm.c **** static uint16_t captures[PWM_PORTS_OR_PPM_CAPTURE_COUNT];
+  83:../cleanflight/src/main/drivers/rx/rx_pwm.c **** 
+  84:../cleanflight/src/main/drivers/rx/rx_pwm.c **** #define PPM_TIMER_PERIOD 0x10000
+  85:../cleanflight/src/main/drivers/rx/rx_pwm.c **** #define PWM_TIMER_PERIOD 0x10000
+  86:../cleanflight/src/main/drivers/rx/rx_pwm.c **** 
+  87:../cleanflight/src/main/drivers/rx/rx_pwm.c **** static uint8_t ppmFrameCount = 0;
+  88:../cleanflight/src/main/drivers/rx/rx_pwm.c **** static uint8_t lastPPMFrameCount = 0;
+  89:../cleanflight/src/main/drivers/rx/rx_pwm.c **** static uint8_t ppmCountDivisor = 1;
+  90:../cleanflight/src/main/drivers/rx/rx_pwm.c **** 
+  91:../cleanflight/src/main/drivers/rx/rx_pwm.c **** typedef struct ppmDevice_s {
+  92:../cleanflight/src/main/drivers/rx/rx_pwm.c ****     //uint32_t previousTime;
+  93:../cleanflight/src/main/drivers/rx/rx_pwm.c ****     uint32_t currentCapture;
+  94:../cleanflight/src/main/drivers/rx/rx_pwm.c ****     uint32_t currentTime;
+  95:../cleanflight/src/main/drivers/rx/rx_pwm.c ****     uint32_t deltaTime;
+  96:../cleanflight/src/main/drivers/rx/rx_pwm.c ****     uint32_t captures[PWM_PORTS_OR_PPM_CAPTURE_COUNT];
+  97:../cleanflight/src/main/drivers/rx/rx_pwm.c ****     uint32_t largeCounter;
+  98:../cleanflight/src/main/drivers/rx/rx_pwm.c ****     uint8_t  pulseIndex;
+  99:../cleanflight/src/main/drivers/rx/rx_pwm.c ****     int8_t   numChannels;
+ 100:../cleanflight/src/main/drivers/rx/rx_pwm.c ****     int8_t   numChannelsPrevFrame;
+ 101:../cleanflight/src/main/drivers/rx/rx_pwm.c ****     uint8_t  stableFramesSeenCount;
+ 102:../cleanflight/src/main/drivers/rx/rx_pwm.c **** 
+ 103:../cleanflight/src/main/drivers/rx/rx_pwm.c ****     bool     tracking;
+ 104:../cleanflight/src/main/drivers/rx/rx_pwm.c ****     bool     overflowed;
+ 105:../cleanflight/src/main/drivers/rx/rx_pwm.c **** } ppmDevice_t;
+ 106:../cleanflight/src/main/drivers/rx/rx_pwm.c **** 
+ 107:../cleanflight/src/main/drivers/rx/rx_pwm.c **** static ppmDevice_t ppmDev;
+ 108:../cleanflight/src/main/drivers/rx/rx_pwm.c **** 
+ 109:../cleanflight/src/main/drivers/rx/rx_pwm.c **** #define PPM_IN_MIN_SYNC_PULSE_US    2700    // microseconds
+ 110:../cleanflight/src/main/drivers/rx/rx_pwm.c **** #define PPM_IN_MIN_CHANNEL_PULSE_US 750     // microseconds
+ 111:../cleanflight/src/main/drivers/rx/rx_pwm.c **** #define PPM_IN_MAX_CHANNEL_PULSE_US 2250    // microseconds
+ 112:../cleanflight/src/main/drivers/rx/rx_pwm.c **** #define PPM_STABLE_FRAMES_REQUIRED_COUNT    25
+ 113:../cleanflight/src/main/drivers/rx/rx_pwm.c **** #define PPM_IN_MIN_NUM_CHANNELS     4
+ 114:../cleanflight/src/main/drivers/rx/rx_pwm.c **** #define PPM_IN_MAX_NUM_CHANNELS     PWM_PORTS_OR_PPM_CAPTURE_COUNT
+ 115:../cleanflight/src/main/drivers/rx/rx_pwm.c **** 
+ 116:../cleanflight/src/main/drivers/rx/rx_pwm.c **** bool isPPMDataBeingReceived(void)
+ 117:../cleanflight/src/main/drivers/rx/rx_pwm.c **** {
+  66              	 .loc 1 117 0
+  67              	 .cfi_startproc
+  68              	 
+  69              	 
+  70              	 
+  71 0000 80B4     	 push {r7}
+  72              	.LCFI0:
+  73              	 .cfi_def_cfa_offset 4
+  74              	 .cfi_offset 7,-4
+  75 0002 00AF     	 add r7,sp,#0
+  76              	.LCFI1:
+  77              	 .cfi_def_cfa_register 7
+ 118:../cleanflight/src/main/drivers/rx/rx_pwm.c ****     return (ppmFrameCount != lastPPMFrameCount);
+  78              	 .loc 1 118 0
+  79 0004 064B     	 ldr r3,.L3
+  80 0006 1A78     	 ldrb r2,[r3]
+  81 0008 064B     	 ldr r3,.L3+4
+  82 000a 1B78     	 ldrb r3,[r3]
+  83 000c 9A42     	 cmp r2,r3
+  84 000e 14BF     	 ite ne
+  85 0010 0123     	 movne r3,#1
+  86 0012 0023     	 moveq r3,#0
+  87 0014 DBB2     	 uxtb r3,r3
+ 119:../cleanflight/src/main/drivers/rx/rx_pwm.c **** }
+  88              	 .loc 1 119 0
+  89 0016 1846     	 mov r0,r3
+  90 0018 BD46     	 mov sp,r7
+  91              	.LCFI2:
+  92              	 .cfi_def_cfa_register 13
+  93              	 
+  94 001a 5DF8047B 	 ldr r7,[sp],#4
+  95              	.LCFI3:
+  96              	 .cfi_restore 7
+  97              	 .cfi_def_cfa_offset 0
+  98 001e 7047     	 bx lr
+  99              	.L4:
+ 100              	 .align 2
+ 101              	.L3:
+ 102 0020 00000000 	 .word ppmFrameCount
+ 103 0024 00000000 	 .word lastPPMFrameCount
+ 104              	 .cfi_endproc
+ 105              	.LFE528:
+ 107              	 .section .text.resetPPMDataReceivedState,"ax",%progbits
+ 108              	 .align 2
+ 109              	 .global resetPPMDataReceivedState
+ 110              	 .thumb
+ 111              	 .thumb_func
+ 113              	resetPPMDataReceivedState:
+ 114              	.LFB529:
+ 120:../cleanflight/src/main/drivers/rx/rx_pwm.c **** 
+ 121:../cleanflight/src/main/drivers/rx/rx_pwm.c **** void resetPPMDataReceivedState(void)
+ 122:../cleanflight/src/main/drivers/rx/rx_pwm.c **** {
+ 115              	 .loc 1 122 0
+ 116              	 .cfi_startproc
+ 117              	 
+ 118              	 
+ 119              	 
+ 120 0000 80B4     	 push {r7}
+ 121              	.LCFI4:
+ 122              	 .cfi_def_cfa_offset 4
+ 123              	 .cfi_offset 7,-4
+ 124 0002 00AF     	 add r7,sp,#0
+ 125              	.LCFI5:
+ 126              	 .cfi_def_cfa_register 7
+ 123:../cleanflight/src/main/drivers/rx/rx_pwm.c ****     lastPPMFrameCount = ppmFrameCount;
+ 127              	 .loc 1 123 0
+ 128 0004 034B     	 ldr r3,.L6
+ 129 0006 1A78     	 ldrb r2,[r3]
+ 130 0008 034B     	 ldr r3,.L6+4
+ 131 000a 1A70     	 strb r2,[r3]
+ 124:../cleanflight/src/main/drivers/rx/rx_pwm.c **** }
+ 132              	 .loc 1 124 0
+ 133 000c BD46     	 mov sp,r7
+ 134              	.LCFI6:
+ 135              	 .cfi_def_cfa_register 13
+ 136              	 
+ 137 000e 5DF8047B 	 ldr r7,[sp],#4
+ 138              	.LCFI7:
+ 139              	 .cfi_restore 7
+ 140              	 .cfi_def_cfa_offset 0
+ 141 0012 7047     	 bx lr
+ 142              	.L7:
+ 143              	 .align 2
+ 144              	.L6:
+ 145 0014 00000000 	 .word ppmFrameCount
+ 146 0018 00000000 	 .word lastPPMFrameCount
+ 147              	 .cfi_endproc
+ 148              	.LFE529:
+ 150              	 .section .bss.ppmEvents,"aw",%nobits
+ 151              	 .align 2
+ 154              	ppmEvents:
+ 155 0000 00000000 	 .space 100
+ 155      00000000 
+ 155      00000000 
+ 155      00000000 
+ 155      00000000 
+ 156              	 .section .bss.ppmEventIndex,"aw",%nobits
+ 159              	ppmEventIndex:
+ 160 0000 00       	 .space 1
+ 161              	 .section .text.ppmISREvent,"ax",%progbits
+ 162              	 .align 2
+ 163              	 .global ppmISREvent
+ 164              	 .thumb
+ 165              	 .thumb_func
+ 167              	ppmISREvent:
+ 168              	.LFB530:
+ 125:../cleanflight/src/main/drivers/rx/rx_pwm.c **** 
+ 126:../cleanflight/src/main/drivers/rx/rx_pwm.c **** #define MIN_CHANNELS_BEFORE_PPM_FRAME_CONSIDERED_VALID 4
+ 127:../cleanflight/src/main/drivers/rx/rx_pwm.c **** 
+ 128:../cleanflight/src/main/drivers/rx/rx_pwm.c **** #ifdef DEBUG_PPM_ISR
+ 129:../cleanflight/src/main/drivers/rx/rx_pwm.c **** typedef enum {
+ 130:../cleanflight/src/main/drivers/rx/rx_pwm.c ****     SOURCE_OVERFLOW = 0,
+ 131:../cleanflight/src/main/drivers/rx/rx_pwm.c ****     SOURCE_EDGE = 1
+ 132:../cleanflight/src/main/drivers/rx/rx_pwm.c **** } eventSource_e;
+ 133:../cleanflight/src/main/drivers/rx/rx_pwm.c **** 
+ 134:../cleanflight/src/main/drivers/rx/rx_pwm.c **** typedef struct ppmISREvent_s {
+ 135:../cleanflight/src/main/drivers/rx/rx_pwm.c ****     uint32_t capture;
+ 136:../cleanflight/src/main/drivers/rx/rx_pwm.c ****     eventSource_e source;
+ 137:../cleanflight/src/main/drivers/rx/rx_pwm.c **** } ppmISREvent_t;
+ 138:../cleanflight/src/main/drivers/rx/rx_pwm.c **** 
+ 139:../cleanflight/src/main/drivers/rx/rx_pwm.c **** static ppmISREvent_t ppmEvents[20];
+ 140:../cleanflight/src/main/drivers/rx/rx_pwm.c **** static uint8_t ppmEventIndex = 0;
+ 141:../cleanflight/src/main/drivers/rx/rx_pwm.c **** 
+ 142:../cleanflight/src/main/drivers/rx/rx_pwm.c **** void ppmISREvent(eventSource_e source, uint32_t capture)
+ 143:../cleanflight/src/main/drivers/rx/rx_pwm.c **** {
+ 169              	 .loc 1 143 0
+ 170              	 .cfi_startproc
+ 171              	 
+ 172              	 
+ 173              	 
+ 174 0000 80B4     	 push {r7}
+ 175              	.LCFI8:
+ 176              	 .cfi_def_cfa_offset 4
+ 177              	 .cfi_offset 7,-4
+ 178 0002 83B0     	 sub sp,sp,#12
+ 179              	.LCFI9:
+ 180              	 .cfi_def_cfa_offset 16
+ 181 0004 00AF     	 add r7,sp,#0
+ 182              	.LCFI10:
+ 183              	 .cfi_def_cfa_register 7
+ 184 0006 0346     	 mov r3,r0
+ 185 0008 3960     	 str r1,[r7]
+ 186 000a FB71     	 strb r3,[r7,#7]
+ 144:../cleanflight/src/main/drivers/rx/rx_pwm.c ****     ppmEventIndex = (ppmEventIndex + 1) % (sizeof(ppmEvents) / sizeof(ppmEvents[0]));
+ 187              	 .loc 1 144 0
+ 188 000c 144B     	 ldr r3,.L9
+ 189 000e 1B78     	 ldrb r3,[r3]
+ 190 0010 0133     	 adds r3,r3,#1
+ 191 0012 1946     	 mov r1,r3
+ 192 0014 134B     	 ldr r3,.L9+4
+ 193 0016 A3FB0123 	 umull r2,r3,r3,r1
+ 194 001a 1A09     	 lsrs r2,r3,#4
+ 195 001c 1346     	 mov r3,r2
+ 196 001e 9B00     	 lsls r3,r3,#2
+ 197 0020 1344     	 add r3,r3,r2
+ 198 0022 9B00     	 lsls r3,r3,#2
+ 199 0024 CA1A     	 subs r2,r1,r3
+ 200 0026 D2B2     	 uxtb r2,r2
+ 201 0028 0D4B     	 ldr r3,.L9
+ 202 002a 1A70     	 strb r2,[r3]
+ 145:../cleanflight/src/main/drivers/rx/rx_pwm.c **** 
+ 146:../cleanflight/src/main/drivers/rx/rx_pwm.c ****     ppmEvents[ppmEventIndex].source = source;
+ 203              	 .loc 1 146 0
+ 204 002c 0C4B     	 ldr r3,.L9
+ 205 002e 1B78     	 ldrb r3,[r3]
+ 206 0030 1946     	 mov r1,r3
+ 207 0032 0D4A     	 ldr r2,.L9+8
+ 208 0034 0B46     	 mov r3,r1
+ 209 0036 9B00     	 lsls r3,r3,#2
+ 210 0038 0B44     	 add r3,r3,r1
+ 211 003a 1344     	 add r3,r3,r2
+ 212 003c FA79     	 ldrb r2,[r7,#7]
+ 213 003e 1A71     	 strb r2,[r3,#4]
+ 147:../cleanflight/src/main/drivers/rx/rx_pwm.c ****     ppmEvents[ppmEventIndex].capture = capture;
+ 214              	 .loc 1 147 0
+ 215 0040 074B     	 ldr r3,.L9
+ 216 0042 1B78     	 ldrb r3,[r3]
+ 217 0044 1946     	 mov r1,r3
+ 218 0046 084A     	 ldr r2,.L9+8
+ 219 0048 0B46     	 mov r3,r1
+ 220 004a 9B00     	 lsls r3,r3,#2
+ 221 004c 0B44     	 add r3,r3,r1
+ 222 004e 1344     	 add r3,r3,r2
+ 223 0050 3A68     	 ldr r2,[r7]
+ 224 0052 1A60     	 str r2,[r3]
+ 148:../cleanflight/src/main/drivers/rx/rx_pwm.c **** }
+ 225              	 .loc 1 148 0
+ 226 0054 0C37     	 adds r7,r7,#12
+ 227              	.LCFI11:
+ 228              	 .cfi_def_cfa_offset 4
+ 229 0056 BD46     	 mov sp,r7
+ 230              	.LCFI12:
+ 231              	 .cfi_def_cfa_register 13
+ 232              	 
+ 233 0058 5DF8047B 	 ldr r7,[sp],#4
+ 234              	.LCFI13:
+ 235              	 .cfi_restore 7
+ 236              	 .cfi_def_cfa_offset 0
+ 237 005c 7047     	 bx lr
+ 238              	.L10:
+ 239 005e 00BF     	 .align 2
+ 240              	.L9:
+ 241 0060 00000000 	 .word ppmEventIndex
+ 242 0064 CDCCCCCC 	 .word -858993459
+ 243 0068 00000000 	 .word ppmEvents
+ 244              	 .cfi_endproc
+ 245              	.LFE530:
+ 247              	 .section .text.ppmResetDevice,"ax",%progbits
+ 248              	 .align 2
+ 249              	 .thumb
+ 250              	 .thumb_func
+ 252              	ppmResetDevice:
+ 253              	.LFB531:
+ 149:../cleanflight/src/main/drivers/rx/rx_pwm.c **** #else
+ 150:../cleanflight/src/main/drivers/rx/rx_pwm.c **** void ppmISREvent(eventSource_e source, uint32_t capture) {}
+ 151:../cleanflight/src/main/drivers/rx/rx_pwm.c **** #endif
+ 152:../cleanflight/src/main/drivers/rx/rx_pwm.c **** 
+ 153:../cleanflight/src/main/drivers/rx/rx_pwm.c **** static void ppmResetDevice(void)
+ 154:../cleanflight/src/main/drivers/rx/rx_pwm.c **** {
+ 254              	 .loc 1 154 0
+ 255              	 .cfi_startproc
+ 256              	 
+ 257              	 
+ 258              	 
+ 259 0000 80B4     	 push {r7}
+ 260              	.LCFI14:
+ 261              	 .cfi_def_cfa_offset 4
+ 262              	 .cfi_offset 7,-4
+ 263 0002 00AF     	 add r7,sp,#0
+ 264              	.LCFI15:
+ 265              	 .cfi_def_cfa_register 7
+ 155:../cleanflight/src/main/drivers/rx/rx_pwm.c ****     ppmDev.pulseIndex   = 0;
+ 266              	 .loc 1 155 0
+ 267 0004 134B     	 ldr r3,.L12
+ 268 0006 0022     	 movs r2,#0
+ 269 0008 83F84020 	 strb r2,[r3,#64]
+ 156:../cleanflight/src/main/drivers/rx/rx_pwm.c ****     ppmDev.currentCapture = 0;
+ 270              	 .loc 1 156 0
+ 271 000c 114B     	 ldr r3,.L12
+ 272 000e 0022     	 movs r2,#0
+ 273 0010 1A60     	 str r2,[r3]
+ 157:../cleanflight/src/main/drivers/rx/rx_pwm.c ****     ppmDev.currentTime  = 0;
+ 274              	 .loc 1 157 0
+ 275 0012 104B     	 ldr r3,.L12
+ 276 0014 0022     	 movs r2,#0
+ 277 0016 5A60     	 str r2,[r3,#4]
+ 158:../cleanflight/src/main/drivers/rx/rx_pwm.c ****     ppmDev.deltaTime    = 0;
+ 278              	 .loc 1 158 0
+ 279 0018 0E4B     	 ldr r3,.L12
+ 280 001a 0022     	 movs r2,#0
+ 281 001c 9A60     	 str r2,[r3,#8]
+ 159:../cleanflight/src/main/drivers/rx/rx_pwm.c ****     ppmDev.largeCounter = 0;
+ 282              	 .loc 1 159 0
+ 283 001e 0D4B     	 ldr r3,.L12
+ 284 0020 0022     	 movs r2,#0
+ 285 0022 DA63     	 str r2,[r3,#60]
+ 160:../cleanflight/src/main/drivers/rx/rx_pwm.c ****     ppmDev.numChannels  = -1;
+ 286              	 .loc 1 160 0
+ 287 0024 0B4B     	 ldr r3,.L12
+ 288 0026 FF22     	 movs r2,#255
+ 289 0028 83F84120 	 strb r2,[r3,#65]
+ 161:../cleanflight/src/main/drivers/rx/rx_pwm.c ****     ppmDev.numChannelsPrevFrame = -1;
+ 290              	 .loc 1 161 0
+ 291 002c 094B     	 ldr r3,.L12
+ 292 002e FF22     	 movs r2,#255
+ 293 0030 83F84220 	 strb r2,[r3,#66]
+ 162:../cleanflight/src/main/drivers/rx/rx_pwm.c ****     ppmDev.stableFramesSeenCount = 0;
+ 294              	 .loc 1 162 0
+ 295 0034 074B     	 ldr r3,.L12
+ 296 0036 0022     	 movs r2,#0
+ 297 0038 83F84320 	 strb r2,[r3,#67]
+ 163:../cleanflight/src/main/drivers/rx/rx_pwm.c ****     ppmDev.tracking     = false;
+ 298              	 .loc 1 163 0
+ 299 003c 054B     	 ldr r3,.L12
+ 300 003e 0022     	 movs r2,#0
+ 301 0040 83F84420 	 strb r2,[r3,#68]
+ 164:../cleanflight/src/main/drivers/rx/rx_pwm.c ****     ppmDev.overflowed   = false;
+ 302              	 .loc 1 164 0
+ 303 0044 034B     	 ldr r3,.L12
+ 304 0046 0022     	 movs r2,#0
+ 305 0048 83F84520 	 strb r2,[r3,#69]
+ 165:../cleanflight/src/main/drivers/rx/rx_pwm.c **** }
+ 306              	 .loc 1 165 0
+ 307 004c BD46     	 mov sp,r7
+ 308              	.LCFI16:
+ 309              	 .cfi_def_cfa_register 13
+ 310              	 
+ 311 004e 5DF8047B 	 ldr r7,[sp],#4
+ 312              	.LCFI17:
+ 313              	 .cfi_restore 7
+ 314              	 .cfi_def_cfa_offset 0
+ 315 0052 7047     	 bx lr
+ 316              	.L13:
+ 317              	 .align 2
+ 318              	.L12:
+ 319 0054 00000000 	 .word ppmDev
+ 320              	 .cfi_endproc
+ 321              	.LFE531:
+ 323              	 .section .text.ppmOverflowCallback,"ax",%progbits
+ 324              	 .align 2
+ 325              	 .thumb
+ 326              	 .thumb_func
+ 328              	ppmOverflowCallback:
+ 329              	.LFB532:
+ 166:../cleanflight/src/main/drivers/rx/rx_pwm.c **** 
+ 167:../cleanflight/src/main/drivers/rx/rx_pwm.c **** static void ppmOverflowCallback(timerOvrHandlerRec_t* cbRec, captureCompare_t capture)
+ 168:../cleanflight/src/main/drivers/rx/rx_pwm.c **** {
+ 330              	 .loc 1 168 0
+ 331              	 .cfi_startproc
+ 332              	 
+ 333              	 
+ 334 0000 80B5     	 push {r7,lr}
+ 335              	.LCFI18:
+ 336              	 .cfi_def_cfa_offset 8
+ 337              	 .cfi_offset 7,-8
+ 338              	 .cfi_offset 14,-4
+ 339 0002 82B0     	 sub sp,sp,#8
+ 340              	.LCFI19:
+ 341              	 .cfi_def_cfa_offset 16
+ 342 0004 00AF     	 add r7,sp,#0
+ 343              	.LCFI20:
+ 344              	 .cfi_def_cfa_register 7
+ 345 0006 7860     	 str r0,[r7,#4]
+ 346 0008 0B46     	 mov r3,r1
+ 347 000a 7B80     	 strh r3,[r7,#2]
+ 169:../cleanflight/src/main/drivers/rx/rx_pwm.c ****     UNUSED(cbRec);
+ 170:../cleanflight/src/main/drivers/rx/rx_pwm.c ****     ppmISREvent(SOURCE_OVERFLOW, capture);
+ 348              	 .loc 1 170 0
+ 349 000c 7B88     	 ldrh r3,[r7,#2]
+ 350 000e 0020     	 movs r0,#0
+ 351 0010 1946     	 mov r1,r3
+ 352 0012 FFF7FEFF 	 bl ppmISREvent
+ 171:../cleanflight/src/main/drivers/rx/rx_pwm.c **** 
+ 172:../cleanflight/src/main/drivers/rx/rx_pwm.c ****     ppmDev.largeCounter += capture + 1;
+ 353              	 .loc 1 172 0
+ 354 0016 094B     	 ldr r3,.L16
+ 355 0018 DA6B     	 ldr r2,[r3,#60]
+ 356 001a 7B88     	 ldrh r3,[r7,#2]
+ 357 001c 1344     	 add r3,r3,r2
+ 358 001e 0133     	 adds r3,r3,#1
+ 359 0020 064A     	 ldr r2,.L16
+ 360 0022 D363     	 str r3,[r2,#60]
+ 173:../cleanflight/src/main/drivers/rx/rx_pwm.c ****     if (capture == PPM_TIMER_PERIOD - 1) {
+ 361              	 .loc 1 173 0
+ 362 0024 7B88     	 ldrh r3,[r7,#2]
+ 363 0026 4FF6FF72 	 movw r2,#65535
+ 364 002a 9342     	 cmp r3,r2
+ 365 002c 03D1     	 bne .L14
+ 174:../cleanflight/src/main/drivers/rx/rx_pwm.c ****         ppmDev.overflowed = true;
+ 366              	 .loc 1 174 0
+ 367 002e 034B     	 ldr r3,.L16
+ 368 0030 0122     	 movs r2,#1
+ 369 0032 83F84520 	 strb r2,[r3,#69]
+ 370              	.L14:
+ 175:../cleanflight/src/main/drivers/rx/rx_pwm.c ****     }
+ 176:../cleanflight/src/main/drivers/rx/rx_pwm.c **** }
+ 371              	 .loc 1 176 0
+ 372 0036 0837     	 adds r7,r7,#8
+ 373              	.LCFI21:
+ 374              	 .cfi_def_cfa_offset 8
+ 375 0038 BD46     	 mov sp,r7
+ 376              	.LCFI22:
+ 377              	 .cfi_def_cfa_register 13
+ 378              	 
+ 379 003a 80BD     	 pop {r7,pc}
+ 380              	.L17:
+ 381              	 .align 2
+ 382              	.L16:
+ 383 003c 00000000 	 .word ppmDev
+ 384              	 .cfi_endproc
+ 385              	.LFE532:
+ 387              	 .section .text.ppmEdgeCallback,"ax",%progbits
+ 388              	 .align 2
+ 389              	 .thumb
+ 390              	 .thumb_func
+ 392              	ppmEdgeCallback:
+ 393              	.LFB533:
+ 177:../cleanflight/src/main/drivers/rx/rx_pwm.c **** 
+ 178:../cleanflight/src/main/drivers/rx/rx_pwm.c **** static void ppmEdgeCallback(timerCCHandlerRec_t* cbRec, captureCompare_t capture)
+ 179:../cleanflight/src/main/drivers/rx/rx_pwm.c **** {
+ 394              	 .loc 1 179 0
+ 395              	 .cfi_startproc
+ 396              	 
+ 397              	 
+ 398 0000 80B5     	 push {r7,lr}
+ 399              	.LCFI23:
+ 400              	 .cfi_def_cfa_offset 8
+ 401              	 .cfi_offset 7,-8
+ 402              	 .cfi_offset 14,-4
+ 403 0002 86B0     	 sub sp,sp,#24
+ 404              	.LCFI24:
+ 405              	 .cfi_def_cfa_offset 32
+ 406 0004 00AF     	 add r7,sp,#0
+ 407              	.LCFI25:
+ 408              	 .cfi_def_cfa_register 7
+ 409 0006 7860     	 str r0,[r7,#4]
+ 410 0008 0B46     	 mov r3,r1
+ 411 000a 7B80     	 strh r3,[r7,#2]
+ 180:../cleanflight/src/main/drivers/rx/rx_pwm.c ****     UNUSED(cbRec);
+ 181:../cleanflight/src/main/drivers/rx/rx_pwm.c ****     ppmISREvent(SOURCE_EDGE, capture);
+ 412              	 .loc 1 181 0
+ 413 000c 7B88     	 ldrh r3,[r7,#2]
+ 414 000e 0120     	 movs r0,#1
+ 415 0010 1946     	 mov r1,r3
+ 416 0012 FFF7FEFF 	 bl ppmISREvent
+ 182:../cleanflight/src/main/drivers/rx/rx_pwm.c **** 
+ 183:../cleanflight/src/main/drivers/rx/rx_pwm.c ****     int32_t i;
+ 184:../cleanflight/src/main/drivers/rx/rx_pwm.c **** 
+ 185:../cleanflight/src/main/drivers/rx/rx_pwm.c ****     uint32_t previousTime = ppmDev.currentTime;
+ 417              	 .loc 1 185 0
+ 418 0016 8B4B     	 ldr r3,.L38
+ 419 0018 5B68     	 ldr r3,[r3,#4]
+ 420 001a FB60     	 str r3,[r7,#12]
+ 186:../cleanflight/src/main/drivers/rx/rx_pwm.c ****     uint32_t previousCapture = ppmDev.currentCapture;
+ 421              	 .loc 1 186 0
+ 422 001c 894B     	 ldr r3,.L38
+ 423 001e 1B68     	 ldr r3,[r3]
+ 424 0020 BB60     	 str r3,[r7,#8]
+ 187:../cleanflight/src/main/drivers/rx/rx_pwm.c **** 
+ 188:../cleanflight/src/main/drivers/rx/rx_pwm.c ****     /* Grab the new count */
+ 189:../cleanflight/src/main/drivers/rx/rx_pwm.c ****     uint32_t currentTime = capture;
+ 425              	 .loc 1 189 0
+ 426 0022 7B88     	 ldrh r3,[r7,#2]
+ 427 0024 3B61     	 str r3,[r7,#16]
+ 190:../cleanflight/src/main/drivers/rx/rx_pwm.c **** 
+ 191:../cleanflight/src/main/drivers/rx/rx_pwm.c ****     /* Convert to 32-bit timer result */
+ 192:../cleanflight/src/main/drivers/rx/rx_pwm.c ****     currentTime += ppmDev.largeCounter;
+ 428              	 .loc 1 192 0
+ 429 0026 874B     	 ldr r3,.L38
+ 430 0028 DB6B     	 ldr r3,[r3,#60]
+ 431 002a 3A69     	 ldr r2,[r7,#16]
+ 432 002c 1344     	 add r3,r3,r2
+ 433 002e 3B61     	 str r3,[r7,#16]
+ 193:../cleanflight/src/main/drivers/rx/rx_pwm.c **** 
+ 194:../cleanflight/src/main/drivers/rx/rx_pwm.c ****     if (capture < previousCapture) {
+ 434              	 .loc 1 194 0
+ 435 0030 7A88     	 ldrh r2,[r7,#2]
+ 436 0032 BB68     	 ldr r3,[r7,#8]
+ 437 0034 9A42     	 cmp r2,r3
+ 438 0036 08D2     	 bcs .L19
+ 195:../cleanflight/src/main/drivers/rx/rx_pwm.c ****         if (ppmDev.overflowed) {
+ 439              	 .loc 1 195 0
+ 440 0038 824B     	 ldr r3,.L38
+ 441 003a 93F84530 	 ldrb r3,[r3,#69]
+ 442 003e 002B     	 cmp r3,#0
+ 443 0040 03D0     	 beq .L19
+ 196:../cleanflight/src/main/drivers/rx/rx_pwm.c ****             currentTime += PPM_TIMER_PERIOD;
+ 444              	 .loc 1 196 0
+ 445 0042 3B69     	 ldr r3,[r7,#16]
+ 446 0044 03F58033 	 add r3,r3,#65536
+ 447 0048 3B61     	 str r3,[r7,#16]
+ 448              	.L19:
+ 197:../cleanflight/src/main/drivers/rx/rx_pwm.c ****         }
+ 198:../cleanflight/src/main/drivers/rx/rx_pwm.c ****     }
+ 199:../cleanflight/src/main/drivers/rx/rx_pwm.c **** 
+ 200:../cleanflight/src/main/drivers/rx/rx_pwm.c ****     // Divide value if Oneshot, Multishot or brushed motors are active and the timer is shared
+ 201:../cleanflight/src/main/drivers/rx/rx_pwm.c ****     currentTime = currentTime / ppmCountDivisor;
+ 449              	 .loc 1 201 0
+ 450 004a 7F4B     	 ldr r3,.L38+4
+ 451 004c 1B78     	 ldrb r3,[r3]
+ 452 004e 1A46     	 mov r2,r3
+ 453 0050 3B69     	 ldr r3,[r7,#16]
+ 454 0052 B3FBF2F3 	 udiv r3,r3,r2
+ 455 0056 3B61     	 str r3,[r7,#16]
+ 202:../cleanflight/src/main/drivers/rx/rx_pwm.c **** 
+ 203:../cleanflight/src/main/drivers/rx/rx_pwm.c ****     /* Capture computation */
+ 204:../cleanflight/src/main/drivers/rx/rx_pwm.c ****     if (currentTime > previousTime) {
+ 456              	 .loc 1 204 0
+ 457 0058 3A69     	 ldr r2,[r7,#16]
+ 458 005a FB68     	 ldr r3,[r7,#12]
+ 459 005c 9A42     	 cmp r2,r3
+ 460 005e 15D9     	 bls .L20
+ 205:../cleanflight/src/main/drivers/rx/rx_pwm.c ****         ppmDev.deltaTime    = currentTime - (previousTime + (ppmDev.overflowed ? (PPM_TIMER_PERIOD 
+ 461              	 .loc 1 205 0
+ 462 0060 784B     	 ldr r3,.L38
+ 463 0062 93F84530 	 ldrb r3,[r3,#69]
+ 464 0066 002B     	 cmp r3,#0
+ 465 0068 08D0     	 beq .L21
+ 466              	 .loc 1 205 0 is_stmt 0 discriminator 1
+ 467 006a 774B     	 ldr r3,.L38+4
+ 468 006c 1B78     	 ldrb r3,[r3]
+ 469 006e 1A46     	 mov r2,r3
+ 470 0070 4FF48033 	 mov r3,#65536
+ 471 0074 93FBF2F3 	 sdiv r3,r3,r2
+ 472 0078 1A46     	 mov r2,r3
+ 473 007a 00E0     	 b .L22
+ 474              	.L21:
+ 475              	 .loc 1 205 0 discriminator 2
+ 476 007c 0022     	 movs r2,#0
+ 477              	.L22:
+ 478              	 .loc 1 205 0 discriminator 4
+ 479 007e FB68     	 ldr r3,[r7,#12]
+ 480 0080 1344     	 add r3,r3,r2
+ 481 0082 3A69     	 ldr r2,[r7,#16]
+ 482 0084 D31A     	 subs r3,r2,r3
+ 483 0086 6F4A     	 ldr r2,.L38
+ 484 0088 9360     	 str r3,[r2,#8]
+ 485 008a 0DE0     	 b .L23
+ 486              	.L20:
+ 206:../cleanflight/src/main/drivers/rx/rx_pwm.c ****     } else {
+ 207:../cleanflight/src/main/drivers/rx/rx_pwm.c ****         ppmDev.deltaTime    = (PPM_TIMER_PERIOD / ppmCountDivisor) + currentTime - previousTime;
+ 487              	 .loc 1 207 0 is_stmt 1
+ 488 008c 6E4B     	 ldr r3,.L38+4
+ 489 008e 1B78     	 ldrb r3,[r3]
+ 490 0090 1A46     	 mov r2,r3
+ 491 0092 4FF48033 	 mov r3,#65536
+ 492 0096 93FBF2F3 	 sdiv r3,r3,r2
+ 493 009a 1A46     	 mov r2,r3
+ 494 009c 3B69     	 ldr r3,[r7,#16]
+ 495 009e 1A44     	 add r2,r2,r3
+ 496 00a0 FB68     	 ldr r3,[r7,#12]
+ 497 00a2 D31A     	 subs r3,r2,r3
+ 498 00a4 674A     	 ldr r2,.L38
+ 499 00a6 9360     	 str r3,[r2,#8]
+ 500              	.L23:
+ 208:../cleanflight/src/main/drivers/rx/rx_pwm.c ****     }
+ 209:../cleanflight/src/main/drivers/rx/rx_pwm.c **** 
+ 210:../cleanflight/src/main/drivers/rx/rx_pwm.c ****     ppmDev.overflowed = false;
+ 501              	 .loc 1 210 0
+ 502 00a8 664B     	 ldr r3,.L38
+ 503 00aa 0022     	 movs r2,#0
+ 504 00ac 83F84520 	 strb r2,[r3,#69]
+ 211:../cleanflight/src/main/drivers/rx/rx_pwm.c **** 
+ 212:../cleanflight/src/main/drivers/rx/rx_pwm.c **** 
+ 213:../cleanflight/src/main/drivers/rx/rx_pwm.c ****     /* Store the current measurement */
+ 214:../cleanflight/src/main/drivers/rx/rx_pwm.c ****     ppmDev.currentTime = currentTime;
+ 505              	 .loc 1 214 0
+ 506 00b0 644A     	 ldr r2,.L38
+ 507 00b2 3B69     	 ldr r3,[r7,#16]
+ 508 00b4 5360     	 str r3,[r2,#4]
+ 215:../cleanflight/src/main/drivers/rx/rx_pwm.c ****     ppmDev.currentCapture = capture;
+ 509              	 .loc 1 215 0
+ 510 00b6 7B88     	 ldrh r3,[r7,#2]
+ 511 00b8 624A     	 ldr r2,.L38
+ 512 00ba 1360     	 str r3,[r2]
+ 216:../cleanflight/src/main/drivers/rx/rx_pwm.c **** 
+ 217:../cleanflight/src/main/drivers/rx/rx_pwm.c ****     /* Sync pulse detection */
+ 218:../cleanflight/src/main/drivers/rx/rx_pwm.c ****     if (ppmDev.deltaTime > PPM_IN_MIN_SYNC_PULSE_US) {
+ 513              	 .loc 1 218 0
+ 514 00bc 614B     	 ldr r3,.L38
+ 515 00be 9B68     	 ldr r3,[r3,#8]
+ 516 00c0 40F68C22 	 movw r2,#2700
+ 517 00c4 9342     	 cmp r3,r2
+ 518 00c6 7BD9     	 bls .L24
+ 219:../cleanflight/src/main/drivers/rx/rx_pwm.c ****         if (ppmDev.pulseIndex == ppmDev.numChannelsPrevFrame
+ 519              	 .loc 1 219 0
+ 520 00c8 5E4B     	 ldr r3,.L38
+ 521 00ca 93F84030 	 ldrb r3,[r3,#64]
+ 522 00ce 1A46     	 mov r2,r3
+ 523 00d0 5C4B     	 ldr r3,.L38
+ 524 00d2 93F84230 	 ldrb r3,[r3,#66]
+ 525 00d6 5BB2     	 sxtb r3,r3
+ 526 00d8 9A42     	 cmp r2,r3
+ 527 00da 1FD1     	 bne .L25
+ 220:../cleanflight/src/main/drivers/rx/rx_pwm.c ****             && ppmDev.pulseIndex >= PPM_IN_MIN_NUM_CHANNELS
+ 528              	 .loc 1 220 0
+ 529 00dc 594B     	 ldr r3,.L38
+ 530 00de 93F84030 	 ldrb r3,[r3,#64]
+ 531 00e2 032B     	 cmp r3,#3
+ 532 00e4 1AD9     	 bls .L25
+ 221:../cleanflight/src/main/drivers/rx/rx_pwm.c ****             && ppmDev.pulseIndex <= PPM_IN_MAX_NUM_CHANNELS) {
+ 533              	 .loc 1 221 0
+ 534 00e6 574B     	 ldr r3,.L38
+ 535 00e8 93F84030 	 ldrb r3,[r3,#64]
+ 536 00ec 0C2B     	 cmp r3,#12
+ 537 00ee 15D8     	 bhi .L25
+ 222:../cleanflight/src/main/drivers/rx/rx_pwm.c ****             /* If we see n simultaneous frames of the same
+ 223:../cleanflight/src/main/drivers/rx/rx_pwm.c ****                number of channels we save it as our frame size */
+ 224:../cleanflight/src/main/drivers/rx/rx_pwm.c ****             if (ppmDev.stableFramesSeenCount < PPM_STABLE_FRAMES_REQUIRED_COUNT) {
+ 538              	 .loc 1 224 0
+ 539 00f0 544B     	 ldr r3,.L38
+ 540 00f2 93F84330 	 ldrb r3,[r3,#67]
+ 541 00f6 182B     	 cmp r3,#24
+ 542 00f8 08D8     	 bhi .L26
+ 225:../cleanflight/src/main/drivers/rx/rx_pwm.c ****                 ppmDev.stableFramesSeenCount++;
+ 543              	 .loc 1 225 0
+ 544 00fa 524B     	 ldr r3,.L38
+ 545 00fc 93F84330 	 ldrb r3,[r3,#67]
+ 546 0100 0133     	 adds r3,r3,#1
+ 547 0102 DAB2     	 uxtb r2,r3
+ 548 0104 4F4B     	 ldr r3,.L38
+ 549 0106 83F84320 	 strb r2,[r3,#67]
+ 224:../cleanflight/src/main/drivers/rx/rx_pwm.c ****                 ppmDev.stableFramesSeenCount++;
+ 550              	 .loc 1 224 0
+ 551 010a 0BE0     	 b .L28
+ 552              	.L26:
+ 226:../cleanflight/src/main/drivers/rx/rx_pwm.c ****             } else {
+ 227:../cleanflight/src/main/drivers/rx/rx_pwm.c ****                 ppmDev.numChannels = ppmDev.pulseIndex;
+ 553              	 .loc 1 227 0
+ 554 010c 4D4B     	 ldr r3,.L38
+ 555 010e 93F84030 	 ldrb r3,[r3,#64]
+ 556 0112 DAB2     	 uxtb r2,r3
+ 557 0114 4B4B     	 ldr r3,.L38
+ 558 0116 83F84120 	 strb r2,[r3,#65]
+ 224:../cleanflight/src/main/drivers/rx/rx_pwm.c ****                 ppmDev.stableFramesSeenCount++;
+ 559              	 .loc 1 224 0
+ 560 011a 03E0     	 b .L28
+ 561              	.L25:
+ 228:../cleanflight/src/main/drivers/rx/rx_pwm.c ****             }
+ 229:../cleanflight/src/main/drivers/rx/rx_pwm.c ****         } else {
+ 230:../cleanflight/src/main/drivers/rx/rx_pwm.c ****             ppmDev.stableFramesSeenCount = 0;
+ 562              	 .loc 1 230 0
+ 563 011c 494B     	 ldr r3,.L38
+ 564 011e 0022     	 movs r2,#0
+ 565 0120 83F84320 	 strb r2,[r3,#67]
+ 566              	.L28:
+ 231:../cleanflight/src/main/drivers/rx/rx_pwm.c ****         }
+ 232:../cleanflight/src/main/drivers/rx/rx_pwm.c **** 
+ 233:../cleanflight/src/main/drivers/rx/rx_pwm.c ****         /* Check if the last frame was well formed */
+ 234:../cleanflight/src/main/drivers/rx/rx_pwm.c ****         if (ppmDev.pulseIndex == ppmDev.numChannels && ppmDev.tracking) {
+ 567              	 .loc 1 234 0
+ 568 0124 474B     	 ldr r3,.L38
+ 569 0126 93F84030 	 ldrb r3,[r3,#64]
+ 570 012a 1A46     	 mov r2,r3
+ 571 012c 454B     	 ldr r3,.L38
+ 572 012e 93F84130 	 ldrb r3,[r3,#65]
+ 573 0132 5BB2     	 sxtb r3,r3
+ 574 0134 9A42     	 cmp r2,r3
+ 575 0136 33D1     	 bne .L29
+ 576              	 .loc 1 234 0 is_stmt 0 discriminator 1
+ 577 0138 424B     	 ldr r3,.L38
+ 578 013a 93F84430 	 ldrb r3,[r3,#68]
+ 579 013e 002B     	 cmp r3,#0
+ 580 0140 2ED0     	 beq .L29
+ 235:../cleanflight/src/main/drivers/rx/rx_pwm.c ****             /* The last frame was well formed */
+ 236:../cleanflight/src/main/drivers/rx/rx_pwm.c ****             for (i = 0; i < ppmDev.numChannels; i++) {
+ 581              	 .loc 1 236 0 is_stmt 1
+ 582 0142 0023     	 movs r3,#0
+ 583 0144 7B61     	 str r3,[r7,#20]
+ 584 0146 0DE0     	 b .L30
+ 585              	.L31:
+ 237:../cleanflight/src/main/drivers/rx/rx_pwm.c ****                 captures[i] = ppmDev.captures[i];
+ 586              	 .loc 1 237 0 discriminator 3
+ 587 0148 3E4A     	 ldr r2,.L38
+ 588 014a 7B69     	 ldr r3,[r7,#20]
+ 589 014c 0233     	 adds r3,r3,#2
+ 590 014e 9B00     	 lsls r3,r3,#2
+ 591 0150 1344     	 add r3,r3,r2
+ 592 0152 5B68     	 ldr r3,[r3,#4]
+ 593 0154 99B2     	 uxth r1,r3
+ 594 0156 3D4A     	 ldr r2,.L38+8
+ 595 0158 7B69     	 ldr r3,[r7,#20]
+ 596 015a 22F81310 	 strh r1,[r2,r3,lsl#1]
+ 236:../cleanflight/src/main/drivers/rx/rx_pwm.c ****                 captures[i] = ppmDev.captures[i];
+ 597              	 .loc 1 236 0 discriminator 3
+ 598 015e 7B69     	 ldr r3,[r7,#20]
+ 599 0160 0133     	 adds r3,r3,#1
+ 600 0162 7B61     	 str r3,[r7,#20]
+ 601              	.L30:
+ 236:../cleanflight/src/main/drivers/rx/rx_pwm.c ****                 captures[i] = ppmDev.captures[i];
+ 602              	 .loc 1 236 0 is_stmt 0 discriminator 1
+ 603 0164 374B     	 ldr r3,.L38
+ 604 0166 93F84130 	 ldrb r3,[r3,#65]
+ 605 016a 5AB2     	 sxtb r2,r3
+ 606 016c 7B69     	 ldr r3,[r7,#20]
+ 607 016e 9A42     	 cmp r2,r3
+ 608 0170 EADC     	 bgt .L31
+ 238:../cleanflight/src/main/drivers/rx/rx_pwm.c ****             }
+ 239:../cleanflight/src/main/drivers/rx/rx_pwm.c ****             for (i = ppmDev.numChannels; i < PPM_IN_MAX_NUM_CHANNELS; i++) {
+ 609              	 .loc 1 239 0 is_stmt 1
+ 610 0172 344B     	 ldr r3,.L38
+ 611 0174 93F84130 	 ldrb r3,[r3,#65]
+ 612 0178 5BB2     	 sxtb r3,r3
+ 613 017a 7B61     	 str r3,[r7,#20]
+ 614 017c 07E0     	 b .L32
+ 615              	.L33:
+ 240:../cleanflight/src/main/drivers/rx/rx_pwm.c ****                 captures[i] = PPM_RCVR_TIMEOUT;
+ 616              	 .loc 1 240 0 discriminator 3
+ 617 017e 334A     	 ldr r2,.L38+8
+ 618 0180 7B69     	 ldr r3,[r7,#20]
+ 619 0182 0021     	 movs r1,#0
+ 620 0184 22F81310 	 strh r1,[r2,r3,lsl#1]
+ 239:../cleanflight/src/main/drivers/rx/rx_pwm.c ****                 captures[i] = PPM_RCVR_TIMEOUT;
+ 621              	 .loc 1 239 0 discriminator 3
+ 622 0188 7B69     	 ldr r3,[r7,#20]
+ 623 018a 0133     	 adds r3,r3,#1
+ 624 018c 7B61     	 str r3,[r7,#20]
+ 625              	.L32:
+ 239:../cleanflight/src/main/drivers/rx/rx_pwm.c ****                 captures[i] = PPM_RCVR_TIMEOUT;
+ 626              	 .loc 1 239 0 is_stmt 0 discriminator 1
+ 627 018e 7B69     	 ldr r3,[r7,#20]
+ 628 0190 0B2B     	 cmp r3,#11
+ 629 0192 F4DD     	 ble .L33
+ 241:../cleanflight/src/main/drivers/rx/rx_pwm.c ****             }
+ 242:../cleanflight/src/main/drivers/rx/rx_pwm.c ****             ppmFrameCount++;
+ 630              	 .loc 1 242 0 is_stmt 1
+ 631 0194 2E4B     	 ldr r3,.L38+12
+ 632 0196 1B78     	 ldrb r3,[r3]
+ 633 0198 0133     	 adds r3,r3,#1
+ 634 019a DAB2     	 uxtb r2,r3
+ 635 019c 2C4B     	 ldr r3,.L38+12
+ 636 019e 1A70     	 strb r2,[r3]
+ 637              	.L29:
+ 243:../cleanflight/src/main/drivers/rx/rx_pwm.c ****         }
+ 244:../cleanflight/src/main/drivers/rx/rx_pwm.c **** 
+ 245:../cleanflight/src/main/drivers/rx/rx_pwm.c ****         ppmDev.tracking   = true;
+ 638              	 .loc 1 245 0
+ 639 01a0 284B     	 ldr r3,.L38
+ 640 01a2 0122     	 movs r2,#1
+ 641 01a4 83F84420 	 strb r2,[r3,#68]
+ 246:../cleanflight/src/main/drivers/rx/rx_pwm.c ****         ppmDev.numChannelsPrevFrame = ppmDev.pulseIndex;
+ 642              	 .loc 1 246 0
+ 643 01a8 264B     	 ldr r3,.L38
+ 644 01aa 93F84030 	 ldrb r3,[r3,#64]
+ 645 01ae DAB2     	 uxtb r2,r3
+ 646 01b0 244B     	 ldr r3,.L38
+ 647 01b2 83F84220 	 strb r2,[r3,#66]
+ 247:../cleanflight/src/main/drivers/rx/rx_pwm.c ****         ppmDev.pulseIndex = 0;
+ 648              	 .loc 1 247 0
+ 649 01b6 234B     	 ldr r3,.L38
+ 650 01b8 0022     	 movs r2,#0
+ 651 01ba 83F84020 	 strb r2,[r3,#64]
+ 652 01be 3DE0     	 b .L18
+ 653              	.L24:
+ 248:../cleanflight/src/main/drivers/rx/rx_pwm.c **** 
+ 249:../cleanflight/src/main/drivers/rx/rx_pwm.c ****         /* We rely on the supervisor to set captureValue to invalid
+ 250:../cleanflight/src/main/drivers/rx/rx_pwm.c ****            if no valid frame is found otherwise we ride over it */
+ 251:../cleanflight/src/main/drivers/rx/rx_pwm.c ****     } else if (ppmDev.tracking) {
+ 654              	 .loc 1 251 0
+ 655 01c0 204B     	 ldr r3,.L38
+ 656 01c2 93F84430 	 ldrb r3,[r3,#68]
+ 657 01c6 002B     	 cmp r3,#0
+ 658 01c8 38D0     	 beq .L18
+ 252:../cleanflight/src/main/drivers/rx/rx_pwm.c ****         /* Valid pulse duration 0.75 to 2.5 ms*/
+ 253:../cleanflight/src/main/drivers/rx/rx_pwm.c ****         if (ppmDev.deltaTime > PPM_IN_MIN_CHANNEL_PULSE_US
+ 659              	 .loc 1 253 0
+ 660 01ca 1E4B     	 ldr r3,.L38
+ 661 01cc 9B68     	 ldr r3,[r3,#8]
+ 662 01ce 40F2EE22 	 movw r2,#750
+ 663 01d2 9342     	 cmp r3,r2
+ 664 01d4 1ED9     	 bls .L35
+ 254:../cleanflight/src/main/drivers/rx/rx_pwm.c ****             && ppmDev.deltaTime < PPM_IN_MAX_CHANNEL_PULSE_US
+ 665              	 .loc 1 254 0
+ 666 01d6 1B4B     	 ldr r3,.L38
+ 667 01d8 9B68     	 ldr r3,[r3,#8]
+ 668 01da 40F6C902 	 movw r2,#2249
+ 669 01de 9342     	 cmp r3,r2
+ 670 01e0 18D8     	 bhi .L35
+ 255:../cleanflight/src/main/drivers/rx/rx_pwm.c ****             && ppmDev.pulseIndex < PPM_IN_MAX_NUM_CHANNELS) {
+ 671              	 .loc 1 255 0
+ 672 01e2 184B     	 ldr r3,.L38
+ 673 01e4 93F84030 	 ldrb r3,[r3,#64]
+ 674 01e8 0B2B     	 cmp r3,#11
+ 675 01ea 13D8     	 bhi .L35
+ 256:../cleanflight/src/main/drivers/rx/rx_pwm.c ****             ppmDev.captures[ppmDev.pulseIndex] = ppmDev.deltaTime;
+ 676              	 .loc 1 256 0
+ 677 01ec 154B     	 ldr r3,.L38
+ 678 01ee 93F84030 	 ldrb r3,[r3,#64]
+ 679 01f2 1846     	 mov r0,r3
+ 680 01f4 134B     	 ldr r3,.L38
+ 681 01f6 9A68     	 ldr r2,[r3,#8]
+ 682 01f8 1249     	 ldr r1,.L38
+ 683 01fa 831C     	 adds r3,r0,#2
+ 684 01fc 9B00     	 lsls r3,r3,#2
+ 685 01fe 0B44     	 add r3,r3,r1
+ 686 0200 5A60     	 str r2,[r3,#4]
+ 257:../cleanflight/src/main/drivers/rx/rx_pwm.c ****             ppmDev.pulseIndex++;
+ 687              	 .loc 1 257 0
+ 688 0202 104B     	 ldr r3,.L38
+ 689 0204 93F84030 	 ldrb r3,[r3,#64]
+ 690 0208 0133     	 adds r3,r3,#1
+ 691 020a DAB2     	 uxtb r2,r3
+ 692 020c 0D4B     	 ldr r3,.L38
+ 693 020e 83F84020 	 strb r2,[r3,#64]
+ 694 0212 13E0     	 b .L18
+ 695              	.L35:
+ 258:../cleanflight/src/main/drivers/rx/rx_pwm.c ****         } else {
+ 259:../cleanflight/src/main/drivers/rx/rx_pwm.c ****             /* Not a valid pulse duration */
+ 260:../cleanflight/src/main/drivers/rx/rx_pwm.c ****             ppmDev.tracking = false;
+ 696              	 .loc 1 260 0
+ 697 0214 0B4B     	 ldr r3,.L38
+ 698 0216 0022     	 movs r2,#0
+ 699 0218 83F84420 	 strb r2,[r3,#68]
+ 261:../cleanflight/src/main/drivers/rx/rx_pwm.c ****             for (i = 0; i < PWM_PORTS_OR_PPM_CAPTURE_COUNT; i++) {
+ 700              	 .loc 1 261 0
+ 701 021c 0023     	 movs r3,#0
+ 702 021e 7B61     	 str r3,[r7,#20]
+ 703 0220 09E0     	 b .L36
+ 704              	.L37:
+ 262:../cleanflight/src/main/drivers/rx/rx_pwm.c ****                 ppmDev.captures[i] = PPM_RCVR_TIMEOUT;
+ 705              	 .loc 1 262 0 discriminator 3
+ 706 0222 084A     	 ldr r2,.L38
+ 707 0224 7B69     	 ldr r3,[r7,#20]
+ 708 0226 0233     	 adds r3,r3,#2
+ 709 0228 9B00     	 lsls r3,r3,#2
+ 710 022a 1344     	 add r3,r3,r2
+ 711 022c 0022     	 movs r2,#0
+ 712 022e 5A60     	 str r2,[r3,#4]
+ 261:../cleanflight/src/main/drivers/rx/rx_pwm.c ****             for (i = 0; i < PWM_PORTS_OR_PPM_CAPTURE_COUNT; i++) {
+ 713              	 .loc 1 261 0 discriminator 3
+ 714 0230 7B69     	 ldr r3,[r7,#20]
+ 715 0232 0133     	 adds r3,r3,#1
+ 716 0234 7B61     	 str r3,[r7,#20]
+ 717              	.L36:
+ 261:../cleanflight/src/main/drivers/rx/rx_pwm.c ****             for (i = 0; i < PWM_PORTS_OR_PPM_CAPTURE_COUNT; i++) {
+ 718              	 .loc 1 261 0 is_stmt 0 discriminator 1
+ 719 0236 7B69     	 ldr r3,[r7,#20]
+ 720 0238 0B2B     	 cmp r3,#11
+ 721 023a F2DD     	 ble .L37
+ 722              	.L18:
+ 263:../cleanflight/src/main/drivers/rx/rx_pwm.c ****             }
+ 264:../cleanflight/src/main/drivers/rx/rx_pwm.c ****         }
+ 265:../cleanflight/src/main/drivers/rx/rx_pwm.c ****     }
+ 266:../cleanflight/src/main/drivers/rx/rx_pwm.c **** }
+ 723              	 .loc 1 266 0 is_stmt 1
+ 724 023c 1837     	 adds r7,r7,#24
+ 725              	.LCFI26:
+ 726              	 .cfi_def_cfa_offset 8
+ 727 023e BD46     	 mov sp,r7
+ 728              	.LCFI27:
+ 729              	 .cfi_def_cfa_register 13
+ 730              	 
+ 731 0240 80BD     	 pop {r7,pc}
+ 732              	.L39:
+ 733 0242 00BF     	 .align 2
+ 734              	.L38:
+ 735 0244 00000000 	 .word ppmDev
+ 736 0248 00000000 	 .word ppmCountDivisor
+ 737 024c 00000000 	 .word captures
+ 738 0250 00000000 	 .word ppmFrameCount
+ 739              	 .cfi_endproc
+ 740              	.LFE533:
+ 742              	 .section .text.isPWMDataBeingReceived,"ax",%progbits
+ 743              	 .align 2
+ 744              	 .global isPWMDataBeingReceived
+ 745              	 .thumb
+ 746              	 .thumb_func
+ 748              	isPWMDataBeingReceived:
+ 749              	.LFB534:
+ 267:../cleanflight/src/main/drivers/rx/rx_pwm.c **** 
+ 268:../cleanflight/src/main/drivers/rx/rx_pwm.c **** #define MAX_MISSED_PWM_EVENTS 10
+ 269:../cleanflight/src/main/drivers/rx/rx_pwm.c **** 
+ 270:../cleanflight/src/main/drivers/rx/rx_pwm.c **** bool isPWMDataBeingReceived(void)
+ 271:../cleanflight/src/main/drivers/rx/rx_pwm.c **** {
+ 750              	 .loc 1 271 0
+ 751              	 .cfi_startproc
+ 752              	 
+ 753              	 
+ 754              	 
+ 755 0000 80B4     	 push {r7}
+ 756              	.LCFI28:
+ 757              	 .cfi_def_cfa_offset 4
+ 758              	 .cfi_offset 7,-4
+ 759 0002 83B0     	 sub sp,sp,#12
+ 760              	.LCFI29:
+ 761              	 .cfi_def_cfa_offset 16
+ 762 0004 00AF     	 add r7,sp,#0
+ 763              	.LCFI30:
+ 764              	 .cfi_def_cfa_register 7
+ 272:../cleanflight/src/main/drivers/rx/rx_pwm.c ****     int channel;
+ 273:../cleanflight/src/main/drivers/rx/rx_pwm.c ****     for (channel = 0; channel < PWM_PORTS_OR_PPM_CAPTURE_COUNT; channel++) {
+ 765              	 .loc 1 273 0
+ 766 0006 0023     	 movs r3,#0
+ 767 0008 7B60     	 str r3,[r7,#4]
+ 768 000a 0AE0     	 b .L41
+ 769              	.L44:
+ 274:../cleanflight/src/main/drivers/rx/rx_pwm.c ****         if (captures[channel] != PPM_RCVR_TIMEOUT) {
+ 770              	 .loc 1 274 0
+ 771 000c 0A4A     	 ldr r2,.L45
+ 772 000e 7B68     	 ldr r3,[r7,#4]
+ 773 0010 32F81330 	 ldrh r3,[r2,r3,lsl#1]
+ 774 0014 002B     	 cmp r3,#0
+ 775 0016 01D0     	 beq .L42
+ 275:../cleanflight/src/main/drivers/rx/rx_pwm.c ****             return true;
+ 776              	 .loc 1 275 0
+ 777 0018 0123     	 movs r3,#1
+ 778 001a 06E0     	 b .L43
+ 779              	.L42:
+ 273:../cleanflight/src/main/drivers/rx/rx_pwm.c ****         if (captures[channel] != PPM_RCVR_TIMEOUT) {
+ 780              	 .loc 1 273 0 discriminator 2
+ 781 001c 7B68     	 ldr r3,[r7,#4]
+ 782 001e 0133     	 adds r3,r3,#1
+ 783 0020 7B60     	 str r3,[r7,#4]
+ 784              	.L41:
+ 273:../cleanflight/src/main/drivers/rx/rx_pwm.c ****         if (captures[channel] != PPM_RCVR_TIMEOUT) {
+ 785              	 .loc 1 273 0 is_stmt 0 discriminator 1
+ 786 0022 7B68     	 ldr r3,[r7,#4]
+ 787 0024 0B2B     	 cmp r3,#11
+ 788 0026 F1DD     	 ble .L44
+ 276:../cleanflight/src/main/drivers/rx/rx_pwm.c ****         }
+ 277:../cleanflight/src/main/drivers/rx/rx_pwm.c ****     }
+ 278:../cleanflight/src/main/drivers/rx/rx_pwm.c ****     return false;
+ 789              	 .loc 1 278 0 is_stmt 1
+ 790 0028 0023     	 movs r3,#0
+ 791              	.L43:
+ 279:../cleanflight/src/main/drivers/rx/rx_pwm.c **** }
+ 792              	 .loc 1 279 0
+ 793 002a 1846     	 mov r0,r3
+ 794 002c 0C37     	 adds r7,r7,#12
+ 795              	.LCFI31:
+ 796              	 .cfi_def_cfa_offset 4
+ 797 002e BD46     	 mov sp,r7
+ 798              	.LCFI32:
+ 799              	 .cfi_def_cfa_register 13
+ 800              	 
+ 801 0030 5DF8047B 	 ldr r7,[sp],#4
+ 802              	.LCFI33:
+ 803              	 .cfi_restore 7
+ 804              	 .cfi_def_cfa_offset 0
+ 805 0034 7047     	 bx lr
+ 806              	.L46:
+ 807 0036 00BF     	 .align 2
+ 808              	.L45:
+ 809 0038 00000000 	 .word captures
+ 810              	 .cfi_endproc
+ 811              	.LFE534:
+ 813              	 .section .text.pwmOverflowCallback,"ax",%progbits
+ 814              	 .align 2
+ 815              	 .thumb
+ 816              	 .thumb_func
+ 818              	pwmOverflowCallback:
+ 819              	.LFB535:
+ 280:../cleanflight/src/main/drivers/rx/rx_pwm.c **** 
+ 281:../cleanflight/src/main/drivers/rx/rx_pwm.c **** static void pwmOverflowCallback(timerOvrHandlerRec_t* cbRec, captureCompare_t capture)
+ 282:../cleanflight/src/main/drivers/rx/rx_pwm.c **** {
+ 820              	 .loc 1 282 0
+ 821              	 .cfi_startproc
+ 822              	 
+ 823              	 
+ 824              	 
+ 825 0000 80B4     	 push {r7}
+ 826              	.LCFI34:
+ 827              	 .cfi_def_cfa_offset 4
+ 828              	 .cfi_offset 7,-4
+ 829 0002 85B0     	 sub sp,sp,#20
+ 830              	.LCFI35:
+ 831              	 .cfi_def_cfa_offset 24
+ 832 0004 00AF     	 add r7,sp,#0
+ 833              	.LCFI36:
+ 834              	 .cfi_def_cfa_register 7
+ 835 0006 7860     	 str r0,[r7,#4]
+ 836 0008 0B46     	 mov r3,r1
+ 837 000a 7B80     	 strh r3,[r7,#2]
+ 838              	.LBB2:
+ 283:../cleanflight/src/main/drivers/rx/rx_pwm.c ****     UNUSED(capture);
+ 284:../cleanflight/src/main/drivers/rx/rx_pwm.c ****     pwmInputPort_t *pwmInputPort = container_of(cbRec, pwmInputPort_t, overflowCb);
+ 839              	 .loc 1 284 0
+ 840 000c 7B68     	 ldr r3,[r7,#4]
+ 841 000e FB60     	 str r3,[r7,#12]
+ 842 0010 FB68     	 ldr r3,[r7,#12]
+ 843 0012 123B     	 subs r3,r3,#18
+ 844              	.LBE2:
+ 845 0014 BB60     	 str r3,[r7,#8]
+ 285:../cleanflight/src/main/drivers/rx/rx_pwm.c **** 
+ 286:../cleanflight/src/main/drivers/rx/rx_pwm.c ****     if (++pwmInputPort->missedEvents > MAX_MISSED_PWM_EVENTS) {
+ 846              	 .loc 1 286 0
+ 847 0016 BB68     	 ldr r3,[r7,#8]
+ 848 0018 DB78     	 ldrb r3,[r3,#3]
+ 849 001a 0133     	 adds r3,r3,#1
+ 850 001c DAB2     	 uxtb r2,r3
+ 851 001e BB68     	 ldr r3,[r7,#8]
+ 852 0020 DA70     	 strb r2,[r3,#3]
+ 853 0022 BB68     	 ldr r3,[r7,#8]
+ 854 0024 DB78     	 ldrb r3,[r3,#3]
+ 855 0026 0A2B     	 cmp r3,#10
+ 856 0028 09D9     	 bls .L47
+ 287:../cleanflight/src/main/drivers/rx/rx_pwm.c ****         captures[pwmInputPort->channel] = PPM_RCVR_TIMEOUT;
+ 857              	 .loc 1 287 0
+ 858 002a BB68     	 ldr r3,[r7,#8]
+ 859 002c 5B78     	 ldrb r3,[r3,#1]
+ 860 002e 1A46     	 mov r2,r3
+ 861 0030 054B     	 ldr r3,.L49
+ 862 0032 0021     	 movs r1,#0
+ 863 0034 23F81210 	 strh r1,[r3,r2,lsl#1]
+ 288:../cleanflight/src/main/drivers/rx/rx_pwm.c ****         pwmInputPort->missedEvents = 0;
+ 864              	 .loc 1 288 0
+ 865 0038 BB68     	 ldr r3,[r7,#8]
+ 866 003a 0022     	 movs r2,#0
+ 867 003c DA70     	 strb r2,[r3,#3]
+ 868              	.L47:
+ 289:../cleanflight/src/main/drivers/rx/rx_pwm.c ****     }
+ 290:../cleanflight/src/main/drivers/rx/rx_pwm.c **** }
+ 869              	 .loc 1 290 0
+ 870 003e 1437     	 adds r7,r7,#20
+ 871              	.LCFI37:
+ 872              	 .cfi_def_cfa_offset 4
+ 873 0040 BD46     	 mov sp,r7
+ 874              	.LCFI38:
+ 875              	 .cfi_def_cfa_register 13
+ 876              	 
+ 877 0042 5DF8047B 	 ldr r7,[sp],#4
+ 878              	.LCFI39:
+ 879              	 .cfi_restore 7
+ 880              	 .cfi_def_cfa_offset 0
+ 881 0046 7047     	 bx lr
+ 882              	.L50:
+ 883              	 .align 2
+ 884              	.L49:
+ 885 0048 00000000 	 .word captures
+ 886              	 .cfi_endproc
+ 887              	.LFE535:
+ 889              	 .section .text.pwmEdgeCallback,"ax",%progbits
+ 890              	 .align 2
+ 891              	 .thumb
+ 892              	 .thumb_func
+ 894              	pwmEdgeCallback:
+ 895              	.LFB536:
+ 291:../cleanflight/src/main/drivers/rx/rx_pwm.c **** 
+ 292:../cleanflight/src/main/drivers/rx/rx_pwm.c **** static void pwmEdgeCallback(timerCCHandlerRec_t *cbRec, captureCompare_t capture)
+ 293:../cleanflight/src/main/drivers/rx/rx_pwm.c **** {
+ 896              	 .loc 1 293 0
+ 897              	 .cfi_startproc
+ 898              	 
+ 899              	 
+ 900              	 
+ 901 0000 80B4     	 push {r7}
+ 902              	.LCFI40:
+ 903              	 .cfi_def_cfa_offset 4
+ 904              	 .cfi_offset 7,-4
+ 905 0002 87B0     	 sub sp,sp,#28
+ 906              	.LCFI41:
+ 907              	 .cfi_def_cfa_offset 32
+ 908 0004 00AF     	 add r7,sp,#0
+ 909              	.LCFI42:
+ 910              	 .cfi_def_cfa_register 7
+ 911 0006 7860     	 str r0,[r7,#4]
+ 912 0008 0B46     	 mov r3,r1
+ 913 000a 7B80     	 strh r3,[r7,#2]
+ 914              	.LBB3:
+ 294:../cleanflight/src/main/drivers/rx/rx_pwm.c ****     pwmInputPort_t *pwmInputPort = container_of(cbRec, pwmInputPort_t, edgeCb);
+ 915              	 .loc 1 294 0
+ 916 000c 7B68     	 ldr r3,[r7,#4]
+ 917 000e 7B61     	 str r3,[r7,#20]
+ 918 0010 7B69     	 ldr r3,[r7,#20]
+ 919 0012 0E3B     	 subs r3,r3,#14
+ 920              	.LBE3:
+ 921 0014 3B61     	 str r3,[r7,#16]
+ 295:../cleanflight/src/main/drivers/rx/rx_pwm.c ****     const timerHardware_t *timerHardwarePtr = pwmInputPort->timerHardware;
+ 922              	 .loc 1 295 0
+ 923 0016 3B69     	 ldr r3,[r7,#16]
+ 924 0018 D3F80A30 	 ldr r3,[r3,#10]
+ 925 001c FB60     	 str r3,[r7,#12]
+ 296:../cleanflight/src/main/drivers/rx/rx_pwm.c **** 
+ 297:../cleanflight/src/main/drivers/rx/rx_pwm.c ****     if (pwmInputPort->state == 0) {
+ 926              	 .loc 1 297 0
+ 927 001e 3B69     	 ldr r3,[r7,#16]
+ 928 0020 9B78     	 ldrb r3,[r3,#2]
+ 929 0022 002B     	 cmp r3,#0
+ 930 0024 06D1     	 bne .L52
+ 298:../cleanflight/src/main/drivers/rx/rx_pwm.c ****         pwmInputPort->rise = capture;
+ 931              	 .loc 1 298 0
+ 932 0026 3B69     	 ldr r3,[r7,#16]
+ 933 0028 7A88     	 ldrh r2,[r7,#2]
+ 934 002a 9A80     	 strh r2,[r3,#4]
+ 299:../cleanflight/src/main/drivers/rx/rx_pwm.c ****         pwmInputPort->state = 1;
+ 935              	 .loc 1 299 0
+ 936 002c 3B69     	 ldr r3,[r7,#16]
+ 937 002e 0122     	 movs r2,#1
+ 938 0030 9A70     	 strb r2,[r3,#2]
+ 939 0032 1BE0     	 b .L51
+ 940              	.L52:
+ 300:../cleanflight/src/main/drivers/rx/rx_pwm.c **** #ifdef XMC4700_F100x2048
+ 301:../cleanflight/src/main/drivers/rx/rx_pwm.c **** #else
+ 302:../cleanflight/src/main/drivers/rx/rx_pwm.c **** #if defined(USE_HAL_DRIVER)
+ 303:../cleanflight/src/main/drivers/rx/rx_pwm.c ****         pwmICConfig(timerHardwarePtr->tim, timerHardwarePtr->channel, TIM_ICPOLARITY_FALLING);
+ 304:../cleanflight/src/main/drivers/rx/rx_pwm.c **** #else
+ 305:../cleanflight/src/main/drivers/rx/rx_pwm.c ****         pwmICConfig(timerHardwarePtr->tim, timerHardwarePtr->channel, TIM_ICPolarity_Falling);
+ 306:../cleanflight/src/main/drivers/rx/rx_pwm.c **** #endif
+ 307:../cleanflight/src/main/drivers/rx/rx_pwm.c **** #endif
+ 308:../cleanflight/src/main/drivers/rx/rx_pwm.c ****     } else {
+ 309:../cleanflight/src/main/drivers/rx/rx_pwm.c ****         pwmInputPort->fall = capture;
+ 941              	 .loc 1 309 0
+ 942 0034 3B69     	 ldr r3,[r7,#16]
+ 943 0036 7A88     	 ldrh r2,[r7,#2]
+ 944 0038 DA80     	 strh r2,[r3,#6]
+ 310:../cleanflight/src/main/drivers/rx/rx_pwm.c **** 
+ 311:../cleanflight/src/main/drivers/rx/rx_pwm.c ****         // compute and store capture
+ 312:../cleanflight/src/main/drivers/rx/rx_pwm.c ****         pwmInputPort->capture = pwmInputPort->fall - pwmInputPort->rise;
+ 945              	 .loc 1 312 0
+ 946 003a 3B69     	 ldr r3,[r7,#16]
+ 947 003c DB88     	 ldrh r3,[r3,#6]
+ 948 003e 9AB2     	 uxth r2,r3
+ 949 0040 3B69     	 ldr r3,[r7,#16]
+ 950 0042 9B88     	 ldrh r3,[r3,#4]
+ 951 0044 9BB2     	 uxth r3,r3
+ 952 0046 D31A     	 subs r3,r2,r3
+ 953 0048 9AB2     	 uxth r2,r3
+ 954 004a 3B69     	 ldr r3,[r7,#16]
+ 955 004c 1A81     	 strh r2,[r3,#8]
+ 313:../cleanflight/src/main/drivers/rx/rx_pwm.c ****         captures[pwmInputPort->channel] = pwmInputPort->capture;
+ 956              	 .loc 1 313 0
+ 957 004e 3B69     	 ldr r3,[r7,#16]
+ 958 0050 5B78     	 ldrb r3,[r3,#1]
+ 959 0052 1A46     	 mov r2,r3
+ 960 0054 3B69     	 ldr r3,[r7,#16]
+ 961 0056 1B89     	 ldrh r3,[r3,#8]
+ 962 0058 99B2     	 uxth r1,r3
+ 963 005a 074B     	 ldr r3,.L54
+ 964 005c 23F81210 	 strh r1,[r3,r2,lsl#1]
+ 314:../cleanflight/src/main/drivers/rx/rx_pwm.c **** 
+ 315:../cleanflight/src/main/drivers/rx/rx_pwm.c ****         // switch state
+ 316:../cleanflight/src/main/drivers/rx/rx_pwm.c ****         pwmInputPort->state = 0;
+ 965              	 .loc 1 316 0
+ 966 0060 3B69     	 ldr r3,[r7,#16]
+ 967 0062 0022     	 movs r2,#0
+ 968 0064 9A70     	 strb r2,[r3,#2]
+ 317:../cleanflight/src/main/drivers/rx/rx_pwm.c **** #ifdef XMC4700_F100x2048
+ 318:../cleanflight/src/main/drivers/rx/rx_pwm.c **** #else
+ 319:../cleanflight/src/main/drivers/rx/rx_pwm.c **** #if defined(USE_HAL_DRIVER)
+ 320:../cleanflight/src/main/drivers/rx/rx_pwm.c ****         pwmICConfig(timerHardwarePtr->tim, timerHardwarePtr->channel, TIM_ICPOLARITY_RISING);
+ 321:../cleanflight/src/main/drivers/rx/rx_pwm.c **** #else
+ 322:../cleanflight/src/main/drivers/rx/rx_pwm.c ****         pwmICConfig(timerHardwarePtr->tim, timerHardwarePtr->channel, TIM_ICPolarity_Rising);
+ 323:../cleanflight/src/main/drivers/rx/rx_pwm.c **** #endif
+ 324:../cleanflight/src/main/drivers/rx/rx_pwm.c **** #endif
+ 325:../cleanflight/src/main/drivers/rx/rx_pwm.c ****         pwmInputPort->missedEvents = 0;
+ 969              	 .loc 1 325 0
+ 970 0066 3B69     	 ldr r3,[r7,#16]
+ 971 0068 0022     	 movs r2,#0
+ 972 006a DA70     	 strb r2,[r3,#3]
+ 973              	.L51:
+ 326:../cleanflight/src/main/drivers/rx/rx_pwm.c ****     }
+ 327:../cleanflight/src/main/drivers/rx/rx_pwm.c **** }
+ 974              	 .loc 1 327 0
+ 975 006c 1C37     	 adds r7,r7,#28
+ 976              	.LCFI43:
+ 977              	 .cfi_def_cfa_offset 4
+ 978 006e BD46     	 mov sp,r7
+ 979              	.LCFI44:
+ 980              	 .cfi_def_cfa_register 13
+ 981              	 
+ 982 0070 5DF8047B 	 ldr r7,[sp],#4
+ 983              	.LCFI45:
+ 984              	 .cfi_restore 7
+ 985              	 .cfi_def_cfa_offset 0
+ 986 0074 7047     	 bx lr
+ 987              	.L55:
+ 988 0076 00BF     	 .align 2
+ 989              	.L54:
+ 990 0078 00000000 	 .word captures
+ 991              	 .cfi_endproc
+ 992              	.LFE536:
+ 994              	 .section .text.pwmRxInit,"ax",%progbits
+ 995              	 .align 2
+ 996              	 .global pwmRxInit
+ 997              	 .thumb
+ 998              	 .thumb_func
+ 1000              	pwmRxInit:
+ 1001              	.LFB537:
+ 328:../cleanflight/src/main/drivers/rx/rx_pwm.c **** 
+ 329:../cleanflight/src/main/drivers/rx/rx_pwm.c **** #ifdef XMC4700_F100x2048
+ 330:../cleanflight/src/main/drivers/rx/rx_pwm.c **** #else
+ 331:../cleanflight/src/main/drivers/rx/rx_pwm.c **** #ifdef USE_HAL_DRIVER
+ 332:../cleanflight/src/main/drivers/rx/rx_pwm.c **** 
+ 333:../cleanflight/src/main/drivers/rx/rx_pwm.c **** void pwmICConfig(TIM_TypeDef *tim, uint8_t channel, uint16_t polarity)
+ 334:../cleanflight/src/main/drivers/rx/rx_pwm.c **** {
+ 335:../cleanflight/src/main/drivers/rx/rx_pwm.c ****     TIM_HandleTypeDef* Handle = timerFindTimerHandle(tim);
+ 336:../cleanflight/src/main/drivers/rx/rx_pwm.c ****     if (Handle == NULL) return;
+ 337:../cleanflight/src/main/drivers/rx/rx_pwm.c **** 
+ 338:../cleanflight/src/main/drivers/rx/rx_pwm.c ****     TIM_IC_InitTypeDef TIM_ICInitStructure;
+ 339:../cleanflight/src/main/drivers/rx/rx_pwm.c **** 
+ 340:../cleanflight/src/main/drivers/rx/rx_pwm.c ****     TIM_ICInitStructure.ICPolarity = polarity;
+ 341:../cleanflight/src/main/drivers/rx/rx_pwm.c ****     TIM_ICInitStructure.ICSelection = TIM_ICSELECTION_DIRECTTI;
+ 342:../cleanflight/src/main/drivers/rx/rx_pwm.c ****     TIM_ICInitStructure.ICPrescaler = TIM_ICPSC_DIV1;
+ 343:../cleanflight/src/main/drivers/rx/rx_pwm.c **** 
+ 344:../cleanflight/src/main/drivers/rx/rx_pwm.c ****     if (inputFilteringMode == INPUT_FILTERING_ENABLED) {
+ 345:../cleanflight/src/main/drivers/rx/rx_pwm.c ****         TIM_ICInitStructure.ICFilter = INPUT_FILTER_TO_HELP_WITH_NOISE_FROM_OPENLRS_TELEMETRY_RX;
+ 346:../cleanflight/src/main/drivers/rx/rx_pwm.c ****     } else {
+ 347:../cleanflight/src/main/drivers/rx/rx_pwm.c ****         TIM_ICInitStructure.ICFilter = 0x00;
+ 348:../cleanflight/src/main/drivers/rx/rx_pwm.c ****     }
+ 349:../cleanflight/src/main/drivers/rx/rx_pwm.c **** 
+ 350:../cleanflight/src/main/drivers/rx/rx_pwm.c ****     HAL_TIM_IC_ConfigChannel(Handle, &TIM_ICInitStructure, channel);
+ 351:../cleanflight/src/main/drivers/rx/rx_pwm.c ****     HAL_TIM_IC_Start_IT(Handle,channel);
+ 352:../cleanflight/src/main/drivers/rx/rx_pwm.c **** }
+ 353:../cleanflight/src/main/drivers/rx/rx_pwm.c **** #else
+ 354:../cleanflight/src/main/drivers/rx/rx_pwm.c **** void pwmICConfig(TIM_TypeDef *tim, uint8_t channel, uint16_t polarity)
+ 355:../cleanflight/src/main/drivers/rx/rx_pwm.c **** {
+ 356:../cleanflight/src/main/drivers/rx/rx_pwm.c ****     TIM_ICInitTypeDef TIM_ICInitStructure;
+ 357:../cleanflight/src/main/drivers/rx/rx_pwm.c **** 
+ 358:../cleanflight/src/main/drivers/rx/rx_pwm.c ****     TIM_ICStructInit(&TIM_ICInitStructure);
+ 359:../cleanflight/src/main/drivers/rx/rx_pwm.c ****     TIM_ICInitStructure.TIM_Channel = channel;
+ 360:../cleanflight/src/main/drivers/rx/rx_pwm.c ****     TIM_ICInitStructure.TIM_ICPolarity = polarity;
+ 361:../cleanflight/src/main/drivers/rx/rx_pwm.c ****     TIM_ICInitStructure.TIM_ICSelection = TIM_ICSelection_DirectTI;
+ 362:../cleanflight/src/main/drivers/rx/rx_pwm.c ****     TIM_ICInitStructure.TIM_ICPrescaler = TIM_ICPSC_DIV1;
+ 363:../cleanflight/src/main/drivers/rx/rx_pwm.c **** 
+ 364:../cleanflight/src/main/drivers/rx/rx_pwm.c ****     if (inputFilteringMode == INPUT_FILTERING_ENABLED) {
+ 365:../cleanflight/src/main/drivers/rx/rx_pwm.c ****         TIM_ICInitStructure.TIM_ICFilter = INPUT_FILTER_TO_HELP_WITH_NOISE_FROM_OPENLRS_TELEMETRY_R
+ 366:../cleanflight/src/main/drivers/rx/rx_pwm.c ****     } else {
+ 367:../cleanflight/src/main/drivers/rx/rx_pwm.c ****         TIM_ICInitStructure.TIM_ICFilter = 0x00;
+ 368:../cleanflight/src/main/drivers/rx/rx_pwm.c ****     }
+ 369:../cleanflight/src/main/drivers/rx/rx_pwm.c **** 
+ 370:../cleanflight/src/main/drivers/rx/rx_pwm.c ****     TIM_ICInit(tim, &TIM_ICInitStructure);
+ 371:../cleanflight/src/main/drivers/rx/rx_pwm.c **** }
+ 372:../cleanflight/src/main/drivers/rx/rx_pwm.c **** #endif
+ 373:../cleanflight/src/main/drivers/rx/rx_pwm.c **** #endif
+ 374:../cleanflight/src/main/drivers/rx/rx_pwm.c **** 
+ 375:../cleanflight/src/main/drivers/rx/rx_pwm.c **** void pwmRxInit(const pwmConfig_t *pwmConfig)
+ 376:../cleanflight/src/main/drivers/rx/rx_pwm.c **** {
+ 1002              	 .loc 1 376 0
+ 1003              	 .cfi_startproc
+ 1004              	 
+ 1005              	 
+ 1006 0000 80B5     	 push {r7,lr}
+ 1007              	.LCFI46:
+ 1008              	 .cfi_def_cfa_offset 8
+ 1009              	 .cfi_offset 7,-8
+ 1010              	 .cfi_offset 14,-4
+ 1011 0002 86B0     	 sub sp,sp,#24
+ 1012              	.LCFI47:
+ 1013              	 .cfi_def_cfa_offset 32
+ 1014 0004 00AF     	 add r7,sp,#0
+ 1015              	.LCFI48:
+ 1016              	 .cfi_def_cfa_register 7
+ 1017 0006 7860     	 str r0,[r7,#4]
+ 377:../cleanflight/src/main/drivers/rx/rx_pwm.c ****     inputFilteringMode = pwmConfig->inputFilteringMode;
+ 1018              	 .loc 1 377 0
+ 1019 0008 7B68     	 ldr r3,[r7,#4]
+ 1020 000a 1A7A     	 ldrb r2,[r3,#8]
+ 1021 000c 324B     	 ldr r3,.L61
+ 1022 000e 1A70     	 strb r2,[r3]
+ 1023              	.LBB4:
+ 378:../cleanflight/src/main/drivers/rx/rx_pwm.c **** 
+ 379:../cleanflight/src/main/drivers/rx/rx_pwm.c ****     for (int channel = 0; channel < PWM_INPUT_PORT_COUNT; channel++) {
+ 1024              	 .loc 1 379 0
+ 1025 0010 0023     	 movs r3,#0
+ 1026 0012 7B61     	 str r3,[r7,#20]
+ 1027 0014 59E0     	 b .L57
+ 1028              	.L60:
+ 1029              	.LBB5:
+ 380:../cleanflight/src/main/drivers/rx/rx_pwm.c **** 
+ 381:../cleanflight/src/main/drivers/rx/rx_pwm.c ****         pwmInputPort_t *port = &pwmInputPorts[channel];
+ 1030              	 .loc 1 381 0
+ 1031 0016 7B69     	 ldr r3,[r7,#20]
+ 1032 0018 1A22     	 movs r2,#26
+ 1033 001a 02FB03F3 	 mul r3,r2,r3
+ 1034 001e 2F4A     	 ldr r2,.L61+4
+ 1035 0020 1344     	 add r3,r3,r2
+ 1036 0022 3B61     	 str r3,[r7,#16]
+ 382:../cleanflight/src/main/drivers/rx/rx_pwm.c **** 
+ 383:../cleanflight/src/main/drivers/rx/rx_pwm.c ****         const timerHardware_t *timer = timerGetByTag(pwmConfig->ioTags[channel]);
+ 1037              	 .loc 1 383 0
+ 1038 0024 7A68     	 ldr r2,[r7,#4]
+ 1039 0026 7B69     	 ldr r3,[r7,#20]
+ 1040 0028 1344     	 add r3,r3,r2
+ 1041 002a 1B78     	 ldrb r3,[r3]
+ 1042 002c 1846     	 mov r0,r3
+ 1043 002e FFF7FEFF 	 bl timerGetByTag
+ 1044 0032 F860     	 str r0,[r7,#12]
+ 384:../cleanflight/src/main/drivers/rx/rx_pwm.c **** 
+ 385:../cleanflight/src/main/drivers/rx/rx_pwm.c ****         if (!timer) {
+ 1045              	 .loc 1 385 0
+ 1046 0034 FB68     	 ldr r3,[r7,#12]
+ 1047 0036 002B     	 cmp r3,#0
+ 1048 0038 00D1     	 bne .L58
+ 386:../cleanflight/src/main/drivers/rx/rx_pwm.c ****             /* TODO: maybe fail here if not enough channels? */
+ 387:../cleanflight/src/main/drivers/rx/rx_pwm.c ****             continue;
+ 1049              	 .loc 1 387 0
+ 1050 003a 43E0     	 b .L59
+ 1051              	.L58:
+ 388:../cleanflight/src/main/drivers/rx/rx_pwm.c ****         }
+ 389:../cleanflight/src/main/drivers/rx/rx_pwm.c **** 
+ 390:../cleanflight/src/main/drivers/rx/rx_pwm.c ****         port->state = 0;
+ 1052              	 .loc 1 390 0
+ 1053 003c 3B69     	 ldr r3,[r7,#16]
+ 1054 003e 0022     	 movs r2,#0
+ 1055 0040 9A70     	 strb r2,[r3,#2]
+ 391:../cleanflight/src/main/drivers/rx/rx_pwm.c ****         port->missedEvents = 0;
+ 1056              	 .loc 1 391 0
+ 1057 0042 3B69     	 ldr r3,[r7,#16]
+ 1058 0044 0022     	 movs r2,#0
+ 1059 0046 DA70     	 strb r2,[r3,#3]
+ 392:../cleanflight/src/main/drivers/rx/rx_pwm.c ****         port->channel = channel;
+ 1060              	 .loc 1 392 0
+ 1061 0048 7B69     	 ldr r3,[r7,#20]
+ 1062 004a DAB2     	 uxtb r2,r3
+ 1063 004c 3B69     	 ldr r3,[r7,#16]
+ 1064 004e 5A70     	 strb r2,[r3,#1]
+ 393:../cleanflight/src/main/drivers/rx/rx_pwm.c ****         port->mode = INPUT_MODE_PWM;
+ 1065              	 .loc 1 393 0
+ 1066 0050 3B69     	 ldr r3,[r7,#16]
+ 1067 0052 0122     	 movs r2,#1
+ 1068 0054 1A70     	 strb r2,[r3]
+ 394:../cleanflight/src/main/drivers/rx/rx_pwm.c ****         port->timerHardware = timer;
+ 1069              	 .loc 1 394 0
+ 1070 0056 3B69     	 ldr r3,[r7,#16]
+ 1071 0058 FA68     	 ldr r2,[r7,#12]
+ 1072 005a C3F80A20 	 str r2,[r3,#10]
+ 395:../cleanflight/src/main/drivers/rx/rx_pwm.c **** 
+ 396:../cleanflight/src/main/drivers/rx/rx_pwm.c ****         IO_t io = IOGetByTag(pwmConfig->ioTags[channel]);
+ 1073              	 .loc 1 396 0
+ 1074 005e 7A68     	 ldr r2,[r7,#4]
+ 1075 0060 7B69     	 ldr r3,[r7,#20]
+ 1076 0062 1344     	 add r3,r3,r2
+ 1077 0064 1B78     	 ldrb r3,[r3]
+ 1078 0066 1846     	 mov r0,r3
+ 1079 0068 FFF7FEFF 	 bl IOGetByTag
+ 1080 006c B860     	 str r0,[r7,#8]
+ 397:../cleanflight/src/main/drivers/rx/rx_pwm.c ****         IOInit(io, OWNER_PWMINPUT, RESOURCE_INDEX(channel));
+ 1081              	 .loc 1 397 0
+ 1082 006e 7B69     	 ldr r3,[r7,#20]
+ 1083 0070 DBB2     	 uxtb r3,r3
+ 1084 0072 0133     	 adds r3,r3,#1
+ 1085 0074 DBB2     	 uxtb r3,r3
+ 1086 0076 B868     	 ldr r0,[r7,#8]
+ 1087 0078 0121     	 movs r1,#1
+ 1088 007a 1A46     	 mov r2,r3
+ 1089 007c FFF7FEFF 	 bl IOInit
+ 398:../cleanflight/src/main/drivers/rx/rx_pwm.c **** #ifdef STM32F1
+ 399:../cleanflight/src/main/drivers/rx/rx_pwm.c ****         IOConfigGPIO(io, IOCFG_IPD);
+ 400:../cleanflight/src/main/drivers/rx/rx_pwm.c **** #else
+ 401:../cleanflight/src/main/drivers/rx/rx_pwm.c ****         IOConfigGPIOAF(io, IOCFG_AF_PP, timer->alternateFunction);
+ 1090              	 .loc 1 401 0
+ 1091 0080 FB68     	 ldr r3,[r7,#12]
+ 1092 0082 1B7A     	 ldrb r3,[r3,#8]
+ 1093 0084 B868     	 ldr r0,[r7,#8]
+ 1094 0086 8021     	 movs r1,#128
+ 1095 0088 1A46     	 mov r2,r3
+ 1096 008a FFF7FEFF 	 bl IOConfigGPIOAF
+ 402:../cleanflight/src/main/drivers/rx/rx_pwm.c **** #endif
+ 403:../cleanflight/src/main/drivers/rx/rx_pwm.c ****         timerConfigure(timer, (uint16_t)PWM_TIMER_PERIOD, PWM_TIMER_1MHZ);
+ 1097              	 .loc 1 403 0
+ 1098 008e F868     	 ldr r0,[r7,#12]
+ 1099 0090 0021     	 movs r1,#0
+ 1100 0092 134A     	 ldr r2,.L61+8
+ 1101 0094 FFF7FEFF 	 bl timerConfigure
+ 404:../cleanflight/src/main/drivers/rx/rx_pwm.c ****         timerChCCHandlerInit(&port->edgeCb, pwmEdgeCallback);
+ 1102              	 .loc 1 404 0
+ 1103 0098 3B69     	 ldr r3,[r7,#16]
+ 1104 009a 0E33     	 adds r3,r3,#14
+ 1105 009c 1846     	 mov r0,r3
+ 1106 009e 1149     	 ldr r1,.L61+12
+ 1107 00a0 FFF7FEFF 	 bl timerChCCHandlerInit
+ 405:../cleanflight/src/main/drivers/rx/rx_pwm.c ****         timerChOvrHandlerInit(&port->overflowCb, pwmOverflowCallback);
+ 1108              	 .loc 1 405 0
+ 1109 00a4 3B69     	 ldr r3,[r7,#16]
+ 1110 00a6 1233     	 adds r3,r3,#18
+ 1111 00a8 1846     	 mov r0,r3
+ 1112 00aa 0F49     	 ldr r1,.L61+16
+ 1113 00ac FFF7FEFF 	 bl timerChOvrHandlerInit
+ 406:../cleanflight/src/main/drivers/rx/rx_pwm.c ****         timerChConfigCallbacks(timer, &port->edgeCb, &port->overflowCb);
+ 1114              	 .loc 1 406 0
+ 1115 00b0 3B69     	 ldr r3,[r7,#16]
+ 1116 00b2 03F10E02 	 add r2,r3,#14
+ 1117 00b6 3B69     	 ldr r3,[r7,#16]
+ 1118 00b8 1233     	 adds r3,r3,#18
+ 1119 00ba F868     	 ldr r0,[r7,#12]
+ 1120 00bc 1146     	 mov r1,r2
+ 1121 00be 1A46     	 mov r2,r3
+ 1122 00c0 FFF7FEFF 	 bl timerChConfigCallbacks
+ 1123              	.L59:
+ 1124              	.LBE5:
+ 379:../cleanflight/src/main/drivers/rx/rx_pwm.c **** 
+ 1125              	 .loc 1 379 0 discriminator 2
+ 1126 00c4 7B69     	 ldr r3,[r7,#20]
+ 1127 00c6 0133     	 adds r3,r3,#1
+ 1128 00c8 7B61     	 str r3,[r7,#20]
+ 1129              	.L57:
+ 379:../cleanflight/src/main/drivers/rx/rx_pwm.c **** 
+ 1130              	 .loc 1 379 0 is_stmt 0 discriminator 1
+ 1131 00ca 7B69     	 ldr r3,[r7,#20]
+ 1132 00cc 072B     	 cmp r3,#7
+ 1133 00ce A2DD     	 ble .L60
+ 1134              	.LBE4:
+ 407:../cleanflight/src/main/drivers/rx/rx_pwm.c **** 
+ 408:../cleanflight/src/main/drivers/rx/rx_pwm.c **** #ifdef XMC4700_F100x2048
+ 409:../cleanflight/src/main/drivers/rx/rx_pwm.c **** #else
+ 410:../cleanflight/src/main/drivers/rx/rx_pwm.c **** #if defined(USE_HAL_DRIVER)
+ 411:../cleanflight/src/main/drivers/rx/rx_pwm.c ****         pwmICConfig(timer->tim, timer->channel, TIM_ICPOLARITY_RISING);
+ 412:../cleanflight/src/main/drivers/rx/rx_pwm.c **** #else
+ 413:../cleanflight/src/main/drivers/rx/rx_pwm.c ****         pwmICConfig(timer->tim, timer->channel, TIM_ICPolarity_Rising);
+ 414:../cleanflight/src/main/drivers/rx/rx_pwm.c **** #endif
+ 415:../cleanflight/src/main/drivers/rx/rx_pwm.c **** #endif
+ 416:../cleanflight/src/main/drivers/rx/rx_pwm.c **** 
+ 417:../cleanflight/src/main/drivers/rx/rx_pwm.c ****     }
+ 418:../cleanflight/src/main/drivers/rx/rx_pwm.c **** }
+ 1135              	 .loc 1 418 0 is_stmt 1
+ 1136 00d0 1837     	 adds r7,r7,#24
+ 1137              	.LCFI49:
+ 1138              	 .cfi_def_cfa_offset 8
+ 1139 00d2 BD46     	 mov sp,r7
+ 1140              	.LCFI50:
+ 1141              	 .cfi_def_cfa_register 13
+ 1142              	 
+ 1143 00d4 80BD     	 pop {r7,pc}
+ 1144              	.L62:
+ 1145 00d6 00BF     	 .align 2
+ 1146              	.L61:
+ 1147 00d8 00000000 	 .word inputFilteringMode
+ 1148 00dc 00000000 	 .word pwmInputPorts
+ 1149 00e0 40420F00 	 .word 1000000
+ 1150 00e4 00000000 	 .word pwmEdgeCallback
+ 1151 00e8 00000000 	 .word pwmOverflowCallback
+ 1152              	 .cfi_endproc
+ 1153              	.LFE537:
+ 1155              	 .section .text.ppmAvoidPWMTimerClash,"ax",%progbits
+ 1156              	 .align 2
+ 1157              	 .global ppmAvoidPWMTimerClash
+ 1158              	 .thumb
+ 1159              	 .thumb_func
+ 1161              	ppmAvoidPWMTimerClash:
+ 1162              	.LFB538:
+ 419:../cleanflight/src/main/drivers/rx/rx_pwm.c **** 
+ 420:../cleanflight/src/main/drivers/rx/rx_pwm.c **** #define FIRST_PWM_PORT 0
+ 421:../cleanflight/src/main/drivers/rx/rx_pwm.c **** 
+ 422:../cleanflight/src/main/drivers/rx/rx_pwm.c **** void ppmAvoidPWMTimerClash(TIM_TypeDef *pwmTimer)
+ 423:../cleanflight/src/main/drivers/rx/rx_pwm.c **** {
+ 1163              	 .loc 1 423 0
+ 1164              	 .cfi_startproc
+ 1165              	 
+ 1166              	 
+ 1167 0000 80B5     	 push {r7,lr}
+ 1168              	.LCFI51:
+ 1169              	 .cfi_def_cfa_offset 8
+ 1170              	 .cfi_offset 7,-8
+ 1171              	 .cfi_offset 14,-4
+ 1172 0002 84B0     	 sub sp,sp,#16
+ 1173              	.LCFI52:
+ 1174              	 .cfi_def_cfa_offset 24
+ 1175 0004 00AF     	 add r7,sp,#0
+ 1176              	.LCFI53:
+ 1177              	 .cfi_def_cfa_register 7
+ 1178 0006 7860     	 str r0,[r7,#4]
+ 424:../cleanflight/src/main/drivers/rx/rx_pwm.c ****     pwmOutputPort_t *motors = pwmGetMotors();
+ 1179              	 .loc 1 424 0
+ 1180 0008 FFF7FEFF 	 bl pwmGetMotors
+ 1181 000c B860     	 str r0,[r7,#8]
+ 1182              	.LBB6:
+ 425:../cleanflight/src/main/drivers/rx/rx_pwm.c ****     for (int motorIndex = 0; motorIndex < MAX_SUPPORTED_MOTORS; motorIndex++) {
+ 1183              	 .loc 1 425 0
+ 1184 000e 0023     	 movs r3,#0
+ 1185 0010 FB60     	 str r3,[r7,#12]
+ 1186 0012 26E0     	 b .L64
+ 1187              	.L68:
+ 426:../cleanflight/src/main/drivers/rx/rx_pwm.c ****         if (!motors[motorIndex].enabled || motors[motorIndex].channel.tim != pwmTimer) {
+ 1188              	 .loc 1 426 0
+ 1189 0014 FB68     	 ldr r3,[r7,#12]
+ 1190 0016 1622     	 movs r2,#22
+ 1191 0018 02FB03F3 	 mul r3,r2,r3
+ 1192 001c BA68     	 ldr r2,[r7,#8]
+ 1193 001e 1344     	 add r3,r3,r2
+ 1194 0020 5B7C     	 ldrb r3,[r3,#17]
+ 1195 0022 83F00103 	 eor r3,r3,#1
+ 1196 0026 DBB2     	 uxtb r3,r3
+ 1197 0028 002B     	 cmp r3,#0
+ 1198 002a 09D1     	 bne .L65
+ 1199              	 .loc 1 426 0 is_stmt 0 discriminator 1
+ 1200 002c FB68     	 ldr r3,[r7,#12]
+ 1201 002e 1622     	 movs r2,#22
+ 1202 0030 02FB03F3 	 mul r3,r2,r3
+ 1203 0034 BA68     	 ldr r2,[r7,#8]
+ 1204 0036 1344     	 add r3,r3,r2
+ 1205 0038 5A68     	 ldr r2,[r3,#4]
+ 1206 003a 7B68     	 ldr r3,[r7,#4]
+ 1207 003c 9A42     	 cmp r2,r3
+ 1208 003e 03D0     	 beq .L66
+ 1209              	.L65:
+ 425:../cleanflight/src/main/drivers/rx/rx_pwm.c ****     for (int motorIndex = 0; motorIndex < MAX_SUPPORTED_MOTORS; motorIndex++) {
+ 1210              	 .loc 1 425 0 is_stmt 1
+ 1211 0040 FB68     	 ldr r3,[r7,#12]
+ 1212 0042 0133     	 adds r3,r3,#1
+ 1213 0044 FB60     	 str r3,[r7,#12]
+ 1214 0046 0CE0     	 b .L64
+ 1215              	.L66:
+ 427:../cleanflight/src/main/drivers/rx/rx_pwm.c ****             continue;
+ 428:../cleanflight/src/main/drivers/rx/rx_pwm.c ****         }
+ 429:../cleanflight/src/main/drivers/rx/rx_pwm.c **** 
+ 430:../cleanflight/src/main/drivers/rx/rx_pwm.c ****         ppmCountDivisor = timerClock(pwmTimer) / (pwmTimer->PSC + 1);
+ 1216              	 .loc 1 430 0
+ 1217 0048 7868     	 ldr r0,[r7,#4]
+ 1218 004a FFF7FEFF 	 bl timerClock
+ 1219 004e 0246     	 mov r2,r0
+ 1220 0050 7B68     	 ldr r3,[r7,#4]
+ 1221 0052 5B6A     	 ldr r3,[r3,#36]
+ 1222 0054 0133     	 adds r3,r3,#1
+ 1223 0056 B2FBF3F3 	 udiv r3,r2,r3
+ 1224 005a DAB2     	 uxtb r2,r3
+ 1225 005c 044B     	 ldr r3,.L69
+ 1226 005e 1A70     	 strb r2,[r3]
+ 431:../cleanflight/src/main/drivers/rx/rx_pwm.c ****         return;
+ 1227              	 .loc 1 431 0
+ 1228 0060 02E0     	 b .L63
+ 1229              	.L64:
+ 425:../cleanflight/src/main/drivers/rx/rx_pwm.c ****         if (!motors[motorIndex].enabled || motors[motorIndex].channel.tim != pwmTimer) {
+ 1230              	 .loc 1 425 0 discriminator 1
+ 1231 0062 FB68     	 ldr r3,[r7,#12]
+ 1232 0064 072B     	 cmp r3,#7
+ 1233 0066 D5DD     	 ble .L68
+ 1234              	.L63:
+ 1235              	.LBE6:
+ 432:../cleanflight/src/main/drivers/rx/rx_pwm.c ****     }
+ 433:../cleanflight/src/main/drivers/rx/rx_pwm.c **** }
+ 1236              	 .loc 1 433 0
+ 1237 0068 1037     	 adds r7,r7,#16
+ 1238              	.LCFI54:
+ 1239              	 .cfi_def_cfa_offset 8
+ 1240 006a BD46     	 mov sp,r7
+ 1241              	.LCFI55:
+ 1242              	 .cfi_def_cfa_register 13
+ 1243              	 
+ 1244 006c 80BD     	 pop {r7,pc}
+ 1245              	.L70:
+ 1246 006e 00BF     	 .align 2
+ 1247              	.L69:
+ 1248 0070 00000000 	 .word ppmCountDivisor
+ 1249              	 .cfi_endproc
+ 1250              	.LFE538:
+ 1252              	 .section .text.ppmRxInit,"ax",%progbits
+ 1253              	 .align 2
+ 1254              	 .global ppmRxInit
+ 1255              	 .thumb
+ 1256              	 .thumb_func
+ 1258              	ppmRxInit:
+ 1259              	.LFB539:
+ 434:../cleanflight/src/main/drivers/rx/rx_pwm.c **** 
+ 435:../cleanflight/src/main/drivers/rx/rx_pwm.c **** void ppmRxInit(const ppmConfig_t *ppmConfig)
+ 436:../cleanflight/src/main/drivers/rx/rx_pwm.c **** {
+ 1260              	 .loc 1 436 0
+ 1261              	 .cfi_startproc
+ 1262              	 
+ 1263              	 
+ 1264 0000 80B5     	 push {r7,lr}
+ 1265              	.LCFI56:
+ 1266              	 .cfi_def_cfa_offset 8
+ 1267              	 .cfi_offset 7,-8
+ 1268              	 .cfi_offset 14,-4
+ 1269 0002 86B0     	 sub sp,sp,#24
+ 1270              	.LCFI57:
+ 1271              	 .cfi_def_cfa_offset 32
+ 1272 0004 00AF     	 add r7,sp,#0
+ 1273              	.LCFI58:
+ 1274              	 .cfi_def_cfa_register 7
+ 1275 0006 7860     	 str r0,[r7,#4]
+ 437:../cleanflight/src/main/drivers/rx/rx_pwm.c ****     ppmResetDevice();
+ 1276              	 .loc 1 437 0
+ 1277 0008 FFF7FEFF 	 bl ppmResetDevice
+ 438:../cleanflight/src/main/drivers/rx/rx_pwm.c **** 
+ 439:../cleanflight/src/main/drivers/rx/rx_pwm.c ****     pwmInputPort_t *port = &pwmInputPorts[FIRST_PWM_PORT];
+ 1278              	 .loc 1 439 0
+ 1279 000c 234B     	 ldr r3,.L74
+ 1280 000e 7B61     	 str r3,[r7,#20]
+ 440:../cleanflight/src/main/drivers/rx/rx_pwm.c **** 
+ 441:../cleanflight/src/main/drivers/rx/rx_pwm.c ****     const timerHardware_t *timer = timerGetByTag(ppmConfig->ioTag);
+ 1281              	 .loc 1 441 0
+ 1282 0010 7B68     	 ldr r3,[r7,#4]
+ 1283 0012 1B78     	 ldrb r3,[r3]
+ 1284 0014 1846     	 mov r0,r3
+ 1285 0016 FFF7FEFF 	 bl timerGetByTag
+ 1286 001a 3861     	 str r0,[r7,#16]
+ 442:../cleanflight/src/main/drivers/rx/rx_pwm.c ****     if (!timer) {
+ 1287              	 .loc 1 442 0
+ 1288 001c 3B69     	 ldr r3,[r7,#16]
+ 1289 001e 002B     	 cmp r3,#0
+ 1290 0020 00D1     	 bne .L72
+ 443:../cleanflight/src/main/drivers/rx/rx_pwm.c ****         /* TODO: fail here? */
+ 444:../cleanflight/src/main/drivers/rx/rx_pwm.c ****         return;
+ 1291              	 .loc 1 444 0
+ 1292 0022 38E0     	 b .L71
+ 1293              	.L72:
+ 445:../cleanflight/src/main/drivers/rx/rx_pwm.c ****     }
+ 446:../cleanflight/src/main/drivers/rx/rx_pwm.c **** 
+ 447:../cleanflight/src/main/drivers/rx/rx_pwm.c ****     ppmAvoidPWMTimerClash(timer->tim);
+ 1294              	 .loc 1 447 0
+ 1295 0024 3B69     	 ldr r3,[r7,#16]
+ 1296 0026 1B68     	 ldr r3,[r3]
+ 1297 0028 1846     	 mov r0,r3
+ 1298 002a FFF7FEFF 	 bl ppmAvoidPWMTimerClash
+ 448:../cleanflight/src/main/drivers/rx/rx_pwm.c **** 
+ 449:../cleanflight/src/main/drivers/rx/rx_pwm.c ****     port->mode = INPUT_MODE_PPM;
+ 1299              	 .loc 1 449 0
+ 1300 002e 7B69     	 ldr r3,[r7,#20]
+ 1301 0030 0022     	 movs r2,#0
+ 1302 0032 1A70     	 strb r2,[r3]
+ 450:../cleanflight/src/main/drivers/rx/rx_pwm.c ****     port->timerHardware = timer;
+ 1303              	 .loc 1 450 0
+ 1304 0034 7B69     	 ldr r3,[r7,#20]
+ 1305 0036 3A69     	 ldr r2,[r7,#16]
+ 1306 0038 C3F80A20 	 str r2,[r3,#10]
+ 451:../cleanflight/src/main/drivers/rx/rx_pwm.c **** 
+ 452:../cleanflight/src/main/drivers/rx/rx_pwm.c ****     IO_t io = IOGetByTag(ppmConfig->ioTag);
+ 1307              	 .loc 1 452 0
+ 1308 003c 7B68     	 ldr r3,[r7,#4]
+ 1309 003e 1B78     	 ldrb r3,[r3]
+ 1310 0040 1846     	 mov r0,r3
+ 1311 0042 FFF7FEFF 	 bl IOGetByTag
+ 1312 0046 F860     	 str r0,[r7,#12]
+ 453:../cleanflight/src/main/drivers/rx/rx_pwm.c ****     IOInit(io, OWNER_PPMINPUT, 0);
+ 1313              	 .loc 1 453 0
+ 1314 0048 F868     	 ldr r0,[r7,#12]
+ 1315 004a 0221     	 movs r1,#2
+ 1316 004c 0022     	 movs r2,#0
+ 1317 004e FFF7FEFF 	 bl IOInit
+ 454:../cleanflight/src/main/drivers/rx/rx_pwm.c **** #ifdef STM32F1
+ 455:../cleanflight/src/main/drivers/rx/rx_pwm.c ****     IOConfigGPIO(io, IOCFG_IPD);
+ 456:../cleanflight/src/main/drivers/rx/rx_pwm.c **** #else
+ 457:../cleanflight/src/main/drivers/rx/rx_pwm.c ****     IOConfigGPIOAF(io, IOCFG_AF_PP, timer->alternateFunction);
+ 1318              	 .loc 1 457 0
+ 1319 0052 3B69     	 ldr r3,[r7,#16]
+ 1320 0054 1B7A     	 ldrb r3,[r3,#8]
+ 1321 0056 F868     	 ldr r0,[r7,#12]
+ 1322 0058 8021     	 movs r1,#128
+ 1323 005a 1A46     	 mov r2,r3
+ 1324 005c FFF7FEFF 	 bl IOConfigGPIOAF
+ 458:../cleanflight/src/main/drivers/rx/rx_pwm.c **** #endif
+ 459:../cleanflight/src/main/drivers/rx/rx_pwm.c **** 
+ 460:../cleanflight/src/main/drivers/rx/rx_pwm.c ****     timerConfigure(timer, (uint16_t)PPM_TIMER_PERIOD, PWM_TIMER_1MHZ);
+ 1325              	 .loc 1 460 0
+ 1326 0060 3869     	 ldr r0,[r7,#16]
+ 1327 0062 0021     	 movs r1,#0
+ 1328 0064 0E4A     	 ldr r2,.L74+4
+ 1329 0066 FFF7FEFF 	 bl timerConfigure
+ 461:../cleanflight/src/main/drivers/rx/rx_pwm.c ****     timerChCCHandlerInit(&port->edgeCb, ppmEdgeCallback);
+ 1330              	 .loc 1 461 0
+ 1331 006a 7B69     	 ldr r3,[r7,#20]
+ 1332 006c 0E33     	 adds r3,r3,#14
+ 1333 006e 1846     	 mov r0,r3
+ 1334 0070 0C49     	 ldr r1,.L74+8
+ 1335 0072 FFF7FEFF 	 bl timerChCCHandlerInit
+ 462:../cleanflight/src/main/drivers/rx/rx_pwm.c ****     timerChOvrHandlerInit(&port->overflowCb, ppmOverflowCallback);
+ 1336              	 .loc 1 462 0
+ 1337 0076 7B69     	 ldr r3,[r7,#20]
+ 1338 0078 1233     	 adds r3,r3,#18
+ 1339 007a 1846     	 mov r0,r3
+ 1340 007c 0A49     	 ldr r1,.L74+12
+ 1341 007e FFF7FEFF 	 bl timerChOvrHandlerInit
+ 463:../cleanflight/src/main/drivers/rx/rx_pwm.c ****     timerChConfigCallbacks(timer, &port->edgeCb, &port->overflowCb);
+ 1342              	 .loc 1 463 0
+ 1343 0082 7B69     	 ldr r3,[r7,#20]
+ 1344 0084 03F10E02 	 add r2,r3,#14
+ 1345 0088 7B69     	 ldr r3,[r7,#20]
+ 1346 008a 1233     	 adds r3,r3,#18
+ 1347 008c 3869     	 ldr r0,[r7,#16]
+ 1348 008e 1146     	 mov r1,r2
+ 1349 0090 1A46     	 mov r2,r3
+ 1350 0092 FFF7FEFF 	 bl timerChConfigCallbacks
+ 1351              	.L71:
+ 464:../cleanflight/src/main/drivers/rx/rx_pwm.c **** 
+ 465:../cleanflight/src/main/drivers/rx/rx_pwm.c **** #ifdef XMC4700_F100x2048
+ 466:../cleanflight/src/main/drivers/rx/rx_pwm.c **** #else
+ 467:../cleanflight/src/main/drivers/rx/rx_pwm.c **** #if defined(USE_HAL_DRIVER)
+ 468:../cleanflight/src/main/drivers/rx/rx_pwm.c ****     pwmICConfig(timer->tim, timer->channel, TIM_ICPOLARITY_RISING);
+ 469:../cleanflight/src/main/drivers/rx/rx_pwm.c **** #else
+ 470:../cleanflight/src/main/drivers/rx/rx_pwm.c ****     pwmICConfig(timer->tim, timer->channel, TIM_ICPolarity_Rising);
+ 471:../cleanflight/src/main/drivers/rx/rx_pwm.c **** #endif
+ 472:../cleanflight/src/main/drivers/rx/rx_pwm.c **** #endif
+ 473:../cleanflight/src/main/drivers/rx/rx_pwm.c **** }
+ 1352              	 .loc 1 473 0
+ 1353 0096 1837     	 adds r7,r7,#24
+ 1354              	.LCFI59:
+ 1355              	 .cfi_def_cfa_offset 8
+ 1356 0098 BD46     	 mov sp,r7
+ 1357              	.LCFI60:
+ 1358              	 .cfi_def_cfa_register 13
+ 1359              	 
+ 1360 009a 80BD     	 pop {r7,pc}
+ 1361              	.L75:
+ 1362              	 .align 2
+ 1363              	.L74:
+ 1364 009c 00000000 	 .word pwmInputPorts
+ 1365 00a0 40420F00 	 .word 1000000
+ 1366 00a4 00000000 	 .word ppmEdgeCallback
+ 1367 00a8 00000000 	 .word ppmOverflowCallback
+ 1368              	 .cfi_endproc
+ 1369              	.LFE539:
+ 1371              	 .section .text.ppmRead,"ax",%progbits
+ 1372              	 .align 2
+ 1373              	 .global ppmRead
+ 1374              	 .thumb
+ 1375              	 .thumb_func
+ 1377              	ppmRead:
+ 1378              	.LFB540:
+ 474:../cleanflight/src/main/drivers/rx/rx_pwm.c **** 
+ 475:../cleanflight/src/main/drivers/rx/rx_pwm.c **** uint16_t ppmRead(uint8_t channel)
+ 476:../cleanflight/src/main/drivers/rx/rx_pwm.c **** {
+ 1379              	 .loc 1 476 0
+ 1380              	 .cfi_startproc
+ 1381              	 
+ 1382              	 
+ 1383              	 
+ 1384 0000 80B4     	 push {r7}
+ 1385              	.LCFI61:
+ 1386              	 .cfi_def_cfa_offset 4
+ 1387              	 .cfi_offset 7,-4
+ 1388 0002 83B0     	 sub sp,sp,#12
+ 1389              	.LCFI62:
+ 1390              	 .cfi_def_cfa_offset 16
+ 1391 0004 00AF     	 add r7,sp,#0
+ 1392              	.LCFI63:
+ 1393              	 .cfi_def_cfa_register 7
+ 1394 0006 0346     	 mov r3,r0
+ 1395 0008 FB71     	 strb r3,[r7,#7]
+ 477:../cleanflight/src/main/drivers/rx/rx_pwm.c ****     return captures[channel];
+ 1396              	 .loc 1 477 0
+ 1397 000a FB79     	 ldrb r3,[r7,#7]
+ 1398 000c 044A     	 ldr r2,.L78
+ 1399 000e 32F81330 	 ldrh r3,[r2,r3,lsl#1]
+ 478:../cleanflight/src/main/drivers/rx/rx_pwm.c **** }
+ 1400              	 .loc 1 478 0
+ 1401 0012 1846     	 mov r0,r3
+ 1402 0014 0C37     	 adds r7,r7,#12
+ 1403              	.LCFI64:
+ 1404              	 .cfi_def_cfa_offset 4
+ 1405 0016 BD46     	 mov sp,r7
+ 1406              	.LCFI65:
+ 1407              	 .cfi_def_cfa_register 13
+ 1408              	 
+ 1409 0018 5DF8047B 	 ldr r7,[sp],#4
+ 1410              	.LCFI66:
+ 1411              	 .cfi_restore 7
+ 1412              	 .cfi_def_cfa_offset 0
+ 1413 001c 7047     	 bx lr
+ 1414              	.L79:
+ 1415 001e 00BF     	 .align 2
+ 1416              	.L78:
+ 1417 0020 00000000 	 .word captures
+ 1418              	 .cfi_endproc
+ 1419              	.LFE540:
+ 1421              	 .section .text.pwmRead,"ax",%progbits
+ 1422              	 .align 2
+ 1423              	 .global pwmRead
+ 1424              	 .thumb
+ 1425              	 .thumb_func
+ 1427              	pwmRead:
+ 1428              	.LFB541:
+ 479:../cleanflight/src/main/drivers/rx/rx_pwm.c **** 
+ 480:../cleanflight/src/main/drivers/rx/rx_pwm.c **** uint16_t pwmRead(uint8_t channel)
+ 481:../cleanflight/src/main/drivers/rx/rx_pwm.c **** {
+ 1429              	 .loc 1 481 0
+ 1430              	 .cfi_startproc
+ 1431              	 
+ 1432              	 
+ 1433              	 
+ 1434 0000 80B4     	 push {r7}
+ 1435              	.LCFI67:
+ 1436              	 .cfi_def_cfa_offset 4
+ 1437              	 .cfi_offset 7,-4
+ 1438 0002 83B0     	 sub sp,sp,#12
+ 1439              	.LCFI68:
+ 1440              	 .cfi_def_cfa_offset 16
+ 1441 0004 00AF     	 add r7,sp,#0
+ 1442              	.LCFI69:
+ 1443              	 .cfi_def_cfa_register 7
+ 1444 0006 0346     	 mov r3,r0
+ 1445 0008 FB71     	 strb r3,[r7,#7]
+ 482:../cleanflight/src/main/drivers/rx/rx_pwm.c ****     return captures[channel];
+ 1446              	 .loc 1 482 0
+ 1447 000a FB79     	 ldrb r3,[r7,#7]
+ 1448 000c 044A     	 ldr r2,.L82
+ 1449 000e 32F81330 	 ldrh r3,[r2,r3,lsl#1]
+ 483:../cleanflight/src/main/drivers/rx/rx_pwm.c **** }
+ 1450              	 .loc 1 483 0
+ 1451 0012 1846     	 mov r0,r3
+ 1452 0014 0C37     	 adds r7,r7,#12
+ 1453              	.LCFI70:
+ 1454              	 .cfi_def_cfa_offset 4
+ 1455 0016 BD46     	 mov sp,r7
+ 1456              	.LCFI71:
+ 1457              	 .cfi_def_cfa_register 13
+ 1458              	 
+ 1459 0018 5DF8047B 	 ldr r7,[sp],#4
+ 1460              	.LCFI72:
+ 1461              	 .cfi_restore 7
+ 1462              	 .cfi_def_cfa_offset 0
+ 1463 001c 7047     	 bx lr
+ 1464              	.L83:
+ 1465 001e 00BF     	 .align 2
+ 1466              	.L82:
+ 1467 0020 00000000 	 .word captures
+ 1468              	 .cfi_endproc
+ 1469              	.LFE541:
+ 1471              	 .text
+ 1472              	.Letext0:
+ 1473              	 .file 2 "d:\\xmc\\dave-ide-4.4.2-64bit\\eclipse\\arm-gcc-49\\arm-none-eabi\\include\\machine\\_default_types.h"
+ 1474              	 .file 3 "d:\\xmc\\dave-ide-4.4.2-64bit\\eclipse\\arm-gcc-49\\arm-none-eabi\\include\\stdint.h"
+ 1475              	 .file 4 "D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/lib/main/XMC4000/xmc4700.h"
+ 1476              	 .file 5 "D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/lib/main/XMC4000/XMCLib/inc/xmc4_gpio.h"
+ 1477              	 .file 6 "D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/lib/main/XMC4000/XMCLib/inc/xmc_usic.h"
+ 1478              	 .file 7 "D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/platform.h"
+ 1479              	 .file 8 "D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/build/debug.h"
+ 1480              	 .file 9 "D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/drivers/resource.h"
+ 1481              	 .file 10 "D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/drivers/io_types.h"
+ 1482              	 .file 11 "D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/drivers/timer.h"
+ 1483              	 .file 12 "D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/drivers/pwm_output.h"
+ 1484              	 .file 13 "D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/drivers/rx/rx_pwm.h"
+ 1485              	 .file 14 "D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/pg/rx_pwm.h"
+ 1486              	 .file 15 "D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/lib/main/CMSIS/Core/Include/core_cm4.h"
+ 1487              	 .file 16 "D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/lib/main/XMC4000/system_XMC4700.h"
+DEFINED SYMBOLS
+                            *ABS*:00000000 rx_pwm.c
+    {standard input}:22     .bss.inputFilteringMode:00000000 inputFilteringMode
+    {standard input}:23     .bss.inputFilteringMode:00000000 $d
+    {standard input}:25     .bss.pwmInputPorts:00000000 $d
+    {standard input}:28     .bss.pwmInputPorts:00000000 pwmInputPorts
+    {standard input}:31     .bss.captures:00000000 $d
+    {standard input}:34     .bss.captures:00000000 captures
+    {standard input}:39     .bss.ppmFrameCount:00000000 ppmFrameCount
+    {standard input}:40     .bss.ppmFrameCount:00000000 $d
+    {standard input}:44     .bss.lastPPMFrameCount:00000000 lastPPMFrameCount
+    {standard input}:45     .bss.lastPPMFrameCount:00000000 $d
+    {standard input}:49     .data.ppmCountDivisor:00000000 ppmCountDivisor
+    {standard input}:52     .bss.ppmDev:00000000 $d
+    {standard input}:55     .bss.ppmDev:00000000 ppmDev
+    {standard input}:58     .text.isPPMDataBeingReceived:00000000 $t
+    {standard input}:63     .text.isPPMDataBeingReceived:00000000 isPPMDataBeingReceived
+    {standard input}:102    .text.isPPMDataBeingReceived:00000020 $d
+    {standard input}:108    .text.resetPPMDataReceivedState:00000000 $t
+    {standard input}:113    .text.resetPPMDataReceivedState:00000000 resetPPMDataReceivedState
+    {standard input}:145    .text.resetPPMDataReceivedState:00000014 $d
+    {standard input}:151    .bss.ppmEvents:00000000 $d
+    {standard input}:154    .bss.ppmEvents:00000000 ppmEvents
+    {standard input}:159    .bss.ppmEventIndex:00000000 ppmEventIndex
+    {standard input}:160    .bss.ppmEventIndex:00000000 $d
+    {standard input}:162    .text.ppmISREvent:00000000 $t
+    {standard input}:167    .text.ppmISREvent:00000000 ppmISREvent
+    {standard input}:241    .text.ppmISREvent:00000060 $d
+    {standard input}:248    .text.ppmResetDevice:00000000 $t
+    {standard input}:252    .text.ppmResetDevice:00000000 ppmResetDevice
+    {standard input}:319    .text.ppmResetDevice:00000054 $d
+    {standard input}:324    .text.ppmOverflowCallback:00000000 $t
+    {standard input}:328    .text.ppmOverflowCallback:00000000 ppmOverflowCallback
+    {standard input}:383    .text.ppmOverflowCallback:0000003c $d
+    {standard input}:388    .text.ppmEdgeCallback:00000000 $t
+    {standard input}:392    .text.ppmEdgeCallback:00000000 ppmEdgeCallback
+    {standard input}:735    .text.ppmEdgeCallback:00000244 $d
+    {standard input}:743    .text.isPWMDataBeingReceived:00000000 $t
+    {standard input}:748    .text.isPWMDataBeingReceived:00000000 isPWMDataBeingReceived
+    {standard input}:809    .text.isPWMDataBeingReceived:00000038 $d
+    {standard input}:814    .text.pwmOverflowCallback:00000000 $t
+    {standard input}:818    .text.pwmOverflowCallback:00000000 pwmOverflowCallback
+    {standard input}:885    .text.pwmOverflowCallback:00000048 $d
+    {standard input}:890    .text.pwmEdgeCallback:00000000 $t
+    {standard input}:894    .text.pwmEdgeCallback:00000000 pwmEdgeCallback
+    {standard input}:990    .text.pwmEdgeCallback:00000078 $d
+    {standard input}:995    .text.pwmRxInit:00000000 $t
+    {standard input}:1000   .text.pwmRxInit:00000000 pwmRxInit
+    {standard input}:1147   .text.pwmRxInit:000000d8 $d
+    {standard input}:1156   .text.ppmAvoidPWMTimerClash:00000000 $t
+    {standard input}:1161   .text.ppmAvoidPWMTimerClash:00000000 ppmAvoidPWMTimerClash
+    {standard input}:1248   .text.ppmAvoidPWMTimerClash:00000070 $d
+    {standard input}:1253   .text.ppmRxInit:00000000 $t
+    {standard input}:1258   .text.ppmRxInit:00000000 ppmRxInit
+    {standard input}:1364   .text.ppmRxInit:0000009c $d
+    {standard input}:1372   .text.ppmRead:00000000 $t
+    {standard input}:1377   .text.ppmRead:00000000 ppmRead
+    {standard input}:1417   .text.ppmRead:00000020 $d
+    {standard input}:1422   .text.pwmRead:00000000 $t
+    {standard input}:1427   .text.pwmRead:00000000 pwmRead
+    {standard input}:1467   .text.pwmRead:00000020 $d
+                     .debug_frame:00000010 $d
+
+UNDEFINED SYMBOLS
+timerGetByTag
+IOGetByTag
+IOInit
+IOConfigGPIOAF
+timerConfigure
+timerChCCHandlerInit
+timerChOvrHandlerInit
+timerChConfigCallbacks
+pwmGetMotors
+timerClock

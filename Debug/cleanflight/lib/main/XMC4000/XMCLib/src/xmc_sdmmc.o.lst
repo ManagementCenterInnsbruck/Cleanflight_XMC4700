@@ -1,0 +1,1255 @@
+   1              	 .syntax unified
+   2              	 .cpu cortex-m4
+   3              	 .eabi_attribute 27,3
+   4              	 .fpu fpv4-sp-d16
+   5              	 .eabi_attribute 20,1
+   6              	 .eabi_attribute 21,1
+   7              	 .eabi_attribute 23,3
+   8              	 .eabi_attribute 24,1
+   9              	 .eabi_attribute 25,1
+  10              	 .eabi_attribute 26,1
+  11              	 .eabi_attribute 30,6
+  12              	 .eabi_attribute 34,1
+  13              	 .eabi_attribute 18,4
+  14              	 .thumb
+  15              	 .file "xmc_sdmmc.c"
+  16              	 .text
+  17              	.Ltext0:
+  18              	 .cfi_sections .debug_frame
+  19              	 .section .text.XMC_SDMMC_GetPowerStatus,"ax",%progbits
+  20              	 .align 2
+  21              	 .global XMC_SDMMC_GetPowerStatus
+  22              	 .thumb
+  23              	 .thumb_func
+  25              	XMC_SDMMC_GetPowerStatus:
+  26              	.LFB213:
+  27              	 .file 1 "../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_sdmmc.c"
+   1:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_sdmmc.c **** 
+   2:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_sdmmc.c **** /**
+   3:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_sdmmc.c ****  * @file xmc_sdmmc.c
+   4:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_sdmmc.c ****  * @date 2016-07-11
+   5:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_sdmmc.c ****  *
+   6:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_sdmmc.c ****  * @cond
+   7:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_sdmmc.c ****  **************************************************************************************************
+   8:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_sdmmc.c ****  * XMClib v2.1.20 - XMC Peripheral Driver Library 
+   9:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_sdmmc.c ****  *
+  10:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_sdmmc.c ****  * Copyright (c) 2015-2018, Infineon Technologies AG
+  11:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_sdmmc.c ****  * All rights reserved.                        
+  12:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_sdmmc.c ****  *                                             
+  13:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_sdmmc.c ****  * Redistribution and use in source and binary forms, with or without modification,are permitted pr
+  14:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_sdmmc.c ****  * following conditions are met:   
+  15:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_sdmmc.c ****  *                                                                              
+  16:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_sdmmc.c ****  * Redistributions of source code must retain the above copyright notice, this list of conditions a
+  17:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_sdmmc.c ****  * disclaimer.                        
+  18:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_sdmmc.c ****  * 
+  19:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_sdmmc.c ****  * Redistributions in binary form must reproduce the above copyright notice, this list of condition
+  20:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_sdmmc.c ****  * disclaimer in the documentation and/or other materials provided with the distribution.          
+  21:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_sdmmc.c ****  * 
+  22:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_sdmmc.c ****  * Neither the name of the copyright holders nor the names of its contributors may be used to endor
+  23:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_sdmmc.c ****  * products derived from this software without specific prior written permission.                  
+  24:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_sdmmc.c ****  *                                                                              
+  25:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_sdmmc.c ****  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND ANY EXPRESS OR I
+  26:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_sdmmc.c ****  * INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTI
+  27:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_sdmmc.c ****  * DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE  FOR ANY DIRECT, IN
+  28:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_sdmmc.c ****  * SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBS
+  29:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_sdmmc.c ****  * SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THE
+  30:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_sdmmc.c ****  * WHETHER IN CONTRACT, STRICT LIABILITY,OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY
+  31:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_sdmmc.c ****  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.                            
+  32:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_sdmmc.c ****  *                                                                              
+  33:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_sdmmc.c ****  * To improve the quality of the software, users are encouraged to share modifications, enhancement
+  34:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_sdmmc.c ****  * Infineon Technologies AG dave@infineon.com).                                                    
+  35:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_sdmmc.c ****  **************************************************************************************************
+  36:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_sdmmc.c ****  *
+  37:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_sdmmc.c ****  * Change History
+  38:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_sdmmc.c ****  * --------------
+  39:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_sdmmc.c ****  *
+  40:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_sdmmc.c ****  * 2015-02-20:
+  41:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_sdmmc.c ****  *     - Initial <br>
+  42:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_sdmmc.c ****  *     - Removed GetDriverVersion API <br>
+  43:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_sdmmc.c ****  *
+  44:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_sdmmc.c ****  * 2015-06-20:
+  45:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_sdmmc.c ****  *     - Removed definition of GetDriverVersion API <br>
+  46:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_sdmmc.c ****  *
+  47:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_sdmmc.c ****  * 2016-03-14:
+  48:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_sdmmc.c ****  *     - Values are directly assigned to the int status registers <br>
+  49:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_sdmmc.c ****  *
+  50:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_sdmmc.c ****  * 2016-07-11:
+  51:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_sdmmc.c ****  *     - XMC_SDMMC_SetDataTransferMode() shall not invoke SetDateLineTimeout() <br>
+  52:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_sdmmc.c ****  *
+  53:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_sdmmc.c ****  * @endcond
+  54:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_sdmmc.c ****  */
+  55:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_sdmmc.c ****  
+  56:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_sdmmc.c **** /**
+  57:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_sdmmc.c ****  * @addtogroup XMClib
+  58:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_sdmmc.c ****  * @{
+  59:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_sdmmc.c ****  */
+  60:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_sdmmc.c **** 
+  61:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_sdmmc.c **** /**
+  62:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_sdmmc.c ****  * @addtogroup SDMMC
+  63:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_sdmmc.c ****  * @brief SDMMC driver
+  64:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_sdmmc.c ****  * @{
+  65:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_sdmmc.c ****  */
+  66:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_sdmmc.c ****  
+  67:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_sdmmc.c **** /*******************************************************************************
+  68:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_sdmmc.c ****  * HEADER FILES
+  69:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_sdmmc.c ****  *******************************************************************************/
+  70:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_sdmmc.c ****  
+  71:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_sdmmc.c **** #include "xmc_sdmmc.h"
+  72:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_sdmmc.c **** 
+  73:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_sdmmc.c **** /*
+  74:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_sdmmc.c ****  * The SDMMC peripheral is only available on the
+  75:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_sdmmc.c ****  * XMC4500. The SDMMC definition can be found in
+  76:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_sdmmc.c ****  * the XMC4500.h (device header file).
+  77:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_sdmmc.c ****  */
+  78:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_sdmmc.c **** #if defined (SDMMC)
+  79:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_sdmmc.c **** #include "xmc_scu.h"
+  80:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_sdmmc.c **** 
+  81:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_sdmmc.c **** /*******************************************************************************
+  82:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_sdmmc.c ****  * MACROS
+  83:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_sdmmc.c ****  *******************************************************************************/
+  84:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_sdmmc.c **** 
+  85:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_sdmmc.c **** /*
+  86:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_sdmmc.c ****  * Check for valid SDMMC error events <br>
+  87:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_sdmmc.c ****  *
+  88:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_sdmmc.c ****  * This macro is used in the LLD for assertion checks (XMC_ASSERT).
+  89:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_sdmmc.c ****  */
+  90:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_sdmmc.c **** #define XMC_SDMMC_CHECK_ERROR_EVENT(e)\
+  91:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_sdmmc.c ****   ((e == XMC_SDMMC_CMD_TIMEOUT_ERR)     ||\
+  92:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_sdmmc.c ****    (e == XMC_SDMMC_CMD_CRC_ERR)         ||\
+  93:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_sdmmc.c ****    (e == XMC_SDMMC_CMD_END_BIT_ERR)     ||\
+  94:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_sdmmc.c ****    (e == XMC_SDMMC_CMD_IND_ERR)         ||\
+  95:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_sdmmc.c ****    (e == XMC_SDMMC_DATA_TIMEOUT_ERR)    ||\
+  96:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_sdmmc.c ****    (e == XMC_SDMMC_DATA_CRC_ERR)        ||\
+  97:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_sdmmc.c ****    (e == XMC_SDMMC_DATA_END_BIT_ERR)    ||\
+  98:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_sdmmc.c ****    (e == XMC_SDMMC_CURRENT_LIMIT_ERR)   ||\
+  99:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_sdmmc.c ****    (e == XMC_SDMMC_ACMD_ERR)            ||\
+ 100:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_sdmmc.c ****    (e == XMC_SDMMC_TARGET_RESP_ERR))
+ 101:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_sdmmc.c **** 
+ 102:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_sdmmc.c **** /*
+ 103:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_sdmmc.c ****  * Check for valid SDMMC normal events <br>
+ 104:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_sdmmc.c ****  *
+ 105:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_sdmmc.c ****  * This macro is used in the LLD for assertion checks (XMC_ASSERT).
+ 106:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_sdmmc.c ****  */
+ 107:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_sdmmc.c **** #define XMC_SDMMC_CHECK_NORMAL_EVENT(e)\
+ 108:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_sdmmc.c ****   ((e == XMC_SDMMC_CMD_COMPLETE)        ||\
+ 109:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_sdmmc.c ****    (e == XMC_SDMMC_TX_COMPLETE)         ||\
+ 110:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_sdmmc.c ****    (e == XMC_SDMMC_BLOCK_GAP_EVENT)     ||\
+ 111:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_sdmmc.c ****    (e == XMC_SDMMC_BUFFER_WRITE_READY)  ||\
+ 112:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_sdmmc.c ****    (e == XMC_SDMMC_BUFFER_READ_READY)   ||\
+ 113:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_sdmmc.c ****    (e == XMC_SDMMC_CARD_INS)            ||\
+ 114:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_sdmmc.c ****    (e == XMC_SDMMC_CARD_REMOVAL)        ||\
+ 115:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_sdmmc.c ****    (e == XMC_SDMMC_CARD_INT))
+ 116:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_sdmmc.c **** 
+ 117:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_sdmmc.c **** /*
+ 118:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_sdmmc.c ****  * Check for both normal and error events <br>
+ 119:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_sdmmc.c ****  *
+ 120:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_sdmmc.c ****  * This macro is used in the LLD for assertion checks (XMC_ASSERT).
+ 121:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_sdmmc.c ****  */
+ 122:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_sdmmc.c **** #define XMC_SDMMC_CHECK_EVENT(e)\
+ 123:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_sdmmc.c ****   ((XMC_SDMMC_CHECK_NORMAL_EVENT(e))    ||\
+ 124:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_sdmmc.c ****    (XMC_SDMMC_CHECK_ERROR_EVENT(e)))
+ 125:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_sdmmc.c **** 
+ 126:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_sdmmc.c **** /*
+ 127:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_sdmmc.c ****  * Check for valid SDMMC wakeup events <br>
+ 128:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_sdmmc.c ****  *
+ 129:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_sdmmc.c ****  * This macro is used in the LLD for assertion checks (XMC_ASSERT).
+ 130:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_sdmmc.c ****  */
+ 131:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_sdmmc.c **** #define XMC_SDMMC_CHECK_WAKEUP_EVENT(w)\
+ 132:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_sdmmc.c ****   ((w == XMC_SDMMC_WAKEUP_EN_CARD_INT)  ||\
+ 133:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_sdmmc.c ****    (w == XMC_SDMMC_WAKEUP_EN_CARD_INS)  ||\
+ 134:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_sdmmc.c ****    (w == XMC_SDMMC_WAKEUP_EN_CARD_REM))
+ 135:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_sdmmc.c **** 
+ 136:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_sdmmc.c **** /*
+ 137:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_sdmmc.c ****  * Check for valid SDMMC software reset modes <br>
+ 138:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_sdmmc.c ****  *
+ 139:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_sdmmc.c ****  * This macro is used in the LLD for assertion checks (XMC_ASSERT).
+ 140:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_sdmmc.c ****  */
+ 141:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_sdmmc.c **** #define XMC_SDMMC_CHECK_SW_RESET_MODE(m)\
+ 142:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_sdmmc.c ****   ((m == XMC_SDMMC_SW_RESET_ALL)        ||\
+ 143:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_sdmmc.c ****    (m == XMC_SDMMC_SW_RST_CMD_LINE)     ||\
+ 144:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_sdmmc.c ****    (m == XMC_SDMMC_SW_RST_DAT_LINE))
+ 145:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_sdmmc.c **** 
+ 146:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_sdmmc.c **** /*
+ 147:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_sdmmc.c ****  * Check for valid SDMMC transfer modes <br>
+ 148:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_sdmmc.c ****  *
+ 149:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_sdmmc.c ****  * This macro is used in the LLD for assertion checks (XMC_ASSERT).
+ 150:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_sdmmc.c ****  */
+ 151:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_sdmmc.c **** #define XMC_SDMMC_CHECK_TRANSFER_MODE(m)\
+ 152:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_sdmmc.c ****   ((m == XMC_SDMMC_TRANSFER_MODE_TYPE_SINGLE)    ||\
+ 153:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_sdmmc.c ****    (m == XMC_SDMMC_TRANSFER_MODE_TYPE_INFINITE)  ||\
+ 154:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_sdmmc.c ****    (m == XMC_SDMMC_TRANSFER_MODE_TYPE_MULTIPLE)  ||\
+ 155:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_sdmmc.c ****    (m == XMC_SDMMC_TRANSFER_MODE_TYPE_STOP_MULTIPLE))
+ 156:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_sdmmc.c **** 
+ 157:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_sdmmc.c **** 
+ 158:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_sdmmc.c **** /*******************************************************************************
+ 159:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_sdmmc.c ****  * API IMPLEMENTATION
+ 160:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_sdmmc.c ****  *******************************************************************************/
+ 161:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_sdmmc.c ****  
+ 162:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_sdmmc.c **** /* Get power status of the SDMMC peripheral */
+ 163:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_sdmmc.c **** bool XMC_SDMMC_GetPowerStatus(XMC_SDMMC_t *const sdmmc)
+ 164:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_sdmmc.c **** {
+  28              	 .loc 1 164 0
+  29              	 .cfi_startproc
+  30              	 
+  31              	 
+  32              	 
+  33 0000 80B4     	 push {r7}
+  34              	.LCFI0:
+  35              	 .cfi_def_cfa_offset 4
+  36              	 .cfi_offset 7,-4
+  37 0002 83B0     	 sub sp,sp,#12
+  38              	.LCFI1:
+  39              	 .cfi_def_cfa_offset 16
+  40 0004 00AF     	 add r7,sp,#0
+  41              	.LCFI2:
+  42              	 .cfi_def_cfa_register 7
+  43 0006 7860     	 str r0,[r7,#4]
+ 165:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_sdmmc.c ****   XMC_ASSERT("XMC_SDMMC_GetPowerStatus: Invalid module pointer", XMC_SDMMC_CHECK_MODULE_PTR(sdmmc))
+ 166:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_sdmmc.c **** 
+ 167:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_sdmmc.c ****   return (bool)(sdmmc->POWER_CTRL & SDMMC_POWER_CTRL_SD_BUS_POWER_Msk);
+  44              	 .loc 1 167 0
+  45 0008 7B68     	 ldr r3,[r7,#4]
+  46 000a 93F82930 	 ldrb r3,[r3,#41]
+  47 000e DBB2     	 uxtb r3,r3
+  48 0010 03F00103 	 and r3,r3,#1
+  49 0014 002B     	 cmp r3,#0
+  50 0016 14BF     	 ite ne
+  51 0018 0123     	 movne r3,#1
+  52 001a 0023     	 moveq r3,#0
+  53 001c DBB2     	 uxtb r3,r3
+ 168:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_sdmmc.c **** }
+  54              	 .loc 1 168 0
+  55 001e 1846     	 mov r0,r3
+  56 0020 0C37     	 adds r7,r7,#12
+  57              	.LCFI3:
+  58              	 .cfi_def_cfa_offset 4
+  59 0022 BD46     	 mov sp,r7
+  60              	.LCFI4:
+  61              	 .cfi_def_cfa_register 13
+  62              	 
+  63 0024 5DF8047B 	 ldr r7,[sp],#4
+  64              	.LCFI5:
+  65              	 .cfi_restore 7
+  66              	 .cfi_def_cfa_offset 0
+  67 0028 7047     	 bx lr
+  68              	 .cfi_endproc
+  69              	.LFE213:
+  71 002a 00BF     	 .section .text.XMC_SDMMC_Enable,"ax",%progbits
+  72              	 .align 2
+  73              	 .global XMC_SDMMC_Enable
+  74              	 .thumb
+  75              	 .thumb_func
+  77              	XMC_SDMMC_Enable:
+  78              	.LFB214:
+ 169:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_sdmmc.c **** 
+ 170:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_sdmmc.c **** /*
+ 171:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_sdmmc.c ****  * De-assert the peripheral reset. The SDMMC peripheral
+ 172:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_sdmmc.c ****  * needs to be initialized
+ 173:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_sdmmc.c ****  */
+ 174:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_sdmmc.c **** void XMC_SDMMC_Enable(XMC_SDMMC_t *const sdmmc)
+ 175:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_sdmmc.c **** {
+  79              	 .loc 1 175 0
+  80              	 .cfi_startproc
+  81              	 
+  82              	 
+  83 0000 80B5     	 push {r7,lr}
+  84              	.LCFI6:
+  85              	 .cfi_def_cfa_offset 8
+  86              	 .cfi_offset 7,-8
+  87              	 .cfi_offset 14,-4
+  88 0002 82B0     	 sub sp,sp,#8
+  89              	.LCFI7:
+  90              	 .cfi_def_cfa_offset 16
+  91 0004 00AF     	 add r7,sp,#0
+  92              	.LCFI8:
+  93              	 .cfi_def_cfa_register 7
+  94 0006 7860     	 str r0,[r7,#4]
+ 176:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_sdmmc.c ****   XMC_ASSERT("XMC_SDMMC_Enable: Invalid module pointer", XMC_SDMMC_CHECK_MODULE_PTR(sdmmc));
+ 177:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_sdmmc.c **** 
+ 178:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_sdmmc.c **** #if defined(CLOCK_GATING_SUPPORTED)
+ 179:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_sdmmc.c ****   XMC_SCU_CLOCK_UngatePeripheralClock(XMC_SCU_PERIPHERAL_CLOCK_SDMMC);
+  95              	 .loc 1 179 0
+  96 0008 0448     	 ldr r0,.L4
+  97 000a FFF7FEFF 	 bl XMC_SCU_CLOCK_UngatePeripheralClock
+ 180:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_sdmmc.c **** #endif
+ 181:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_sdmmc.c **** #if defined(PERIPHERAL_RESET_SUPPORTED)
+ 182:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_sdmmc.c ****   XMC_SCU_RESET_DeassertPeripheralReset(XMC_SCU_PERIPHERAL_RESET_SDMMC);
+  98              	 .loc 1 182 0
+  99 000e 0348     	 ldr r0,.L4
+ 100 0010 FFF7FEFF 	 bl XMC_SCU_RESET_DeassertPeripheralReset
+ 183:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_sdmmc.c **** #endif  
+ 184:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_sdmmc.c **** }
+ 101              	 .loc 1 184 0
+ 102 0014 0837     	 adds r7,r7,#8
+ 103              	.LCFI9:
+ 104              	 .cfi_def_cfa_offset 8
+ 105 0016 BD46     	 mov sp,r7
+ 106              	.LCFI10:
+ 107              	 .cfi_def_cfa_register 13
+ 108              	 
+ 109 0018 80BD     	 pop {r7,pc}
+ 110              	.L5:
+ 111 001a 00BF     	 .align 2
+ 112              	.L4:
+ 113 001c 40000010 	 .word 268435520
+ 114              	 .cfi_endproc
+ 115              	.LFE214:
+ 117              	 .section .text.XMC_SDMMC_Disable,"ax",%progbits
+ 118              	 .align 2
+ 119              	 .global XMC_SDMMC_Disable
+ 120              	 .thumb
+ 121              	 .thumb_func
+ 123              	XMC_SDMMC_Disable:
+ 124              	.LFB215:
+ 185:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_sdmmc.c **** 
+ 186:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_sdmmc.c **** /* Assert the peripheral reset */
+ 187:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_sdmmc.c **** void XMC_SDMMC_Disable(XMC_SDMMC_t *const sdmmc)
+ 188:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_sdmmc.c **** {
+ 125              	 .loc 1 188 0
+ 126              	 .cfi_startproc
+ 127              	 
+ 128              	 
+ 129 0000 80B5     	 push {r7,lr}
+ 130              	.LCFI11:
+ 131              	 .cfi_def_cfa_offset 8
+ 132              	 .cfi_offset 7,-8
+ 133              	 .cfi_offset 14,-4
+ 134 0002 82B0     	 sub sp,sp,#8
+ 135              	.LCFI12:
+ 136              	 .cfi_def_cfa_offset 16
+ 137 0004 00AF     	 add r7,sp,#0
+ 138              	.LCFI13:
+ 139              	 .cfi_def_cfa_register 7
+ 140 0006 7860     	 str r0,[r7,#4]
+ 189:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_sdmmc.c ****   XMC_ASSERT("XMC_SDMMC_Disable: Invalid module pointer", XMC_SDMMC_CHECK_MODULE_PTR(sdmmc));
+ 190:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_sdmmc.c **** 
+ 191:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_sdmmc.c **** #if defined(PERIPHERAL_RESET_SUPPORTED)
+ 192:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_sdmmc.c ****   XMC_SCU_RESET_AssertPeripheralReset(XMC_SCU_PERIPHERAL_RESET_SDMMC);
+ 141              	 .loc 1 192 0
+ 142 0008 0448     	 ldr r0,.L7
+ 143 000a FFF7FEFF 	 bl XMC_SCU_RESET_AssertPeripheralReset
+ 193:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_sdmmc.c **** #endif  
+ 194:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_sdmmc.c **** #if defined(CLOCK_GATING_SUPPORTED)
+ 195:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_sdmmc.c ****   XMC_SCU_CLOCK_GatePeripheralClock(XMC_SCU_PERIPHERAL_CLOCK_SDMMC);
+ 144              	 .loc 1 195 0
+ 145 000e 0348     	 ldr r0,.L7
+ 146 0010 FFF7FEFF 	 bl XMC_SCU_CLOCK_GatePeripheralClock
+ 196:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_sdmmc.c **** #endif
+ 197:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_sdmmc.c **** }
+ 147              	 .loc 1 197 0
+ 148 0014 0837     	 adds r7,r7,#8
+ 149              	.LCFI14:
+ 150              	 .cfi_def_cfa_offset 8
+ 151 0016 BD46     	 mov sp,r7
+ 152              	.LCFI15:
+ 153              	 .cfi_def_cfa_register 13
+ 154              	 
+ 155 0018 80BD     	 pop {r7,pc}
+ 156              	.L8:
+ 157 001a 00BF     	 .align 2
+ 158              	.L7:
+ 159 001c 40000010 	 .word 268435520
+ 160              	 .cfi_endproc
+ 161              	.LFE215:
+ 163              	 .section .text.XMC_SDMMC_Init,"ax",%progbits
+ 164              	 .align 2
+ 165              	 .global XMC_SDMMC_Init
+ 166              	 .thumb
+ 167              	 .thumb_func
+ 169              	XMC_SDMMC_Init:
+ 170              	.LFB216:
+ 198:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_sdmmc.c **** 
+ 199:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_sdmmc.c **** /* Initialize SDMMC peripheral */
+ 200:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_sdmmc.c **** XMC_SDMMC_STATUS_t XMC_SDMMC_Init(XMC_SDMMC_t *const sdmmc, const XMC_SDMMC_CONFIG_t *config)
+ 201:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_sdmmc.c **** {
+ 171              	 .loc 1 201 0
+ 172              	 .cfi_startproc
+ 173              	 
+ 174              	 
+ 175 0000 80B5     	 push {r7,lr}
+ 176              	.LCFI16:
+ 177              	 .cfi_def_cfa_offset 8
+ 178              	 .cfi_offset 7,-8
+ 179              	 .cfi_offset 14,-4
+ 180 0002 82B0     	 sub sp,sp,#8
+ 181              	.LCFI17:
+ 182              	 .cfi_def_cfa_offset 16
+ 183 0004 00AF     	 add r7,sp,#0
+ 184              	.LCFI18:
+ 185              	 .cfi_def_cfa_register 7
+ 186 0006 7860     	 str r0,[r7,#4]
+ 187 0008 3960     	 str r1,[r7]
+ 202:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_sdmmc.c ****   XMC_ASSERT("XMC_SDMMC_Init: Invalid module pointer", XMC_SDMMC_CHECK_MODULE_PTR(sdmmc));
+ 203:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_sdmmc.c ****   XMC_ASSERT("XMC_SDMMC_Init: Invalid clock divider value", XMC_SDMMC_CHECK_SDCLK_FREQ(config->cloc
+ 204:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_sdmmc.c ****   XMC_ASSERT("XMC_SDMMC_Init: Invalid bus width", XMC_SDMMC_CHECK_DATA_LINES(config->bus_width));
+ 205:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_sdmmc.c ****   
+ 206:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_sdmmc.c ****   /* Enable SDMMC peripheral */
+ 207:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_sdmmc.c ****   XMC_SDMMC_Enable(sdmmc);
+ 188              	 .loc 1 207 0
+ 189 000a 7868     	 ldr r0,[r7,#4]
+ 190 000c FFF7FEFF 	 bl XMC_SDMMC_Enable
+ 208:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_sdmmc.c ****   
+ 209:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_sdmmc.c ****   /* Write internal clock divider register */
+ 210:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_sdmmc.c ****   sdmmc->CLOCK_CTRL |= (uint16_t)((uint32_t)config->clock_divider << SDMMC_CLOCK_CTRL_SDCLK_FREQ_SE
+ 191              	 .loc 1 210 0
+ 192 0010 7B68     	 ldr r3,[r7,#4]
+ 193 0012 9B8D     	 ldrh r3,[r3,#44]
+ 194 0014 9AB2     	 uxth r2,r3
+ 195 0016 3B68     	 ldr r3,[r7]
+ 196 0018 5B78     	 ldrb r3,[r3,#1]
+ 197 001a 9BB2     	 uxth r3,r3
+ 198 001c 1B02     	 lsls r3,r3,#8
+ 199 001e 9BB2     	 uxth r3,r3
+ 200 0020 1343     	 orrs r3,r3,r2
+ 201 0022 9AB2     	 uxth r2,r3
+ 202 0024 7B68     	 ldr r3,[r7,#4]
+ 203 0026 998D     	 ldrh r1,[r3,#44]
+ 204 0028 0021     	 movs r1,#0
+ 205 002a 0A43     	 orrs r2,r2,r1
+ 206 002c 9A85     	 strh r2,[r3,#44]
+ 211:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_sdmmc.c ****   
+ 212:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_sdmmc.c ****   /* Set bus width */
+ 213:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_sdmmc.c ****   sdmmc->HOST_CTRL = (uint8_t)((sdmmc->HOST_CTRL & (uint8_t)~SDMMC_HOST_CTRL_DATA_TX_WIDTH_Msk) |
+ 207              	 .loc 1 213 0
+ 208 002e 7B68     	 ldr r3,[r7,#4]
+ 209 0030 93F82830 	 ldrb r3,[r3,#40]
+ 210 0034 DBB2     	 uxtb r3,r3
+ 211 0036 DBB2     	 uxtb r3,r3
+ 212 0038 23F00203 	 bic r3,r3,#2
+ 213 003c DAB2     	 uxtb r2,r3
+ 214:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_sdmmc.c ****                                ((uint8_t)config->bus_width << SDMMC_HOST_CTRL_DATA_TX_WIDTH_Pos));
+ 214              	 .loc 1 214 0
+ 215 003e 3B68     	 ldr r3,[r7]
+ 216 0040 1B78     	 ldrb r3,[r3]
+ 217 0042 5B00     	 lsls r3,r3,#1
+ 213:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_sdmmc.c ****                                ((uint8_t)config->bus_width << SDMMC_HOST_CTRL_DATA_TX_WIDTH_Pos));
+ 218              	 .loc 1 213 0
+ 219 0044 DBB2     	 uxtb r3,r3
+ 220 0046 1343     	 orrs r3,r3,r2
+ 221 0048 DBB2     	 uxtb r3,r3
+ 222 004a DAB2     	 uxtb r2,r3
+ 223 004c 7B68     	 ldr r3,[r7,#4]
+ 224 004e 83F82820 	 strb r2,[r3,#40]
+ 215:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_sdmmc.c **** 
+ 216:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_sdmmc.c ****   return XMC_SDMMC_STATUS_SUCCESS;
+ 225              	 .loc 1 216 0
+ 226 0052 0023     	 movs r3,#0
+ 217:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_sdmmc.c **** }
+ 227              	 .loc 1 217 0
+ 228 0054 1846     	 mov r0,r3
+ 229 0056 0837     	 adds r7,r7,#8
+ 230              	.LCFI19:
+ 231              	 .cfi_def_cfa_offset 8
+ 232 0058 BD46     	 mov sp,r7
+ 233              	.LCFI20:
+ 234              	 .cfi_def_cfa_register 13
+ 235              	 
+ 236 005a 80BD     	 pop {r7,pc}
+ 237              	 .cfi_endproc
+ 238              	.LFE216:
+ 240              	 .section .text.XMC_SDMMC_EnableEventStatus,"ax",%progbits
+ 241              	 .align 2
+ 242              	 .global XMC_SDMMC_EnableEventStatus
+ 243              	 .thumb
+ 244              	 .thumb_func
+ 246              	XMC_SDMMC_EnableEventStatus:
+ 247              	.LFB217:
+ 218:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_sdmmc.c **** 
+ 219:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_sdmmc.c **** /* Enable event status */
+ 220:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_sdmmc.c **** void XMC_SDMMC_EnableEventStatus(XMC_SDMMC_t *const sdmmc, uint32_t event)
+ 221:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_sdmmc.c **** {
+ 248              	 .loc 1 221 0
+ 249              	 .cfi_startproc
+ 250              	 
+ 251              	 
+ 252              	 
+ 253 0000 80B4     	 push {r7}
+ 254              	.LCFI21:
+ 255              	 .cfi_def_cfa_offset 4
+ 256              	 .cfi_offset 7,-4
+ 257 0002 83B0     	 sub sp,sp,#12
+ 258              	.LCFI22:
+ 259              	 .cfi_def_cfa_offset 16
+ 260 0004 00AF     	 add r7,sp,#0
+ 261              	.LCFI23:
+ 262              	 .cfi_def_cfa_register 7
+ 263 0006 7860     	 str r0,[r7,#4]
+ 264 0008 3960     	 str r1,[r7]
+ 222:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_sdmmc.c ****   XMC_ASSERT("XMC_SDMMC_EnableEventStatus: Invalid module pointer", XMC_SDMMC_CHECK_MODULE_PTR(sdmm
+ 223:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_sdmmc.c **** 
+ 224:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_sdmmc.c ****   /* Set INT status enable register */
+ 225:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_sdmmc.c ****   sdmmc->EN_INT_STATUS_NORM |= (uint16_t)event;
+ 265              	 .loc 1 225 0
+ 266 000a 7B68     	 ldr r3,[r7,#4]
+ 267 000c 9B8E     	 ldrh r3,[r3,#52]
+ 268 000e 9AB2     	 uxth r2,r3
+ 269 0010 3B68     	 ldr r3,[r7]
+ 270 0012 9BB2     	 uxth r3,r3
+ 271 0014 1343     	 orrs r3,r3,r2
+ 272 0016 9AB2     	 uxth r2,r3
+ 273 0018 7B68     	 ldr r3,[r7,#4]
+ 274 001a 998E     	 ldrh r1,[r3,#52]
+ 275 001c 0021     	 movs r1,#0
+ 276 001e 0A43     	 orrs r2,r2,r1
+ 277 0020 9A86     	 strh r2,[r3,#52]
+ 226:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_sdmmc.c ****   sdmmc->EN_INT_STATUS_ERR |= (uint16_t)(event >> 16U);
+ 278              	 .loc 1 226 0
+ 279 0022 7B68     	 ldr r3,[r7,#4]
+ 280 0024 DB8E     	 ldrh r3,[r3,#54]
+ 281 0026 9AB2     	 uxth r2,r3
+ 282 0028 3B68     	 ldr r3,[r7]
+ 283 002a 1B0C     	 lsrs r3,r3,#16
+ 284 002c 9BB2     	 uxth r3,r3
+ 285 002e 1343     	 orrs r3,r3,r2
+ 286 0030 9AB2     	 uxth r2,r3
+ 287 0032 7B68     	 ldr r3,[r7,#4]
+ 288 0034 D98E     	 ldrh r1,[r3,#54]
+ 289 0036 0021     	 movs r1,#0
+ 290 0038 0A43     	 orrs r2,r2,r1
+ 291 003a DA86     	 strh r2,[r3,#54]
+ 227:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_sdmmc.c **** }
+ 292              	 .loc 1 227 0
+ 293 003c 0C37     	 adds r7,r7,#12
+ 294              	.LCFI24:
+ 295              	 .cfi_def_cfa_offset 4
+ 296 003e BD46     	 mov sp,r7
+ 297              	.LCFI25:
+ 298              	 .cfi_def_cfa_register 13
+ 299              	 
+ 300 0040 5DF8047B 	 ldr r7,[sp],#4
+ 301              	.LCFI26:
+ 302              	 .cfi_restore 7
+ 303              	 .cfi_def_cfa_offset 0
+ 304 0044 7047     	 bx lr
+ 305              	 .cfi_endproc
+ 306              	.LFE217:
+ 308 0046 00BF     	 .section .text.XMC_SDMMC_DisableEventStatus,"ax",%progbits
+ 309              	 .align 2
+ 310              	 .global XMC_SDMMC_DisableEventStatus
+ 311              	 .thumb
+ 312              	 .thumb_func
+ 314              	XMC_SDMMC_DisableEventStatus:
+ 315              	.LFB218:
+ 228:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_sdmmc.c **** 
+ 229:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_sdmmc.c **** /* Disable event status */
+ 230:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_sdmmc.c **** void XMC_SDMMC_DisableEventStatus(XMC_SDMMC_t *const sdmmc, uint32_t event)
+ 231:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_sdmmc.c **** {
+ 316              	 .loc 1 231 0
+ 317              	 .cfi_startproc
+ 318              	 
+ 319              	 
+ 320              	 
+ 321 0000 80B4     	 push {r7}
+ 322              	.LCFI27:
+ 323              	 .cfi_def_cfa_offset 4
+ 324              	 .cfi_offset 7,-4
+ 325 0002 83B0     	 sub sp,sp,#12
+ 326              	.LCFI28:
+ 327              	 .cfi_def_cfa_offset 16
+ 328 0004 00AF     	 add r7,sp,#0
+ 329              	.LCFI29:
+ 330              	 .cfi_def_cfa_register 7
+ 331 0006 7860     	 str r0,[r7,#4]
+ 332 0008 3960     	 str r1,[r7]
+ 232:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_sdmmc.c ****   XMC_ASSERT("XMC_SDMMC_DisableEventStatus: Invalid module pointer", XMC_SDMMC_CHECK_MODULE_PTR(sdm
+ 233:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_sdmmc.c **** 
+ 234:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_sdmmc.c ****   /* Clear INT status enable register */
+ 235:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_sdmmc.c ****   sdmmc->EN_INT_STATUS_NORM &= (uint16_t)~event;
+ 333              	 .loc 1 235 0
+ 334 000a 7B68     	 ldr r3,[r7,#4]
+ 335 000c 9B8E     	 ldrh r3,[r3,#52]
+ 336 000e 9AB2     	 uxth r2,r3
+ 337 0010 3B68     	 ldr r3,[r7]
+ 338 0012 9BB2     	 uxth r3,r3
+ 339 0014 DB43     	 mvns r3,r3
+ 340 0016 9BB2     	 uxth r3,r3
+ 341 0018 1340     	 ands r3,r3,r2
+ 342 001a 9AB2     	 uxth r2,r3
+ 343 001c 7B68     	 ldr r3,[r7,#4]
+ 344 001e 998E     	 ldrh r1,[r3,#52]
+ 345 0020 0021     	 movs r1,#0
+ 346 0022 0A43     	 orrs r2,r2,r1
+ 347 0024 9A86     	 strh r2,[r3,#52]
+ 236:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_sdmmc.c ****   sdmmc->EN_INT_STATUS_ERR &= (uint16_t)~(event >> 16U);
+ 348              	 .loc 1 236 0
+ 349 0026 7B68     	 ldr r3,[r7,#4]
+ 350 0028 DB8E     	 ldrh r3,[r3,#54]
+ 351 002a 9AB2     	 uxth r2,r3
+ 352 002c 3B68     	 ldr r3,[r7]
+ 353 002e 1B0C     	 lsrs r3,r3,#16
+ 354 0030 9BB2     	 uxth r3,r3
+ 355 0032 DB43     	 mvns r3,r3
+ 356 0034 9BB2     	 uxth r3,r3
+ 357 0036 1340     	 ands r3,r3,r2
+ 358 0038 9AB2     	 uxth r2,r3
+ 359 003a 7B68     	 ldr r3,[r7,#4]
+ 360 003c D98E     	 ldrh r1,[r3,#54]
+ 361 003e 0021     	 movs r1,#0
+ 362 0040 0A43     	 orrs r2,r2,r1
+ 363 0042 DA86     	 strh r2,[r3,#54]
+ 237:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_sdmmc.c **** }
+ 364              	 .loc 1 237 0
+ 365 0044 0C37     	 adds r7,r7,#12
+ 366              	.LCFI30:
+ 367              	 .cfi_def_cfa_offset 4
+ 368 0046 BD46     	 mov sp,r7
+ 369              	.LCFI31:
+ 370              	 .cfi_def_cfa_register 13
+ 371              	 
+ 372 0048 5DF8047B 	 ldr r7,[sp],#4
+ 373              	.LCFI32:
+ 374              	 .cfi_restore 7
+ 375              	 .cfi_def_cfa_offset 0
+ 376 004c 7047     	 bx lr
+ 377              	 .cfi_endproc
+ 378              	.LFE218:
+ 380 004e 00BF     	 .section .text.XMC_SDMMC_EnableEvent,"ax",%progbits
+ 381              	 .align 2
+ 382              	 .global XMC_SDMMC_EnableEvent
+ 383              	 .thumb
+ 384              	 .thumb_func
+ 386              	XMC_SDMMC_EnableEvent:
+ 387              	.LFB219:
+ 238:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_sdmmc.c **** 
+ 239:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_sdmmc.c **** /* Enable SDMMC event */
+ 240:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_sdmmc.c **** void XMC_SDMMC_EnableEvent(XMC_SDMMC_t *const sdmmc, uint32_t event)
+ 241:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_sdmmc.c **** {
+ 388              	 .loc 1 241 0
+ 389              	 .cfi_startproc
+ 390              	 
+ 391              	 
+ 392 0000 80B5     	 push {r7,lr}
+ 393              	.LCFI33:
+ 394              	 .cfi_def_cfa_offset 8
+ 395              	 .cfi_offset 7,-8
+ 396              	 .cfi_offset 14,-4
+ 397 0002 82B0     	 sub sp,sp,#8
+ 398              	.LCFI34:
+ 399              	 .cfi_def_cfa_offset 16
+ 400 0004 00AF     	 add r7,sp,#0
+ 401              	.LCFI35:
+ 402              	 .cfi_def_cfa_register 7
+ 403 0006 7860     	 str r0,[r7,#4]
+ 404 0008 3960     	 str r1,[r7]
+ 242:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_sdmmc.c ****   XMC_ASSERT("XMC_SDMMC_EnableEvent: Invalid module pointer", XMC_SDMMC_CHECK_MODULE_PTR(sdmmc));
+ 243:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_sdmmc.c ****   
+ 244:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_sdmmc.c ****   XMC_SDMMC_EnableEventStatus(sdmmc, event);
+ 405              	 .loc 1 244 0
+ 406 000a 7868     	 ldr r0,[r7,#4]
+ 407 000c 3968     	 ldr r1,[r7]
+ 408 000e FFF7FEFF 	 bl XMC_SDMMC_EnableEventStatus
+ 245:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_sdmmc.c **** 
+ 246:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_sdmmc.c ****   sdmmc->EN_INT_SIGNAL_NORM |= (uint16_t)event;
+ 409              	 .loc 1 246 0
+ 410 0012 7B68     	 ldr r3,[r7,#4]
+ 411 0014 1B8F     	 ldrh r3,[r3,#56]
+ 412 0016 9AB2     	 uxth r2,r3
+ 413 0018 3B68     	 ldr r3,[r7]
+ 414 001a 9BB2     	 uxth r3,r3
+ 415 001c 1343     	 orrs r3,r3,r2
+ 416 001e 9AB2     	 uxth r2,r3
+ 417 0020 7B68     	 ldr r3,[r7,#4]
+ 418 0022 198F     	 ldrh r1,[r3,#56]
+ 419 0024 0021     	 movs r1,#0
+ 420 0026 0A43     	 orrs r2,r2,r1
+ 421 0028 1A87     	 strh r2,[r3,#56]
+ 247:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_sdmmc.c ****   sdmmc->EN_INT_SIGNAL_ERR |= (uint16_t)(event >> 16U);
+ 422              	 .loc 1 247 0
+ 423 002a 7B68     	 ldr r3,[r7,#4]
+ 424 002c 5B8F     	 ldrh r3,[r3,#58]
+ 425 002e 9AB2     	 uxth r2,r3
+ 426 0030 3B68     	 ldr r3,[r7]
+ 427 0032 1B0C     	 lsrs r3,r3,#16
+ 428 0034 9BB2     	 uxth r3,r3
+ 429 0036 1343     	 orrs r3,r3,r2
+ 430 0038 9AB2     	 uxth r2,r3
+ 431 003a 7B68     	 ldr r3,[r7,#4]
+ 432 003c 598F     	 ldrh r1,[r3,#58]
+ 433 003e 0021     	 movs r1,#0
+ 434 0040 0A43     	 orrs r2,r2,r1
+ 435 0042 5A87     	 strh r2,[r3,#58]
+ 248:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_sdmmc.c **** }
+ 436              	 .loc 1 248 0
+ 437 0044 0837     	 adds r7,r7,#8
+ 438              	.LCFI36:
+ 439              	 .cfi_def_cfa_offset 8
+ 440 0046 BD46     	 mov sp,r7
+ 441              	.LCFI37:
+ 442              	 .cfi_def_cfa_register 13
+ 443              	 
+ 444 0048 80BD     	 pop {r7,pc}
+ 445              	 .cfi_endproc
+ 446              	.LFE219:
+ 448 004a 00BF     	 .section .text.XMC_SDMMC_DisableEvent,"ax",%progbits
+ 449              	 .align 2
+ 450              	 .global XMC_SDMMC_DisableEvent
+ 451              	 .thumb
+ 452              	 .thumb_func
+ 454              	XMC_SDMMC_DisableEvent:
+ 455              	.LFB220:
+ 249:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_sdmmc.c **** 
+ 250:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_sdmmc.c **** /* Disable SDMMC event without disabling event status */
+ 251:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_sdmmc.c **** void XMC_SDMMC_DisableEvent(XMC_SDMMC_t *const sdmmc, uint32_t event)
+ 252:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_sdmmc.c **** {
+ 456              	 .loc 1 252 0
+ 457              	 .cfi_startproc
+ 458              	 
+ 459              	 
+ 460              	 
+ 461 0000 80B4     	 push {r7}
+ 462              	.LCFI38:
+ 463              	 .cfi_def_cfa_offset 4
+ 464              	 .cfi_offset 7,-4
+ 465 0002 83B0     	 sub sp,sp,#12
+ 466              	.LCFI39:
+ 467              	 .cfi_def_cfa_offset 16
+ 468 0004 00AF     	 add r7,sp,#0
+ 469              	.LCFI40:
+ 470              	 .cfi_def_cfa_register 7
+ 471 0006 7860     	 str r0,[r7,#4]
+ 472 0008 3960     	 str r1,[r7]
+ 253:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_sdmmc.c ****   XMC_ASSERT("XMC_SDMMC_DisableEvent: Invalid module pointer", XMC_SDMMC_CHECK_MODULE_PTR(sdmmc));
+ 254:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_sdmmc.c **** 
+ 255:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_sdmmc.c ****   /* Clear INT signal enable register */
+ 256:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_sdmmc.c ****   sdmmc->EN_INT_SIGNAL_NORM &= (uint16_t)~event;
+ 473              	 .loc 1 256 0
+ 474 000a 7B68     	 ldr r3,[r7,#4]
+ 475 000c 1B8F     	 ldrh r3,[r3,#56]
+ 476 000e 9AB2     	 uxth r2,r3
+ 477 0010 3B68     	 ldr r3,[r7]
+ 478 0012 9BB2     	 uxth r3,r3
+ 479 0014 DB43     	 mvns r3,r3
+ 480 0016 9BB2     	 uxth r3,r3
+ 481 0018 1340     	 ands r3,r3,r2
+ 482 001a 9AB2     	 uxth r2,r3
+ 483 001c 7B68     	 ldr r3,[r7,#4]
+ 484 001e 198F     	 ldrh r1,[r3,#56]
+ 485 0020 0021     	 movs r1,#0
+ 486 0022 0A43     	 orrs r2,r2,r1
+ 487 0024 1A87     	 strh r2,[r3,#56]
+ 257:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_sdmmc.c ****   sdmmc->EN_INT_SIGNAL_ERR &= (uint16_t)~(event >> 16U);
+ 488              	 .loc 1 257 0
+ 489 0026 7B68     	 ldr r3,[r7,#4]
+ 490 0028 5B8F     	 ldrh r3,[r3,#58]
+ 491 002a 9AB2     	 uxth r2,r3
+ 492 002c 3B68     	 ldr r3,[r7]
+ 493 002e 1B0C     	 lsrs r3,r3,#16
+ 494 0030 9BB2     	 uxth r3,r3
+ 495 0032 DB43     	 mvns r3,r3
+ 496 0034 9BB2     	 uxth r3,r3
+ 497 0036 1340     	 ands r3,r3,r2
+ 498 0038 9AB2     	 uxth r2,r3
+ 499 003a 7B68     	 ldr r3,[r7,#4]
+ 500 003c 598F     	 ldrh r1,[r3,#58]
+ 501 003e 0021     	 movs r1,#0
+ 502 0040 0A43     	 orrs r2,r2,r1
+ 503 0042 5A87     	 strh r2,[r3,#58]
+ 258:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_sdmmc.c **** }
+ 504              	 .loc 1 258 0
+ 505 0044 0C37     	 adds r7,r7,#12
+ 506              	.LCFI41:
+ 507              	 .cfi_def_cfa_offset 4
+ 508 0046 BD46     	 mov sp,r7
+ 509              	.LCFI42:
+ 510              	 .cfi_def_cfa_register 13
+ 511              	 
+ 512 0048 5DF8047B 	 ldr r7,[sp],#4
+ 513              	.LCFI43:
+ 514              	 .cfi_restore 7
+ 515              	 .cfi_def_cfa_offset 0
+ 516 004c 7047     	 bx lr
+ 517              	 .cfi_endproc
+ 518              	.LFE220:
+ 520 004e 00BF     	 .section .text.XMC_SDMMC_ClearEvent,"ax",%progbits
+ 521              	 .align 2
+ 522              	 .global XMC_SDMMC_ClearEvent
+ 523              	 .thumb
+ 524              	 .thumb_func
+ 526              	XMC_SDMMC_ClearEvent:
+ 527              	.LFB221:
+ 259:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_sdmmc.c **** 
+ 260:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_sdmmc.c **** /* Clear SDMMC event(s) */
+ 261:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_sdmmc.c **** void XMC_SDMMC_ClearEvent(XMC_SDMMC_t *const sdmmc, uint32_t event)
+ 262:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_sdmmc.c **** {
+ 528              	 .loc 1 262 0
+ 529              	 .cfi_startproc
+ 530              	 
+ 531              	 
+ 532              	 
+ 533 0000 80B4     	 push {r7}
+ 534              	.LCFI44:
+ 535              	 .cfi_def_cfa_offset 4
+ 536              	 .cfi_offset 7,-4
+ 537 0002 83B0     	 sub sp,sp,#12
+ 538              	.LCFI45:
+ 539              	 .cfi_def_cfa_offset 16
+ 540 0004 00AF     	 add r7,sp,#0
+ 541              	.LCFI46:
+ 542              	 .cfi_def_cfa_register 7
+ 543 0006 7860     	 str r0,[r7,#4]
+ 544 0008 3960     	 str r1,[r7]
+ 263:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_sdmmc.c ****   XMC_ASSERT("XMC_SDMMC_ClearEvent: Invalid module pointer", XMC_SDMMC_CHECK_MODULE_PTR(sdmmc));
+ 264:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_sdmmc.c ****   XMC_ASSERT("XMC_SDMMC_ClearEvent: Invalid bit-field", !(event & XMC_SDMMC_TARGET_RESP_ERR));
+ 265:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_sdmmc.c **** 
+ 266:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_sdmmc.c ****   sdmmc->INT_STATUS_NORM = (uint16_t)event;
+ 545              	 .loc 1 266 0
+ 546 000a 3B68     	 ldr r3,[r7]
+ 547 000c 9AB2     	 uxth r2,r3
+ 548 000e 7B68     	 ldr r3,[r7,#4]
+ 549 0010 198E     	 ldrh r1,[r3,#48]
+ 550 0012 0021     	 movs r1,#0
+ 551 0014 0A43     	 orrs r2,r2,r1
+ 552 0016 1A86     	 strh r2,[r3,#48]
+ 267:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_sdmmc.c ****   sdmmc->INT_STATUS_ERR = (uint16_t)(event >> 16U);
+ 553              	 .loc 1 267 0
+ 554 0018 3B68     	 ldr r3,[r7]
+ 555 001a 1B0C     	 lsrs r3,r3,#16
+ 556 001c 9AB2     	 uxth r2,r3
+ 557 001e 7B68     	 ldr r3,[r7,#4]
+ 558 0020 598E     	 ldrh r1,[r3,#50]
+ 559 0022 0021     	 movs r1,#0
+ 560 0024 0A43     	 orrs r2,r2,r1
+ 561 0026 5A86     	 strh r2,[r3,#50]
+ 268:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_sdmmc.c **** }
+ 562              	 .loc 1 268 0
+ 563 0028 0C37     	 adds r7,r7,#12
+ 564              	.LCFI47:
+ 565              	 .cfi_def_cfa_offset 4
+ 566 002a BD46     	 mov sp,r7
+ 567              	.LCFI48:
+ 568              	 .cfi_def_cfa_register 13
+ 569              	 
+ 570 002c 5DF8047B 	 ldr r7,[sp],#4
+ 571              	.LCFI49:
+ 572              	 .cfi_restore 7
+ 573              	 .cfi_def_cfa_offset 0
+ 574 0030 7047     	 bx lr
+ 575              	 .cfi_endproc
+ 576              	.LFE221:
+ 578 0032 00BF     	 .section .text.XMC_SDMMC_GetEvent,"ax",%progbits
+ 579              	 .align 2
+ 580              	 .global XMC_SDMMC_GetEvent
+ 581              	 .thumb
+ 582              	 .thumb_func
+ 584              	XMC_SDMMC_GetEvent:
+ 585              	.LFB222:
+ 269:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_sdmmc.c **** 
+ 270:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_sdmmc.c **** /* Get the status of an SDMMC event */
+ 271:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_sdmmc.c **** bool XMC_SDMMC_GetEvent(XMC_SDMMC_t *const sdmmc, XMC_SDMMC_EVENT_t event)
+ 272:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_sdmmc.c **** {  
+ 586              	 .loc 1 272 0
+ 587              	 .cfi_startproc
+ 588              	 
+ 589              	 
+ 590              	 
+ 591 0000 80B4     	 push {r7}
+ 592              	.LCFI50:
+ 593              	 .cfi_def_cfa_offset 4
+ 594              	 .cfi_offset 7,-4
+ 595 0002 85B0     	 sub sp,sp,#20
+ 596              	.LCFI51:
+ 597              	 .cfi_def_cfa_offset 24
+ 598 0004 00AF     	 add r7,sp,#0
+ 599              	.LCFI52:
+ 600              	 .cfi_def_cfa_register 7
+ 601 0006 7860     	 str r0,[r7,#4]
+ 602 0008 3960     	 str r1,[r7]
+ 273:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_sdmmc.c ****   bool status;
+ 274:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_sdmmc.c ****   
+ 275:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_sdmmc.c ****   XMC_ASSERT("XMC_SDMMC_GetEvent: Invalid module pointer", XMC_SDMMC_CHECK_MODULE_PTR(sdmmc));
+ 276:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_sdmmc.c ****   XMC_ASSERT("XMC_SDMMC_GetEvent: Invalid SDMMC event", XMC_SDMMC_CHECK_EVENT(event));
+ 277:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_sdmmc.c **** 
+ 278:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_sdmmc.c ****   if (event < XMC_SDMMC_CMD_TIMEOUT_ERR)
+ 603              	 .loc 1 278 0
+ 604 000a 3B68     	 ldr r3,[r7]
+ 605 000c B3F5803F 	 cmp r3,#65536
+ 606 0010 0CD2     	 bcs .L17
+ 279:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_sdmmc.c ****   {
+ 280:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_sdmmc.c ****     status = (bool)(sdmmc->INT_STATUS_NORM & (uint16_t)event);
+ 607              	 .loc 1 280 0
+ 608 0012 7B68     	 ldr r3,[r7,#4]
+ 609 0014 1B8E     	 ldrh r3,[r3,#48]
+ 610 0016 9AB2     	 uxth r2,r3
+ 611 0018 3B68     	 ldr r3,[r7]
+ 612 001a 9BB2     	 uxth r3,r3
+ 613 001c 1340     	 ands r3,r3,r2
+ 614 001e 9BB2     	 uxth r3,r3
+ 615 0020 002B     	 cmp r3,#0
+ 616 0022 14BF     	 ite ne
+ 617 0024 0123     	 movne r3,#1
+ 618 0026 0023     	 moveq r3,#0
+ 619 0028 FB73     	 strb r3,[r7,#15]
+ 620 002a 0CE0     	 b .L18
+ 621              	.L17:
+ 281:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_sdmmc.c ****   }
+ 282:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_sdmmc.c ****   else
+ 283:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_sdmmc.c ****   {
+ 284:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_sdmmc.c ****     status = (bool)(sdmmc->INT_STATUS_ERR & (uint16_t)((uint32_t)event >> 16U));
+ 622              	 .loc 1 284 0
+ 623 002c 7B68     	 ldr r3,[r7,#4]
+ 624 002e 5B8E     	 ldrh r3,[r3,#50]
+ 625 0030 9AB2     	 uxth r2,r3
+ 626 0032 3B68     	 ldr r3,[r7]
+ 627 0034 1B0C     	 lsrs r3,r3,#16
+ 628 0036 9BB2     	 uxth r3,r3
+ 629 0038 1340     	 ands r3,r3,r2
+ 630 003a 9BB2     	 uxth r3,r3
+ 631 003c 002B     	 cmp r3,#0
+ 632 003e 14BF     	 ite ne
+ 633 0040 0123     	 movne r3,#1
+ 634 0042 0023     	 moveq r3,#0
+ 635 0044 FB73     	 strb r3,[r7,#15]
+ 636              	.L18:
+ 285:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_sdmmc.c ****   }
+ 286:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_sdmmc.c ****   
+ 287:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_sdmmc.c ****   return status;
+ 637              	 .loc 1 287 0
+ 638 0046 FB7B     	 ldrb r3,[r7,#15]
+ 288:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_sdmmc.c **** }
+ 639              	 .loc 1 288 0
+ 640 0048 1846     	 mov r0,r3
+ 641 004a 1437     	 adds r7,r7,#20
+ 642              	.LCFI53:
+ 643              	 .cfi_def_cfa_offset 4
+ 644 004c BD46     	 mov sp,r7
+ 645              	.LCFI54:
+ 646              	 .cfi_def_cfa_register 13
+ 647              	 
+ 648 004e 5DF8047B 	 ldr r7,[sp],#4
+ 649              	.LCFI55:
+ 650              	 .cfi_restore 7
+ 651              	 .cfi_def_cfa_offset 0
+ 652 0052 7047     	 bx lr
+ 653              	 .cfi_endproc
+ 654              	.LFE222:
+ 656              	 .section .text.XMC_SDMMC_GetR2Response,"ax",%progbits
+ 657              	 .align 2
+ 658              	 .global XMC_SDMMC_GetR2Response
+ 659              	 .thumb
+ 660              	 .thumb_func
+ 662              	XMC_SDMMC_GetR2Response:
+ 663              	.LFB223:
+ 289:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_sdmmc.c **** 
+ 290:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_sdmmc.c **** /* Read R2 response (CID, CSD register) */
+ 291:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_sdmmc.c **** void XMC_SDMMC_GetR2Response(XMC_SDMMC_t *const sdmmc, XMC_SDMMC_RESPONSE_t *const response)
+ 292:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_sdmmc.c **** {
+ 664              	 .loc 1 292 0
+ 665              	 .cfi_startproc
+ 666              	 
+ 667              	 
+ 668              	 
+ 669 0000 80B4     	 push {r7}
+ 670              	.LCFI56:
+ 671              	 .cfi_def_cfa_offset 4
+ 672              	 .cfi_offset 7,-4
+ 673 0002 83B0     	 sub sp,sp,#12
+ 674              	.LCFI57:
+ 675              	 .cfi_def_cfa_offset 16
+ 676 0004 00AF     	 add r7,sp,#0
+ 677              	.LCFI58:
+ 678              	 .cfi_def_cfa_register 7
+ 679 0006 7860     	 str r0,[r7,#4]
+ 680 0008 3960     	 str r1,[r7]
+ 293:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_sdmmc.c ****   XMC_ASSERT("XMC_SDMMC_GetR2Response: Invalid module pointer", XMC_SDMMC_CHECK_MODULE_PTR(sdmmc));
+ 294:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_sdmmc.c ****   
+ 295:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_sdmmc.c ****   response->response_0 = sdmmc->RESPONSE[0];
+ 681              	 .loc 1 295 0
+ 682 000a 7B68     	 ldr r3,[r7,#4]
+ 683 000c 1A69     	 ldr r2,[r3,#16]
+ 684 000e 3B68     	 ldr r3,[r7]
+ 685 0010 1A60     	 str r2,[r3]
+ 296:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_sdmmc.c ****   response->response_2 = sdmmc->RESPONSE[1];
+ 686              	 .loc 1 296 0
+ 687 0012 7B68     	 ldr r3,[r7,#4]
+ 688 0014 5A69     	 ldr r2,[r3,#20]
+ 689 0016 3B68     	 ldr r3,[r7]
+ 690 0018 5A60     	 str r2,[r3,#4]
+ 297:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_sdmmc.c ****   response->response_4 = sdmmc->RESPONSE[2];
+ 691              	 .loc 1 297 0
+ 692 001a 7B68     	 ldr r3,[r7,#4]
+ 693 001c 9A69     	 ldr r2,[r3,#24]
+ 694 001e 3B68     	 ldr r3,[r7]
+ 695 0020 9A60     	 str r2,[r3,#8]
+ 298:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_sdmmc.c ****   response->response_6 = sdmmc->RESPONSE[3];
+ 696              	 .loc 1 298 0
+ 697 0022 7B68     	 ldr r3,[r7,#4]
+ 698 0024 DA69     	 ldr r2,[r3,#28]
+ 699 0026 3B68     	 ldr r3,[r7]
+ 700 0028 DA60     	 str r2,[r3,#12]
+ 299:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_sdmmc.c **** }
+ 701              	 .loc 1 299 0
+ 702 002a 0C37     	 adds r7,r7,#12
+ 703              	.LCFI59:
+ 704              	 .cfi_def_cfa_offset 4
+ 705 002c BD46     	 mov sp,r7
+ 706              	.LCFI60:
+ 707              	 .cfi_def_cfa_register 13
+ 708              	 
+ 709 002e 5DF8047B 	 ldr r7,[sp],#4
+ 710              	.LCFI61:
+ 711              	 .cfi_restore 7
+ 712              	 .cfi_def_cfa_offset 0
+ 713 0032 7047     	 bx lr
+ 714              	 .cfi_endproc
+ 715              	.LFE223:
+ 717              	 .section .text.XMC_SDMMC_SendCommand,"ax",%progbits
+ 718              	 .align 2
+ 719              	 .global XMC_SDMMC_SendCommand
+ 720              	 .thumb
+ 721              	 .thumb_func
+ 723              	XMC_SDMMC_SendCommand:
+ 724              	.LFB224:
+ 300:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_sdmmc.c **** 
+ 301:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_sdmmc.c **** /* Send SDMMC command */
+ 302:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_sdmmc.c **** XMC_SDMMC_STATUS_t XMC_SDMMC_SendCommand(XMC_SDMMC_t *const sdmmc, const XMC_SDMMC_COMMAND_t *cmd, 
+ 303:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_sdmmc.c **** {
+ 725              	 .loc 1 303 0
+ 726              	 .cfi_startproc
+ 727              	 
+ 728              	 
+ 729              	 
+ 730 0000 80B4     	 push {r7}
+ 731              	.LCFI62:
+ 732              	 .cfi_def_cfa_offset 4
+ 733              	 .cfi_offset 7,-4
+ 734 0002 85B0     	 sub sp,sp,#20
+ 735              	.LCFI63:
+ 736              	 .cfi_def_cfa_offset 24
+ 737 0004 00AF     	 add r7,sp,#0
+ 738              	.LCFI64:
+ 739              	 .cfi_def_cfa_register 7
+ 740 0006 F860     	 str r0,[r7,#12]
+ 741 0008 B960     	 str r1,[r7,#8]
+ 742 000a 7A60     	 str r2,[r7,#4]
+ 304:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_sdmmc.c ****   XMC_ASSERT("XMC_SDMMC_SendCommand: Invalid module pointer", XMC_SDMMC_CHECK_MODULE_PTR(sdmmc));
+ 305:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_sdmmc.c ****   
+ 306:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_sdmmc.c ****   sdmmc->ARGUMENT1 = arg;
+ 743              	 .loc 1 306 0
+ 744 000c FB68     	 ldr r3,[r7,#12]
+ 745 000e 9A68     	 ldr r2,[r3,#8]
+ 746 0010 0021     	 movs r1,#0
+ 747 0012 7A68     	 ldr r2,[r7,#4]
+ 748 0014 0A43     	 orrs r2,r2,r1
+ 749 0016 9A60     	 str r2,[r3,#8]
+ 307:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_sdmmc.c ****   sdmmc->COMMAND = (uint16_t)(*(uint16_t *)cmd);
+ 750              	 .loc 1 307 0
+ 751 0018 BB68     	 ldr r3,[r7,#8]
+ 752 001a 1A88     	 ldrh r2,[r3]
+ 753 001c FB68     	 ldr r3,[r7,#12]
+ 754 001e D989     	 ldrh r1,[r3,#14]
+ 755 0020 0021     	 movs r1,#0
+ 756 0022 0A43     	 orrs r2,r2,r1
+ 757 0024 DA81     	 strh r2,[r3,#14]
+ 308:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_sdmmc.c ****   
+ 309:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_sdmmc.c ****   return XMC_SDMMC_STATUS_SUCCESS;
+ 758              	 .loc 1 309 0
+ 759 0026 0023     	 movs r3,#0
+ 310:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_sdmmc.c **** }
+ 760              	 .loc 1 310 0
+ 761 0028 1846     	 mov r0,r3
+ 762 002a 1437     	 adds r7,r7,#20
+ 763              	.LCFI65:
+ 764              	 .cfi_def_cfa_offset 4
+ 765 002c BD46     	 mov sp,r7
+ 766              	.LCFI66:
+ 767              	 .cfi_def_cfa_register 13
+ 768              	 
+ 769 002e 5DF8047B 	 ldr r7,[sp],#4
+ 770              	.LCFI67:
+ 771              	 .cfi_restore 7
+ 772              	 .cfi_def_cfa_offset 0
+ 773 0032 7047     	 bx lr
+ 774              	 .cfi_endproc
+ 775              	.LFE224:
+ 777              	 .section .text.XMC_SDMMC_SetDataTransferMode,"ax",%progbits
+ 778              	 .align 2
+ 779              	 .global XMC_SDMMC_SetDataTransferMode
+ 780              	 .thumb
+ 781              	 .thumb_func
+ 783              	XMC_SDMMC_SetDataTransferMode:
+ 784              	.LFB225:
+ 311:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_sdmmc.c **** 
+ 312:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_sdmmc.c **** /* Set data transfer mode */
+ 313:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_sdmmc.c **** void XMC_SDMMC_SetDataTransferMode(XMC_SDMMC_t *const sdmmc, XMC_SDMMC_TRANSFER_MODE_t *const respo
+ 314:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_sdmmc.c **** {
+ 785              	 .loc 1 314 0
+ 786              	 .cfi_startproc
+ 787              	 
+ 788              	 
+ 789              	 
+ 790 0000 80B4     	 push {r7}
+ 791              	.LCFI68:
+ 792              	 .cfi_def_cfa_offset 4
+ 793              	 .cfi_offset 7,-4
+ 794 0002 83B0     	 sub sp,sp,#12
+ 795              	.LCFI69:
+ 796              	 .cfi_def_cfa_offset 16
+ 797 0004 00AF     	 add r7,sp,#0
+ 798              	.LCFI70:
+ 799              	 .cfi_def_cfa_register 7
+ 800 0006 7860     	 str r0,[r7,#4]
+ 801 0008 3960     	 str r1,[r7]
+ 315:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_sdmmc.c ****   XMC_ASSERT("XMC_SDMMC_SetDataTransferMode: Invalid module pointer", XMC_SDMMC_CHECK_MODULE_PTR(sd
+ 316:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_sdmmc.c ****   XMC_ASSERT("XMC_SDMMC_SetDataTransferMode: Invalid transfer type", XMC_SDMMC_CHECK_TRANSFER_MODE(
+ 317:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_sdmmc.c ****   
+ 318:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_sdmmc.c ****   /* Block size */
+ 319:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_sdmmc.c ****   sdmmc->BLOCK_SIZE = (uint16_t)(response->block_size);
+ 802              	 .loc 1 319 0
+ 803 000a 3B68     	 ldr r3,[r7]
+ 804 000c 1B68     	 ldr r3,[r3]
+ 805 000e 9AB2     	 uxth r2,r3
+ 806 0010 7B68     	 ldr r3,[r7,#4]
+ 807 0012 9988     	 ldrh r1,[r3,#4]
+ 808 0014 0021     	 movs r1,#0
+ 809 0016 0A43     	 orrs r2,r2,r1
+ 810 0018 9A80     	 strh r2,[r3,#4]
+ 320:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_sdmmc.c ****   
+ 321:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_sdmmc.c ****   /* Number of blocks */
+ 322:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_sdmmc.c ****   sdmmc->BLOCK_COUNT = (uint16_t)(response->num_blocks);
+ 811              	 .loc 1 322 0
+ 812 001a 3B68     	 ldr r3,[r7]
+ 813 001c 5B68     	 ldr r3,[r3,#4]
+ 814 001e 9AB2     	 uxth r2,r3
+ 815 0020 7B68     	 ldr r3,[r7,#4]
+ 816 0022 D988     	 ldrh r1,[r3,#6]
+ 817 0024 0021     	 movs r1,#0
+ 818 0026 0A43     	 orrs r2,r2,r1
+ 819 0028 DA80     	 strh r2,[r3,#6]
+ 323:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_sdmmc.c **** 
+ 324:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_sdmmc.c ****   /* Type of data transfer: single, infinite, multiple or stop multiple */
+ 325:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_sdmmc.c ****   sdmmc->TRANSFER_MODE = (uint16_t)((sdmmc->TRANSFER_MODE & (uint16_t)~SDMMC_TRANSFER_MODE_MULTI_BL
+ 820              	 .loc 1 325 0
+ 821 002a 7B68     	 ldr r3,[r7,#4]
+ 822 002c 9B89     	 ldrh r3,[r3,#12]
+ 823 002e 9BB2     	 uxth r3,r3
+ 824 0030 9BB2     	 uxth r3,r3
+ 825 0032 23F02003 	 bic r3,r3,#32
+ 826 0036 9AB2     	 uxth r2,r3
+ 326:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_sdmmc.c ****                                     ((uint16_t)response->type));
+ 827              	 .loc 1 326 0
+ 828 0038 3B68     	 ldr r3,[r7]
+ 829 003a 1B7A     	 ldrb r3,[r3,#8]
+ 325:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_sdmmc.c ****                                     ((uint16_t)response->type));
+ 830              	 .loc 1 325 0
+ 831 003c 9BB2     	 uxth r3,r3
+ 832 003e 1343     	 orrs r3,r3,r2
+ 833 0040 9BB2     	 uxth r3,r3
+ 834 0042 9AB2     	 uxth r2,r3
+ 835 0044 7B68     	 ldr r3,[r7,#4]
+ 836 0046 9989     	 ldrh r1,[r3,#12]
+ 837 0048 0021     	 movs r1,#0
+ 838 004a 0A43     	 orrs r2,r2,r1
+ 839 004c 9A81     	 strh r2,[r3,#12]
+ 327:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_sdmmc.c **** 
+ 328:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_sdmmc.c ****   /*
+ 329:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_sdmmc.c ****    * Clear block count enable bit; that's only valid for
+ 330:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_sdmmc.c ****    * a multi-block transfer
+ 331:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_sdmmc.c ****    */
+ 332:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_sdmmc.c ****   if (response->type == XMC_SDMMC_TRANSFER_MODE_TYPE_SINGLE)
+ 840              	 .loc 1 332 0
+ 841 004e 3B68     	 ldr r3,[r7]
+ 842 0050 1B7A     	 ldrb r3,[r3,#8]
+ 843 0052 002B     	 cmp r3,#0
+ 844 0054 0AD1     	 bne .L24
+ 333:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_sdmmc.c ****   {
+ 334:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_sdmmc.c ****     sdmmc->TRANSFER_MODE &= (uint16_t)~SDMMC_TRANSFER_MODE_BLOCK_COUNT_EN_Msk;
+ 845              	 .loc 1 334 0
+ 846 0056 7B68     	 ldr r3,[r7,#4]
+ 847 0058 9B89     	 ldrh r3,[r3,#12]
+ 848 005a 9BB2     	 uxth r3,r3
+ 849 005c 23F00203 	 bic r3,r3,#2
+ 850 0060 9AB2     	 uxth r2,r3
+ 851 0062 7B68     	 ldr r3,[r7,#4]
+ 852 0064 9989     	 ldrh r1,[r3,#12]
+ 853 0066 0021     	 movs r1,#0
+ 854 0068 0A43     	 orrs r2,r2,r1
+ 855 006a 9A81     	 strh r2,[r3,#12]
+ 856              	.L24:
+ 335:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_sdmmc.c ****   }
+ 336:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_sdmmc.c **** 
+ 337:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_sdmmc.c ****   /* Auto CMD configuration */
+ 338:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_sdmmc.c ****   sdmmc->TRANSFER_MODE = (uint16_t)((sdmmc->TRANSFER_MODE & (uint16_t)~SDMMC_TRANSFER_MODE_ACMD_EN_
+ 857              	 .loc 1 338 0
+ 858 006c 7B68     	 ldr r3,[r7,#4]
+ 859 006e 9B89     	 ldrh r3,[r3,#12]
+ 860 0070 9BB2     	 uxth r3,r3
+ 861 0072 9BB2     	 uxth r3,r3
+ 862 0074 23F00C03 	 bic r3,r3,#12
+ 863 0078 9AB2     	 uxth r2,r3
+ 339:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_sdmmc.c ****                                     ((uint16_t)response->auto_cmd << SDMMC_TRANSFER_MODE_ACMD_EN_Po
+ 864              	 .loc 1 339 0
+ 865 007a 3B68     	 ldr r3,[r7]
+ 866 007c 5B7A     	 ldrb r3,[r3,#9]
+ 867 007e 9B00     	 lsls r3,r3,#2
+ 338:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_sdmmc.c ****                                     ((uint16_t)response->auto_cmd << SDMMC_TRANSFER_MODE_ACMD_EN_Po
+ 868              	 .loc 1 338 0
+ 869 0080 9BB2     	 uxth r3,r3
+ 870 0082 1343     	 orrs r3,r3,r2
+ 871 0084 9BB2     	 uxth r3,r3
+ 872 0086 9AB2     	 uxth r2,r3
+ 873 0088 7B68     	 ldr r3,[r7,#4]
+ 874 008a 9989     	 ldrh r1,[r3,#12]
+ 875 008c 0021     	 movs r1,#0
+ 876 008e 0A43     	 orrs r2,r2,r1
+ 877 0090 9A81     	 strh r2,[r3,#12]
+ 340:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_sdmmc.c **** }
+ 878              	 .loc 1 340 0
+ 879 0092 0C37     	 adds r7,r7,#12
+ 880              	.LCFI71:
+ 881              	 .cfi_def_cfa_offset 4
+ 882 0094 BD46     	 mov sp,r7
+ 883              	.LCFI72:
+ 884              	 .cfi_def_cfa_register 13
+ 885              	 
+ 886 0096 5DF8047B 	 ldr r7,[sp],#4
+ 887              	.LCFI73:
+ 888              	 .cfi_restore 7
+ 889              	 .cfi_def_cfa_offset 0
+ 890 009a 7047     	 bx lr
+ 891              	 .cfi_endproc
+ 892              	.LFE225:
+ 894              	 .text
+ 895              	.Letext0:
+ 896              	 .file 2 "d:\\xmc\\dave-ide-4.4.2-64bit\\eclipse\\arm-gcc-49\\arm-none-eabi\\include\\machine\\_default_types.h"
+ 897              	 .file 3 "d:\\xmc\\dave-ide-4.4.2-64bit\\eclipse\\arm-gcc-49\\arm-none-eabi\\include\\stdint.h"
+ 898              	 .file 4 "D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/lib/main/XMC4000/XMCLib/inc/xmc_sdmmc.h"
+ 899              	 .file 5 "D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/lib/main/XMC4000/XMCLib/inc/xmc4_scu.h"
+ 900              	 .file 6 "D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/lib/main/CMSIS/Core/Include/core_cm4.h"
+ 901              	 .file 7 "D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/lib/main/XMC4000/system_XMC4700.h"
+DEFINED SYMBOLS
+                            *ABS*:00000000 xmc_sdmmc.c
+    {standard input}:20     .text.XMC_SDMMC_GetPowerStatus:00000000 $t
+    {standard input}:25     .text.XMC_SDMMC_GetPowerStatus:00000000 XMC_SDMMC_GetPowerStatus
+    {standard input}:72     .text.XMC_SDMMC_Enable:00000000 $t
+    {standard input}:77     .text.XMC_SDMMC_Enable:00000000 XMC_SDMMC_Enable
+    {standard input}:113    .text.XMC_SDMMC_Enable:0000001c $d
+    {standard input}:118    .text.XMC_SDMMC_Disable:00000000 $t
+    {standard input}:123    .text.XMC_SDMMC_Disable:00000000 XMC_SDMMC_Disable
+    {standard input}:159    .text.XMC_SDMMC_Disable:0000001c $d
+    {standard input}:164    .text.XMC_SDMMC_Init:00000000 $t
+    {standard input}:169    .text.XMC_SDMMC_Init:00000000 XMC_SDMMC_Init
+    {standard input}:241    .text.XMC_SDMMC_EnableEventStatus:00000000 $t
+    {standard input}:246    .text.XMC_SDMMC_EnableEventStatus:00000000 XMC_SDMMC_EnableEventStatus
+    {standard input}:309    .text.XMC_SDMMC_DisableEventStatus:00000000 $t
+    {standard input}:314    .text.XMC_SDMMC_DisableEventStatus:00000000 XMC_SDMMC_DisableEventStatus
+    {standard input}:381    .text.XMC_SDMMC_EnableEvent:00000000 $t
+    {standard input}:386    .text.XMC_SDMMC_EnableEvent:00000000 XMC_SDMMC_EnableEvent
+    {standard input}:449    .text.XMC_SDMMC_DisableEvent:00000000 $t
+    {standard input}:454    .text.XMC_SDMMC_DisableEvent:00000000 XMC_SDMMC_DisableEvent
+    {standard input}:521    .text.XMC_SDMMC_ClearEvent:00000000 $t
+    {standard input}:526    .text.XMC_SDMMC_ClearEvent:00000000 XMC_SDMMC_ClearEvent
+    {standard input}:579    .text.XMC_SDMMC_GetEvent:00000000 $t
+    {standard input}:584    .text.XMC_SDMMC_GetEvent:00000000 XMC_SDMMC_GetEvent
+    {standard input}:657    .text.XMC_SDMMC_GetR2Response:00000000 $t
+    {standard input}:662    .text.XMC_SDMMC_GetR2Response:00000000 XMC_SDMMC_GetR2Response
+    {standard input}:718    .text.XMC_SDMMC_SendCommand:00000000 $t
+    {standard input}:723    .text.XMC_SDMMC_SendCommand:00000000 XMC_SDMMC_SendCommand
+    {standard input}:778    .text.XMC_SDMMC_SetDataTransferMode:00000000 $t
+    {standard input}:783    .text.XMC_SDMMC_SetDataTransferMode:00000000 XMC_SDMMC_SetDataTransferMode
+                     .debug_frame:00000010 $d
+
+UNDEFINED SYMBOLS
+XMC_SCU_CLOCK_UngatePeripheralClock
+XMC_SCU_RESET_DeassertPeripheralReset
+XMC_SCU_RESET_AssertPeripheralReset
+XMC_SCU_CLOCK_GatePeripheralClock

@@ -1,0 +1,600 @@
+   1              	 .syntax unified
+   2              	 .cpu cortex-m4
+   3              	 .eabi_attribute 27,3
+   4              	 .fpu fpv4-sp-d16
+   5              	 .eabi_attribute 20,1
+   6              	 .eabi_attribute 21,1
+   7              	 .eabi_attribute 23,3
+   8              	 .eabi_attribute 24,1
+   9              	 .eabi_attribute 25,1
+  10              	 .eabi_attribute 26,1
+  11              	 .eabi_attribute 30,6
+  12              	 .eabi_attribute 34,1
+  13              	 .eabi_attribute 18,4
+  14              	 .thumb
+  15              	 .file "rx_xn297.c"
+  16              	 .text
+  17              	.Ltext0:
+  18              	 .cfi_sections .debug_frame
+  19              	 .section .rodata.xn297_data_scramble,"a",%progbits
+  20              	 .align 2
+  23              	xn297_data_scramble:
+  24 0000 BC       	 .byte -68
+  25 0001 E5       	 .byte -27
+  26 0002 66       	 .byte 102
+  27 0003 0D       	 .byte 13
+  28 0004 AE       	 .byte -82
+  29 0005 8C       	 .byte -116
+  30 0006 88       	 .byte -120
+  31 0007 12       	 .byte 18
+  32 0008 69       	 .byte 105
+  33 0009 EE       	 .byte -18
+  34 000a 1F       	 .byte 31
+  35 000b C7       	 .byte -57
+  36 000c 62       	 .byte 98
+  37 000d 97       	 .byte -105
+  38 000e D5       	 .byte -43
+  39 000f 0B       	 .byte 11
+  40 0010 79       	 .byte 121
+  41 0011 CA       	 .byte -54
+  42 0012 CC       	 .byte -52
+  43 0013 1B       	 .byte 27
+  44 0014 5D       	 .byte 93
+  45 0015 19       	 .byte 25
+  46 0016 10       	 .byte 16
+  47 0017 24       	 .byte 36
+  48 0018 D3       	 .byte -45
+  49 0019 DC       	 .byte -36
+  50 001a 3F       	 .byte 63
+  51 001b 8E       	 .byte -114
+  52 001c C5       	 .byte -59
+  53 001d 2F       	 .byte 47
+  54 001e 0000     	 .section .rodata.xn297_crc_xorout,"a",%progbits
+  55              	 .align 2
+  58              	xn297_crc_xorout:
+  59 0000 A79B     	 .short -25689
+  60 0002 BB8B     	 .short -29765
+  61 0004 E185     	 .short -31263
+  62 0006 8C3E     	 .short 16012
+  63 0008 1E45     	 .short 17694
+  64 000a E618     	 .short 6374
+  65 000c 246B     	 .short 27428
+  66 000e ABE7     	 .short -6229
+  67 0010 2838     	 .short 14376
+  68 0012 4B81     	 .short -32437
+  69 0014 61D4     	 .short -11167
+  70 0016 94F4     	 .short -2924
+  71 0018 0325     	 .short 9475
+  72 001a 1D69     	 .short 26909
+  73 001c 8BFE     	 .short -373
+  74 001e A79B     	 .short -25689
+  75 0020 178B     	 .short -29929
+  76 0022 2029     	 .short 10528
+  77 0024 5F8B     	 .short -29857
+  78 0026 B161     	 .short 25009
+  79 0028 91D3     	 .short -11375
+  80 002a 0174     	 .short 29697
+  81 002c 3821     	 .short 8504
+  82 002e 9F12     	 .short 4767
+  83 0030 A0B3     	 .short -19552
+  84 0032 8829     	 .short 10632
+  85              	 .section .text.bitReverse,"ax",%progbits
+  86              	 .align 2
+  87              	 .thumb
+  88              	 .thumb_func
+  90              	bitReverse:
+  91              	.LFB537:
+  92              	 .file 1 "../cleanflight/src/main/drivers/rx/rx_xn297.c"
+   1:../cleanflight/src/main/drivers/rx/rx_xn297.c **** /*
+   2:../cleanflight/src/main/drivers/rx/rx_xn297.c ****  * This file is part of Cleanflight and Betaflight.
+   3:../cleanflight/src/main/drivers/rx/rx_xn297.c ****  *
+   4:../cleanflight/src/main/drivers/rx/rx_xn297.c ****  * Cleanflight and Betaflight are free software. You can redistribute
+   5:../cleanflight/src/main/drivers/rx/rx_xn297.c ****  * this software and/or modify this software under the terms of the
+   6:../cleanflight/src/main/drivers/rx/rx_xn297.c ****  * GNU General Public License as published by the Free Software
+   7:../cleanflight/src/main/drivers/rx/rx_xn297.c ****  * Foundation, either version 3 of the License, or (at your option)
+   8:../cleanflight/src/main/drivers/rx/rx_xn297.c ****  * any later version.
+   9:../cleanflight/src/main/drivers/rx/rx_xn297.c ****  *
+  10:../cleanflight/src/main/drivers/rx/rx_xn297.c ****  * Cleanflight and Betaflight are distributed in the hope that they
+  11:../cleanflight/src/main/drivers/rx/rx_xn297.c ****  * will be useful, but WITHOUT ANY WARRANTY; without even the implied
+  12:../cleanflight/src/main/drivers/rx/rx_xn297.c ****  * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+  13:../cleanflight/src/main/drivers/rx/rx_xn297.c ****  * See the GNU General Public License for more details.
+  14:../cleanflight/src/main/drivers/rx/rx_xn297.c ****  *
+  15:../cleanflight/src/main/drivers/rx/rx_xn297.c ****  * You should have received a copy of the GNU General Public License
+  16:../cleanflight/src/main/drivers/rx/rx_xn297.c ****  * along with this software.
+  17:../cleanflight/src/main/drivers/rx/rx_xn297.c ****  *
+  18:../cleanflight/src/main/drivers/rx/rx_xn297.c ****  * If not, see <http://www.gnu.org/licenses/>.
+  19:../cleanflight/src/main/drivers/rx/rx_xn297.c ****  */
+  20:../cleanflight/src/main/drivers/rx/rx_xn297.c **** 
+  21:../cleanflight/src/main/drivers/rx/rx_xn297.c **** // This file borrows heavily from project Deviation,
+  22:../cleanflight/src/main/drivers/rx/rx_xn297.c **** // see http://deviationtx.com
+  23:../cleanflight/src/main/drivers/rx/rx_xn297.c **** 
+  24:../cleanflight/src/main/drivers/rx/rx_xn297.c **** #include <stdbool.h>
+  25:../cleanflight/src/main/drivers/rx/rx_xn297.c **** #include <stdint.h>
+  26:../cleanflight/src/main/drivers/rx/rx_xn297.c **** 
+  27:../cleanflight/src/main/drivers/rx/rx_xn297.c **** #include "platform.h"
+  28:../cleanflight/src/main/drivers/rx/rx_xn297.c **** 
+  29:../cleanflight/src/main/drivers/rx/rx_xn297.c **** #include "common/crc.h"
+  30:../cleanflight/src/main/drivers/rx/rx_xn297.c **** 
+  31:../cleanflight/src/main/drivers/rx/rx_xn297.c **** #include "pg/rx.h"
+  32:../cleanflight/src/main/drivers/rx/rx_xn297.c **** 
+  33:../cleanflight/src/main/drivers/rx/rx_xn297.c **** #include "drivers/rx/rx_nrf24l01.h"
+  34:../cleanflight/src/main/drivers/rx/rx_xn297.c **** #include "drivers/rx/rx_spi.h"
+  35:../cleanflight/src/main/drivers/rx/rx_xn297.c **** 
+  36:../cleanflight/src/main/drivers/rx/rx_xn297.c **** 
+  37:../cleanflight/src/main/drivers/rx/rx_xn297.c **** static const uint8_t xn297_data_scramble[30] = {
+  38:../cleanflight/src/main/drivers/rx/rx_xn297.c ****     0xbc, 0xe5, 0x66, 0x0d, 0xae, 0x8c, 0x88, 0x12,
+  39:../cleanflight/src/main/drivers/rx/rx_xn297.c ****     0x69, 0xee, 0x1f, 0xc7, 0x62, 0x97, 0xd5, 0x0b,
+  40:../cleanflight/src/main/drivers/rx/rx_xn297.c ****     0x79, 0xca, 0xcc, 0x1b, 0x5d, 0x19, 0x10, 0x24,
+  41:../cleanflight/src/main/drivers/rx/rx_xn297.c ****     0xd3, 0xdc, 0x3f, 0x8e, 0xc5, 0x2f
+  42:../cleanflight/src/main/drivers/rx/rx_xn297.c **** };
+  43:../cleanflight/src/main/drivers/rx/rx_xn297.c **** 
+  44:../cleanflight/src/main/drivers/rx/rx_xn297.c **** static const uint16_t xn297_crc_xorout[26] = {
+  45:../cleanflight/src/main/drivers/rx/rx_xn297.c ****     0x9BA7, 0x8BBB, 0x85E1, 0x3E8C, 0x451E, 0x18E6, 0x6B24, 0xE7AB,
+  46:../cleanflight/src/main/drivers/rx/rx_xn297.c ****     0x3828, 0x814B, 0xD461, 0xF494, 0x2503, 0x691D, 0xFE8B, 0x9BA7,
+  47:../cleanflight/src/main/drivers/rx/rx_xn297.c ****     0x8B17, 0x2920, 0x8B5F, 0x61B1, 0xD391, 0x7401, 0x2138, 0x129F,
+  48:../cleanflight/src/main/drivers/rx/rx_xn297.c ****     0xB3A0, 0x2988
+  49:../cleanflight/src/main/drivers/rx/rx_xn297.c **** };
+  50:../cleanflight/src/main/drivers/rx/rx_xn297.c **** 
+  51:../cleanflight/src/main/drivers/rx/rx_xn297.c **** static uint8_t bitReverse(uint8_t bIn)
+  52:../cleanflight/src/main/drivers/rx/rx_xn297.c **** {
+  93              	 .loc 1 52 0
+  94              	 .cfi_startproc
+  95              	 
+  96              	 
+  97              	 
+  98 0000 80B4     	 push {r7}
+  99              	.LCFI0:
+ 100              	 .cfi_def_cfa_offset 4
+ 101              	 .cfi_offset 7,-4
+ 102 0002 85B0     	 sub sp,sp,#20
+ 103              	.LCFI1:
+ 104              	 .cfi_def_cfa_offset 24
+ 105 0004 00AF     	 add r7,sp,#0
+ 106              	.LCFI2:
+ 107              	 .cfi_def_cfa_register 7
+ 108 0006 0346     	 mov r3,r0
+ 109 0008 FB71     	 strb r3,[r7,#7]
+  53:../cleanflight/src/main/drivers/rx/rx_xn297.c ****     uint8_t bOut = 0;
+ 110              	 .loc 1 53 0
+ 111 000a 0023     	 movs r3,#0
+ 112 000c FB73     	 strb r3,[r7,#15]
+ 113              	.LBB2:
+  54:../cleanflight/src/main/drivers/rx/rx_xn297.c ****     for (int ii = 0; ii < 8; ++ii) {
+ 114              	 .loc 1 54 0
+ 115 000e 0023     	 movs r3,#0
+ 116 0010 BB60     	 str r3,[r7,#8]
+ 117 0012 0FE0     	 b .L2
+ 118              	.L3:
+  55:../cleanflight/src/main/drivers/rx/rx_xn297.c ****         bOut = (bOut << 1) | (bIn & 1);
+ 119              	 .loc 1 55 0 discriminator 3
+ 120 0014 FB7B     	 ldrb r3,[r7,#15]
+ 121 0016 5B00     	 lsls r3,r3,#1
+ 122 0018 DAB2     	 uxtb r2,r3
+ 123 001a FB79     	 ldrb r3,[r7,#7]
+ 124 001c 03F00103 	 and r3,r3,#1
+ 125 0020 DBB2     	 uxtb r3,r3
+ 126 0022 1343     	 orrs r3,r3,r2
+ 127 0024 DBB2     	 uxtb r3,r3
+ 128 0026 FB73     	 strb r3,[r7,#15]
+  56:../cleanflight/src/main/drivers/rx/rx_xn297.c ****         bIn >>= 1;
+ 129              	 .loc 1 56 0 discriminator 3
+ 130 0028 FB79     	 ldrb r3,[r7,#7]
+ 131 002a 5B08     	 lsrs r3,r3,#1
+ 132 002c FB71     	 strb r3,[r7,#7]
+  54:../cleanflight/src/main/drivers/rx/rx_xn297.c ****     for (int ii = 0; ii < 8; ++ii) {
+ 133              	 .loc 1 54 0 discriminator 3
+ 134 002e BB68     	 ldr r3,[r7,#8]
+ 135 0030 0133     	 adds r3,r3,#1
+ 136 0032 BB60     	 str r3,[r7,#8]
+ 137              	.L2:
+  54:../cleanflight/src/main/drivers/rx/rx_xn297.c ****     for (int ii = 0; ii < 8; ++ii) {
+ 138              	 .loc 1 54 0 is_stmt 0 discriminator 1
+ 139 0034 BB68     	 ldr r3,[r7,#8]
+ 140 0036 072B     	 cmp r3,#7
+ 141 0038 ECDD     	 ble .L3
+ 142              	.LBE2:
+  57:../cleanflight/src/main/drivers/rx/rx_xn297.c ****     }
+  58:../cleanflight/src/main/drivers/rx/rx_xn297.c ****     return bOut;
+ 143              	 .loc 1 58 0 is_stmt 1
+ 144 003a FB7B     	 ldrb r3,[r7,#15]
+  59:../cleanflight/src/main/drivers/rx/rx_xn297.c **** }
+ 145              	 .loc 1 59 0
+ 146 003c 1846     	 mov r0,r3
+ 147 003e 1437     	 adds r7,r7,#20
+ 148              	.LCFI3:
+ 149              	 .cfi_def_cfa_offset 4
+ 150 0040 BD46     	 mov sp,r7
+ 151              	.LCFI4:
+ 152              	 .cfi_def_cfa_register 13
+ 153              	 
+ 154 0042 5DF8047B 	 ldr r7,[sp],#4
+ 155              	.LCFI5:
+ 156              	 .cfi_restore 7
+ 157              	 .cfi_def_cfa_offset 0
+ 158 0046 7047     	 bx lr
+ 159              	 .cfi_endproc
+ 160              	.LFE537:
+ 162              	 .section .text.XN297_UnscramblePayload,"ax",%progbits
+ 163              	 .align 2
+ 164              	 .global XN297_UnscramblePayload
+ 165              	 .thumb
+ 166              	 .thumb_func
+ 168              	XN297_UnscramblePayload:
+ 169              	.LFB538:
+  60:../cleanflight/src/main/drivers/rx/rx_xn297.c **** 
+  61:../cleanflight/src/main/drivers/rx/rx_xn297.c **** 
+  62:../cleanflight/src/main/drivers/rx/rx_xn297.c **** #define RX_TX_ADDR_LEN 5
+  63:../cleanflight/src/main/drivers/rx/rx_xn297.c **** 
+  64:../cleanflight/src/main/drivers/rx/rx_xn297.c **** uint16_t XN297_UnscramblePayload(uint8_t *data, int len, const uint8_t *rxAddr)
+  65:../cleanflight/src/main/drivers/rx/rx_xn297.c **** {
+ 170              	 .loc 1 65 0
+ 171              	 .cfi_startproc
+ 172              	 
+ 173              	 
+ 174 0000 90B5     	 push {r4,r7,lr}
+ 175              	.LCFI6:
+ 176              	 .cfi_def_cfa_offset 12
+ 177              	 .cfi_offset 4,-12
+ 178              	 .cfi_offset 7,-8
+ 179              	 .cfi_offset 14,-4
+ 180 0002 89B0     	 sub sp,sp,#36
+ 181              	.LCFI7:
+ 182              	 .cfi_def_cfa_offset 48
+ 183 0004 00AF     	 add r7,sp,#0
+ 184              	.LCFI8:
+ 185              	 .cfi_def_cfa_register 7
+ 186 0006 F860     	 str r0,[r7,#12]
+ 187 0008 B960     	 str r1,[r7,#8]
+ 188 000a 7A60     	 str r2,[r7,#4]
+  66:../cleanflight/src/main/drivers/rx/rx_xn297.c ****     uint16_t crc = 0xb5d2;
+ 189              	 .loc 1 66 0
+ 190 000c 4BF2D253 	 movw r3,#46546
+ 191 0010 FB83     	 strh r3,[r7,#30]
+  67:../cleanflight/src/main/drivers/rx/rx_xn297.c ****     if (rxAddr) {
+ 192              	 .loc 1 67 0
+ 193 0012 7B68     	 ldr r3,[r7,#4]
+ 194 0014 002B     	 cmp r3,#0
+ 195 0016 16D0     	 beq .L6
+ 196              	.LBB3:
+  68:../cleanflight/src/main/drivers/rx/rx_xn297.c ****         for (int ii = 0; ii < RX_TX_ADDR_LEN; ++ii) {
+ 197              	 .loc 1 68 0
+ 198 0018 0023     	 movs r3,#0
+ 199 001a BB61     	 str r3,[r7,#24]
+ 200 001c 10E0     	 b .L7
+ 201              	.L8:
+  69:../cleanflight/src/main/drivers/rx/rx_xn297.c ****             crc = crc16_ccitt(crc, rxAddr[RX_TX_ADDR_LEN - 1 - ii]);
+ 202              	 .loc 1 69 0 discriminator 3
+ 203 001e BB69     	 ldr r3,[r7,#24]
+ 204 0020 C3F10403 	 rsb r3,r3,#4
+ 205 0024 1A46     	 mov r2,r3
+ 206 0026 7B68     	 ldr r3,[r7,#4]
+ 207 0028 1344     	 add r3,r3,r2
+ 208 002a 1B78     	 ldrb r3,[r3]
+ 209 002c FA8B     	 ldrh r2,[r7,#30]
+ 210 002e 1046     	 mov r0,r2
+ 211 0030 1946     	 mov r1,r3
+ 212 0032 FFF7FEFF 	 bl crc16_ccitt
+ 213 0036 0346     	 mov r3,r0
+ 214 0038 FB83     	 strh r3,[r7,#30]
+  68:../cleanflight/src/main/drivers/rx/rx_xn297.c ****         for (int ii = 0; ii < RX_TX_ADDR_LEN; ++ii) {
+ 215              	 .loc 1 68 0 discriminator 3
+ 216 003a BB69     	 ldr r3,[r7,#24]
+ 217 003c 0133     	 adds r3,r3,#1
+ 218 003e BB61     	 str r3,[r7,#24]
+ 219              	.L7:
+  68:../cleanflight/src/main/drivers/rx/rx_xn297.c ****         for (int ii = 0; ii < RX_TX_ADDR_LEN; ++ii) {
+ 220              	 .loc 1 68 0 is_stmt 0 discriminator 1
+ 221 0040 BB69     	 ldr r3,[r7,#24]
+ 222 0042 042B     	 cmp r3,#4
+ 223 0044 EBDD     	 ble .L8
+ 224              	.L6:
+ 225              	.LBE3:
+ 226              	.LBB4:
+  70:../cleanflight/src/main/drivers/rx/rx_xn297.c ****         }
+  71:../cleanflight/src/main/drivers/rx/rx_xn297.c ****     }
+  72:../cleanflight/src/main/drivers/rx/rx_xn297.c ****     for (int ii = 0; ii < len; ++ii) {
+ 227              	 .loc 1 72 0 is_stmt 1
+ 228 0046 0023     	 movs r3,#0
+ 229 0048 7B61     	 str r3,[r7,#20]
+ 230 004a 1FE0     	 b .L9
+ 231              	.L10:
+  73:../cleanflight/src/main/drivers/rx/rx_xn297.c ****         crc = crc16_ccitt(crc, data[ii]);
+ 232              	 .loc 1 73 0 discriminator 3
+ 233 004c 7B69     	 ldr r3,[r7,#20]
+ 234 004e FA68     	 ldr r2,[r7,#12]
+ 235 0050 1344     	 add r3,r3,r2
+ 236 0052 1B78     	 ldrb r3,[r3]
+ 237 0054 FA8B     	 ldrh r2,[r7,#30]
+ 238 0056 1046     	 mov r0,r2
+ 239 0058 1946     	 mov r1,r3
+ 240 005a FFF7FEFF 	 bl crc16_ccitt
+ 241 005e 0346     	 mov r3,r0
+ 242 0060 FB83     	 strh r3,[r7,#30]
+  74:../cleanflight/src/main/drivers/rx/rx_xn297.c ****         data[ii] = bitReverse(data[ii] ^ xn297_data_scramble[ii]);
+ 243              	 .loc 1 74 0 discriminator 3
+ 244 0062 7B69     	 ldr r3,[r7,#20]
+ 245 0064 FA68     	 ldr r2,[r7,#12]
+ 246 0066 D418     	 adds r4,r2,r3
+ 247 0068 7B69     	 ldr r3,[r7,#20]
+ 248 006a FA68     	 ldr r2,[r7,#12]
+ 249 006c 1344     	 add r3,r3,r2
+ 250 006e 1A78     	 ldrb r2,[r3]
+ 251 0070 0E49     	 ldr r1,.L12
+ 252 0072 7B69     	 ldr r3,[r7,#20]
+ 253 0074 0B44     	 add r3,r3,r1
+ 254 0076 1B78     	 ldrb r3,[r3]
+ 255 0078 5340     	 eors r3,r3,r2
+ 256 007a DBB2     	 uxtb r3,r3
+ 257 007c 1846     	 mov r0,r3
+ 258 007e FFF7FEFF 	 bl bitReverse
+ 259 0082 0346     	 mov r3,r0
+ 260 0084 2370     	 strb r3,[r4]
+  72:../cleanflight/src/main/drivers/rx/rx_xn297.c ****         crc = crc16_ccitt(crc, data[ii]);
+ 261              	 .loc 1 72 0 discriminator 3
+ 262 0086 7B69     	 ldr r3,[r7,#20]
+ 263 0088 0133     	 adds r3,r3,#1
+ 264 008a 7B61     	 str r3,[r7,#20]
+ 265              	.L9:
+  72:../cleanflight/src/main/drivers/rx/rx_xn297.c ****         crc = crc16_ccitt(crc, data[ii]);
+ 266              	 .loc 1 72 0 is_stmt 0 discriminator 1
+ 267 008c 7A69     	 ldr r2,[r7,#20]
+ 268 008e BB68     	 ldr r3,[r7,#8]
+ 269 0090 9A42     	 cmp r2,r3
+ 270 0092 DBDB     	 blt .L10
+ 271              	.LBE4:
+  75:../cleanflight/src/main/drivers/rx/rx_xn297.c ****     }
+  76:../cleanflight/src/main/drivers/rx/rx_xn297.c ****     crc ^= xn297_crc_xorout[len];
+ 272              	 .loc 1 76 0 is_stmt 1
+ 273 0094 064A     	 ldr r2,.L12+4
+ 274 0096 BB68     	 ldr r3,[r7,#8]
+ 275 0098 32F81320 	 ldrh r2,[r2,r3,lsl#1]
+ 276 009c FB8B     	 ldrh r3,[r7,#30]
+ 277 009e 5340     	 eors r3,r3,r2
+ 278 00a0 FB83     	 strh r3,[r7,#30]
+  77:../cleanflight/src/main/drivers/rx/rx_xn297.c ****     return crc;
+ 279              	 .loc 1 77 0
+ 280 00a2 FB8B     	 ldrh r3,[r7,#30]
+  78:../cleanflight/src/main/drivers/rx/rx_xn297.c **** }
+ 281              	 .loc 1 78 0
+ 282 00a4 1846     	 mov r0,r3
+ 283 00a6 2437     	 adds r7,r7,#36
+ 284              	.LCFI9:
+ 285              	 .cfi_def_cfa_offset 12
+ 286 00a8 BD46     	 mov sp,r7
+ 287              	.LCFI10:
+ 288              	 .cfi_def_cfa_register 13
+ 289              	 
+ 290 00aa 90BD     	 pop {r4,r7,pc}
+ 291              	.L13:
+ 292              	 .align 2
+ 293              	.L12:
+ 294 00ac 00000000 	 .word xn297_data_scramble
+ 295 00b0 00000000 	 .word xn297_crc_xorout
+ 296              	 .cfi_endproc
+ 297              	.LFE538:
+ 299              	 .section .text.XN297_WritePayload,"ax",%progbits
+ 300              	 .align 2
+ 301              	 .global XN297_WritePayload
+ 302              	 .thumb
+ 303              	 .thumb_func
+ 305              	XN297_WritePayload:
+ 306              	.LFB539:
+  79:../cleanflight/src/main/drivers/rx/rx_xn297.c **** 
+  80:../cleanflight/src/main/drivers/rx/rx_xn297.c **** uint8_t XN297_WritePayload(uint8_t *data, int len, const uint8_t *rxAddr)
+  81:../cleanflight/src/main/drivers/rx/rx_xn297.c **** {
+ 307              	 .loc 1 81 0
+ 308              	 .cfi_startproc
+ 309              	 
+ 310              	 
+ 311 0000 80B5     	 push {r7,lr}
+ 312              	.LCFI11:
+ 313              	 .cfi_def_cfa_offset 8
+ 314              	 .cfi_offset 7,-8
+ 315              	 .cfi_offset 14,-4
+ 316 0002 90B0     	 sub sp,sp,#64
+ 317              	.LCFI12:
+ 318              	 .cfi_def_cfa_offset 72
+ 319 0004 00AF     	 add r7,sp,#0
+ 320              	.LCFI13:
+ 321              	 .cfi_def_cfa_register 7
+ 322 0006 F860     	 str r0,[r7,#12]
+ 323 0008 B960     	 str r1,[r7,#8]
+ 324 000a 7A60     	 str r2,[r7,#4]
+  82:../cleanflight/src/main/drivers/rx/rx_xn297.c ****     uint8_t packet[NRF24L01_MAX_PAYLOAD_SIZE];
+  83:../cleanflight/src/main/drivers/rx/rx_xn297.c ****     uint16_t crc = 0xb5d2;
+ 325              	 .loc 1 83 0
+ 326 000c 4BF2D253 	 movw r3,#46546
+ 327 0010 FB87     	 strh r3,[r7,#62]
+ 328              	.LBB5:
+  84:../cleanflight/src/main/drivers/rx/rx_xn297.c ****     for (int ii = 0; ii < RX_TX_ADDR_LEN; ++ii) {
+ 329              	 .loc 1 84 0
+ 330 0012 0023     	 movs r3,#0
+ 331 0014 BB63     	 str r3,[r7,#56]
+ 332 0016 1BE0     	 b .L15
+ 333              	.L16:
+  85:../cleanflight/src/main/drivers/rx/rx_xn297.c ****         packet[ii] = rxAddr[RX_TX_ADDR_LEN - 1 - ii];
+ 334              	 .loc 1 85 0 discriminator 3
+ 335 0018 BB6B     	 ldr r3,[r7,#56]
+ 336 001a C3F10403 	 rsb r3,r3,#4
+ 337 001e 1A46     	 mov r2,r3
+ 338 0020 7B68     	 ldr r3,[r7,#4]
+ 339 0022 1344     	 add r3,r3,r2
+ 340 0024 1978     	 ldrb r1,[r3]
+ 341 0026 07F11002 	 add r2,r7,#16
+ 342 002a BB6B     	 ldr r3,[r7,#56]
+ 343 002c 1344     	 add r3,r3,r2
+ 344 002e 0A46     	 mov r2,r1
+ 345 0030 1A70     	 strb r2,[r3]
+  86:../cleanflight/src/main/drivers/rx/rx_xn297.c ****         crc = crc16_ccitt(crc, packet[ii]);
+ 346              	 .loc 1 86 0 discriminator 3
+ 347 0032 07F11002 	 add r2,r7,#16
+ 348 0036 BB6B     	 ldr r3,[r7,#56]
+ 349 0038 1344     	 add r3,r3,r2
+ 350 003a 1B78     	 ldrb r3,[r3]
+ 351 003c FA8F     	 ldrh r2,[r7,#62]
+ 352 003e 1046     	 mov r0,r2
+ 353 0040 1946     	 mov r1,r3
+ 354 0042 FFF7FEFF 	 bl crc16_ccitt
+ 355 0046 0346     	 mov r3,r0
+ 356 0048 FB87     	 strh r3,[r7,#62]
+  84:../cleanflight/src/main/drivers/rx/rx_xn297.c ****     for (int ii = 0; ii < RX_TX_ADDR_LEN; ++ii) {
+ 357              	 .loc 1 84 0 discriminator 3
+ 358 004a BB6B     	 ldr r3,[r7,#56]
+ 359 004c 0133     	 adds r3,r3,#1
+ 360 004e BB63     	 str r3,[r7,#56]
+ 361              	.L15:
+  84:../cleanflight/src/main/drivers/rx/rx_xn297.c ****     for (int ii = 0; ii < RX_TX_ADDR_LEN; ++ii) {
+ 362              	 .loc 1 84 0 is_stmt 0 discriminator 1
+ 363 0050 BB6B     	 ldr r3,[r7,#56]
+ 364 0052 042B     	 cmp r3,#4
+ 365 0054 E0DD     	 ble .L16
+ 366              	.LBE5:
+ 367              	.LBB6:
+  87:../cleanflight/src/main/drivers/rx/rx_xn297.c ****     }
+  88:../cleanflight/src/main/drivers/rx/rx_xn297.c ****     for (int ii = 0; ii < len; ++ii) {
+ 368              	 .loc 1 88 0 is_stmt 1
+ 369 0056 0023     	 movs r3,#0
+ 370 0058 7B63     	 str r3,[r7,#52]
+ 371 005a 29E0     	 b .L17
+ 372              	.L18:
+ 373              	.LBB7:
+  89:../cleanflight/src/main/drivers/rx/rx_xn297.c ****         const uint8_t bOut = bitReverse(data[ii]);
+ 374              	 .loc 1 89 0 discriminator 3
+ 375 005c 7B6B     	 ldr r3,[r7,#52]
+ 376 005e FA68     	 ldr r2,[r7,#12]
+ 377 0060 1344     	 add r3,r3,r2
+ 378 0062 1B78     	 ldrb r3,[r3]
+ 379 0064 1846     	 mov r0,r3
+ 380 0066 FFF7FEFF 	 bl bitReverse
+ 381 006a 0346     	 mov r3,r0
+ 382 006c 87F83330 	 strb r3,[r7,#51]
+  90:../cleanflight/src/main/drivers/rx/rx_xn297.c ****         packet[ii + RX_TX_ADDR_LEN] = bOut ^ xn297_data_scramble[ii];
+ 383              	 .loc 1 90 0 discriminator 3
+ 384 0070 7B6B     	 ldr r3,[r7,#52]
+ 385 0072 0533     	 adds r3,r3,#5
+ 386 0074 2549     	 ldr r1,.L20
+ 387 0076 7A6B     	 ldr r2,[r7,#52]
+ 388 0078 0A44     	 add r2,r2,r1
+ 389 007a 1178     	 ldrb r1,[r2]
+ 390 007c 97F83320 	 ldrb r2,[r7,#51]
+ 391 0080 4A40     	 eors r2,r2,r1
+ 392 0082 D2B2     	 uxtb r2,r2
+ 393 0084 07F14001 	 add r1,r7,#64
+ 394 0088 0B44     	 add r3,r3,r1
+ 395 008a 03F8302C 	 strb r2,[r3,#-48]
+  91:../cleanflight/src/main/drivers/rx/rx_xn297.c ****         crc = crc16_ccitt(crc, packet[ii + RX_TX_ADDR_LEN]);
+ 396              	 .loc 1 91 0 discriminator 3
+ 397 008e 7B6B     	 ldr r3,[r7,#52]
+ 398 0090 0533     	 adds r3,r3,#5
+ 399 0092 07F14002 	 add r2,r7,#64
+ 400 0096 1344     	 add r3,r3,r2
+ 401 0098 13F8303C 	 ldrb r3,[r3,#-48]
+ 402 009c FA8F     	 ldrh r2,[r7,#62]
+ 403 009e 1046     	 mov r0,r2
+ 404 00a0 1946     	 mov r1,r3
+ 405 00a2 FFF7FEFF 	 bl crc16_ccitt
+ 406 00a6 0346     	 mov r3,r0
+ 407 00a8 FB87     	 strh r3,[r7,#62]
+ 408              	.LBE7:
+  88:../cleanflight/src/main/drivers/rx/rx_xn297.c ****         const uint8_t bOut = bitReverse(data[ii]);
+ 409              	 .loc 1 88 0 discriminator 3
+ 410 00aa 7B6B     	 ldr r3,[r7,#52]
+ 411 00ac 0133     	 adds r3,r3,#1
+ 412 00ae 7B63     	 str r3,[r7,#52]
+ 413              	.L17:
+  88:../cleanflight/src/main/drivers/rx/rx_xn297.c ****         const uint8_t bOut = bitReverse(data[ii]);
+ 414              	 .loc 1 88 0 is_stmt 0 discriminator 1
+ 415 00b0 7A6B     	 ldr r2,[r7,#52]
+ 416 00b2 BB68     	 ldr r3,[r7,#8]
+ 417 00b4 9A42     	 cmp r2,r3
+ 418 00b6 D1DB     	 blt .L18
+ 419              	.LBE6:
+  92:../cleanflight/src/main/drivers/rx/rx_xn297.c ****     }
+  93:../cleanflight/src/main/drivers/rx/rx_xn297.c ****     crc ^= xn297_crc_xorout[len];
+ 420              	 .loc 1 93 0 is_stmt 1
+ 421 00b8 154A     	 ldr r2,.L20+4
+ 422 00ba BB68     	 ldr r3,[r7,#8]
+ 423 00bc 32F81320 	 ldrh r2,[r2,r3,lsl#1]
+ 424 00c0 FB8F     	 ldrh r3,[r7,#62]
+ 425 00c2 5340     	 eors r3,r3,r2
+ 426 00c4 FB87     	 strh r3,[r7,#62]
+  94:../cleanflight/src/main/drivers/rx/rx_xn297.c ****     packet[RX_TX_ADDR_LEN + len] = crc >> 8;
+ 427              	 .loc 1 94 0
+ 428 00c6 BB68     	 ldr r3,[r7,#8]
+ 429 00c8 0533     	 adds r3,r3,#5
+ 430 00ca FA8F     	 ldrh r2,[r7,#62]
+ 431 00cc 120A     	 lsrs r2,r2,#8
+ 432 00ce 92B2     	 uxth r2,r2
+ 433 00d0 D2B2     	 uxtb r2,r2
+ 434 00d2 07F14001 	 add r1,r7,#64
+ 435 00d6 0B44     	 add r3,r3,r1
+ 436 00d8 03F8302C 	 strb r2,[r3,#-48]
+  95:../cleanflight/src/main/drivers/rx/rx_xn297.c ****     packet[RX_TX_ADDR_LEN + len + 1] = crc & 0xff;
+ 437              	 .loc 1 95 0
+ 438 00dc BB68     	 ldr r3,[r7,#8]
+ 439 00de 0633     	 adds r3,r3,#6
+ 440 00e0 FA8F     	 ldrh r2,[r7,#62]
+ 441 00e2 D2B2     	 uxtb r2,r2
+ 442 00e4 07F14001 	 add r1,r7,#64
+ 443 00e8 0B44     	 add r3,r3,r1
+ 444 00ea 03F8302C 	 strb r2,[r3,#-48]
+  96:../cleanflight/src/main/drivers/rx/rx_xn297.c ****     return NRF24L01_WritePayload(packet, RX_TX_ADDR_LEN + len + 2);
+ 445              	 .loc 1 96 0
+ 446 00ee BB68     	 ldr r3,[r7,#8]
+ 447 00f0 DBB2     	 uxtb r3,r3
+ 448 00f2 0733     	 adds r3,r3,#7
+ 449 00f4 DBB2     	 uxtb r3,r3
+ 450 00f6 07F11002 	 add r2,r7,#16
+ 451 00fa 1046     	 mov r0,r2
+ 452 00fc 1946     	 mov r1,r3
+ 453 00fe FFF7FEFF 	 bl NRF24L01_WritePayload
+ 454 0102 0346     	 mov r3,r0
+  97:../cleanflight/src/main/drivers/rx/rx_xn297.c **** }
+ 455              	 .loc 1 97 0
+ 456 0104 1846     	 mov r0,r3
+ 457 0106 4037     	 adds r7,r7,#64
+ 458              	.LCFI14:
+ 459              	 .cfi_def_cfa_offset 8
+ 460 0108 BD46     	 mov sp,r7
+ 461              	.LCFI15:
+ 462              	 .cfi_def_cfa_register 13
+ 463              	 
+ 464 010a 80BD     	 pop {r7,pc}
+ 465              	.L21:
+ 466              	 .align 2
+ 467              	.L20:
+ 468 010c 00000000 	 .word xn297_data_scramble
+ 469 0110 00000000 	 .word xn297_crc_xorout
+ 470              	 .cfi_endproc
+ 471              	.LFE539:
+ 473              	 .text
+ 474              	.Letext0:
+ 475              	 .file 2 "d:\\xmc\\dave-ide-4.4.2-64bit\\eclipse\\arm-gcc-49\\arm-none-eabi\\include\\machine\\_default_types.h"
+ 476              	 .file 3 "d:\\xmc\\dave-ide-4.4.2-64bit\\eclipse\\arm-gcc-49\\arm-none-eabi\\include\\stdint.h"
+ 477              	 .file 4 "D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/lib/main/XMC4000/XMCLib/inc/xmc_usic.h"
+ 478              	 .file 5 "D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/drivers/io_types.h"
+ 479              	 .file 6 "D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/pg/rx.h"
+ 480              	 .file 7 "D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/common/time.h"
+ 481              	 .file 8 "D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/rx/rx.h"
+ 482              	 .file 9 "D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/pg/rx_spi.h"
+ 483              	 .file 10 "D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/lib/main/CMSIS/Core/Include/core_cm4.h"
+ 484              	 .file 11 "D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/lib/main/XMC4000/system_XMC4700.h"
+DEFINED SYMBOLS
+                            *ABS*:00000000 rx_xn297.c
+    {standard input}:20     .rodata.xn297_data_scramble:00000000 $d
+    {standard input}:23     .rodata.xn297_data_scramble:00000000 xn297_data_scramble
+    {standard input}:55     .rodata.xn297_crc_xorout:00000000 $d
+    {standard input}:58     .rodata.xn297_crc_xorout:00000000 xn297_crc_xorout
+    {standard input}:86     .text.bitReverse:00000000 $t
+    {standard input}:90     .text.bitReverse:00000000 bitReverse
+    {standard input}:163    .text.XN297_UnscramblePayload:00000000 $t
+    {standard input}:168    .text.XN297_UnscramblePayload:00000000 XN297_UnscramblePayload
+    {standard input}:294    .text.XN297_UnscramblePayload:000000ac $d
+    {standard input}:300    .text.XN297_WritePayload:00000000 $t
+    {standard input}:305    .text.XN297_WritePayload:00000000 XN297_WritePayload
+    {standard input}:468    .text.XN297_WritePayload:0000010c $d
+                     .debug_frame:00000010 $d
+
+UNDEFINED SYMBOLS
+crc16_ccitt
+NRF24L01_WritePayload

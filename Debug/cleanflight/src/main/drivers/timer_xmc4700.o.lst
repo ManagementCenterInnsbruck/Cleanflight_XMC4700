@@ -1,0 +1,130 @@
+   1              	 .syntax unified
+   2              	 .cpu cortex-m4
+   3              	 .eabi_attribute 27,3
+   4              	 .fpu fpv4-sp-d16
+   5              	 .eabi_attribute 20,1
+   6              	 .eabi_attribute 21,1
+   7              	 .eabi_attribute 23,3
+   8              	 .eabi_attribute 24,1
+   9              	 .eabi_attribute 25,1
+  10              	 .eabi_attribute 26,1
+  11              	 .eabi_attribute 30,6
+  12              	 .eabi_attribute 34,1
+  13              	 .eabi_attribute 18,4
+  14              	 .thumb
+  15              	 .file "timer_xmc4700.c"
+  16              	 .text
+  17              	.Ltext0:
+  18              	 .cfi_sections .debug_frame
+  19              	 .global timerDefinitions
+  20              	 .section .rodata.timerDefinitions,"a",%progbits
+  21              	 .align 2
+  24              	timerDefinitions:
+  25 0000 00000000 	 .space 24
+  25      00000000 
+  25      00000000 
+  25      00000000 
+  25      00000000 
+  26              	 .section .text.timerClock,"ax",%progbits
+  27              	 .align 2
+  28              	 .global timerClock
+  29              	 .thumb
+  30              	 .thumb_func
+  32              	timerClock:
+  33              	.LFB521:
+  34              	 .file 1 "../cleanflight/src/main/drivers/timer_xmc4700.c"
+   1:../cleanflight/src/main/drivers/timer_xmc4700.c **** /*
+   2:../cleanflight/src/main/drivers/timer_xmc4700.c ****  * This file is part of Cleanflight and Betaflight.
+   3:../cleanflight/src/main/drivers/timer_xmc4700.c ****  *
+   4:../cleanflight/src/main/drivers/timer_xmc4700.c ****  * Cleanflight and Betaflight are free software. You can redistribute
+   5:../cleanflight/src/main/drivers/timer_xmc4700.c ****  * this software and/or modify this software under the terms of the
+   6:../cleanflight/src/main/drivers/timer_xmc4700.c ****  * GNU General Public License as published by the Free Software
+   7:../cleanflight/src/main/drivers/timer_xmc4700.c ****  * Foundation, either version 3 of the License, or (at your option)
+   8:../cleanflight/src/main/drivers/timer_xmc4700.c ****  * any later version.
+   9:../cleanflight/src/main/drivers/timer_xmc4700.c ****  *
+  10:../cleanflight/src/main/drivers/timer_xmc4700.c ****  * Cleanflight and Betaflight are distributed in the hope that they
+  11:../cleanflight/src/main/drivers/timer_xmc4700.c ****  * will be useful, but WITHOUT ANY WARRANTY; without even the implied
+  12:../cleanflight/src/main/drivers/timer_xmc4700.c ****  * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+  13:../cleanflight/src/main/drivers/timer_xmc4700.c ****  * See the GNU General Public License for more details.
+  14:../cleanflight/src/main/drivers/timer_xmc4700.c ****  *
+  15:../cleanflight/src/main/drivers/timer_xmc4700.c ****  * You should have received a copy of the GNU General Public License
+  16:../cleanflight/src/main/drivers/timer_xmc4700.c ****  * along with this software.
+  17:../cleanflight/src/main/drivers/timer_xmc4700.c ****  *
+  18:../cleanflight/src/main/drivers/timer_xmc4700.c ****  * If not, see <http://www.gnu.org/licenses/>.
+  19:../cleanflight/src/main/drivers/timer_xmc4700.c ****  */
+  20:../cleanflight/src/main/drivers/timer_xmc4700.c **** 
+  21:../cleanflight/src/main/drivers/timer_xmc4700.c **** #include "platform.h"
+  22:../cleanflight/src/main/drivers/timer_xmc4700.c **** 
+  23:../cleanflight/src/main/drivers/timer_xmc4700.c **** #include "common/utils.h"
+  24:../cleanflight/src/main/drivers/timer_xmc4700.c **** 
+  25:../cleanflight/src/main/drivers/timer_xmc4700.c **** #include "timer.h"
+  26:../cleanflight/src/main/drivers/timer_xmc4700.c **** 
+  27:../cleanflight/src/main/drivers/timer_xmc4700.c **** const timerDef_t timerDefinitions[HARDWARE_TIMER_DEFINITION_COUNT] = {
+  28:../cleanflight/src/main/drivers/timer_xmc4700.c **** };
+  29:../cleanflight/src/main/drivers/timer_xmc4700.c **** 
+  30:../cleanflight/src/main/drivers/timer_xmc4700.c **** uint32_t timerClock(TIM_TypeDef *tim)
+  31:../cleanflight/src/main/drivers/timer_xmc4700.c **** {
+  35              	 .loc 1 31 0
+  36              	 .cfi_startproc
+  37              	 
+  38              	 
+  39              	 
+  40 0000 80B4     	 push {r7}
+  41              	.LCFI0:
+  42              	 .cfi_def_cfa_offset 4
+  43              	 .cfi_offset 7,-4
+  44 0002 83B0     	 sub sp,sp,#12
+  45              	.LCFI1:
+  46              	 .cfi_def_cfa_offset 16
+  47 0004 00AF     	 add r7,sp,#0
+  48              	.LCFI2:
+  49              	 .cfi_def_cfa_register 7
+  50 0006 7860     	 str r0,[r7,#4]
+  32:../cleanflight/src/main/drivers/timer_xmc4700.c ****     UNUSED(tim);
+  33:../cleanflight/src/main/drivers/timer_xmc4700.c ****     return SystemCoreClock;
+  51              	 .loc 1 33 0
+  52 0008 034B     	 ldr r3,.L3
+  53 000a 1B68     	 ldr r3,[r3]
+  34:../cleanflight/src/main/drivers/timer_xmc4700.c **** }
+  54              	 .loc 1 34 0
+  55 000c 1846     	 mov r0,r3
+  56 000e 0C37     	 adds r7,r7,#12
+  57              	.LCFI3:
+  58              	 .cfi_def_cfa_offset 4
+  59 0010 BD46     	 mov sp,r7
+  60              	.LCFI4:
+  61              	 .cfi_def_cfa_register 13
+  62              	 
+  63 0012 5DF8047B 	 ldr r7,[sp],#4
+  64              	.LCFI5:
+  65              	 .cfi_restore 7
+  66              	 .cfi_def_cfa_offset 0
+  67 0016 7047     	 bx lr
+  68              	.L4:
+  69              	 .align 2
+  70              	.L3:
+  71 0018 00000000 	 .word SystemCoreClock
+  72              	 .cfi_endproc
+  73              	.LFE521:
+  75              	 .text
+  76              	.Letext0:
+  77              	 .file 2 "d:\\xmc\\dave-ide-4.4.2-64bit\\eclipse\\arm-gcc-49\\arm-none-eabi\\include\\machine\\_default_types.h"
+  78              	 .file 3 "d:\\xmc\\dave-ide-4.4.2-64bit\\eclipse\\arm-gcc-49\\arm-none-eabi\\include\\stdint.h"
+  79              	 .file 4 "D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/lib/main/XMC4000/xmc4700.h"
+  80              	 .file 5 "D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/lib/main/XMC4000/XMCLib/inc/xmc_usic.h"
+  81              	 .file 6 "D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/platform.h"
+  82              	 .file 7 "../cleanflight/src/main/drivers/rcc_types.h"
+  83              	 .file 8 "../cleanflight/src/main/drivers/timer.h"
+  84              	 .file 9 "D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/lib/main/CMSIS/Core/Include/core_cm4.h"
+  85              	 .file 10 "D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/lib/main/XMC4000/system_XMC4700.h"
+DEFINED SYMBOLS
+                            *ABS*:00000000 timer_xmc4700.c
+    {standard input}:24     .rodata.timerDefinitions:00000000 timerDefinitions
+    {standard input}:21     .rodata.timerDefinitions:00000000 $d
+    {standard input}:27     .text.timerClock:00000000 $t
+    {standard input}:32     .text.timerClock:00000000 timerClock
+    {standard input}:71     .text.timerClock:00000018 $d
+                     .debug_frame:00000010 $d
+
+UNDEFINED SYMBOLS
+SystemCoreClock

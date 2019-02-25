@@ -1,0 +1,3162 @@
+   1              	 .syntax unified
+   2              	 .cpu cortex-m4
+   3              	 .eabi_attribute 27,3
+   4              	 .fpu fpv4-sp-d16
+   5              	 .eabi_attribute 20,1
+   6              	 .eabi_attribute 21,1
+   7              	 .eabi_attribute 23,3
+   8              	 .eabi_attribute 24,1
+   9              	 .eabi_attribute 25,1
+  10              	 .eabi_attribute 26,1
+  11              	 .eabi_attribute 30,6
+  12              	 .eabi_attribute 34,1
+  13              	 .eabi_attribute 18,4
+  14              	 .thumb
+  15              	 .file "serial_4way.c"
+  16              	 .text
+  17              	.Ltext0:
+  18              	 .cfi_sections .debug_frame
+  19              	 .section .bss.escCount,"aw",%nobits
+  22              	escCount:
+  23 0000 00       	 .space 1
+  24              	 .comm escHardware,32,4
+  25              	 .comm selected_esc,1,1
+  26              	 .comm DeviceInfo,4,4
+  27              	 .section .text.isMcuConnected,"ax",%progbits
+  28              	 .align 2
+  29              	 .global isMcuConnected
+  30              	 .thumb
+  31              	 .thumb_func
+  33              	isMcuConnected:
+  34              	.LFB538:
+  35              	 .file 1 "../cleanflight/src/main/io/serial_4way.c"
+   1:../cleanflight/src/main/io/serial_4way.c **** /*
+   2:../cleanflight/src/main/io/serial_4way.c ****  * This file is part of Cleanflight and Betaflight.
+   3:../cleanflight/src/main/io/serial_4way.c ****  *
+   4:../cleanflight/src/main/io/serial_4way.c ****  * Cleanflight and Betaflight are free software. You can redistribute
+   5:../cleanflight/src/main/io/serial_4way.c ****  * this software and/or modify this software under the terms of the
+   6:../cleanflight/src/main/io/serial_4way.c ****  * GNU General Public License as published by the Free Software
+   7:../cleanflight/src/main/io/serial_4way.c ****  * Foundation, either version 3 of the License, or (at your option)
+   8:../cleanflight/src/main/io/serial_4way.c ****  * any later version.
+   9:../cleanflight/src/main/io/serial_4way.c ****  *
+  10:../cleanflight/src/main/io/serial_4way.c ****  * Cleanflight and Betaflight are distributed in the hope that they
+  11:../cleanflight/src/main/io/serial_4way.c ****  * will be useful, but WITHOUT ANY WARRANTY; without even the implied
+  12:../cleanflight/src/main/io/serial_4way.c ****  * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+  13:../cleanflight/src/main/io/serial_4way.c ****  * See the GNU General Public License for more details.
+  14:../cleanflight/src/main/io/serial_4way.c ****  *
+  15:../cleanflight/src/main/io/serial_4way.c ****  * You should have received a copy of the GNU General Public License
+  16:../cleanflight/src/main/io/serial_4way.c ****  * along with this software.
+  17:../cleanflight/src/main/io/serial_4way.c ****  *
+  18:../cleanflight/src/main/io/serial_4way.c ****  * If not, see <http://www.gnu.org/licenses/>.
+  19:../cleanflight/src/main/io/serial_4way.c ****  */
+  20:../cleanflight/src/main/io/serial_4way.c **** 
+  21:../cleanflight/src/main/io/serial_4way.c **** /*
+  22:../cleanflight/src/main/io/serial_4way.c ****  * Author: 4712
+  23:../cleanflight/src/main/io/serial_4way.c **** */
+  24:../cleanflight/src/main/io/serial_4way.c **** 
+  25:../cleanflight/src/main/io/serial_4way.c **** #include <stdbool.h>
+  26:../cleanflight/src/main/io/serial_4way.c **** #include <stdint.h>
+  27:../cleanflight/src/main/io/serial_4way.c **** #include <string.h>
+  28:../cleanflight/src/main/io/serial_4way.c **** 
+  29:../cleanflight/src/main/io/serial_4way.c **** #include "platform.h"
+  30:../cleanflight/src/main/io/serial_4way.c **** 
+  31:../cleanflight/src/main/io/serial_4way.c **** #ifdef  USE_SERIAL_4WAY_BLHELI_INTERFACE
+  32:../cleanflight/src/main/io/serial_4way.c **** 
+  33:../cleanflight/src/main/io/serial_4way.c **** #include "drivers/buf_writer.h"
+  34:../cleanflight/src/main/io/serial_4way.c **** #include "drivers/io.h"
+  35:../cleanflight/src/main/io/serial_4way.c **** #include "drivers/serial.h"
+  36:../cleanflight/src/main/io/serial_4way.c **** #include "drivers/timer.h"
+  37:../cleanflight/src/main/io/serial_4way.c **** #include "drivers/pwm_output.h"
+  38:../cleanflight/src/main/io/serial_4way.c **** #include "drivers/light_led.h"
+  39:../cleanflight/src/main/io/serial_4way.c **** 
+  40:../cleanflight/src/main/io/serial_4way.c **** #include "flight/mixer.h"
+  41:../cleanflight/src/main/io/serial_4way.c **** 
+  42:../cleanflight/src/main/io/serial_4way.c **** #include "io/beeper.h"
+  43:../cleanflight/src/main/io/serial_4way.c **** #include "io/serial_4way.h"
+  44:../cleanflight/src/main/io/serial_4way.c **** 
+  45:../cleanflight/src/main/io/serial_4way.c **** #ifdef USE_SERIAL_4WAY_BLHELI_BOOTLOADER
+  46:../cleanflight/src/main/io/serial_4way.c **** #include "io/serial_4way_avrootloader.h"
+  47:../cleanflight/src/main/io/serial_4way.c **** #endif
+  48:../cleanflight/src/main/io/serial_4way.c **** #if defined(USE_SERIAL_4WAY_SK_BOOTLOADER)
+  49:../cleanflight/src/main/io/serial_4way.c **** #include "io/serial_4way_stk500v2.h"
+  50:../cleanflight/src/main/io/serial_4way.c **** #endif
+  51:../cleanflight/src/main/io/serial_4way.c **** 
+  52:../cleanflight/src/main/io/serial_4way.c **** #if defined(USE_HAL_DRIVER)
+  53:../cleanflight/src/main/io/serial_4way.c **** #define Bit_RESET GPIO_PIN_RESET
+  54:../cleanflight/src/main/io/serial_4way.c **** #endif
+  55:../cleanflight/src/main/io/serial_4way.c **** 
+  56:../cleanflight/src/main/io/serial_4way.c **** #define USE_TXRX_LED
+  57:../cleanflight/src/main/io/serial_4way.c **** 
+  58:../cleanflight/src/main/io/serial_4way.c **** #ifdef  USE_TXRX_LED
+  59:../cleanflight/src/main/io/serial_4way.c **** #define RX_LED_OFF LED0_OFF
+  60:../cleanflight/src/main/io/serial_4way.c **** #define RX_LED_ON LED0_ON
+  61:../cleanflight/src/main/io/serial_4way.c **** #ifdef  LED1
+  62:../cleanflight/src/main/io/serial_4way.c **** #define TX_LED_OFF LED1_OFF
+  63:../cleanflight/src/main/io/serial_4way.c **** #define TX_LED_ON LED1_ON
+  64:../cleanflight/src/main/io/serial_4way.c **** #else
+  65:../cleanflight/src/main/io/serial_4way.c **** #define TX_LED_OFF LED0_OFF
+  66:../cleanflight/src/main/io/serial_4way.c **** #define TX_LED_ON LED0_ON
+  67:../cleanflight/src/main/io/serial_4way.c **** #endif
+  68:../cleanflight/src/main/io/serial_4way.c **** #else
+  69:../cleanflight/src/main/io/serial_4way.c **** #define RX_LED_OFF
+  70:../cleanflight/src/main/io/serial_4way.c **** #define RX_LED_ON
+  71:../cleanflight/src/main/io/serial_4way.c **** #define TX_LED_OFF
+  72:../cleanflight/src/main/io/serial_4way.c **** #define TX_LED_ON
+  73:../cleanflight/src/main/io/serial_4way.c **** #endif
+  74:../cleanflight/src/main/io/serial_4way.c **** 
+  75:../cleanflight/src/main/io/serial_4way.c **** #define SERIAL_4WAY_INTERFACE_NAME_STR "m4wFCIntf"
+  76:../cleanflight/src/main/io/serial_4way.c **** // *** change to adapt Revision
+  77:../cleanflight/src/main/io/serial_4way.c **** #define SERIAL_4WAY_VER_MAIN 20
+  78:../cleanflight/src/main/io/serial_4way.c **** #define SERIAL_4WAY_VER_SUB_1 (uint8_t) 0
+  79:../cleanflight/src/main/io/serial_4way.c **** #define SERIAL_4WAY_VER_SUB_2 (uint8_t) 02
+  80:../cleanflight/src/main/io/serial_4way.c **** 
+  81:../cleanflight/src/main/io/serial_4way.c **** #define SERIAL_4WAY_PROTOCOL_VER 107
+  82:../cleanflight/src/main/io/serial_4way.c **** // *** end
+  83:../cleanflight/src/main/io/serial_4way.c **** 
+  84:../cleanflight/src/main/io/serial_4way.c **** #if (SERIAL_4WAY_VER_MAIN > 24)
+  85:../cleanflight/src/main/io/serial_4way.c **** #error "beware of SERIAL_4WAY_VER_SUB_1 is uint8_t"
+  86:../cleanflight/src/main/io/serial_4way.c **** #endif
+  87:../cleanflight/src/main/io/serial_4way.c **** 
+  88:../cleanflight/src/main/io/serial_4way.c **** #define SERIAL_4WAY_VERSION (uint16_t) ((SERIAL_4WAY_VER_MAIN * 1000) + (SERIAL_4WAY_VER_SUB_1 * 10
+  89:../cleanflight/src/main/io/serial_4way.c **** 
+  90:../cleanflight/src/main/io/serial_4way.c **** #define SERIAL_4WAY_VERSION_HI (uint8_t) (SERIAL_4WAY_VERSION / 100)
+  91:../cleanflight/src/main/io/serial_4way.c **** #define SERIAL_4WAY_VERSION_LO (uint8_t) (SERIAL_4WAY_VERSION % 100)
+  92:../cleanflight/src/main/io/serial_4way.c **** 
+  93:../cleanflight/src/main/io/serial_4way.c **** static uint8_t escCount;
+  94:../cleanflight/src/main/io/serial_4way.c **** 
+  95:../cleanflight/src/main/io/serial_4way.c **** escHardware_t escHardware[MAX_SUPPORTED_MOTORS];
+  96:../cleanflight/src/main/io/serial_4way.c **** 
+  97:../cleanflight/src/main/io/serial_4way.c **** uint8_t selected_esc;
+  98:../cleanflight/src/main/io/serial_4way.c **** 
+  99:../cleanflight/src/main/io/serial_4way.c **** uint8_32_u DeviceInfo;
+ 100:../cleanflight/src/main/io/serial_4way.c **** 
+ 101:../cleanflight/src/main/io/serial_4way.c **** #define DeviceInfoSize 4
+ 102:../cleanflight/src/main/io/serial_4way.c **** 
+ 103:../cleanflight/src/main/io/serial_4way.c **** inline bool isMcuConnected(void)
+ 104:../cleanflight/src/main/io/serial_4way.c **** {
+  36              	 .loc 1 104 0
+  37              	 .cfi_startproc
+  38              	 
+  39              	 
+  40              	 
+  41 0000 80B4     	 push {r7}
+  42              	.LCFI0:
+  43              	 .cfi_def_cfa_offset 4
+  44              	 .cfi_offset 7,-4
+  45 0002 00AF     	 add r7,sp,#0
+  46              	.LCFI1:
+  47              	 .cfi_def_cfa_register 7
+ 105:../cleanflight/src/main/io/serial_4way.c ****     return (DeviceInfo.bytes[0] > 0);
+  48              	 .loc 1 105 0
+  49 0004 054B     	 ldr r3,.L3
+  50 0006 1B78     	 ldrb r3,[r3]
+  51 0008 002B     	 cmp r3,#0
+  52 000a 14BF     	 ite ne
+  53 000c 0123     	 movne r3,#1
+  54 000e 0023     	 moveq r3,#0
+  55 0010 DBB2     	 uxtb r3,r3
+ 106:../cleanflight/src/main/io/serial_4way.c **** }
+  56              	 .loc 1 106 0
+  57 0012 1846     	 mov r0,r3
+  58 0014 BD46     	 mov sp,r7
+  59              	.LCFI2:
+  60              	 .cfi_def_cfa_register 13
+  61              	 
+  62 0016 5DF8047B 	 ldr r7,[sp],#4
+  63              	.LCFI3:
+  64              	 .cfi_restore 7
+  65              	 .cfi_def_cfa_offset 0
+  66 001a 7047     	 bx lr
+  67              	.L4:
+  68              	 .align 2
+  69              	.L3:
+  70 001c 00000000 	 .word DeviceInfo
+  71              	 .cfi_endproc
+  72              	.LFE538:
+  74              	 .section .text.isEscHi,"ax",%progbits
+  75              	 .align 2
+  76              	 .global isEscHi
+  77              	 .thumb
+  78              	 .thumb_func
+  80              	isEscHi:
+  81              	.LFB539:
+ 107:../cleanflight/src/main/io/serial_4way.c **** 
+ 108:../cleanflight/src/main/io/serial_4way.c **** inline bool isEscHi(uint8_t selEsc)
+ 109:../cleanflight/src/main/io/serial_4way.c **** {
+  82              	 .loc 1 109 0
+  83              	 .cfi_startproc
+  84              	 
+  85              	 
+  86 0000 80B5     	 push {r7,lr}
+  87              	.LCFI4:
+  88              	 .cfi_def_cfa_offset 8
+  89              	 .cfi_offset 7,-8
+  90              	 .cfi_offset 14,-4
+  91 0002 82B0     	 sub sp,sp,#8
+  92              	.LCFI5:
+  93              	 .cfi_def_cfa_offset 16
+  94 0004 00AF     	 add r7,sp,#0
+  95              	.LCFI6:
+  96              	 .cfi_def_cfa_register 7
+  97 0006 0346     	 mov r3,r0
+  98 0008 FB71     	 strb r3,[r7,#7]
+ 110:../cleanflight/src/main/io/serial_4way.c ****     return (IORead(escHardware[selEsc].io) != Bit_RESET);
+  99              	 .loc 1 110 0
+ 100 000a FB79     	 ldrb r3,[r7,#7]
+ 101 000c 074A     	 ldr r2,.L7
+ 102 000e 52F82330 	 ldr r3,[r2,r3,lsl#2]
+ 103 0012 1846     	 mov r0,r3
+ 104 0014 FFF7FEFF 	 bl IORead
+ 105 0018 0346     	 mov r3,r0
+ 106 001a 002B     	 cmp r3,#0
+ 107 001c 14BF     	 ite ne
+ 108 001e 0123     	 movne r3,#1
+ 109 0020 0023     	 moveq r3,#0
+ 110 0022 DBB2     	 uxtb r3,r3
+ 111:../cleanflight/src/main/io/serial_4way.c **** }
+ 111              	 .loc 1 111 0
+ 112 0024 1846     	 mov r0,r3
+ 113 0026 0837     	 adds r7,r7,#8
+ 114              	.LCFI7:
+ 115              	 .cfi_def_cfa_offset 8
+ 116 0028 BD46     	 mov sp,r7
+ 117              	.LCFI8:
+ 118              	 .cfi_def_cfa_register 13
+ 119              	 
+ 120 002a 80BD     	 pop {r7,pc}
+ 121              	.L8:
+ 122              	 .align 2
+ 123              	.L7:
+ 124 002c 00000000 	 .word escHardware
+ 125              	 .cfi_endproc
+ 126              	.LFE539:
+ 128              	 .section .text.isEscLo,"ax",%progbits
+ 129              	 .align 2
+ 130              	 .global isEscLo
+ 131              	 .thumb
+ 132              	 .thumb_func
+ 134              	isEscLo:
+ 135              	.LFB540:
+ 112:../cleanflight/src/main/io/serial_4way.c **** inline bool isEscLo(uint8_t selEsc)
+ 113:../cleanflight/src/main/io/serial_4way.c **** {
+ 136              	 .loc 1 113 0
+ 137              	 .cfi_startproc
+ 138              	 
+ 139              	 
+ 140 0000 80B5     	 push {r7,lr}
+ 141              	.LCFI9:
+ 142              	 .cfi_def_cfa_offset 8
+ 143              	 .cfi_offset 7,-8
+ 144              	 .cfi_offset 14,-4
+ 145 0002 82B0     	 sub sp,sp,#8
+ 146              	.LCFI10:
+ 147              	 .cfi_def_cfa_offset 16
+ 148 0004 00AF     	 add r7,sp,#0
+ 149              	.LCFI11:
+ 150              	 .cfi_def_cfa_register 7
+ 151 0006 0346     	 mov r3,r0
+ 152 0008 FB71     	 strb r3,[r7,#7]
+ 114:../cleanflight/src/main/io/serial_4way.c ****     return (IORead(escHardware[selEsc].io) == Bit_RESET);
+ 153              	 .loc 1 114 0
+ 154 000a FB79     	 ldrb r3,[r7,#7]
+ 155 000c 0A4A     	 ldr r2,.L11
+ 156 000e 52F82330 	 ldr r3,[r2,r3,lsl#2]
+ 157 0012 1846     	 mov r0,r3
+ 158 0014 FFF7FEFF 	 bl IORead
+ 159 0018 0346     	 mov r3,r0
+ 160 001a 002B     	 cmp r3,#0
+ 161 001c 14BF     	 ite ne
+ 162 001e 0123     	 movne r3,#1
+ 163 0020 0023     	 moveq r3,#0
+ 164 0022 DBB2     	 uxtb r3,r3
+ 165 0024 83F00103 	 eor r3,r3,#1
+ 166 0028 DBB2     	 uxtb r3,r3
+ 167 002a 03F00103 	 and r3,r3,#1
+ 168 002e DBB2     	 uxtb r3,r3
+ 115:../cleanflight/src/main/io/serial_4way.c **** }
+ 169              	 .loc 1 115 0
+ 170 0030 1846     	 mov r0,r3
+ 171 0032 0837     	 adds r7,r7,#8
+ 172              	.LCFI12:
+ 173              	 .cfi_def_cfa_offset 8
+ 174 0034 BD46     	 mov sp,r7
+ 175              	.LCFI13:
+ 176              	 .cfi_def_cfa_register 13
+ 177              	 
+ 178 0036 80BD     	 pop {r7,pc}
+ 179              	.L12:
+ 180              	 .align 2
+ 181              	.L11:
+ 182 0038 00000000 	 .word escHardware
+ 183              	 .cfi_endproc
+ 184              	.LFE540:
+ 186              	 .section .text.setEscHi,"ax",%progbits
+ 187              	 .align 2
+ 188              	 .global setEscHi
+ 189              	 .thumb
+ 190              	 .thumb_func
+ 192              	setEscHi:
+ 193              	.LFB541:
+ 116:../cleanflight/src/main/io/serial_4way.c **** 
+ 117:../cleanflight/src/main/io/serial_4way.c **** inline void setEscHi(uint8_t selEsc)
+ 118:../cleanflight/src/main/io/serial_4way.c **** {
+ 194              	 .loc 1 118 0
+ 195              	 .cfi_startproc
+ 196              	 
+ 197              	 
+ 198 0000 80B5     	 push {r7,lr}
+ 199              	.LCFI14:
+ 200              	 .cfi_def_cfa_offset 8
+ 201              	 .cfi_offset 7,-8
+ 202              	 .cfi_offset 14,-4
+ 203 0002 82B0     	 sub sp,sp,#8
+ 204              	.LCFI15:
+ 205              	 .cfi_def_cfa_offset 16
+ 206 0004 00AF     	 add r7,sp,#0
+ 207              	.LCFI16:
+ 208              	 .cfi_def_cfa_register 7
+ 209 0006 0346     	 mov r3,r0
+ 210 0008 FB71     	 strb r3,[r7,#7]
+ 119:../cleanflight/src/main/io/serial_4way.c ****     IOHi(escHardware[selEsc].io);
+ 211              	 .loc 1 119 0
+ 212 000a FB79     	 ldrb r3,[r7,#7]
+ 213 000c 044A     	 ldr r2,.L14
+ 214 000e 52F82330 	 ldr r3,[r2,r3,lsl#2]
+ 215 0012 1846     	 mov r0,r3
+ 216 0014 FFF7FEFF 	 bl IOHi
+ 120:../cleanflight/src/main/io/serial_4way.c **** }
+ 217              	 .loc 1 120 0
+ 218 0018 0837     	 adds r7,r7,#8
+ 219              	.LCFI17:
+ 220              	 .cfi_def_cfa_offset 8
+ 221 001a BD46     	 mov sp,r7
+ 222              	.LCFI18:
+ 223              	 .cfi_def_cfa_register 13
+ 224              	 
+ 225 001c 80BD     	 pop {r7,pc}
+ 226              	.L15:
+ 227 001e 00BF     	 .align 2
+ 228              	.L14:
+ 229 0020 00000000 	 .word escHardware
+ 230              	 .cfi_endproc
+ 231              	.LFE541:
+ 233              	 .section .text.setEscLo,"ax",%progbits
+ 234              	 .align 2
+ 235              	 .global setEscLo
+ 236              	 .thumb
+ 237              	 .thumb_func
+ 239              	setEscLo:
+ 240              	.LFB542:
+ 121:../cleanflight/src/main/io/serial_4way.c **** 
+ 122:../cleanflight/src/main/io/serial_4way.c **** inline void setEscLo(uint8_t selEsc)
+ 123:../cleanflight/src/main/io/serial_4way.c **** {
+ 241              	 .loc 1 123 0
+ 242              	 .cfi_startproc
+ 243              	 
+ 244              	 
+ 245 0000 80B5     	 push {r7,lr}
+ 246              	.LCFI19:
+ 247              	 .cfi_def_cfa_offset 8
+ 248              	 .cfi_offset 7,-8
+ 249              	 .cfi_offset 14,-4
+ 250 0002 82B0     	 sub sp,sp,#8
+ 251              	.LCFI20:
+ 252              	 .cfi_def_cfa_offset 16
+ 253 0004 00AF     	 add r7,sp,#0
+ 254              	.LCFI21:
+ 255              	 .cfi_def_cfa_register 7
+ 256 0006 0346     	 mov r3,r0
+ 257 0008 FB71     	 strb r3,[r7,#7]
+ 124:../cleanflight/src/main/io/serial_4way.c ****     IOLo(escHardware[selEsc].io);
+ 258              	 .loc 1 124 0
+ 259 000a FB79     	 ldrb r3,[r7,#7]
+ 260 000c 044A     	 ldr r2,.L17
+ 261 000e 52F82330 	 ldr r3,[r2,r3,lsl#2]
+ 262 0012 1846     	 mov r0,r3
+ 263 0014 FFF7FEFF 	 bl IOLo
+ 125:../cleanflight/src/main/io/serial_4way.c **** }
+ 264              	 .loc 1 125 0
+ 265 0018 0837     	 adds r7,r7,#8
+ 266              	.LCFI22:
+ 267              	 .cfi_def_cfa_offset 8
+ 268 001a BD46     	 mov sp,r7
+ 269              	.LCFI23:
+ 270              	 .cfi_def_cfa_register 13
+ 271              	 
+ 272 001c 80BD     	 pop {r7,pc}
+ 273              	.L18:
+ 274 001e 00BF     	 .align 2
+ 275              	.L17:
+ 276 0020 00000000 	 .word escHardware
+ 277              	 .cfi_endproc
+ 278              	.LFE542:
+ 280              	 .section .text.setEscInput,"ax",%progbits
+ 281              	 .align 2
+ 282              	 .global setEscInput
+ 283              	 .thumb
+ 284              	 .thumb_func
+ 286              	setEscInput:
+ 287              	.LFB543:
+ 126:../cleanflight/src/main/io/serial_4way.c **** 
+ 127:../cleanflight/src/main/io/serial_4way.c **** inline void setEscInput(uint8_t selEsc)
+ 128:../cleanflight/src/main/io/serial_4way.c **** {
+ 288              	 .loc 1 128 0
+ 289              	 .cfi_startproc
+ 290              	 
+ 291              	 
+ 292 0000 80B5     	 push {r7,lr}
+ 293              	.LCFI24:
+ 294              	 .cfi_def_cfa_offset 8
+ 295              	 .cfi_offset 7,-8
+ 296              	 .cfi_offset 14,-4
+ 297 0002 82B0     	 sub sp,sp,#8
+ 298              	.LCFI25:
+ 299              	 .cfi_def_cfa_offset 16
+ 300 0004 00AF     	 add r7,sp,#0
+ 301              	.LCFI26:
+ 302              	 .cfi_def_cfa_register 7
+ 303 0006 0346     	 mov r3,r0
+ 304 0008 FB71     	 strb r3,[r7,#7]
+ 129:../cleanflight/src/main/io/serial_4way.c ****     IOConfigGPIO(escHardware[selEsc].io, IOCFG_IPU);
+ 305              	 .loc 1 129 0
+ 306 000a FB79     	 ldrb r3,[r7,#7]
+ 307 000c 044A     	 ldr r2,.L20
+ 308 000e 52F82330 	 ldr r3,[r2,r3,lsl#2]
+ 309 0012 1846     	 mov r0,r3
+ 310 0014 1021     	 movs r1,#16
+ 311 0016 FFF7FEFF 	 bl IOConfigGPIO
+ 130:../cleanflight/src/main/io/serial_4way.c **** }
+ 312              	 .loc 1 130 0
+ 313 001a 0837     	 adds r7,r7,#8
+ 314              	.LCFI27:
+ 315              	 .cfi_def_cfa_offset 8
+ 316 001c BD46     	 mov sp,r7
+ 317              	.LCFI28:
+ 318              	 .cfi_def_cfa_register 13
+ 319              	 
+ 320 001e 80BD     	 pop {r7,pc}
+ 321              	.L21:
+ 322              	 .align 2
+ 323              	.L20:
+ 324 0020 00000000 	 .word escHardware
+ 325              	 .cfi_endproc
+ 326              	.LFE543:
+ 328              	 .section .text.setEscOutput,"ax",%progbits
+ 329              	 .align 2
+ 330              	 .global setEscOutput
+ 331              	 .thumb
+ 332              	 .thumb_func
+ 334              	setEscOutput:
+ 335              	.LFB544:
+ 131:../cleanflight/src/main/io/serial_4way.c **** 
+ 132:../cleanflight/src/main/io/serial_4way.c **** inline void setEscOutput(uint8_t selEsc)
+ 133:../cleanflight/src/main/io/serial_4way.c **** {
+ 336              	 .loc 1 133 0
+ 337              	 .cfi_startproc
+ 338              	 
+ 339              	 
+ 340 0000 80B5     	 push {r7,lr}
+ 341              	.LCFI29:
+ 342              	 .cfi_def_cfa_offset 8
+ 343              	 .cfi_offset 7,-8
+ 344              	 .cfi_offset 14,-4
+ 345 0002 82B0     	 sub sp,sp,#8
+ 346              	.LCFI30:
+ 347              	 .cfi_def_cfa_offset 16
+ 348 0004 00AF     	 add r7,sp,#0
+ 349              	.LCFI31:
+ 350              	 .cfi_def_cfa_register 7
+ 351 0006 0346     	 mov r3,r0
+ 352 0008 FB71     	 strb r3,[r7,#7]
+ 134:../cleanflight/src/main/io/serial_4way.c **** #ifdef XMC4700_F100x2048
+ 135:../cleanflight/src/main/io/serial_4way.c **** 	IOConfigGPIO(escHardware[selEsc].io, IOCFG_OUT_PP | 0x01);		// initial output level high
+ 353              	 .loc 1 135 0
+ 354 000a FB79     	 ldrb r3,[r7,#7]
+ 355 000c 044A     	 ldr r2,.L23
+ 356 000e 52F82330 	 ldr r3,[r2,r3,lsl#2]
+ 357 0012 1846     	 mov r0,r3
+ 358 0014 8121     	 movs r1,#129
+ 359 0016 FFF7FEFF 	 bl IOConfigGPIO
+ 136:../cleanflight/src/main/io/serial_4way.c **** #else
+ 137:../cleanflight/src/main/io/serial_4way.c ****     IOConfigGPIO(escHardware[selEsc].io, IOCFG_OUT_PP);
+ 138:../cleanflight/src/main/io/serial_4way.c **** #endif
+ 139:../cleanflight/src/main/io/serial_4way.c **** }
+ 360              	 .loc 1 139 0
+ 361 001a 0837     	 adds r7,r7,#8
+ 362              	.LCFI32:
+ 363              	 .cfi_def_cfa_offset 8
+ 364 001c BD46     	 mov sp,r7
+ 365              	.LCFI33:
+ 366              	 .cfi_def_cfa_register 13
+ 367              	 
+ 368 001e 80BD     	 pop {r7,pc}
+ 369              	.L24:
+ 370              	 .align 2
+ 371              	.L23:
+ 372 0020 00000000 	 .word escHardware
+ 373              	 .cfi_endproc
+ 374              	.LFE544:
+ 376              	 .section .text.esc4wayInit,"ax",%progbits
+ 377              	 .align 2
+ 378              	 .global esc4wayInit
+ 379              	 .thumb
+ 380              	 .thumb_func
+ 382              	esc4wayInit:
+ 383              	.LFB545:
+ 140:../cleanflight/src/main/io/serial_4way.c **** 
+ 141:../cleanflight/src/main/io/serial_4way.c **** uint8_t esc4wayInit(void)
+ 142:../cleanflight/src/main/io/serial_4way.c **** {
+ 384              	 .loc 1 142 0
+ 385              	 .cfi_startproc
+ 386              	 
+ 387              	 
+ 388 0000 80B5     	 push {r7,lr}
+ 389              	.LCFI34:
+ 390              	 .cfi_def_cfa_offset 8
+ 391              	 .cfi_offset 7,-8
+ 392              	 .cfi_offset 14,-4
+ 393 0002 82B0     	 sub sp,sp,#8
+ 394              	.LCFI35:
+ 395              	 .cfi_def_cfa_offset 16
+ 396 0004 00AF     	 add r7,sp,#0
+ 397              	.LCFI36:
+ 398              	 .cfi_def_cfa_register 7
+ 143:../cleanflight/src/main/io/serial_4way.c ****     // StopPwmAllMotors();
+ 144:../cleanflight/src/main/io/serial_4way.c ****     pwmDisableMotors();
+ 399              	 .loc 1 144 0
+ 400 0006 FFF7FEFF 	 bl pwmDisableMotors
+ 145:../cleanflight/src/main/io/serial_4way.c ****     escCount = 0;
+ 401              	 .loc 1 145 0
+ 402 000a 2A4B     	 ldr r3,.L30
+ 403 000c 0022     	 movs r2,#0
+ 404 000e 1A70     	 strb r2,[r3]
+ 146:../cleanflight/src/main/io/serial_4way.c ****     memset(&escHardware, 0, sizeof(escHardware));
+ 405              	 .loc 1 146 0
+ 406 0010 2948     	 ldr r0,.L30+4
+ 407 0012 0021     	 movs r1,#0
+ 408 0014 2022     	 movs r2,#32
+ 409 0016 FFF7FEFF 	 bl memset
+ 147:../cleanflight/src/main/io/serial_4way.c ****     pwmOutputPort_t *pwmMotors = pwmGetMotors();
+ 410              	 .loc 1 147 0
+ 411 001a FFF7FEFF 	 bl pwmGetMotors
+ 412 001e 7860     	 str r0,[r7,#4]
+ 413              	.LBB2:
+ 148:../cleanflight/src/main/io/serial_4way.c ****     for (volatile uint8_t i = 0; i < MAX_SUPPORTED_MOTORS; i++) {
+ 414              	 .loc 1 148 0
+ 415 0020 0023     	 movs r3,#0
+ 416 0022 FB70     	 strb r3,[r7,#3]
+ 417 0024 3BE0     	 b .L26
+ 418              	.L28:
+ 149:../cleanflight/src/main/io/serial_4way.c ****         if (pwmMotors[i].enabled) {
+ 419              	 .loc 1 149 0
+ 420 0026 FB78     	 ldrb r3,[r7,#3]
+ 421 0028 DBB2     	 uxtb r3,r3
+ 422 002a 1A46     	 mov r2,r3
+ 423 002c 1623     	 movs r3,#22
+ 424 002e 03FB02F3 	 mul r3,r3,r2
+ 425 0032 7A68     	 ldr r2,[r7,#4]
+ 426 0034 1344     	 add r3,r3,r2
+ 427 0036 5B7C     	 ldrb r3,[r3,#17]
+ 428 0038 002B     	 cmp r3,#0
+ 429 003a 2BD0     	 beq .L27
+ 150:../cleanflight/src/main/io/serial_4way.c ****             if (pwmMotors[i].io != IO_NONE) {
+ 430              	 .loc 1 150 0
+ 431 003c FB78     	 ldrb r3,[r7,#3]
+ 432 003e DBB2     	 uxtb r3,r3
+ 433 0040 1A46     	 mov r2,r3
+ 434 0042 1623     	 movs r3,#22
+ 435 0044 03FB02F3 	 mul r3,r3,r2
+ 436 0048 7A68     	 ldr r2,[r7,#4]
+ 437 004a 1344     	 add r3,r3,r2
+ 438 004c D3F81230 	 ldr r3,[r3,#18]
+ 439 0050 002B     	 cmp r3,#0
+ 440 0052 1FD0     	 beq .L27
+ 151:../cleanflight/src/main/io/serial_4way.c ****                 escHardware[escCount].io = pwmMotors[i].io;
+ 441              	 .loc 1 151 0
+ 442 0054 174B     	 ldr r3,.L30
+ 443 0056 1B78     	 ldrb r3,[r3]
+ 444 0058 1946     	 mov r1,r3
+ 445 005a FB78     	 ldrb r3,[r7,#3]
+ 446 005c DBB2     	 uxtb r3,r3
+ 447 005e 1A46     	 mov r2,r3
+ 448 0060 1623     	 movs r3,#22
+ 449 0062 03FB02F3 	 mul r3,r3,r2
+ 450 0066 7A68     	 ldr r2,[r7,#4]
+ 451 0068 1344     	 add r3,r3,r2
+ 452 006a D3F81230 	 ldr r3,[r3,#18]
+ 453 006e 124A     	 ldr r2,.L30+4
+ 454 0070 42F82130 	 str r3,[r2,r1,lsl#2]
+ 152:../cleanflight/src/main/io/serial_4way.c ****                 setEscInput(escCount);
+ 455              	 .loc 1 152 0
+ 456 0074 0F4B     	 ldr r3,.L30
+ 457 0076 1B78     	 ldrb r3,[r3]
+ 458 0078 1846     	 mov r0,r3
+ 459 007a FFF7FEFF 	 bl setEscInput
+ 153:../cleanflight/src/main/io/serial_4way.c ****                 setEscHi(escCount);
+ 460              	 .loc 1 153 0
+ 461 007e 0D4B     	 ldr r3,.L30
+ 462 0080 1B78     	 ldrb r3,[r3]
+ 463 0082 1846     	 mov r0,r3
+ 464 0084 FFF7FEFF 	 bl setEscHi
+ 154:../cleanflight/src/main/io/serial_4way.c ****                 escCount++;
+ 465              	 .loc 1 154 0
+ 466 0088 0A4B     	 ldr r3,.L30
+ 467 008a 1B78     	 ldrb r3,[r3]
+ 468 008c 0133     	 adds r3,r3,#1
+ 469 008e DAB2     	 uxtb r2,r3
+ 470 0090 084B     	 ldr r3,.L30
+ 471 0092 1A70     	 strb r2,[r3]
+ 472              	.L27:
+ 148:../cleanflight/src/main/io/serial_4way.c ****         if (pwmMotors[i].enabled) {
+ 473              	 .loc 1 148 0 discriminator 2
+ 474 0094 FB78     	 ldrb r3,[r7,#3]
+ 475 0096 DBB2     	 uxtb r3,r3
+ 476 0098 0133     	 adds r3,r3,#1
+ 477 009a DBB2     	 uxtb r3,r3
+ 478 009c FB70     	 strb r3,[r7,#3]
+ 479              	.L26:
+ 148:../cleanflight/src/main/io/serial_4way.c ****         if (pwmMotors[i].enabled) {
+ 480              	 .loc 1 148 0 is_stmt 0 discriminator 1
+ 481 009e FB78     	 ldrb r3,[r7,#3]
+ 482 00a0 DBB2     	 uxtb r3,r3
+ 483 00a2 072B     	 cmp r3,#7
+ 484 00a4 BFD9     	 bls .L28
+ 485              	.LBE2:
+ 155:../cleanflight/src/main/io/serial_4way.c ****             }
+ 156:../cleanflight/src/main/io/serial_4way.c ****         }
+ 157:../cleanflight/src/main/io/serial_4way.c ****     }
+ 158:../cleanflight/src/main/io/serial_4way.c ****     return escCount;
+ 486              	 .loc 1 158 0 is_stmt 1
+ 487 00a6 034B     	 ldr r3,.L30
+ 488 00a8 1B78     	 ldrb r3,[r3]
+ 159:../cleanflight/src/main/io/serial_4way.c **** }
+ 489              	 .loc 1 159 0
+ 490 00aa 1846     	 mov r0,r3
+ 491 00ac 0837     	 adds r7,r7,#8
+ 492              	.LCFI37:
+ 493              	 .cfi_def_cfa_offset 8
+ 494 00ae BD46     	 mov sp,r7
+ 495              	.LCFI38:
+ 496              	 .cfi_def_cfa_register 13
+ 497              	 
+ 498 00b0 80BD     	 pop {r7,pc}
+ 499              	.L31:
+ 500 00b2 00BF     	 .align 2
+ 501              	.L30:
+ 502 00b4 00000000 	 .word escCount
+ 503 00b8 00000000 	 .word escHardware
+ 504              	 .cfi_endproc
+ 505              	.LFE545:
+ 507              	 .section .text.esc4wayRelease,"ax",%progbits
+ 508              	 .align 2
+ 509              	 .global esc4wayRelease
+ 510              	 .thumb
+ 511              	 .thumb_func
+ 513              	esc4wayRelease:
+ 514              	.LFB546:
+ 160:../cleanflight/src/main/io/serial_4way.c **** 
+ 161:../cleanflight/src/main/io/serial_4way.c **** void esc4wayRelease(void)
+ 162:../cleanflight/src/main/io/serial_4way.c **** {
+ 515              	 .loc 1 162 0
+ 516              	 .cfi_startproc
+ 517              	 
+ 518              	 
+ 519 0000 90B5     	 push {r4,r7,lr}
+ 520              	.LCFI39:
+ 521              	 .cfi_def_cfa_offset 12
+ 522              	 .cfi_offset 4,-12
+ 523              	 .cfi_offset 7,-8
+ 524              	 .cfi_offset 14,-4
+ 525 0002 83B0     	 sub sp,sp,#12
+ 526              	.LCFI40:
+ 527              	 .cfi_def_cfa_offset 24
+ 528 0004 00AF     	 add r7,sp,#0
+ 529              	.LCFI41:
+ 530              	 .cfi_def_cfa_register 7
+ 163:../cleanflight/src/main/io/serial_4way.c ****     while (escCount > 0) {
+ 531              	 .loc 1 163 0
+ 532 0006 38E0     	 b .L33
+ 533              	.L37:
+ 164:../cleanflight/src/main/io/serial_4way.c ****         escCount--;
+ 534              	 .loc 1 164 0
+ 535 0008 204B     	 ldr r3,.L38
+ 536 000a 1B78     	 ldrb r3,[r3]
+ 537 000c 013B     	 subs r3,r3,#1
+ 538 000e DAB2     	 uxtb r2,r3
+ 539 0010 1E4B     	 ldr r3,.L38
+ 540 0012 1A70     	 strb r2,[r3]
+ 541              	.LBB3:
+ 165:../cleanflight/src/main/io/serial_4way.c **** #ifdef XMC4700_F100x2048
+ 166:../cleanflight/src/main/io/serial_4way.c ****         for (int i=0; i<USABLE_TIMER_CHANNEL_COUNT; i++)
+ 542              	 .loc 1 166 0
+ 543 0014 0023     	 movs r3,#0
+ 544 0016 7B60     	 str r3,[r7,#4]
+ 545 0018 27E0     	 b .L34
+ 546              	.L36:
+ 167:../cleanflight/src/main/io/serial_4way.c ****         {
+ 168:../cleanflight/src/main/io/serial_4way.c ****         	if (escHardware[escCount].io == IOGetByTag(timerHardware[i].tag))
+ 547              	 .loc 1 168 0
+ 548 001a 1C4B     	 ldr r3,.L38
+ 549 001c 1B78     	 ldrb r3,[r3]
+ 550 001e 1A46     	 mov r2,r3
+ 551 0020 1B4B     	 ldr r3,.L38+4
+ 552 0022 53F82240 	 ldr r4,[r3,r2,lsl#2]
+ 553 0026 1B49     	 ldr r1,.L38+8
+ 554 0028 7A68     	 ldr r2,[r7,#4]
+ 555 002a 1346     	 mov r3,r2
+ 556 002c DB00     	 lsls r3,r3,#3
+ 557 002e 1344     	 add r3,r3,r2
+ 558 0030 0B44     	 add r3,r3,r1
+ 559 0032 1B79     	 ldrb r3,[r3,#4]
+ 560 0034 1846     	 mov r0,r3
+ 561 0036 FFF7FEFF 	 bl IOGetByTag
+ 562 003a 0346     	 mov r3,r0
+ 563 003c 9C42     	 cmp r4,r3
+ 564 003e 11D1     	 bne .L35
+ 169:../cleanflight/src/main/io/serial_4way.c ****         		IOConfigGPIOAF(escHardware[escCount].io, IOCFG_AF_PP, timerHardware[i].alternateFunction)
+ 565              	 .loc 1 169 0
+ 566 0040 124B     	 ldr r3,.L38
+ 567 0042 1B78     	 ldrb r3,[r3]
+ 568 0044 1A46     	 mov r2,r3
+ 569 0046 124B     	 ldr r3,.L38+4
+ 570 0048 53F82200 	 ldr r0,[r3,r2,lsl#2]
+ 571 004c 1149     	 ldr r1,.L38+8
+ 572 004e 7A68     	 ldr r2,[r7,#4]
+ 573 0050 1346     	 mov r3,r2
+ 574 0052 DB00     	 lsls r3,r3,#3
+ 575 0054 1344     	 add r3,r3,r2
+ 576 0056 0B44     	 add r3,r3,r1
+ 577 0058 0833     	 adds r3,r3,#8
+ 578 005a 1B78     	 ldrb r3,[r3]
+ 579 005c 8021     	 movs r1,#128
+ 580 005e 1A46     	 mov r2,r3
+ 581 0060 FFF7FEFF 	 bl IOConfigGPIOAF
+ 582              	.L35:
+ 166:../cleanflight/src/main/io/serial_4way.c ****         {
+ 583              	 .loc 1 166 0 discriminator 2
+ 584 0064 7B68     	 ldr r3,[r7,#4]
+ 585 0066 0133     	 adds r3,r3,#1
+ 586 0068 7B60     	 str r3,[r7,#4]
+ 587              	.L34:
+ 166:../cleanflight/src/main/io/serial_4way.c ****         {
+ 588              	 .loc 1 166 0 is_stmt 0 discriminator 1
+ 589 006a 7B68     	 ldr r3,[r7,#4]
+ 590 006c 0C2B     	 cmp r3,#12
+ 591 006e D4DD     	 ble .L36
+ 592              	.LBE3:
+ 170:../cleanflight/src/main/io/serial_4way.c ****         }
+ 171:../cleanflight/src/main/io/serial_4way.c **** #else
+ 172:../cleanflight/src/main/io/serial_4way.c ****         IOConfigGPIO(escHardware[escCount].io, IOCFG_AF_PP);
+ 173:../cleanflight/src/main/io/serial_4way.c **** #endif
+ 174:../cleanflight/src/main/io/serial_4way.c ****         setEscLo(escCount);
+ 593              	 .loc 1 174 0 is_stmt 1
+ 594 0070 064B     	 ldr r3,.L38
+ 595 0072 1B78     	 ldrb r3,[r3]
+ 596 0074 1846     	 mov r0,r3
+ 597 0076 FFF7FEFF 	 bl setEscLo
+ 598              	.L33:
+ 163:../cleanflight/src/main/io/serial_4way.c ****         escCount--;
+ 599              	 .loc 1 163 0
+ 600 007a 044B     	 ldr r3,.L38
+ 601 007c 1B78     	 ldrb r3,[r3]
+ 602 007e 002B     	 cmp r3,#0
+ 603 0080 C2D1     	 bne .L37
+ 175:../cleanflight/src/main/io/serial_4way.c ****     }
+ 176:../cleanflight/src/main/io/serial_4way.c ****     pwmEnableMotors();
+ 604              	 .loc 1 176 0
+ 605 0082 FFF7FEFF 	 bl pwmEnableMotors
+ 177:../cleanflight/src/main/io/serial_4way.c **** }
+ 606              	 .loc 1 177 0
+ 607 0086 0C37     	 adds r7,r7,#12
+ 608              	.LCFI42:
+ 609              	 .cfi_def_cfa_offset 12
+ 610 0088 BD46     	 mov sp,r7
+ 611              	.LCFI43:
+ 612              	 .cfi_def_cfa_register 13
+ 613              	 
+ 614 008a 90BD     	 pop {r4,r7,pc}
+ 615              	.L39:
+ 616              	 .align 2
+ 617              	.L38:
+ 618 008c 00000000 	 .word escCount
+ 619 0090 00000000 	 .word escHardware
+ 620 0094 00000000 	 .word timerHardware
+ 621              	 .cfi_endproc
+ 622              	.LFE546:
+ 624              	 .section .text._crc_xmodem_update,"ax",%progbits
+ 625              	 .align 2
+ 626              	 .global _crc_xmodem_update
+ 627              	 .thumb
+ 628              	 .thumb_func
+ 630              	_crc_xmodem_update:
+ 631              	.LFB547:
+ 178:../cleanflight/src/main/io/serial_4way.c **** 
+ 179:../cleanflight/src/main/io/serial_4way.c **** 
+ 180:../cleanflight/src/main/io/serial_4way.c **** #define SET_DISCONNECTED DeviceInfo.words[0] = 0
+ 181:../cleanflight/src/main/io/serial_4way.c **** 
+ 182:../cleanflight/src/main/io/serial_4way.c **** #define INTF_MODE_IDX 3  // index for DeviceInfostate
+ 183:../cleanflight/src/main/io/serial_4way.c **** 
+ 184:../cleanflight/src/main/io/serial_4way.c **** // Interface related only
+ 185:../cleanflight/src/main/io/serial_4way.c **** // establish and test connection to the Interface
+ 186:../cleanflight/src/main/io/serial_4way.c **** 
+ 187:../cleanflight/src/main/io/serial_4way.c **** // Send Structure
+ 188:../cleanflight/src/main/io/serial_4way.c **** // ESC + CMD PARAM_LEN [PARAM (if len > 0)] CRC16_Hi CRC16_Lo
+ 189:../cleanflight/src/main/io/serial_4way.c **** // Return
+ 190:../cleanflight/src/main/io/serial_4way.c **** // ESC CMD PARAM_LEN [PARAM (if len > 0)] + ACK (uint8_t OK or ERR) + CRC16_Hi CRC16_Lo
+ 191:../cleanflight/src/main/io/serial_4way.c **** 
+ 192:../cleanflight/src/main/io/serial_4way.c **** #define cmd_Remote_Escape 0x2E // '.'
+ 193:../cleanflight/src/main/io/serial_4way.c **** #define cmd_Local_Escape  0x2F // '/'
+ 194:../cleanflight/src/main/io/serial_4way.c **** 
+ 195:../cleanflight/src/main/io/serial_4way.c **** // Test Interface still present
+ 196:../cleanflight/src/main/io/serial_4way.c **** #define cmd_InterfaceTestAlive 0x30 // '0' alive
+ 197:../cleanflight/src/main/io/serial_4way.c **** // RETURN: ACK
+ 198:../cleanflight/src/main/io/serial_4way.c **** 
+ 199:../cleanflight/src/main/io/serial_4way.c **** // get Protocol Version Number 01..255
+ 200:../cleanflight/src/main/io/serial_4way.c **** #define cmd_ProtocolGetVersion 0x31  // '1' version
+ 201:../cleanflight/src/main/io/serial_4way.c **** // RETURN: uint8_t VersionNumber + ACK
+ 202:../cleanflight/src/main/io/serial_4way.c **** 
+ 203:../cleanflight/src/main/io/serial_4way.c **** // get Version String
+ 204:../cleanflight/src/main/io/serial_4way.c **** #define cmd_InterfaceGetName 0x32 // '2' name
+ 205:../cleanflight/src/main/io/serial_4way.c **** // RETURN: String + ACK
+ 206:../cleanflight/src/main/io/serial_4way.c **** 
+ 207:../cleanflight/src/main/io/serial_4way.c **** //get Version Number 01..255
+ 208:../cleanflight/src/main/io/serial_4way.c **** #define cmd_InterfaceGetVersion 0x33  // '3' version
+ 209:../cleanflight/src/main/io/serial_4way.c **** // RETURN: uint8_t AVersionNumber + ACK
+ 210:../cleanflight/src/main/io/serial_4way.c **** 
+ 211:../cleanflight/src/main/io/serial_4way.c **** 
+ 212:../cleanflight/src/main/io/serial_4way.c **** // Exit / Restart Interface - can be used to switch to Box Mode
+ 213:../cleanflight/src/main/io/serial_4way.c **** #define cmd_InterfaceExit 0x34       // '4' exit
+ 214:../cleanflight/src/main/io/serial_4way.c **** // RETURN: ACK
+ 215:../cleanflight/src/main/io/serial_4way.c **** 
+ 216:../cleanflight/src/main/io/serial_4way.c **** // Reset the Device connected to the Interface
+ 217:../cleanflight/src/main/io/serial_4way.c **** #define cmd_DeviceReset 0x35        // '5' reset
+ 218:../cleanflight/src/main/io/serial_4way.c **** // RETURN: ACK
+ 219:../cleanflight/src/main/io/serial_4way.c **** 
+ 220:../cleanflight/src/main/io/serial_4way.c **** // Get the Device ID connected
+ 221:../cleanflight/src/main/io/serial_4way.c **** // #define cmd_DeviceGetID 0x36      //'6' device id removed since 06/106
+ 222:../cleanflight/src/main/io/serial_4way.c **** // RETURN: uint8_t DeviceID + ACK
+ 223:../cleanflight/src/main/io/serial_4way.c **** 
+ 224:../cleanflight/src/main/io/serial_4way.c **** // Initialize Flash Access for Device connected
+ 225:../cleanflight/src/main/io/serial_4way.c **** #define cmd_DeviceInitFlash 0x37    // '7' init flash access
+ 226:../cleanflight/src/main/io/serial_4way.c **** // RETURN: ACK
+ 227:../cleanflight/src/main/io/serial_4way.c **** 
+ 228:../cleanflight/src/main/io/serial_4way.c **** // Erase the whole Device Memory of connected Device
+ 229:../cleanflight/src/main/io/serial_4way.c **** #define cmd_DeviceEraseAll 0x38     // '8' erase all
+ 230:../cleanflight/src/main/io/serial_4way.c **** // RETURN: ACK
+ 231:../cleanflight/src/main/io/serial_4way.c **** 
+ 232:../cleanflight/src/main/io/serial_4way.c **** // Erase one Page of Device Memory of connected Device
+ 233:../cleanflight/src/main/io/serial_4way.c **** #define cmd_DevicePageErase 0x39    // '9' page erase
+ 234:../cleanflight/src/main/io/serial_4way.c **** // PARAM: uint8_t APageNumber
+ 235:../cleanflight/src/main/io/serial_4way.c **** // RETURN: ACK
+ 236:../cleanflight/src/main/io/serial_4way.c **** 
+ 237:../cleanflight/src/main/io/serial_4way.c **** // Read to Buffer from Device Memory of connected Device // Buffer Len is Max 256 Bytes
+ 238:../cleanflight/src/main/io/serial_4way.c **** // BuffLen = 0 means 256 Bytes
+ 239:../cleanflight/src/main/io/serial_4way.c **** #define cmd_DeviceRead 0x3A  // ':' read Device
+ 240:../cleanflight/src/main/io/serial_4way.c **** // PARAM: uint8_t ADRESS_Hi + ADRESS_Lo + BuffLen[0..255]
+ 241:../cleanflight/src/main/io/serial_4way.c **** // RETURN: PARAM: uint8_t ADRESS_Hi + ADRESS_Lo + BUffLen + Buffer[0..255] ACK
+ 242:../cleanflight/src/main/io/serial_4way.c **** 
+ 243:../cleanflight/src/main/io/serial_4way.c **** // Write to Buffer for Device Memory of connected Device // Buffer Len is Max 256 Bytes
+ 244:../cleanflight/src/main/io/serial_4way.c **** // BuffLen = 0 means 256 Bytes
+ 245:../cleanflight/src/main/io/serial_4way.c **** #define cmd_DeviceWrite 0x3B    // ';' write
+ 246:../cleanflight/src/main/io/serial_4way.c **** // PARAM: uint8_t ADRESS_Hi + ADRESS_Lo + BUffLen + Buffer[0..255]
+ 247:../cleanflight/src/main/io/serial_4way.c **** // RETURN: ACK
+ 248:../cleanflight/src/main/io/serial_4way.c **** 
+ 249:../cleanflight/src/main/io/serial_4way.c **** // Set C2CK low infinite ) permanent Reset state
+ 250:../cleanflight/src/main/io/serial_4way.c **** #define cmd_DeviceC2CK_LOW 0x3C // '<'
+ 251:../cleanflight/src/main/io/serial_4way.c **** // RETURN: ACK
+ 252:../cleanflight/src/main/io/serial_4way.c **** 
+ 253:../cleanflight/src/main/io/serial_4way.c **** // Read to Buffer from Device Memory of connected Device //Buffer Len is Max 256 Bytes
+ 254:../cleanflight/src/main/io/serial_4way.c **** // BuffLen = 0 means 256 Bytes
+ 255:../cleanflight/src/main/io/serial_4way.c **** #define cmd_DeviceReadEEprom 0x3D  // '=' read Device
+ 256:../cleanflight/src/main/io/serial_4way.c **** // PARAM: uint8_t ADRESS_Hi + ADRESS_Lo + BuffLen[0..255]
+ 257:../cleanflight/src/main/io/serial_4way.c **** // RETURN: PARAM: uint8_t ADRESS_Hi + ADRESS_Lo + BUffLen + Buffer[0..255] ACK
+ 258:../cleanflight/src/main/io/serial_4way.c **** 
+ 259:../cleanflight/src/main/io/serial_4way.c **** // Write to Buffer for Device Memory of connected Device // Buffer Len is Max 256 Bytes
+ 260:../cleanflight/src/main/io/serial_4way.c **** // BuffLen = 0 means 256 Bytes
+ 261:../cleanflight/src/main/io/serial_4way.c **** #define cmd_DeviceWriteEEprom 0x3E  // '>' write
+ 262:../cleanflight/src/main/io/serial_4way.c **** // PARAM: uint8_t ADRESS_Hi + ADRESS_Lo + BUffLen + Buffer[0..255]
+ 263:../cleanflight/src/main/io/serial_4way.c **** // RETURN: ACK
+ 264:../cleanflight/src/main/io/serial_4way.c **** 
+ 265:../cleanflight/src/main/io/serial_4way.c **** // Set Interface Mode
+ 266:../cleanflight/src/main/io/serial_4way.c **** #define cmd_InterfaceSetMode 0x3F   // '?'
+ 267:../cleanflight/src/main/io/serial_4way.c **** // #define imC2 0
+ 268:../cleanflight/src/main/io/serial_4way.c **** // #define imSIL_BLB 1
+ 269:../cleanflight/src/main/io/serial_4way.c **** // #define imATM_BLB 2
+ 270:../cleanflight/src/main/io/serial_4way.c **** // #define imSK 3
+ 271:../cleanflight/src/main/io/serial_4way.c **** // PARAM: uint8_t Mode
+ 272:../cleanflight/src/main/io/serial_4way.c **** // RETURN: ACK or ACK_I_INVALID_CHANNEL
+ 273:../cleanflight/src/main/io/serial_4way.c **** 
+ 274:../cleanflight/src/main/io/serial_4way.c **** //Write to Buffer for Verify Device Memory of connected Device //Buffer Len is Max 256 Bytes
+ 275:../cleanflight/src/main/io/serial_4way.c **** //BuffLen = 0 means 256 Bytes
+ 276:../cleanflight/src/main/io/serial_4way.c **** #define cmd_DeviceVerify 0x40   //'@' write
+ 277:../cleanflight/src/main/io/serial_4way.c **** //PARAM: uint8_t ADRESS_Hi + ADRESS_Lo + BUffLen + Buffer[0..255]
+ 278:../cleanflight/src/main/io/serial_4way.c **** //RETURN: ACK
+ 279:../cleanflight/src/main/io/serial_4way.c **** 
+ 280:../cleanflight/src/main/io/serial_4way.c **** 
+ 281:../cleanflight/src/main/io/serial_4way.c **** // responses
+ 282:../cleanflight/src/main/io/serial_4way.c **** #define ACK_OK                  0x00
+ 283:../cleanflight/src/main/io/serial_4way.c **** // #define ACK_I_UNKNOWN_ERROR       0x01
+ 284:../cleanflight/src/main/io/serial_4way.c **** #define ACK_I_INVALID_CMD       0x02
+ 285:../cleanflight/src/main/io/serial_4way.c **** #define ACK_I_INVALID_CRC       0x03
+ 286:../cleanflight/src/main/io/serial_4way.c **** #define ACK_I_VERIFY_ERROR      0x04
+ 287:../cleanflight/src/main/io/serial_4way.c **** // #define ACK_D_INVALID_COMMAND 0x05
+ 288:../cleanflight/src/main/io/serial_4way.c **** // #define ACK_D_COMMAND_FAILED  0x06
+ 289:../cleanflight/src/main/io/serial_4way.c **** // #define ACK_D_UNKNOWN_ERROR       0x07
+ 290:../cleanflight/src/main/io/serial_4way.c **** 
+ 291:../cleanflight/src/main/io/serial_4way.c **** #define ACK_I_INVALID_CHANNEL   0x08
+ 292:../cleanflight/src/main/io/serial_4way.c **** #define ACK_I_INVALID_PARAM     0x09
+ 293:../cleanflight/src/main/io/serial_4way.c **** #define ACK_D_GENERAL_ERROR     0x0F
+ 294:../cleanflight/src/main/io/serial_4way.c **** 
+ 295:../cleanflight/src/main/io/serial_4way.c **** /* Copyright (c) 2002, 2003, 2004  Marek Michalkiewicz
+ 296:../cleanflight/src/main/io/serial_4way.c ****    Copyright (c) 2005, 2007 Joerg Wunsch
+ 297:../cleanflight/src/main/io/serial_4way.c ****    Copyright (c) 2013 Dave Hylands
+ 298:../cleanflight/src/main/io/serial_4way.c ****    Copyright (c) 2013 Frederic Nadeau
+ 299:../cleanflight/src/main/io/serial_4way.c ****    All rights reserved.
+ 300:../cleanflight/src/main/io/serial_4way.c **** 
+ 301:../cleanflight/src/main/io/serial_4way.c ****    Redistribution and use in source and binary forms, with or without
+ 302:../cleanflight/src/main/io/serial_4way.c ****    modification, are permitted provided that the following conditions are met:
+ 303:../cleanflight/src/main/io/serial_4way.c **** 
+ 304:../cleanflight/src/main/io/serial_4way.c ****    * Redistributions of source code must retain the above copyright
+ 305:../cleanflight/src/main/io/serial_4way.c ****      notice, this list of conditions and the following disclaimer.
+ 306:../cleanflight/src/main/io/serial_4way.c **** 
+ 307:../cleanflight/src/main/io/serial_4way.c ****    * Redistributions in binary form must reproduce the above copyright
+ 308:../cleanflight/src/main/io/serial_4way.c ****      notice, this list of conditions and the following disclaimer in
+ 309:../cleanflight/src/main/io/serial_4way.c ****      the documentation and/or other materials provided with the
+ 310:../cleanflight/src/main/io/serial_4way.c ****      distribution.
+ 311:../cleanflight/src/main/io/serial_4way.c **** 
+ 312:../cleanflight/src/main/io/serial_4way.c ****    * Neither the name of the copyright holders nor the names of
+ 313:../cleanflight/src/main/io/serial_4way.c ****      contributors may be used to endorse or promote products derived
+ 314:../cleanflight/src/main/io/serial_4way.c ****      from this software without specific prior written permission.
+ 315:../cleanflight/src/main/io/serial_4way.c **** 
+ 316:../cleanflight/src/main/io/serial_4way.c ****   THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
+ 317:../cleanflight/src/main/io/serial_4way.c ****   AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+ 318:../cleanflight/src/main/io/serial_4way.c ****   IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
+ 319:../cleanflight/src/main/io/serial_4way.c ****   ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE
+ 320:../cleanflight/src/main/io/serial_4way.c ****   LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR
+ 321:../cleanflight/src/main/io/serial_4way.c ****   CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF
+ 322:../cleanflight/src/main/io/serial_4way.c ****   SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS
+ 323:../cleanflight/src/main/io/serial_4way.c ****   INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN
+ 324:../cleanflight/src/main/io/serial_4way.c ****   CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
+ 325:../cleanflight/src/main/io/serial_4way.c ****   ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
+ 326:../cleanflight/src/main/io/serial_4way.c ****   POSSIBILITY OF SUCH DAMAGE. */
+ 327:../cleanflight/src/main/io/serial_4way.c **** uint16_t _crc_xmodem_update (uint16_t crc, uint8_t data) {
+ 632              	 .loc 1 327 0
+ 633              	 .cfi_startproc
+ 634              	 
+ 635              	 
+ 636              	 
+ 637 0000 80B4     	 push {r7}
+ 638              	.LCFI44:
+ 639              	 .cfi_def_cfa_offset 4
+ 640              	 .cfi_offset 7,-4
+ 641 0002 85B0     	 sub sp,sp,#20
+ 642              	.LCFI45:
+ 643              	 .cfi_def_cfa_offset 24
+ 644 0004 00AF     	 add r7,sp,#0
+ 645              	.LCFI46:
+ 646              	 .cfi_def_cfa_register 7
+ 647 0006 0346     	 mov r3,r0
+ 648 0008 0A46     	 mov r2,r1
+ 649 000a FB80     	 strh r3,[r7,#6]
+ 650 000c 1346     	 mov r3,r2
+ 651 000e 7B71     	 strb r3,[r7,#5]
+ 328:../cleanflight/src/main/io/serial_4way.c ****         int i;
+ 329:../cleanflight/src/main/io/serial_4way.c **** 
+ 330:../cleanflight/src/main/io/serial_4way.c ****         crc = crc ^ ((uint16_t)data << 8);
+ 652              	 .loc 1 330 0
+ 653 0010 7B79     	 ldrb r3,[r7,#5]
+ 654 0012 1B02     	 lsls r3,r3,#8
+ 655 0014 9AB2     	 uxth r2,r3
+ 656 0016 FB88     	 ldrh r3,[r7,#6]
+ 657 0018 5340     	 eors r3,r3,r2
+ 658 001a 9BB2     	 uxth r3,r3
+ 659 001c FB80     	 strh r3,[r7,#6]
+ 331:../cleanflight/src/main/io/serial_4way.c ****         for (i=0; i < 8; i++) {
+ 660              	 .loc 1 331 0
+ 661 001e 0023     	 movs r3,#0
+ 662 0020 FB60     	 str r3,[r7,#12]
+ 663 0022 13E0     	 b .L41
+ 664              	.L44:
+ 332:../cleanflight/src/main/io/serial_4way.c ****             if (crc & 0x8000)
+ 665              	 .loc 1 332 0
+ 666 0024 FB88     	 ldrh r3,[r7,#6]
+ 667 0026 1BB2     	 sxth r3,r3
+ 668 0028 002B     	 cmp r3,#0
+ 669 002a 09DA     	 bge .L42
+ 333:../cleanflight/src/main/io/serial_4way.c ****                 crc = (crc << 1) ^ 0x1021;
+ 670              	 .loc 1 333 0
+ 671 002c FB88     	 ldrh r3,[r7,#6]
+ 672 002e 5B00     	 lsls r3,r3,#1
+ 673 0030 9BB2     	 uxth r3,r3
+ 674 0032 83F48153 	 eor r3,r3,#4128
+ 675 0036 83F00103 	 eor r3,r3,#1
+ 676 003a 9BB2     	 uxth r3,r3
+ 677 003c FB80     	 strh r3,[r7,#6]
+ 678 003e 02E0     	 b .L43
+ 679              	.L42:
+ 334:../cleanflight/src/main/io/serial_4way.c ****             else
+ 335:../cleanflight/src/main/io/serial_4way.c ****                 crc <<= 1;
+ 680              	 .loc 1 335 0
+ 681 0040 FB88     	 ldrh r3,[r7,#6]
+ 682 0042 5B00     	 lsls r3,r3,#1
+ 683 0044 FB80     	 strh r3,[r7,#6]
+ 684              	.L43:
+ 331:../cleanflight/src/main/io/serial_4way.c ****             if (crc & 0x8000)
+ 685              	 .loc 1 331 0 discriminator 2
+ 686 0046 FB68     	 ldr r3,[r7,#12]
+ 687 0048 0133     	 adds r3,r3,#1
+ 688 004a FB60     	 str r3,[r7,#12]
+ 689              	.L41:
+ 331:../cleanflight/src/main/io/serial_4way.c ****             if (crc & 0x8000)
+ 690              	 .loc 1 331 0 is_stmt 0 discriminator 1
+ 691 004c FB68     	 ldr r3,[r7,#12]
+ 692 004e 072B     	 cmp r3,#7
+ 693 0050 E8DD     	 ble .L44
+ 336:../cleanflight/src/main/io/serial_4way.c ****         }
+ 337:../cleanflight/src/main/io/serial_4way.c ****         return crc;
+ 694              	 .loc 1 337 0 is_stmt 1
+ 695 0052 FB88     	 ldrh r3,[r7,#6]
+ 338:../cleanflight/src/main/io/serial_4way.c **** }
+ 696              	 .loc 1 338 0
+ 697 0054 1846     	 mov r0,r3
+ 698 0056 1437     	 adds r7,r7,#20
+ 699              	.LCFI47:
+ 700              	 .cfi_def_cfa_offset 4
+ 701 0058 BD46     	 mov sp,r7
+ 702              	.LCFI48:
+ 703              	 .cfi_def_cfa_register 13
+ 704              	 
+ 705 005a 5DF8047B 	 ldr r7,[sp],#4
+ 706              	.LCFI49:
+ 707              	 .cfi_restore 7
+ 708              	 .cfi_def_cfa_offset 0
+ 709 005e 7047     	 bx lr
+ 710              	 .cfi_endproc
+ 711              	.LFE547:
+ 713              	 .section .bss.CurrentInterfaceMode,"aw",%nobits
+ 716              	CurrentInterfaceMode:
+ 717 0000 00       	 .space 1
+ 718              	 .section .text.Connect,"ax",%progbits
+ 719              	 .align 2
+ 720              	 .thumb
+ 721              	 .thumb_func
+ 723              	Connect:
+ 724              	.LFB548:
+ 339:../cleanflight/src/main/io/serial_4way.c **** // * End copyright
+ 340:../cleanflight/src/main/io/serial_4way.c **** 
+ 341:../cleanflight/src/main/io/serial_4way.c **** 
+ 342:../cleanflight/src/main/io/serial_4way.c **** #define ATMEL_DEVICE_MATCH ((pDeviceInfo->words[0] == 0x9307) || (pDeviceInfo->words[0] == 0x930A) 
+ 343:../cleanflight/src/main/io/serial_4way.c ****         (pDeviceInfo->words[0] == 0x930F) || (pDeviceInfo->words[0] == 0x940B))
+ 344:../cleanflight/src/main/io/serial_4way.c **** 
+ 345:../cleanflight/src/main/io/serial_4way.c **** #define SILABS_DEVICE_MATCH ((pDeviceInfo->words[0] == 0xF310)||(pDeviceInfo->words[0] ==0xF330) ||
+ 346:../cleanflight/src/main/io/serial_4way.c ****         (pDeviceInfo->words[0] == 0xF410) || (pDeviceInfo->words[0] == 0xF390) || \
+ 347:../cleanflight/src/main/io/serial_4way.c ****         (pDeviceInfo->words[0] == 0xF850) || (pDeviceInfo->words[0] == 0xE8B1) || \
+ 348:../cleanflight/src/main/io/serial_4way.c ****         (pDeviceInfo->words[0] == 0xE8B2))
+ 349:../cleanflight/src/main/io/serial_4way.c **** 
+ 350:../cleanflight/src/main/io/serial_4way.c **** #define ARM_DEVICE_MATCH ((pDeviceInfo->words[0] == 0x1F06) || \
+ 351:../cleanflight/src/main/io/serial_4way.c ****         (pDeviceInfo->words[0] == 0x3306) || (pDeviceInfo->words[0] == 0x3406) || (pDeviceInfo->wor
+ 352:../cleanflight/src/main/io/serial_4way.c **** 
+ 353:../cleanflight/src/main/io/serial_4way.c **** static uint8_t CurrentInterfaceMode;
+ 354:../cleanflight/src/main/io/serial_4way.c **** 
+ 355:../cleanflight/src/main/io/serial_4way.c **** static uint8_t Connect(uint8_32_u *pDeviceInfo)
+ 356:../cleanflight/src/main/io/serial_4way.c **** {
+ 725              	 .loc 1 356 0
+ 726              	 .cfi_startproc
+ 727              	 
+ 728              	 
+ 729 0000 80B5     	 push {r7,lr}
+ 730              	.LCFI50:
+ 731              	 .cfi_def_cfa_offset 8
+ 732              	 .cfi_offset 7,-8
+ 733              	 .cfi_offset 14,-4
+ 734 0002 84B0     	 sub sp,sp,#16
+ 735              	.LCFI51:
+ 736              	 .cfi_def_cfa_offset 24
+ 737 0004 00AF     	 add r7,sp,#0
+ 738              	.LCFI52:
+ 739              	 .cfi_def_cfa_register 7
+ 740 0006 7860     	 str r0,[r7,#4]
+ 741              	.LBB4:
+ 357:../cleanflight/src/main/io/serial_4way.c ****     for (uint8_t I = 0; I < 3; ++I) {
+ 742              	 .loc 1 357 0
+ 743 0008 0023     	 movs r3,#0
+ 744 000a FB73     	 strb r3,[r7,#15]
+ 745 000c ABE0     	 b .L47
+ 746              	.L57:
+ 358:../cleanflight/src/main/io/serial_4way.c ****         #if (defined(USE_SERIAL_4WAY_BLHELI_BOOTLOADER) && defined(USE_SERIAL_4WAY_SK_BOOTLOADER))
+ 359:../cleanflight/src/main/io/serial_4way.c ****         if ((CurrentInterfaceMode != imARM_BLB) && Stk_ConnectEx(pDeviceInfo) && ATMEL_DEVICE_MATCH
+ 747              	 .loc 1 359 0
+ 748 000e 5A4B     	 ldr r3,.L58
+ 749 0010 1B78     	 ldrb r3,[r3]
+ 750 0012 042B     	 cmp r3,#4
+ 751 0014 26D0     	 beq .L48
+ 752              	 .loc 1 359 0 is_stmt 0 discriminator 1
+ 753 0016 7868     	 ldr r0,[r7,#4]
+ 754 0018 FFF7FEFF 	 bl Stk_ConnectEx
+ 755 001c 0346     	 mov r3,r0
+ 756 001e 002B     	 cmp r3,#0
+ 757 0020 20D0     	 beq .L48
+ 758              	 .loc 1 359 0 discriminator 2
+ 759 0022 7B68     	 ldr r3,[r7,#4]
+ 760 0024 1B88     	 ldrh r3,[r3]
+ 761 0026 9BB2     	 uxth r3,r3
+ 762 0028 49F20732 	 movw r2,#37639
+ 763 002c 9342     	 cmp r3,r2
+ 764 002e 14D0     	 beq .L49
+ 765              	 .loc 1 359 0 discriminator 3
+ 766 0030 7B68     	 ldr r3,[r7,#4]
+ 767 0032 1B88     	 ldrh r3,[r3]
+ 768 0034 9BB2     	 uxth r3,r3
+ 769 0036 49F20A32 	 movw r2,#37642
+ 770 003a 9342     	 cmp r3,r2
+ 771 003c 0DD0     	 beq .L49
+ 772              	 .loc 1 359 0 discriminator 4
+ 773 003e 7B68     	 ldr r3,[r7,#4]
+ 774 0040 1B88     	 ldrh r3,[r3]
+ 775 0042 9BB2     	 uxth r3,r3
+ 776 0044 49F20F32 	 movw r2,#37647
+ 777 0048 9342     	 cmp r3,r2
+ 778 004a 06D0     	 beq .L49
+ 779              	 .loc 1 359 0 discriminator 5
+ 780 004c 7B68     	 ldr r3,[r7,#4]
+ 781 004e 1B88     	 ldrh r3,[r3]
+ 782 0050 9BB2     	 uxth r3,r3
+ 783 0052 49F20B42 	 movw r2,#37899
+ 784 0056 9342     	 cmp r3,r2
+ 785 0058 04D1     	 bne .L48
+ 786              	.L49:
+ 360:../cleanflight/src/main/io/serial_4way.c ****             CurrentInterfaceMode = imSK;
+ 787              	 .loc 1 360 0 is_stmt 1
+ 788 005a 474B     	 ldr r3,.L58
+ 789 005c 0322     	 movs r2,#3
+ 790 005e 1A70     	 strb r2,[r3]
+ 361:../cleanflight/src/main/io/serial_4way.c ****             return 1;
+ 791              	 .loc 1 361 0
+ 792 0060 0123     	 movs r3,#1
+ 793 0062 85E0     	 b .L50
+ 794              	.L48:
+ 362:../cleanflight/src/main/io/serial_4way.c ****         } else {
+ 363:../cleanflight/src/main/io/serial_4way.c ****             if (BL_ConnectEx(pDeviceInfo)) {
+ 795              	 .loc 1 363 0
+ 796 0064 7868     	 ldr r0,[r7,#4]
+ 797 0066 FFF7FEFF 	 bl BL_ConnectEx
+ 798 006a 0346     	 mov r3,r0
+ 799 006c 002B     	 cmp r3,#0
+ 800 006e 77D0     	 beq .L51
+ 364:../cleanflight/src/main/io/serial_4way.c ****                 if  SILABS_DEVICE_MATCH {
+ 801              	 .loc 1 364 0
+ 802 0070 7B68     	 ldr r3,[r7,#4]
+ 803 0072 1B88     	 ldrh r3,[r3]
+ 804 0074 9BB2     	 uxth r3,r3
+ 805 0076 4FF21032 	 movw r2,#62224
+ 806 007a 9342     	 cmp r3,r2
+ 807 007c 29D0     	 beq .L52
+ 808              	 .loc 1 364 0 is_stmt 0 discriminator 1
+ 809 007e 7B68     	 ldr r3,[r7,#4]
+ 810 0080 1B88     	 ldrh r3,[r3]
+ 811 0082 9BB2     	 uxth r3,r3
+ 812 0084 4FF23032 	 movw r2,#62256
+ 813 0088 9342     	 cmp r3,r2
+ 814 008a 22D0     	 beq .L52
+ 815              	 .loc 1 364 0 discriminator 2
+ 816 008c 7B68     	 ldr r3,[r7,#4]
+ 817 008e 1B88     	 ldrh r3,[r3]
+ 818 0090 9BB2     	 uxth r3,r3
+ 819 0092 4FF21042 	 movw r2,#62480
+ 820 0096 9342     	 cmp r3,r2
+ 821 0098 1BD0     	 beq .L52
+ 822              	 .loc 1 364 0 discriminator 3
+ 823 009a 7B68     	 ldr r3,[r7,#4]
+ 824 009c 1B88     	 ldrh r3,[r3]
+ 825 009e 9BB2     	 uxth r3,r3
+ 826 00a0 4FF29032 	 movw r2,#62352
+ 827 00a4 9342     	 cmp r3,r2
+ 828 00a6 14D0     	 beq .L52
+ 829              	 .loc 1 364 0 discriminator 4
+ 830 00a8 7B68     	 ldr r3,[r7,#4]
+ 831 00aa 1B88     	 ldrh r3,[r3]
+ 832 00ac 9BB2     	 uxth r3,r3
+ 833 00ae 4FF65002 	 movw r2,#63568
+ 834 00b2 9342     	 cmp r3,r2
+ 835 00b4 0DD0     	 beq .L52
+ 836              	 .loc 1 364 0 discriminator 5
+ 837 00b6 7B68     	 ldr r3,[r7,#4]
+ 838 00b8 1B88     	 ldrh r3,[r3]
+ 839 00ba 9BB2     	 uxth r3,r3
+ 840 00bc 4EF6B102 	 movw r2,#59569
+ 841 00c0 9342     	 cmp r3,r2
+ 842 00c2 06D0     	 beq .L52
+ 843              	 .loc 1 364 0 discriminator 6
+ 844 00c4 7B68     	 ldr r3,[r7,#4]
+ 845 00c6 1B88     	 ldrh r3,[r3]
+ 846 00c8 9BB2     	 uxth r3,r3
+ 847 00ca 4EF6B202 	 movw r2,#59570
+ 848 00ce 9342     	 cmp r3,r2
+ 849 00d0 04D1     	 bne .L53
+ 850              	.L52:
+ 365:../cleanflight/src/main/io/serial_4way.c ****                     CurrentInterfaceMode = imSIL_BLB;
+ 851              	 .loc 1 365 0 is_stmt 1
+ 852 00d2 294B     	 ldr r3,.L58
+ 853 00d4 0122     	 movs r2,#1
+ 854 00d6 1A70     	 strb r2,[r3]
+ 366:../cleanflight/src/main/io/serial_4way.c ****                     return 1;
+ 855              	 .loc 1 366 0
+ 856 00d8 0123     	 movs r3,#1
+ 857 00da 49E0     	 b .L50
+ 858              	.L53:
+ 367:../cleanflight/src/main/io/serial_4way.c ****                 } else if ATMEL_DEVICE_MATCH {
+ 859              	 .loc 1 367 0
+ 860 00dc 7B68     	 ldr r3,[r7,#4]
+ 861 00de 1B88     	 ldrh r3,[r3]
+ 862 00e0 9BB2     	 uxth r3,r3
+ 863 00e2 49F20732 	 movw r2,#37639
+ 864 00e6 9342     	 cmp r3,r2
+ 865 00e8 14D0     	 beq .L54
+ 866              	 .loc 1 367 0 is_stmt 0 discriminator 1
+ 867 00ea 7B68     	 ldr r3,[r7,#4]
+ 868 00ec 1B88     	 ldrh r3,[r3]
+ 869 00ee 9BB2     	 uxth r3,r3
+ 870 00f0 49F20A32 	 movw r2,#37642
+ 871 00f4 9342     	 cmp r3,r2
+ 872 00f6 0DD0     	 beq .L54
+ 873              	 .loc 1 367 0 discriminator 2
+ 874 00f8 7B68     	 ldr r3,[r7,#4]
+ 875 00fa 1B88     	 ldrh r3,[r3]
+ 876 00fc 9BB2     	 uxth r3,r3
+ 877 00fe 49F20F32 	 movw r2,#37647
+ 878 0102 9342     	 cmp r3,r2
+ 879 0104 06D0     	 beq .L54
+ 880              	 .loc 1 367 0 discriminator 3
+ 881 0106 7B68     	 ldr r3,[r7,#4]
+ 882 0108 1B88     	 ldrh r3,[r3]
+ 883 010a 9BB2     	 uxth r3,r3
+ 884 010c 49F20B42 	 movw r2,#37899
+ 885 0110 9342     	 cmp r3,r2
+ 886 0112 04D1     	 bne .L55
+ 887              	.L54:
+ 368:../cleanflight/src/main/io/serial_4way.c ****                     CurrentInterfaceMode = imATM_BLB;
+ 888              	 .loc 1 368 0 is_stmt 1
+ 889 0114 184B     	 ldr r3,.L58
+ 890 0116 0222     	 movs r2,#2
+ 891 0118 1A70     	 strb r2,[r3]
+ 369:../cleanflight/src/main/io/serial_4way.c ****                     return 1;
+ 892              	 .loc 1 369 0
+ 893 011a 0123     	 movs r3,#1
+ 894 011c 28E0     	 b .L50
+ 895              	.L55:
+ 370:../cleanflight/src/main/io/serial_4way.c ****                 } else if ARM_DEVICE_MATCH {
+ 896              	 .loc 1 370 0
+ 897 011e 7B68     	 ldr r3,[r7,#4]
+ 898 0120 1B88     	 ldrh r3,[r3]
+ 899 0122 9BB2     	 uxth r3,r3
+ 900 0124 41F60672 	 movw r2,#7942
+ 901 0128 9342     	 cmp r3,r2
+ 902 012a 14D0     	 beq .L56
+ 903              	 .loc 1 370 0 is_stmt 0 discriminator 1
+ 904 012c 7B68     	 ldr r3,[r7,#4]
+ 905 012e 1B88     	 ldrh r3,[r3]
+ 906 0130 9BB2     	 uxth r3,r3
+ 907 0132 43F20632 	 movw r2,#13062
+ 908 0136 9342     	 cmp r3,r2
+ 909 0138 0DD0     	 beq .L56
+ 910              	 .loc 1 370 0 discriminator 2
+ 911 013a 7B68     	 ldr r3,[r7,#4]
+ 912 013c 1B88     	 ldrh r3,[r3]
+ 913 013e 9BB2     	 uxth r3,r3
+ 914 0140 43F20642 	 movw r2,#13318
+ 915 0144 9342     	 cmp r3,r2
+ 916 0146 06D0     	 beq .L56
+ 917              	 .loc 1 370 0 discriminator 3
+ 918 0148 7B68     	 ldr r3,[r7,#4]
+ 919 014a 1B88     	 ldrh r3,[r3]
+ 920 014c 9BB2     	 uxth r3,r3
+ 921 014e 43F20652 	 movw r2,#13574
+ 922 0152 9342     	 cmp r3,r2
+ 923 0154 04D1     	 bne .L51
+ 924              	.L56:
+ 371:../cleanflight/src/main/io/serial_4way.c ****                     CurrentInterfaceMode = imARM_BLB;
+ 925              	 .loc 1 371 0 is_stmt 1
+ 926 0156 084B     	 ldr r3,.L58
+ 927 0158 0422     	 movs r2,#4
+ 928 015a 1A70     	 strb r2,[r3]
+ 372:../cleanflight/src/main/io/serial_4way.c ****                     return 1;
+ 929              	 .loc 1 372 0
+ 930 015c 0123     	 movs r3,#1
+ 931 015e 07E0     	 b .L50
+ 932              	.L51:
+ 357:../cleanflight/src/main/io/serial_4way.c ****         #if (defined(USE_SERIAL_4WAY_BLHELI_BOOTLOADER) && defined(USE_SERIAL_4WAY_SK_BOOTLOADER))
+ 933              	 .loc 1 357 0 discriminator 2
+ 934 0160 FB7B     	 ldrb r3,[r7,#15]
+ 935 0162 0133     	 adds r3,r3,#1
+ 936 0164 FB73     	 strb r3,[r7,#15]
+ 937              	.L47:
+ 357:../cleanflight/src/main/io/serial_4way.c ****         #if (defined(USE_SERIAL_4WAY_BLHELI_BOOTLOADER) && defined(USE_SERIAL_4WAY_SK_BOOTLOADER))
+ 938              	 .loc 1 357 0 is_stmt 0 discriminator 1
+ 939 0166 FB7B     	 ldrb r3,[r7,#15]
+ 940 0168 022B     	 cmp r3,#2
+ 941 016a 7FF650AF 	 bls .L57
+ 942              	.LBE4:
+ 373:../cleanflight/src/main/io/serial_4way.c ****                 }
+ 374:../cleanflight/src/main/io/serial_4way.c ****             }
+ 375:../cleanflight/src/main/io/serial_4way.c ****         }
+ 376:../cleanflight/src/main/io/serial_4way.c ****         #elif defined(USE_SERIAL_4WAY_BLHELI_BOOTLOADER)
+ 377:../cleanflight/src/main/io/serial_4way.c ****         if (BL_ConnectEx(pDeviceInfo)) {
+ 378:../cleanflight/src/main/io/serial_4way.c ****             if SILABS_DEVICE_MATCH {
+ 379:../cleanflight/src/main/io/serial_4way.c ****                 CurrentInterfaceMode = imSIL_BLB;
+ 380:../cleanflight/src/main/io/serial_4way.c ****                 return 1;
+ 381:../cleanflight/src/main/io/serial_4way.c ****             } else if ATMEL_DEVICE_MATCH {
+ 382:../cleanflight/src/main/io/serial_4way.c ****                 CurrentInterfaceMode = imATM_BLB;
+ 383:../cleanflight/src/main/io/serial_4way.c ****                 return 1;
+ 384:../cleanflight/src/main/io/serial_4way.c ****             }  else if ARM_DEVICE_MATCH {
+ 385:../cleanflight/src/main/io/serial_4way.c ****                 CurrentInterfaceMode = imARM_BLB;
+ 386:../cleanflight/src/main/io/serial_4way.c ****                 return 1;
+ 387:../cleanflight/src/main/io/serial_4way.c ****             }
+ 388:../cleanflight/src/main/io/serial_4way.c ****         }
+ 389:../cleanflight/src/main/io/serial_4way.c ****         #elif defined(USE_SERIAL_4WAY_SK_BOOTLOADER)
+ 390:../cleanflight/src/main/io/serial_4way.c ****         if (Stk_ConnectEx(pDeviceInfo)) {
+ 391:../cleanflight/src/main/io/serial_4way.c ****             CurrentInterfaceMode = imSK;
+ 392:../cleanflight/src/main/io/serial_4way.c ****             if ATMEL_DEVICE_MATCH return 1;
+ 393:../cleanflight/src/main/io/serial_4way.c ****         }
+ 394:../cleanflight/src/main/io/serial_4way.c ****         #endif
+ 395:../cleanflight/src/main/io/serial_4way.c ****     }
+ 396:../cleanflight/src/main/io/serial_4way.c ****     return 0;
+ 943              	 .loc 1 396 0 is_stmt 1
+ 944 016e 0023     	 movs r3,#0
+ 945              	.L50:
+ 397:../cleanflight/src/main/io/serial_4way.c **** }
+ 946              	 .loc 1 397 0
+ 947 0170 1846     	 mov r0,r3
+ 948 0172 1037     	 adds r7,r7,#16
+ 949              	.LCFI53:
+ 950              	 .cfi_def_cfa_offset 8
+ 951 0174 BD46     	 mov sp,r7
+ 952              	.LCFI54:
+ 953              	 .cfi_def_cfa_register 13
+ 954              	 
+ 955 0176 80BD     	 pop {r7,pc}
+ 956              	.L59:
+ 957              	 .align 2
+ 958              	.L58:
+ 959 0178 00000000 	 .word CurrentInterfaceMode
+ 960              	 .cfi_endproc
+ 961              	.LFE548:
+ 963              	 .section .bss.port,"aw",%nobits
+ 964              	 .align 2
+ 967              	port:
+ 968 0000 00000000 	 .space 4
+ 969              	 .section .text.ReadByte,"ax",%progbits
+ 970              	 .align 2
+ 971              	 .thumb
+ 972              	 .thumb_func
+ 974              	ReadByte:
+ 975              	.LFB549:
+ 398:../cleanflight/src/main/io/serial_4way.c **** 
+ 399:../cleanflight/src/main/io/serial_4way.c **** static serialPort_t *port;
+ 400:../cleanflight/src/main/io/serial_4way.c **** 
+ 401:../cleanflight/src/main/io/serial_4way.c **** static uint8_t ReadByte(void)
+ 402:../cleanflight/src/main/io/serial_4way.c **** {
+ 976              	 .loc 1 402 0
+ 977              	 .cfi_startproc
+ 978              	 
+ 979              	 
+ 980 0000 80B5     	 push {r7,lr}
+ 981              	.LCFI55:
+ 982              	 .cfi_def_cfa_offset 8
+ 983              	 .cfi_offset 7,-8
+ 984              	 .cfi_offset 14,-4
+ 985 0002 00AF     	 add r7,sp,#0
+ 986              	.LCFI56:
+ 987              	 .cfi_def_cfa_register 7
+ 403:../cleanflight/src/main/io/serial_4way.c ****     // need timeout?
+ 404:../cleanflight/src/main/io/serial_4way.c ****     while (!serialRxBytesWaiting(port));
+ 988              	 .loc 1 404 0
+ 989 0004 00BF     	 nop
+ 990              	.L61:
+ 991              	 .loc 1 404 0 is_stmt 0 discriminator 1
+ 992 0006 084B     	 ldr r3,.L63
+ 993 0008 1B68     	 ldr r3,[r3]
+ 994 000a 1846     	 mov r0,r3
+ 995 000c FFF7FEFF 	 bl serialRxBytesWaiting
+ 996 0010 0346     	 mov r3,r0
+ 997 0012 002B     	 cmp r3,#0
+ 998 0014 F7D0     	 beq .L61
+ 405:../cleanflight/src/main/io/serial_4way.c ****     return serialRead(port);
+ 999              	 .loc 1 405 0 is_stmt 1
+ 1000 0016 044B     	 ldr r3,.L63
+ 1001 0018 1B68     	 ldr r3,[r3]
+ 1002 001a 1846     	 mov r0,r3
+ 1003 001c FFF7FEFF 	 bl serialRead
+ 1004 0020 0346     	 mov r3,r0
+ 406:../cleanflight/src/main/io/serial_4way.c **** }
+ 1005              	 .loc 1 406 0
+ 1006 0022 1846     	 mov r0,r3
+ 1007 0024 80BD     	 pop {r7,pc}
+ 1008              	.L64:
+ 1009 0026 00BF     	 .align 2
+ 1010              	.L63:
+ 1011 0028 00000000 	 .word port
+ 1012              	 .cfi_endproc
+ 1013              	.LFE549:
+ 1015              	 .section .bss.CRC_in,"aw",%nobits
+ 1016              	 .align 2
+ 1019              	CRC_in:
+ 1020 0000 0000     	 .space 2
+ 1021 0002 0000     	 .section .text.ReadByteCrc,"ax",%progbits
+ 1022              	 .align 2
+ 1023              	 .thumb
+ 1024              	 .thumb_func
+ 1026              	ReadByteCrc:
+ 1027              	.LFB550:
+ 407:../cleanflight/src/main/io/serial_4way.c **** 
+ 408:../cleanflight/src/main/io/serial_4way.c **** static uint8_16_u CRC_in;
+ 409:../cleanflight/src/main/io/serial_4way.c **** static uint8_t ReadByteCrc(void)
+ 410:../cleanflight/src/main/io/serial_4way.c **** {
+ 1028              	 .loc 1 410 0
+ 1029              	 .cfi_startproc
+ 1030              	 
+ 1031              	 
+ 1032 0000 80B5     	 push {r7,lr}
+ 1033              	.LCFI57:
+ 1034              	 .cfi_def_cfa_offset 8
+ 1035              	 .cfi_offset 7,-8
+ 1036              	 .cfi_offset 14,-4
+ 1037 0002 82B0     	 sub sp,sp,#8
+ 1038              	.LCFI58:
+ 1039              	 .cfi_def_cfa_offset 16
+ 1040 0004 00AF     	 add r7,sp,#0
+ 1041              	.LCFI59:
+ 1042              	 .cfi_def_cfa_register 7
+ 411:../cleanflight/src/main/io/serial_4way.c ****     uint8_t b = ReadByte();
+ 1043              	 .loc 1 411 0
+ 1044 0006 FFF7FEFF 	 bl ReadByte
+ 1045 000a 0346     	 mov r3,r0
+ 1046 000c FB71     	 strb r3,[r7,#7]
+ 412:../cleanflight/src/main/io/serial_4way.c ****     CRC_in.word = _crc_xmodem_update(CRC_in.word, b);
+ 1047              	 .loc 1 412 0
+ 1048 000e 084B     	 ldr r3,.L67
+ 1049 0010 1A88     	 ldrh r2,[r3]
+ 1050 0012 FB79     	 ldrb r3,[r7,#7]
+ 1051 0014 1046     	 mov r0,r2
+ 1052 0016 1946     	 mov r1,r3
+ 1053 0018 FFF7FEFF 	 bl _crc_xmodem_update
+ 1054 001c 0346     	 mov r3,r0
+ 1055 001e 1A46     	 mov r2,r3
+ 1056 0020 034B     	 ldr r3,.L67
+ 1057 0022 1A80     	 strh r2,[r3]
+ 413:../cleanflight/src/main/io/serial_4way.c ****     return b;
+ 1058              	 .loc 1 413 0
+ 1059 0024 FB79     	 ldrb r3,[r7,#7]
+ 414:../cleanflight/src/main/io/serial_4way.c **** }
+ 1060              	 .loc 1 414 0
+ 1061 0026 1846     	 mov r0,r3
+ 1062 0028 0837     	 adds r7,r7,#8
+ 1063              	.LCFI60:
+ 1064              	 .cfi_def_cfa_offset 8
+ 1065 002a BD46     	 mov sp,r7
+ 1066              	.LCFI61:
+ 1067              	 .cfi_def_cfa_register 13
+ 1068              	 
+ 1069 002c 80BD     	 pop {r7,pc}
+ 1070              	.L68:
+ 1071 002e 00BF     	 .align 2
+ 1072              	.L67:
+ 1073 0030 00000000 	 .word CRC_in
+ 1074              	 .cfi_endproc
+ 1075              	.LFE550:
+ 1077              	 .section .text.WriteByte,"ax",%progbits
+ 1078              	 .align 2
+ 1079              	 .thumb
+ 1080              	 .thumb_func
+ 1082              	WriteByte:
+ 1083              	.LFB551:
+ 415:../cleanflight/src/main/io/serial_4way.c **** 
+ 416:../cleanflight/src/main/io/serial_4way.c **** static void WriteByte(uint8_t b)
+ 417:../cleanflight/src/main/io/serial_4way.c **** {
+ 1084              	 .loc 1 417 0
+ 1085              	 .cfi_startproc
+ 1086              	 
+ 1087              	 
+ 1088 0000 80B5     	 push {r7,lr}
+ 1089              	.LCFI62:
+ 1090              	 .cfi_def_cfa_offset 8
+ 1091              	 .cfi_offset 7,-8
+ 1092              	 .cfi_offset 14,-4
+ 1093 0002 82B0     	 sub sp,sp,#8
+ 1094              	.LCFI63:
+ 1095              	 .cfi_def_cfa_offset 16
+ 1096 0004 00AF     	 add r7,sp,#0
+ 1097              	.LCFI64:
+ 1098              	 .cfi_def_cfa_register 7
+ 1099 0006 0346     	 mov r3,r0
+ 1100 0008 FB71     	 strb r3,[r7,#7]
+ 418:../cleanflight/src/main/io/serial_4way.c ****     serialWrite(port, b);
+ 1101              	 .loc 1 418 0
+ 1102 000a 054B     	 ldr r3,.L70
+ 1103 000c 1A68     	 ldr r2,[r3]
+ 1104 000e FB79     	 ldrb r3,[r7,#7]
+ 1105 0010 1046     	 mov r0,r2
+ 1106 0012 1946     	 mov r1,r3
+ 1107 0014 FFF7FEFF 	 bl serialWrite
+ 419:../cleanflight/src/main/io/serial_4way.c **** }
+ 1108              	 .loc 1 419 0
+ 1109 0018 0837     	 adds r7,r7,#8
+ 1110              	.LCFI65:
+ 1111              	 .cfi_def_cfa_offset 8
+ 1112 001a BD46     	 mov sp,r7
+ 1113              	.LCFI66:
+ 1114              	 .cfi_def_cfa_register 13
+ 1115              	 
+ 1116 001c 80BD     	 pop {r7,pc}
+ 1117              	.L71:
+ 1118 001e 00BF     	 .align 2
+ 1119              	.L70:
+ 1120 0020 00000000 	 .word port
+ 1121              	 .cfi_endproc
+ 1122              	.LFE551:
+ 1124              	 .section .bss.CRCout,"aw",%nobits
+ 1125              	 .align 2
+ 1128              	CRCout:
+ 1129 0000 0000     	 .space 2
+ 1130 0002 0000     	 .section .text.WriteByteCrc,"ax",%progbits
+ 1131              	 .align 2
+ 1132              	 .thumb
+ 1133              	 .thumb_func
+ 1135              	WriteByteCrc:
+ 1136              	.LFB552:
+ 420:../cleanflight/src/main/io/serial_4way.c **** 
+ 421:../cleanflight/src/main/io/serial_4way.c **** static uint8_16_u CRCout;
+ 422:../cleanflight/src/main/io/serial_4way.c **** static void WriteByteCrc(uint8_t b)
+ 423:../cleanflight/src/main/io/serial_4way.c **** {
+ 1137              	 .loc 1 423 0
+ 1138              	 .cfi_startproc
+ 1139              	 
+ 1140              	 
+ 1141 0000 80B5     	 push {r7,lr}
+ 1142              	.LCFI67:
+ 1143              	 .cfi_def_cfa_offset 8
+ 1144              	 .cfi_offset 7,-8
+ 1145              	 .cfi_offset 14,-4
+ 1146 0002 82B0     	 sub sp,sp,#8
+ 1147              	.LCFI68:
+ 1148              	 .cfi_def_cfa_offset 16
+ 1149 0004 00AF     	 add r7,sp,#0
+ 1150              	.LCFI69:
+ 1151              	 .cfi_def_cfa_register 7
+ 1152 0006 0346     	 mov r3,r0
+ 1153 0008 FB71     	 strb r3,[r7,#7]
+ 424:../cleanflight/src/main/io/serial_4way.c ****     WriteByte(b);
+ 1154              	 .loc 1 424 0
+ 1155 000a FB79     	 ldrb r3,[r7,#7]
+ 1156 000c 1846     	 mov r0,r3
+ 1157 000e FFF7FEFF 	 bl WriteByte
+ 425:../cleanflight/src/main/io/serial_4way.c ****     CRCout.word = _crc_xmodem_update(CRCout.word, b);
+ 1158              	 .loc 1 425 0
+ 1159 0012 074B     	 ldr r3,.L73
+ 1160 0014 1A88     	 ldrh r2,[r3]
+ 1161 0016 FB79     	 ldrb r3,[r7,#7]
+ 1162 0018 1046     	 mov r0,r2
+ 1163 001a 1946     	 mov r1,r3
+ 1164 001c FFF7FEFF 	 bl _crc_xmodem_update
+ 1165 0020 0346     	 mov r3,r0
+ 1166 0022 1A46     	 mov r2,r3
+ 1167 0024 024B     	 ldr r3,.L73
+ 1168 0026 1A80     	 strh r2,[r3]
+ 426:../cleanflight/src/main/io/serial_4way.c **** }
+ 1169              	 .loc 1 426 0
+ 1170 0028 0837     	 adds r7,r7,#8
+ 1171              	.LCFI70:
+ 1172              	 .cfi_def_cfa_offset 8
+ 1173 002a BD46     	 mov sp,r7
+ 1174              	.LCFI71:
+ 1175              	 .cfi_def_cfa_register 13
+ 1176              	 
+ 1177 002c 80BD     	 pop {r7,pc}
+ 1178              	.L74:
+ 1179 002e 00BF     	 .align 2
+ 1180              	.L73:
+ 1181 0030 00000000 	 .word CRCout
+ 1182              	 .cfi_endproc
+ 1183              	.LFE552:
+ 1185              	 .section .rodata
+ 1186              	 .align 2
+ 1187              	.LC0:
+ 1188 0000 6D347746 	 .ascii "m4wFCIntf\000"
+ 1188      43496E74 
+ 1188      6600
+ 1189 000a 0000     	 .section .text.esc4wayProcess,"ax",%progbits
+ 1190              	 .align 2
+ 1191              	 .global esc4wayProcess
+ 1192              	 .thumb
+ 1193              	 .thumb_func
+ 1195              	esc4wayProcess:
+ 1196              	.LFB553:
+ 427:../cleanflight/src/main/io/serial_4way.c **** 
+ 428:../cleanflight/src/main/io/serial_4way.c **** void esc4wayProcess(serialPort_t *mspPort)
+ 429:../cleanflight/src/main/io/serial_4way.c **** {
+ 1197              	 .loc 1 429 0
+ 1198              	 .cfi_startproc
+ 1199              	 
+ 1200              	 
+ 1201 0000 80B5     	 push {r7,lr}
+ 1202              	.LCFI72:
+ 1203              	 .cfi_def_cfa_offset 8
+ 1204              	 .cfi_offset 7,-8
+ 1205              	 .cfi_offset 14,-4
+ 1206 0002 CCB0     	 sub sp,sp,#304
+ 1207              	.LCFI73:
+ 1208              	 .cfi_def_cfa_offset 312
+ 1209 0004 00AF     	 add r7,sp,#0
+ 1210              	.LCFI74:
+ 1211              	 .cfi_def_cfa_register 7
+ 1212 0006 3B1D     	 adds r3,r7,#4
+ 1213 0008 1860     	 str r0,[r3]
+ 430:../cleanflight/src/main/io/serial_4way.c **** 
+ 431:../cleanflight/src/main/io/serial_4way.c ****     uint8_t ParamBuf[256];
+ 432:../cleanflight/src/main/io/serial_4way.c ****     uint8_t ESC;
+ 433:../cleanflight/src/main/io/serial_4way.c ****     uint8_t I_PARAM_LEN;
+ 434:../cleanflight/src/main/io/serial_4way.c ****     uint8_t CMD;
+ 435:../cleanflight/src/main/io/serial_4way.c ****     uint8_t ACK_OUT;
+ 436:../cleanflight/src/main/io/serial_4way.c ****     uint8_16_u CRC_check;
+ 437:../cleanflight/src/main/io/serial_4way.c ****     uint8_16_u Dummy;
+ 438:../cleanflight/src/main/io/serial_4way.c ****     uint8_t O_PARAM_LEN;
+ 439:../cleanflight/src/main/io/serial_4way.c ****     uint8_t *O_PARAM;
+ 440:../cleanflight/src/main/io/serial_4way.c ****     uint8_t *InBuff;
+ 441:../cleanflight/src/main/io/serial_4way.c ****     ioMem_t ioMem;
+ 442:../cleanflight/src/main/io/serial_4way.c **** 
+ 443:../cleanflight/src/main/io/serial_4way.c ****     port = mspPort;
+ 1214              	 .loc 1 443 0
+ 1215 000a C14A     	 ldr r2,.L177
+ 1216 000c 3B1D     	 adds r3,r7,#4
+ 1217 000e 1B68     	 ldr r3,[r3]
+ 1218 0010 1360     	 str r3,[r2]
+ 444:../cleanflight/src/main/io/serial_4way.c **** 
+ 445:../cleanflight/src/main/io/serial_4way.c ****     // Start here  with UART Main loop
+ 446:../cleanflight/src/main/io/serial_4way.c **** #ifdef USE_BEEPER
+ 447:../cleanflight/src/main/io/serial_4way.c ****     // fix for buzzer often starts beeping continuously when the ESCs are read
+ 448:../cleanflight/src/main/io/serial_4way.c ****     // switch beeper silent here
+ 449:../cleanflight/src/main/io/serial_4way.c ****     beeperSilence();
+ 450:../cleanflight/src/main/io/serial_4way.c **** #endif
+ 451:../cleanflight/src/main/io/serial_4way.c ****     bool isExitScheduled = false;
+ 1219              	 .loc 1 451 0
+ 1220 0012 0023     	 movs r3,#0
+ 1221 0014 87F82331 	 strb r3,[r7,#291]
+ 1222              	.L76:
+ 1223              	.LBB5:
+ 452:../cleanflight/src/main/io/serial_4way.c **** 
+ 453:../cleanflight/src/main/io/serial_4way.c ****     while (1) {
+ 454:../cleanflight/src/main/io/serial_4way.c ****         // restart looking for new sequence from host
+ 455:../cleanflight/src/main/io/serial_4way.c ****         do {
+ 456:../cleanflight/src/main/io/serial_4way.c ****             CRC_in.word = 0;
+ 1224              	 .loc 1 456 0 discriminator 1
+ 1225 0018 BE4B     	 ldr r3,.L177+4
+ 1226 001a 0022     	 movs r2,#0
+ 1227 001c 1A80     	 strh r2,[r3]
+ 457:../cleanflight/src/main/io/serial_4way.c ****             ESC = ReadByteCrc();
+ 1228              	 .loc 1 457 0 discriminator 1
+ 1229 001e FFF7FEFF 	 bl ReadByteCrc
+ 1230 0022 0346     	 mov r3,r0
+ 1231 0024 87F82131 	 strb r3,[r7,#289]
+ 458:../cleanflight/src/main/io/serial_4way.c ****         } while (ESC != cmd_Local_Escape);
+ 1232              	 .loc 1 458 0 discriminator 1
+ 1233 0028 97F82131 	 ldrb r3,[r7,#289]
+ 1234 002c 2F2B     	 cmp r3,#47
+ 1235 002e F3D1     	 bne .L76
+ 459:../cleanflight/src/main/io/serial_4way.c **** 
+ 460:../cleanflight/src/main/io/serial_4way.c ****         RX_LED_ON;
+ 1236              	 .loc 1 460 0
+ 1237 0030 0020     	 movs r0,#0
+ 1238 0032 0121     	 movs r1,#1
+ 1239 0034 FFF7FEFF 	 bl ledSet
+ 461:../cleanflight/src/main/io/serial_4way.c **** 
+ 462:../cleanflight/src/main/io/serial_4way.c ****         Dummy.word = 0;
+ 1240              	 .loc 1 462 0
+ 1241 0038 07F11403 	 add r3,r7,#20
+ 1242 003c 0022     	 movs r2,#0
+ 1243 003e 1A80     	 strh r2,[r3]
+ 463:../cleanflight/src/main/io/serial_4way.c ****         O_PARAM = &Dummy.bytes[0];
+ 1244              	 .loc 1 463 0
+ 1245 0040 07F11403 	 add r3,r7,#20
+ 1246 0044 C7F82831 	 str r3,[r7,#296]
+ 464:../cleanflight/src/main/io/serial_4way.c ****         O_PARAM_LEN = 1;
+ 1247              	 .loc 1 464 0
+ 1248 0048 0123     	 movs r3,#1
+ 1249 004a 87F82E31 	 strb r3,[r7,#302]
+ 465:../cleanflight/src/main/io/serial_4way.c ****         CMD = ReadByteCrc();
+ 1250              	 .loc 1 465 0
+ 1251 004e FFF7FEFF 	 bl ReadByteCrc
+ 1252 0052 0346     	 mov r3,r0
+ 1253 0054 87F82031 	 strb r3,[r7,#288]
+ 466:../cleanflight/src/main/io/serial_4way.c ****         ioMem.D_FLASH_ADDR_H = ReadByteCrc();
+ 1254              	 .loc 1 466 0
+ 1255 0058 FFF7FEFF 	 bl ReadByteCrc
+ 1256 005c 0346     	 mov r3,r0
+ 1257 005e 1A46     	 mov r2,r3
+ 1258 0060 07F10C03 	 add r3,r7,#12
+ 1259 0064 5A70     	 strb r2,[r3,#1]
+ 467:../cleanflight/src/main/io/serial_4way.c ****         ioMem.D_FLASH_ADDR_L = ReadByteCrc();
+ 1260              	 .loc 1 467 0
+ 1261 0066 FFF7FEFF 	 bl ReadByteCrc
+ 1262 006a 0346     	 mov r3,r0
+ 1263 006c 1A46     	 mov r2,r3
+ 1264 006e 07F10C03 	 add r3,r7,#12
+ 1265 0072 9A70     	 strb r2,[r3,#2]
+ 468:../cleanflight/src/main/io/serial_4way.c ****         I_PARAM_LEN = ReadByteCrc();
+ 1266              	 .loc 1 468 0
+ 1267 0074 FFF7FEFF 	 bl ReadByteCrc
+ 1268 0078 0346     	 mov r3,r0
+ 1269 007a 87F81F31 	 strb r3,[r7,#287]
+ 469:../cleanflight/src/main/io/serial_4way.c **** 
+ 470:../cleanflight/src/main/io/serial_4way.c ****         InBuff = ParamBuf;
+ 1270              	 .loc 1 470 0
+ 1271 007e 07F11C03 	 add r3,r7,#28
+ 1272 0082 C7F82431 	 str r3,[r7,#292]
+ 471:../cleanflight/src/main/io/serial_4way.c ****         uint8_t i = I_PARAM_LEN;
+ 1273              	 .loc 1 471 0
+ 1274 0086 97F81F31 	 ldrb r3,[r7,#287]
+ 1275 008a 87F82231 	 strb r3,[r7,#290]
+ 1276              	.L77:
+ 472:../cleanflight/src/main/io/serial_4way.c ****         do {
+ 473:../cleanflight/src/main/io/serial_4way.c ****           *InBuff = ReadByteCrc();
+ 1277              	 .loc 1 473 0 discriminator 1
+ 1278 008e FFF7FEFF 	 bl ReadByteCrc
+ 1279 0092 0346     	 mov r3,r0
+ 1280 0094 1A46     	 mov r2,r3
+ 1281 0096 D7F82431 	 ldr r3,[r7,#292]
+ 1282 009a 1A70     	 strb r2,[r3]
+ 474:../cleanflight/src/main/io/serial_4way.c ****           InBuff++;
+ 1283              	 .loc 1 474 0 discriminator 1
+ 1284 009c D7F82431 	 ldr r3,[r7,#292]
+ 1285 00a0 0133     	 adds r3,r3,#1
+ 1286 00a2 C7F82431 	 str r3,[r7,#292]
+ 475:../cleanflight/src/main/io/serial_4way.c ****           i--;
+ 1287              	 .loc 1 475 0 discriminator 1
+ 1288 00a6 97F82231 	 ldrb r3,[r7,#290]
+ 1289 00aa 013B     	 subs r3,r3,#1
+ 1290 00ac 87F82231 	 strb r3,[r7,#290]
+ 476:../cleanflight/src/main/io/serial_4way.c ****         } while (i != 0);
+ 1291              	 .loc 1 476 0 discriminator 1
+ 1292 00b0 97F82231 	 ldrb r3,[r7,#290]
+ 1293 00b4 002B     	 cmp r3,#0
+ 1294 00b6 EAD1     	 bne .L77
+ 477:../cleanflight/src/main/io/serial_4way.c **** 
+ 478:../cleanflight/src/main/io/serial_4way.c ****         CRC_check.bytes[1] = ReadByte();
+ 1295              	 .loc 1 478 0
+ 1296 00b8 FFF7FEFF 	 bl ReadByte
+ 1297 00bc 0346     	 mov r3,r0
+ 1298 00be 1A46     	 mov r2,r3
+ 1299 00c0 07F11803 	 add r3,r7,#24
+ 1300 00c4 5A70     	 strb r2,[r3,#1]
+ 479:../cleanflight/src/main/io/serial_4way.c ****         CRC_check.bytes[0] = ReadByte();
+ 1301              	 .loc 1 479 0
+ 1302 00c6 FFF7FEFF 	 bl ReadByte
+ 1303 00ca 0346     	 mov r3,r0
+ 1304 00cc 1A46     	 mov r2,r3
+ 1305 00ce 07F11803 	 add r3,r7,#24
+ 1306 00d2 1A70     	 strb r2,[r3]
+ 480:../cleanflight/src/main/io/serial_4way.c **** 
+ 481:../cleanflight/src/main/io/serial_4way.c ****         if (CRC_check.word == CRC_in.word) {
+ 1307              	 .loc 1 481 0
+ 1308 00d4 07F11803 	 add r3,r7,#24
+ 1309 00d8 1A88     	 ldrh r2,[r3]
+ 1310 00da 8E4B     	 ldr r3,.L177+4
+ 1311 00dc 1B88     	 ldrh r3,[r3]
+ 1312 00de 9A42     	 cmp r2,r3
+ 1313 00e0 03D1     	 bne .L78
+ 482:../cleanflight/src/main/io/serial_4way.c ****             ACK_OUT = ACK_OK;
+ 1314              	 .loc 1 482 0
+ 1315 00e2 0023     	 movs r3,#0
+ 1316 00e4 87F82F31 	 strb r3,[r7,#303]
+ 1317 00e8 02E0     	 b .L79
+ 1318              	.L78:
+ 483:../cleanflight/src/main/io/serial_4way.c ****         } else {
+ 484:../cleanflight/src/main/io/serial_4way.c ****             ACK_OUT = ACK_I_INVALID_CRC;
+ 1319              	 .loc 1 484 0
+ 1320 00ea 0323     	 movs r3,#3
+ 1321 00ec 87F82F31 	 strb r3,[r7,#303]
+ 1322              	.L79:
+ 485:../cleanflight/src/main/io/serial_4way.c ****         }
+ 486:../cleanflight/src/main/io/serial_4way.c **** 
+ 487:../cleanflight/src/main/io/serial_4way.c ****         TX_LED_ON;
+ 1323              	 .loc 1 487 0
+ 1324 00f0 0020     	 movs r0,#0
+ 1325 00f2 0121     	 movs r1,#1
+ 1326 00f4 FFF7FEFF 	 bl ledSet
+ 488:../cleanflight/src/main/io/serial_4way.c **** 
+ 489:../cleanflight/src/main/io/serial_4way.c ****         if (ACK_OUT == ACK_OK)
+ 1327              	 .loc 1 489 0
+ 1328 00f8 97F82F31 	 ldrb r3,[r7,#303]
+ 1329 00fc 002B     	 cmp r3,#0
+ 1330 00fe 40F05E82 	 bne .L80
+ 490:../cleanflight/src/main/io/serial_4way.c ****         {
+ 491:../cleanflight/src/main/io/serial_4way.c ****             // wtf.D_FLASH_ADDR_H=Adress_H;
+ 492:../cleanflight/src/main/io/serial_4way.c ****             // wtf.D_FLASH_ADDR_L=Adress_L;
+ 493:../cleanflight/src/main/io/serial_4way.c ****             ioMem.D_PTR_I = ParamBuf;
+ 1331              	 .loc 1 493 0
+ 1332 0102 07F10C03 	 add r3,r7,#12
+ 1333 0106 07F11C02 	 add r2,r7,#28
+ 1334 010a C3F80320 	 str r2,[r3,#3]
+ 494:../cleanflight/src/main/io/serial_4way.c **** 
+ 495:../cleanflight/src/main/io/serial_4way.c **** 
+ 496:../cleanflight/src/main/io/serial_4way.c ****             switch (CMD) {
+ 1335              	 .loc 1 496 0
+ 1336 010e 97F82031 	 ldrb r3,[r7,#288]
+ 1337 0112 303B     	 subs r3,r3,#48
+ 1338 0114 102B     	 cmp r3,#16
+ 1339 0116 00F24A82 	 bhi .L81
+ 1340 011a 01A2     	 adr r2,.L83
+ 1341 011c 52F823F0 	 ldr pc,[r2,r3,lsl#2]
+ 1342              	 .p2align 2
+ 1343              	.L83:
+ 1344 0120 65010000 	 .word .L82+1
+ 1345 0124 D5010000 	 .word .L84+1
+ 1346 0128 DF010000 	 .word .L85+1
+ 1347 012c ED010000 	 .word .L86+1
+ 1348 0130 05020000 	 .word .L87+1
+ 1349 0134 35020000 	 .word .L88+1
+ 1350 0138 AF050000 	 .word .L81+1
+ 1351 013c 89020000 	 .word .L89+1
+ 1352 0140 E9020000 	 .word .L90+1
+ 1353 0144 2D030000 	 .word .L91+1
+ 1354 0148 9B030000 	 .word .L92+1
+ 1355 014c 99040000 	 .word .L93+1
+ 1356 0150 AF050000 	 .word .L81+1
+ 1357 0154 27040000 	 .word .L94+1
+ 1358 0158 FB040000 	 .word .L95+1
+ 1359 015c 0D020000 	 .word .L96+1
+ 1360 0160 5B050000 	 .word .L97+1
+ 1361              	 .p2align 1
+ 1362              	.L82:
+ 497:../cleanflight/src/main/io/serial_4way.c ****                 // ******* Interface related stuff *******
+ 498:../cleanflight/src/main/io/serial_4way.c ****                 case cmd_InterfaceTestAlive:
+ 499:../cleanflight/src/main/io/serial_4way.c ****                 {
+ 500:../cleanflight/src/main/io/serial_4way.c ****                     if (isMcuConnected()) {
+ 1363              	 .loc 1 500 0
+ 1364 0164 FFF7FEFF 	 bl isMcuConnected
+ 1365 0168 0346     	 mov r3,r0
+ 1366 016a 002B     	 cmp r3,#0
+ 1367 016c 31D0     	 beq .L98
+ 501:../cleanflight/src/main/io/serial_4way.c ****                         switch (CurrentInterfaceMode)
+ 1368              	 .loc 1 501 0
+ 1369 016e 6A4B     	 ldr r3,.L177+8
+ 1370 0170 1B78     	 ldrb r3,[r3]
+ 1371 0172 013B     	 subs r3,r3,#1
+ 1372 0174 032B     	 cmp r3,#3
+ 1373 0176 1FD8     	 bhi .L99
+ 1374 0178 01A2     	 adr r2,.L101
+ 1375 017a 52F823F0 	 ldr pc,[r2,r3,lsl#2]
+ 1376 017e 00BF     	 .p2align 2
+ 1377              	.L101:
+ 1378 0180 91010000 	 .word .L100+1
+ 1379 0184 91010000 	 .word .L100+1
+ 1380 0188 A5010000 	 .word .L102+1
+ 1381 018c 91010000 	 .word .L100+1
+ 1382              	 .p2align 1
+ 1383              	.L100:
+ 502:../cleanflight/src/main/io/serial_4way.c ****                         {
+ 503:../cleanflight/src/main/io/serial_4way.c ****                             #ifdef USE_SERIAL_4WAY_BLHELI_BOOTLOADER
+ 504:../cleanflight/src/main/io/serial_4way.c ****                             case imATM_BLB:
+ 505:../cleanflight/src/main/io/serial_4way.c ****                             case imSIL_BLB:
+ 506:../cleanflight/src/main/io/serial_4way.c ****                             case imARM_BLB:
+ 507:../cleanflight/src/main/io/serial_4way.c ****                             {
+ 508:../cleanflight/src/main/io/serial_4way.c ****                                 if (!BL_SendCMDKeepAlive()) { // SetStateDisconnected() included
+ 1384              	 .loc 1 508 0
+ 1385 0190 FFF7FEFF 	 bl BL_SendCMDKeepAlive
+ 1386 0194 0346     	 mov r3,r0
+ 1387 0196 002B     	 cmp r3,#0
+ 1388 0198 03D1     	 bne .L103
+ 509:../cleanflight/src/main/io/serial_4way.c ****                                     ACK_OUT = ACK_D_GENERAL_ERROR;
+ 1389              	 .loc 1 509 0
+ 1390 019a 0F23     	 movs r3,#15
+ 1391 019c 87F82F31 	 strb r3,[r7,#303]
+ 510:../cleanflight/src/main/io/serial_4way.c ****                                 }
+ 511:../cleanflight/src/main/io/serial_4way.c ****                                 break;
+ 1392              	 .loc 1 511 0
+ 1393 01a0 0DE0     	 b .L104
+ 1394              	.L103:
+ 1395 01a2 0CE0     	 b .L104
+ 1396              	.L102:
+ 512:../cleanflight/src/main/io/serial_4way.c ****                             }
+ 513:../cleanflight/src/main/io/serial_4way.c ****                             #endif
+ 514:../cleanflight/src/main/io/serial_4way.c ****                             #ifdef USE_SERIAL_4WAY_SK_BOOTLOADER
+ 515:../cleanflight/src/main/io/serial_4way.c ****                             case imSK:
+ 516:../cleanflight/src/main/io/serial_4way.c ****                             {
+ 517:../cleanflight/src/main/io/serial_4way.c ****                                 if (!Stk_SignOn()) { // SetStateDisconnected();
+ 1397              	 .loc 1 517 0
+ 1398 01a4 FFF7FEFF 	 bl Stk_SignOn
+ 1399 01a8 0346     	 mov r3,r0
+ 1400 01aa 002B     	 cmp r3,#0
+ 1401 01ac 03D1     	 bne .L105
+ 518:../cleanflight/src/main/io/serial_4way.c ****                                     ACK_OUT = ACK_D_GENERAL_ERROR;
+ 1402              	 .loc 1 518 0
+ 1403 01ae 0F23     	 movs r3,#15
+ 1404 01b0 87F82F31 	 strb r3,[r7,#303]
+ 519:../cleanflight/src/main/io/serial_4way.c ****                                 }
+ 520:../cleanflight/src/main/io/serial_4way.c ****                                 break;
+ 1405              	 .loc 1 520 0
+ 1406 01b4 03E0     	 b .L104
+ 1407              	.L105:
+ 1408 01b6 02E0     	 b .L104
+ 1409              	.L99:
+ 521:../cleanflight/src/main/io/serial_4way.c ****                             }
+ 522:../cleanflight/src/main/io/serial_4way.c ****                             #endif
+ 523:../cleanflight/src/main/io/serial_4way.c ****                             default:
+ 524:../cleanflight/src/main/io/serial_4way.c ****                                 ACK_OUT = ACK_D_GENERAL_ERROR;
+ 1410              	 .loc 1 524 0
+ 1411 01b8 0F23     	 movs r3,#15
+ 1412 01ba 87F82F31 	 strb r3,[r7,#303]
+ 1413              	.L104:
+ 525:../cleanflight/src/main/io/serial_4way.c ****                         }
+ 526:../cleanflight/src/main/io/serial_4way.c ****                         if ( ACK_OUT != ACK_OK) SET_DISCONNECTED;
+ 1414              	 .loc 1 526 0
+ 1415 01be 97F82F31 	 ldrb r3,[r7,#303]
+ 1416 01c2 002B     	 cmp r3,#0
+ 1417 01c4 05D0     	 beq .L98
+ 1418              	 .loc 1 526 0 is_stmt 0 discriminator 1
+ 1419 01c6 554B     	 ldr r3,.L177+12
+ 1420 01c8 0022     	 movs r2,#0
+ 1421 01ca 1A70     	 strb r2,[r3]
+ 1422 01cc 0022     	 movs r2,#0
+ 1423 01ce 5A70     	 strb r2,[r3,#1]
+ 527:../cleanflight/src/main/io/serial_4way.c ****                     }
+ 528:../cleanflight/src/main/io/serial_4way.c ****                     break;
+ 1424              	 .loc 1 528 0 is_stmt 1 discriminator 1
+ 1425 01d0 F5E1     	 b .L80
+ 1426              	.L98:
+ 1427              	 .loc 1 528 0 is_stmt 0
+ 1428 01d2 F4E1     	 b .L80
+ 1429              	.L84:
+ 529:../cleanflight/src/main/io/serial_4way.c ****                 }
+ 530:../cleanflight/src/main/io/serial_4way.c ****                 case cmd_ProtocolGetVersion:
+ 531:../cleanflight/src/main/io/serial_4way.c ****                 {
+ 532:../cleanflight/src/main/io/serial_4way.c ****                     // Only interface itself, no matter what Device
+ 533:../cleanflight/src/main/io/serial_4way.c ****                     Dummy.bytes[0] = SERIAL_4WAY_PROTOCOL_VER;
+ 1430              	 .loc 1 533 0 is_stmt 1
+ 1431 01d4 07F11403 	 add r3,r7,#20
+ 1432 01d8 6B22     	 movs r2,#107
+ 1433 01da 1A70     	 strb r2,[r3]
+ 534:../cleanflight/src/main/io/serial_4way.c ****                     break;
+ 1434              	 .loc 1 534 0
+ 1435 01dc EFE1     	 b .L80
+ 1436              	.L85:
+ 535:../cleanflight/src/main/io/serial_4way.c ****                 }
+ 536:../cleanflight/src/main/io/serial_4way.c **** 
+ 537:../cleanflight/src/main/io/serial_4way.c ****                 case cmd_InterfaceGetName:
+ 538:../cleanflight/src/main/io/serial_4way.c ****                 {
+ 539:../cleanflight/src/main/io/serial_4way.c ****                     // Only interface itself, no matter what Device
+ 540:../cleanflight/src/main/io/serial_4way.c ****                     // O_PARAM_LEN=16;
+ 541:../cleanflight/src/main/io/serial_4way.c ****                     O_PARAM_LEN = strlen(SERIAL_4WAY_INTERFACE_NAME_STR);
+ 1437              	 .loc 1 541 0
+ 1438 01de 0923     	 movs r3,#9
+ 1439 01e0 87F82E31 	 strb r3,[r7,#302]
+ 542:../cleanflight/src/main/io/serial_4way.c ****                     O_PARAM = (uint8_t *)SERIAL_4WAY_INTERFACE_NAME_STR;
+ 1440              	 .loc 1 542 0
+ 1441 01e4 4E4B     	 ldr r3,.L177+16
+ 1442 01e6 C7F82831 	 str r3,[r7,#296]
+ 543:../cleanflight/src/main/io/serial_4way.c ****                     break;
+ 1443              	 .loc 1 543 0
+ 1444 01ea E8E1     	 b .L80
+ 1445              	.L86:
+ 544:../cleanflight/src/main/io/serial_4way.c ****                 }
+ 545:../cleanflight/src/main/io/serial_4way.c **** 
+ 546:../cleanflight/src/main/io/serial_4way.c ****                 case cmd_InterfaceGetVersion:
+ 547:../cleanflight/src/main/io/serial_4way.c ****                 {
+ 548:../cleanflight/src/main/io/serial_4way.c ****                     // Only interface itself, no matter what Device
+ 549:../cleanflight/src/main/io/serial_4way.c ****                     // Dummy = iUart_res_InterfVersion;
+ 550:../cleanflight/src/main/io/serial_4way.c ****                     O_PARAM_LEN = 2;
+ 1446              	 .loc 1 550 0
+ 1447 01ec 0223     	 movs r3,#2
+ 1448 01ee 87F82E31 	 strb r3,[r7,#302]
+ 551:../cleanflight/src/main/io/serial_4way.c ****                     Dummy.bytes[0] = SERIAL_4WAY_VERSION_HI;
+ 1449              	 .loc 1 551 0
+ 1450 01f2 07F11403 	 add r3,r7,#20
+ 1451 01f6 C822     	 movs r2,#200
+ 1452 01f8 1A70     	 strb r2,[r3]
+ 552:../cleanflight/src/main/io/serial_4way.c ****                     Dummy.bytes[1] = SERIAL_4WAY_VERSION_LO;
+ 1453              	 .loc 1 552 0
+ 1454 01fa 07F11403 	 add r3,r7,#20
+ 1455 01fe 0222     	 movs r2,#2
+ 1456 0200 5A70     	 strb r2,[r3,#1]
+ 553:../cleanflight/src/main/io/serial_4way.c ****                     break;
+ 1457              	 .loc 1 553 0
+ 1458 0202 DCE1     	 b .L80
+ 1459              	.L87:
+ 554:../cleanflight/src/main/io/serial_4way.c ****                 }
+ 555:../cleanflight/src/main/io/serial_4way.c ****                 case cmd_InterfaceExit:
+ 556:../cleanflight/src/main/io/serial_4way.c ****                 {
+ 557:../cleanflight/src/main/io/serial_4way.c ****                     isExitScheduled = true;
+ 1460              	 .loc 1 557 0
+ 1461 0204 0123     	 movs r3,#1
+ 1462 0206 87F82331 	 strb r3,[r7,#291]
+ 558:../cleanflight/src/main/io/serial_4way.c ****                     break;
+ 1463              	 .loc 1 558 0
+ 1464 020a D8E1     	 b .L80
+ 1465              	.L96:
+ 559:../cleanflight/src/main/io/serial_4way.c ****                 }
+ 560:../cleanflight/src/main/io/serial_4way.c ****                 case cmd_InterfaceSetMode:
+ 561:../cleanflight/src/main/io/serial_4way.c ****                 {
+ 562:../cleanflight/src/main/io/serial_4way.c **** #if defined(USE_SERIAL_4WAY_BLHELI_BOOTLOADER) && defined(USE_SERIAL_4WAY_SK_BOOTLOADER)
+ 563:../cleanflight/src/main/io/serial_4way.c ****                     if ((ParamBuf[0] <= imARM_BLB) && (ParamBuf[0] >= imSIL_BLB)) {
+ 1466              	 .loc 1 563 0
+ 1467 020c 07F11C03 	 add r3,r7,#28
+ 1468 0210 1B78     	 ldrb r3,[r3]
+ 1469 0212 042B     	 cmp r3,#4
+ 1470 0214 0AD8     	 bhi .L106
+ 1471              	 .loc 1 563 0 is_stmt 0 discriminator 1
+ 1472 0216 07F11C03 	 add r3,r7,#28
+ 1473 021a 1B78     	 ldrb r3,[r3]
+ 1474 021c 002B     	 cmp r3,#0
+ 1475 021e 05D0     	 beq .L106
+ 564:../cleanflight/src/main/io/serial_4way.c **** #elif defined(USE_SERIAL_4WAY_BLHELI_BOOTLOADER)
+ 565:../cleanflight/src/main/io/serial_4way.c ****                     if (((ParamBuf[0] <= imATM_BLB)||(ParamBuf[0] == imARM_BLB)) && (ParamBuf[0] >=
+ 566:../cleanflight/src/main/io/serial_4way.c **** #elif defined(USE_SERIAL_4WAY_SK_BOOTLOADER)
+ 567:../cleanflight/src/main/io/serial_4way.c ****                     if (ParamBuf[0] == imSK) {
+ 568:../cleanflight/src/main/io/serial_4way.c **** #endif
+ 569:../cleanflight/src/main/io/serial_4way.c ****                         CurrentInterfaceMode = ParamBuf[0];
+ 1476              	 .loc 1 569 0 is_stmt 1
+ 1477 0220 07F11C03 	 add r3,r7,#28
+ 1478 0224 1A78     	 ldrb r2,[r3]
+ 1479 0226 3C4B     	 ldr r3,.L177+8
+ 1480 0228 1A70     	 strb r2,[r3]
+ 570:../cleanflight/src/main/io/serial_4way.c ****                     } else {
+ 571:../cleanflight/src/main/io/serial_4way.c ****                         ACK_OUT = ACK_I_INVALID_PARAM;
+ 572:../cleanflight/src/main/io/serial_4way.c ****                     }
+ 573:../cleanflight/src/main/io/serial_4way.c ****                     break;
+ 1481              	 .loc 1 573 0
+ 1482 022a C8E1     	 b .L80
+ 1483              	.L106:
+ 571:../cleanflight/src/main/io/serial_4way.c ****                     }
+ 1484              	 .loc 1 571 0
+ 1485 022c 0923     	 movs r3,#9
+ 1486 022e 87F82F31 	 strb r3,[r7,#303]
+ 1487              	 .loc 1 573 0
+ 1488 0232 C4E1     	 b .L80
+ 1489              	.L88:
+ 574:../cleanflight/src/main/io/serial_4way.c ****                 }
+ 575:../cleanflight/src/main/io/serial_4way.c **** 
+ 576:../cleanflight/src/main/io/serial_4way.c ****                 case cmd_DeviceReset:
+ 577:../cleanflight/src/main/io/serial_4way.c ****                 {
+ 578:../cleanflight/src/main/io/serial_4way.c ****                     if (ParamBuf[0] < escCount) {
+ 1490              	 .loc 1 578 0
+ 1491 0234 07F11C03 	 add r3,r7,#28
+ 1492 0238 1A78     	 ldrb r2,[r3]
+ 1493 023a 3A4B     	 ldr r3,.L177+20
+ 1494 023c 1B78     	 ldrb r3,[r3]
+ 1495 023e 9A42     	 cmp r2,r3
+ 1496 0240 14D2     	 bcs .L108
+ 579:../cleanflight/src/main/io/serial_4way.c ****                         // Channel may change here
+ 580:../cleanflight/src/main/io/serial_4way.c ****                         selected_esc = ParamBuf[0];
+ 1497              	 .loc 1 580 0
+ 1498 0242 07F11C03 	 add r3,r7,#28
+ 1499 0246 1A78     	 ldrb r2,[r3]
+ 1500 0248 374B     	 ldr r3,.L177+24
+ 1501 024a 1A70     	 strb r2,[r3]
+ 581:../cleanflight/src/main/io/serial_4way.c ****                     }
+ 582:../cleanflight/src/main/io/serial_4way.c ****                     else {
+ 583:../cleanflight/src/main/io/serial_4way.c ****                         ACK_OUT = ACK_I_INVALID_CHANNEL;
+ 584:../cleanflight/src/main/io/serial_4way.c ****                         break;
+ 585:../cleanflight/src/main/io/serial_4way.c ****                     }
+ 586:../cleanflight/src/main/io/serial_4way.c ****                     switch (CurrentInterfaceMode)
+ 1502              	 .loc 1 586 0
+ 1503 024c 324B     	 ldr r3,.L177+8
+ 1504 024e 1B78     	 ldrb r3,[r3]
+ 1505 0250 013B     	 subs r3,r3,#1
+ 1506 0252 032B     	 cmp r3,#3
+ 1507 0254 12D8     	 bhi .L110
+ 1508 0256 01A2     	 adr r2,.L112
+ 1509 0258 52F823F0 	 ldr pc,[r2,r3,lsl#2]
+ 1510              	 .p2align 2
+ 1511              	.L112:
+ 1512 025c 75020000 	 .word .L111+1
+ 1513 0260 75020000 	 .word .L111+1
+ 1514 0264 7D020000 	 .word .L110+1
+ 1515 0268 75020000 	 .word .L111+1
+ 1516              	 .p2align 1
+ 1517              	.L108:
+ 583:../cleanflight/src/main/io/serial_4way.c ****                         break;
+ 1518              	 .loc 1 583 0
+ 1519 026c 0823     	 movs r3,#8
+ 1520 026e 87F82F31 	 strb r3,[r7,#303]
+ 584:../cleanflight/src/main/io/serial_4way.c ****                     }
+ 1521              	 .loc 1 584 0
+ 1522 0272 A4E1     	 b .L80
+ 1523              	.L111:
+ 587:../cleanflight/src/main/io/serial_4way.c ****                     {
+ 588:../cleanflight/src/main/io/serial_4way.c ****                         case imSIL_BLB:
+ 589:../cleanflight/src/main/io/serial_4way.c ****                         #ifdef USE_SERIAL_4WAY_BLHELI_BOOTLOADER
+ 590:../cleanflight/src/main/io/serial_4way.c ****                         case imATM_BLB:
+ 591:../cleanflight/src/main/io/serial_4way.c ****                         case imARM_BLB:
+ 592:../cleanflight/src/main/io/serial_4way.c ****                         {
+ 593:../cleanflight/src/main/io/serial_4way.c ****                             BL_SendCMDRunRestartBootloader(&DeviceInfo);
+ 1524              	 .loc 1 593 0
+ 1525 0274 2948     	 ldr r0,.L177+12
+ 1526 0276 FFF7FEFF 	 bl BL_SendCMDRunRestartBootloader
+ 594:../cleanflight/src/main/io/serial_4way.c ****                             break;
+ 1527              	 .loc 1 594 0
+ 1528 027a 00BF     	 nop
+ 1529              	.L110:
+ 595:../cleanflight/src/main/io/serial_4way.c ****                         }
+ 596:../cleanflight/src/main/io/serial_4way.c ****                         #endif
+ 597:../cleanflight/src/main/io/serial_4way.c ****                         #ifdef USE_SERIAL_4WAY_SK_BOOTLOADER
+ 598:../cleanflight/src/main/io/serial_4way.c ****                         case imSK:
+ 599:../cleanflight/src/main/io/serial_4way.c ****                         {
+ 600:../cleanflight/src/main/io/serial_4way.c ****                             break;
+ 601:../cleanflight/src/main/io/serial_4way.c ****                         }
+ 602:../cleanflight/src/main/io/serial_4way.c ****                         #endif
+ 603:../cleanflight/src/main/io/serial_4way.c ****                     }
+ 604:../cleanflight/src/main/io/serial_4way.c ****                     SET_DISCONNECTED;
+ 1530              	 .loc 1 604 0
+ 1531 027c 274B     	 ldr r3,.L177+12
+ 1532 027e 0022     	 movs r2,#0
+ 1533 0280 1A70     	 strb r2,[r3]
+ 1534 0282 0022     	 movs r2,#0
+ 1535 0284 5A70     	 strb r2,[r3,#1]
+ 605:../cleanflight/src/main/io/serial_4way.c ****                     break;
+ 1536              	 .loc 1 605 0
+ 1537 0286 9AE1     	 b .L80
+ 1538              	.L89:
+ 606:../cleanflight/src/main/io/serial_4way.c ****                 }
+ 607:../cleanflight/src/main/io/serial_4way.c ****                 case cmd_DeviceInitFlash:
+ 608:../cleanflight/src/main/io/serial_4way.c ****                 {
+ 609:../cleanflight/src/main/io/serial_4way.c ****                     SET_DISCONNECTED;
+ 1539              	 .loc 1 609 0
+ 1540 0288 244B     	 ldr r3,.L177+12
+ 1541 028a 0022     	 movs r2,#0
+ 1542 028c 1A70     	 strb r2,[r3]
+ 1543 028e 0022     	 movs r2,#0
+ 1544 0290 5A70     	 strb r2,[r3,#1]
+ 610:../cleanflight/src/main/io/serial_4way.c ****                     if (ParamBuf[0] < escCount) {
+ 1545              	 .loc 1 610 0
+ 1546 0292 07F11C03 	 add r3,r7,#28
+ 1547 0296 1A78     	 ldrb r2,[r3]
+ 1548 0298 224B     	 ldr r3,.L177+20
+ 1549 029a 1B78     	 ldrb r3,[r3]
+ 1550 029c 9A42     	 cmp r2,r3
+ 1551 029e 11D2     	 bcs .L114
+ 611:../cleanflight/src/main/io/serial_4way.c ****                         //Channel may change here
+ 612:../cleanflight/src/main/io/serial_4way.c ****                         //ESC_LO or ESC_HI; Halt state for prev channel
+ 613:../cleanflight/src/main/io/serial_4way.c ****                         selected_esc = ParamBuf[0];
+ 1552              	 .loc 1 613 0
+ 1553 02a0 07F11C03 	 add r3,r7,#28
+ 1554 02a4 1A78     	 ldrb r2,[r3]
+ 1555 02a6 204B     	 ldr r3,.L177+24
+ 1556 02a8 1A70     	 strb r2,[r3]
+ 614:../cleanflight/src/main/io/serial_4way.c ****                     } else {
+ 615:../cleanflight/src/main/io/serial_4way.c ****                         ACK_OUT = ACK_I_INVALID_CHANNEL;
+ 616:../cleanflight/src/main/io/serial_4way.c ****                         break;
+ 617:../cleanflight/src/main/io/serial_4way.c ****                     }
+ 618:../cleanflight/src/main/io/serial_4way.c ****                     O_PARAM_LEN = DeviceInfoSize; //4
+ 1557              	 .loc 1 618 0
+ 1558 02aa 0423     	 movs r3,#4
+ 1559 02ac 87F82E31 	 strb r3,[r7,#302]
+ 619:../cleanflight/src/main/io/serial_4way.c ****                     O_PARAM = (uint8_t *)&DeviceInfo;
+ 1560              	 .loc 1 619 0
+ 1561 02b0 1A4B     	 ldr r3,.L177+12
+ 1562 02b2 C7F82831 	 str r3,[r7,#296]
+ 620:../cleanflight/src/main/io/serial_4way.c ****                     if (Connect(&DeviceInfo)) {
+ 1563              	 .loc 1 620 0
+ 1564 02b6 1948     	 ldr r0,.L177+12
+ 1565 02b8 FFF7FEFF 	 bl Connect
+ 1566 02bc 0346     	 mov r3,r0
+ 1567 02be 002B     	 cmp r3,#0
+ 1568 02c0 09D0     	 beq .L116
+ 1569 02c2 03E0     	 b .L167
+ 1570              	.L114:
+ 615:../cleanflight/src/main/io/serial_4way.c ****                         break;
+ 1571              	 .loc 1 615 0
+ 1572 02c4 0823     	 movs r3,#8
+ 1573 02c6 87F82F31 	 strb r3,[r7,#303]
+ 616:../cleanflight/src/main/io/serial_4way.c ****                     }
+ 1574              	 .loc 1 616 0
+ 1575 02ca 78E1     	 b .L80
+ 1576              	.L167:
+ 621:../cleanflight/src/main/io/serial_4way.c ****                         DeviceInfo.bytes[INTF_MODE_IDX] = CurrentInterfaceMode;
+ 1577              	 .loc 1 621 0
+ 1578 02cc 124B     	 ldr r3,.L177+8
+ 1579 02ce 1A78     	 ldrb r2,[r3]
+ 1580 02d0 124B     	 ldr r3,.L177+12
+ 1581 02d2 DA70     	 strb r2,[r3,#3]
+ 622:../cleanflight/src/main/io/serial_4way.c ****                     } else {
+ 623:../cleanflight/src/main/io/serial_4way.c ****                         SET_DISCONNECTED;
+ 624:../cleanflight/src/main/io/serial_4way.c ****                         ACK_OUT = ACK_D_GENERAL_ERROR;
+ 625:../cleanflight/src/main/io/serial_4way.c ****                     }
+ 626:../cleanflight/src/main/io/serial_4way.c ****                     break;
+ 1582              	 .loc 1 626 0
+ 1583 02d4 73E1     	 b .L80
+ 1584              	.L116:
+ 623:../cleanflight/src/main/io/serial_4way.c ****                         ACK_OUT = ACK_D_GENERAL_ERROR;
+ 1585              	 .loc 1 623 0
+ 1586 02d6 114B     	 ldr r3,.L177+12
+ 1587 02d8 0022     	 movs r2,#0
+ 1588 02da 1A70     	 strb r2,[r3]
+ 1589 02dc 0022     	 movs r2,#0
+ 1590 02de 5A70     	 strb r2,[r3,#1]
+ 624:../cleanflight/src/main/io/serial_4way.c ****                     }
+ 1591              	 .loc 1 624 0
+ 1592 02e0 0F23     	 movs r3,#15
+ 1593 02e2 87F82F31 	 strb r3,[r7,#303]
+ 1594              	 .loc 1 626 0
+ 1595 02e6 6AE1     	 b .L80
+ 1596              	.L90:
+ 627:../cleanflight/src/main/io/serial_4way.c ****                 }
+ 628:../cleanflight/src/main/io/serial_4way.c **** 
+ 629:../cleanflight/src/main/io/serial_4way.c ****                 #ifdef USE_SERIAL_4WAY_SK_BOOTLOADER
+ 630:../cleanflight/src/main/io/serial_4way.c ****                 case cmd_DeviceEraseAll:
+ 631:../cleanflight/src/main/io/serial_4way.c ****                 {
+ 632:../cleanflight/src/main/io/serial_4way.c ****                     switch (CurrentInterfaceMode)
+ 1597              	 .loc 1 632 0
+ 1598 02e8 0B4B     	 ldr r3,.L177+8
+ 1599 02ea 1B78     	 ldrb r3,[r3]
+ 1600 02ec 032B     	 cmp r3,#3
+ 1601 02ee 09D1     	 bne .L168
+ 633:../cleanflight/src/main/io/serial_4way.c ****                     {
+ 634:../cleanflight/src/main/io/serial_4way.c ****                         case imSK:
+ 635:../cleanflight/src/main/io/serial_4way.c ****                         {
+ 636:../cleanflight/src/main/io/serial_4way.c ****                             if (!Stk_Chip_Erase()) ACK_OUT=ACK_D_GENERAL_ERROR;
+ 1602              	 .loc 1 636 0
+ 1603 02f0 FFF7FEFF 	 bl Stk_Chip_Erase
+ 1604 02f4 0346     	 mov r3,r0
+ 1605 02f6 002B     	 cmp r3,#0
+ 1606 02f8 03D1     	 bne .L120
+ 1607              	 .loc 1 636 0 is_stmt 0 discriminator 1
+ 1608 02fa 0F23     	 movs r3,#15
+ 1609 02fc 87F82F31 	 strb r3,[r7,#303]
+ 637:../cleanflight/src/main/io/serial_4way.c ****                             break;
+ 1610              	 .loc 1 637 0 is_stmt 1 discriminator 1
+ 1611 0300 04E0     	 b .L121
+ 1612              	.L120:
+ 1613              	 .loc 1 637 0 is_stmt 0
+ 1614 0302 03E0     	 b .L121
+ 1615              	.L168:
+ 638:../cleanflight/src/main/io/serial_4way.c ****                         }
+ 639:../cleanflight/src/main/io/serial_4way.c ****                         default:
+ 640:../cleanflight/src/main/io/serial_4way.c ****                             ACK_OUT = ACK_I_INVALID_CMD;
+ 1616              	 .loc 1 640 0 is_stmt 1
+ 1617 0304 0223     	 movs r3,#2
+ 1618 0306 87F82F31 	 strb r3,[r7,#303]
+ 641:../cleanflight/src/main/io/serial_4way.c ****                     }
+ 642:../cleanflight/src/main/io/serial_4way.c ****                     break;
+ 1619              	 .loc 1 642 0
+ 1620 030a 58E1     	 b .L80
+ 1621              	.L121:
+ 1622              	 .loc 1 642 0 is_stmt 0 discriminator 1
+ 1623 030c 57E1     	 b .L80
+ 1624              	.L178:
+ 1625 030e 00BF     	 .align 2
+ 1626              	.L177:
+ 1627 0310 00000000 	 .word port
+ 1628 0314 00000000 	 .word CRC_in
+ 1629 0318 00000000 	 .word CurrentInterfaceMode
+ 1630 031c 00000000 	 .word DeviceInfo
+ 1631 0320 00000000 	 .word .LC0
+ 1632 0324 00000000 	 .word escCount
+ 1633 0328 00000000 	 .word selected_esc
+ 1634              	.L91:
+ 643:../cleanflight/src/main/io/serial_4way.c ****                 }
+ 644:../cleanflight/src/main/io/serial_4way.c ****                 #endif
+ 645:../cleanflight/src/main/io/serial_4way.c **** 
+ 646:../cleanflight/src/main/io/serial_4way.c ****                 #ifdef USE_SERIAL_4WAY_BLHELI_BOOTLOADER
+ 647:../cleanflight/src/main/io/serial_4way.c ****                 case cmd_DevicePageErase:
+ 648:../cleanflight/src/main/io/serial_4way.c ****                 {
+ 649:../cleanflight/src/main/io/serial_4way.c ****                     switch (CurrentInterfaceMode)
+ 1635              	 .loc 1 649 0 is_stmt 1
+ 1636 032c A24B     	 ldr r3,.L179
+ 1637 032e 1B78     	 ldrb r3,[r3]
+ 1638 0330 012B     	 cmp r3,#1
+ 1639 0332 01D0     	 beq .L123
+ 1640 0334 042B     	 cmp r3,#4
+ 1641 0336 2BD1     	 bne .L169
+ 1642              	.L123:
+ 650:../cleanflight/src/main/io/serial_4way.c ****                     {
+ 651:../cleanflight/src/main/io/serial_4way.c ****                         case imSIL_BLB:
+ 652:../cleanflight/src/main/io/serial_4way.c ****                         case imARM_BLB:
+ 653:../cleanflight/src/main/io/serial_4way.c ****                         {
+ 654:../cleanflight/src/main/io/serial_4way.c ****                             Dummy.bytes[0] = ParamBuf[0];
+ 1643              	 .loc 1 654 0
+ 1644 0338 07F11C03 	 add r3,r7,#28
+ 1645 033c 1A78     	 ldrb r2,[r3]
+ 1646 033e 07F11403 	 add r3,r7,#20
+ 1647 0342 1A70     	 strb r2,[r3]
+ 655:../cleanflight/src/main/io/serial_4way.c ****                             if  (CurrentInterfaceMode == imARM_BLB) {
+ 1648              	 .loc 1 655 0
+ 1649 0344 9C4B     	 ldr r3,.L179
+ 1650 0346 1B78     	 ldrb r3,[r3]
+ 1651 0348 042B     	 cmp r3,#4
+ 1652 034a 08D1     	 bne .L124
+ 656:../cleanflight/src/main/io/serial_4way.c ****                                 // Address =Page * 1024
+ 657:../cleanflight/src/main/io/serial_4way.c ****                                 ioMem.D_FLASH_ADDR_H = (Dummy.bytes[0] << 2);
+ 1653              	 .loc 1 657 0
+ 1654 034c 07F11403 	 add r3,r7,#20
+ 1655 0350 1B78     	 ldrb r3,[r3]
+ 1656 0352 9B00     	 lsls r3,r3,#2
+ 1657 0354 DAB2     	 uxtb r2,r3
+ 1658 0356 07F10C03 	 add r3,r7,#12
+ 1659 035a 5A70     	 strb r2,[r3,#1]
+ 1660 035c 07E0     	 b .L125
+ 1661              	.L124:
+ 658:../cleanflight/src/main/io/serial_4way.c ****                             } else {
+ 659:../cleanflight/src/main/io/serial_4way.c ****                                 // Address =Page * 512
+ 660:../cleanflight/src/main/io/serial_4way.c ****                                 ioMem.D_FLASH_ADDR_H = (Dummy.bytes[0] << 1);
+ 1662              	 .loc 1 660 0
+ 1663 035e 07F11403 	 add r3,r7,#20
+ 1664 0362 1B78     	 ldrb r3,[r3]
+ 1665 0364 5B00     	 lsls r3,r3,#1
+ 1666 0366 DAB2     	 uxtb r2,r3
+ 1667 0368 07F10C03 	 add r3,r7,#12
+ 1668 036c 5A70     	 strb r2,[r3,#1]
+ 1669              	.L125:
+ 661:../cleanflight/src/main/io/serial_4way.c ****                             }
+ 662:../cleanflight/src/main/io/serial_4way.c ****                             ioMem.D_FLASH_ADDR_L = 0;
+ 1670              	 .loc 1 662 0
+ 1671 036e 07F10C03 	 add r3,r7,#12
+ 1672 0372 0022     	 movs r2,#0
+ 1673 0374 9A70     	 strb r2,[r3,#2]
+ 663:../cleanflight/src/main/io/serial_4way.c ****                             if (!BL_PageErase(&ioMem)) ACK_OUT = ACK_D_GENERAL_ERROR;
+ 1674              	 .loc 1 663 0
+ 1675 0376 07F10C03 	 add r3,r7,#12
+ 1676 037a 1846     	 mov r0,r3
+ 1677 037c FFF7FEFF 	 bl BL_PageErase
+ 1678 0380 0346     	 mov r3,r0
+ 1679 0382 002B     	 cmp r3,#0
+ 1680 0384 03D1     	 bne .L126
+ 1681              	 .loc 1 663 0 is_stmt 0 discriminator 1
+ 1682 0386 0F23     	 movs r3,#15
+ 1683 0388 87F82F31 	 strb r3,[r7,#303]
+ 664:../cleanflight/src/main/io/serial_4way.c ****                             break;
+ 1684              	 .loc 1 664 0 is_stmt 1 discriminator 1
+ 1685 038c 04E0     	 b .L127
+ 1686              	.L126:
+ 1687              	 .loc 1 664 0 is_stmt 0
+ 1688 038e 03E0     	 b .L127
+ 1689              	.L169:
+ 665:../cleanflight/src/main/io/serial_4way.c ****                         }
+ 666:../cleanflight/src/main/io/serial_4way.c ****                         default:
+ 667:../cleanflight/src/main/io/serial_4way.c ****                             ACK_OUT = ACK_I_INVALID_CMD;
+ 1690              	 .loc 1 667 0 is_stmt 1
+ 1691 0390 0223     	 movs r3,#2
+ 1692 0392 87F82F31 	 strb r3,[r7,#303]
+ 668:../cleanflight/src/main/io/serial_4way.c ****                     }
+ 669:../cleanflight/src/main/io/serial_4way.c ****                     break;
+ 1693              	 .loc 1 669 0
+ 1694 0396 12E1     	 b .L80
+ 1695              	.L127:
+ 1696              	 .loc 1 669 0 is_stmt 0 discriminator 2
+ 1697 0398 11E1     	 b .L80
+ 1698              	.L92:
+ 670:../cleanflight/src/main/io/serial_4way.c ****                 }
+ 671:../cleanflight/src/main/io/serial_4way.c ****                 #endif
+ 672:../cleanflight/src/main/io/serial_4way.c **** 
+ 673:../cleanflight/src/main/io/serial_4way.c ****                 //*** Device Memory Read Ops ***
+ 674:../cleanflight/src/main/io/serial_4way.c ****                 case cmd_DeviceRead:
+ 675:../cleanflight/src/main/io/serial_4way.c ****                 {
+ 676:../cleanflight/src/main/io/serial_4way.c ****                     ioMem.D_NUM_BYTES = ParamBuf[0];
+ 1699              	 .loc 1 676 0 is_stmt 1
+ 1700 039a 07F11C03 	 add r3,r7,#28
+ 1701 039e 1A78     	 ldrb r2,[r3]
+ 1702 03a0 07F10C03 	 add r3,r7,#12
+ 1703 03a4 1A70     	 strb r2,[r3]
+ 677:../cleanflight/src/main/io/serial_4way.c ****                     /*
+ 678:../cleanflight/src/main/io/serial_4way.c ****                     wtf.D_FLASH_ADDR_H=Adress_H;
+ 679:../cleanflight/src/main/io/serial_4way.c ****                     wtf.D_FLASH_ADDR_L=Adress_L;
+ 680:../cleanflight/src/main/io/serial_4way.c ****                     wtf.D_PTR_I = BUF_I;
+ 681:../cleanflight/src/main/io/serial_4way.c ****                     */
+ 682:../cleanflight/src/main/io/serial_4way.c ****                     switch (CurrentInterfaceMode)
+ 1704              	 .loc 1 682 0
+ 1705 03a6 844B     	 ldr r3,.L179
+ 1706 03a8 1B78     	 ldrb r3,[r3]
+ 1707 03aa 013B     	 subs r3,r3,#1
+ 1708 03ac 032B     	 cmp r3,#3
+ 1709 03ae 28D8     	 bhi .L128
+ 1710 03b0 01A2     	 adr r2,.L130
+ 1711 03b2 52F823F0 	 ldr pc,[r2,r3,lsl#2]
+ 1712 03b6 00BF     	 .p2align 2
+ 1713              	.L130:
+ 1714 03b8 C9030000 	 .word .L129+1
+ 1715 03bc C9030000 	 .word .L129+1
+ 1716 03c0 E9030000 	 .word .L131+1
+ 1717 03c4 C9030000 	 .word .L129+1
+ 1718              	 .p2align 1
+ 1719              	.L129:
+ 683:../cleanflight/src/main/io/serial_4way.c ****                     {
+ 684:../cleanflight/src/main/io/serial_4way.c ****                         #ifdef USE_SERIAL_4WAY_BLHELI_BOOTLOADER
+ 685:../cleanflight/src/main/io/serial_4way.c ****                         case imSIL_BLB:
+ 686:../cleanflight/src/main/io/serial_4way.c ****                         case imATM_BLB:
+ 687:../cleanflight/src/main/io/serial_4way.c ****                         case imARM_BLB:
+ 688:../cleanflight/src/main/io/serial_4way.c ****                         {
+ 689:../cleanflight/src/main/io/serial_4way.c ****                             if (!BL_ReadFlash(CurrentInterfaceMode, &ioMem))
+ 1720              	 .loc 1 689 0
+ 1721 03c8 7B4B     	 ldr r3,.L179
+ 1722 03ca 1A78     	 ldrb r2,[r3]
+ 1723 03cc 07F10C03 	 add r3,r7,#12
+ 1724 03d0 1046     	 mov r0,r2
+ 1725 03d2 1946     	 mov r1,r3
+ 1726 03d4 FFF7FEFF 	 bl BL_ReadFlash
+ 1727 03d8 0346     	 mov r3,r0
+ 1728 03da 002B     	 cmp r3,#0
+ 1729 03dc 03D1     	 bne .L132
+ 690:../cleanflight/src/main/io/serial_4way.c ****                             {
+ 691:../cleanflight/src/main/io/serial_4way.c ****                                 ACK_OUT = ACK_D_GENERAL_ERROR;
+ 1730              	 .loc 1 691 0
+ 1731 03de 0F23     	 movs r3,#15
+ 1732 03e0 87F82F31 	 strb r3,[r7,#303]
+ 692:../cleanflight/src/main/io/serial_4way.c ****                             }
+ 693:../cleanflight/src/main/io/serial_4way.c ****                             break;
+ 1733              	 .loc 1 693 0
+ 1734 03e4 10E0     	 b .L133
+ 1735              	.L132:
+ 1736 03e6 0FE0     	 b .L133
+ 1737              	.L131:
+ 694:../cleanflight/src/main/io/serial_4way.c ****                         }
+ 695:../cleanflight/src/main/io/serial_4way.c ****                         #endif
+ 696:../cleanflight/src/main/io/serial_4way.c ****                         #ifdef USE_SERIAL_4WAY_SK_BOOTLOADER
+ 697:../cleanflight/src/main/io/serial_4way.c ****                         case imSK:
+ 698:../cleanflight/src/main/io/serial_4way.c ****                         {
+ 699:../cleanflight/src/main/io/serial_4way.c ****                             if (!Stk_ReadFlash(&ioMem))
+ 1738              	 .loc 1 699 0
+ 1739 03e8 07F10C03 	 add r3,r7,#12
+ 1740 03ec 1846     	 mov r0,r3
+ 1741 03ee FFF7FEFF 	 bl Stk_ReadFlash
+ 1742 03f2 0346     	 mov r3,r0
+ 1743 03f4 002B     	 cmp r3,#0
+ 1744 03f6 03D1     	 bne .L134
+ 700:../cleanflight/src/main/io/serial_4way.c ****                             {
+ 701:../cleanflight/src/main/io/serial_4way.c ****                                 ACK_OUT = ACK_D_GENERAL_ERROR;
+ 1745              	 .loc 1 701 0
+ 1746 03f8 0F23     	 movs r3,#15
+ 1747 03fa 87F82F31 	 strb r3,[r7,#303]
+ 702:../cleanflight/src/main/io/serial_4way.c ****                             }
+ 703:../cleanflight/src/main/io/serial_4way.c ****                             break;
+ 1748              	 .loc 1 703 0
+ 1749 03fe 03E0     	 b .L133
+ 1750              	.L134:
+ 1751 0400 02E0     	 b .L133
+ 1752              	.L128:
+ 704:../cleanflight/src/main/io/serial_4way.c ****                         }
+ 705:../cleanflight/src/main/io/serial_4way.c ****                         #endif
+ 706:../cleanflight/src/main/io/serial_4way.c ****                         default:
+ 707:../cleanflight/src/main/io/serial_4way.c ****                             ACK_OUT = ACK_I_INVALID_CMD;
+ 1753              	 .loc 1 707 0
+ 1754 0402 0223     	 movs r3,#2
+ 1755 0404 87F82F31 	 strb r3,[r7,#303]
+ 1756              	.L133:
+ 708:../cleanflight/src/main/io/serial_4way.c ****                     }
+ 709:../cleanflight/src/main/io/serial_4way.c ****                     if (ACK_OUT == ACK_OK)
+ 1757              	 .loc 1 709 0
+ 1758 0408 97F82F31 	 ldrb r3,[r7,#303]
+ 1759 040c 002B     	 cmp r3,#0
+ 1760 040e 09D1     	 bne .L135
+ 710:../cleanflight/src/main/io/serial_4way.c ****                     {
+ 711:../cleanflight/src/main/io/serial_4way.c ****                         O_PARAM_LEN = ioMem.D_NUM_BYTES;
+ 1761              	 .loc 1 711 0
+ 1762 0410 07F10C03 	 add r3,r7,#12
+ 1763 0414 1B78     	 ldrb r3,[r3]
+ 1764 0416 87F82E31 	 strb r3,[r7,#302]
+ 712:../cleanflight/src/main/io/serial_4way.c ****                         O_PARAM = (uint8_t *)&ParamBuf;
+ 1765              	 .loc 1 712 0
+ 1766 041a 07F11C03 	 add r3,r7,#28
+ 1767 041e C7F82831 	 str r3,[r7,#296]
+ 713:../cleanflight/src/main/io/serial_4way.c ****                     }
+ 714:../cleanflight/src/main/io/serial_4way.c ****                     break;
+ 1768              	 .loc 1 714 0
+ 1769 0422 CCE0     	 b .L80
+ 1770              	.L135:
+ 1771 0424 CBE0     	 b .L80
+ 1772              	.L94:
+ 715:../cleanflight/src/main/io/serial_4way.c ****                 }
+ 716:../cleanflight/src/main/io/serial_4way.c **** 
+ 717:../cleanflight/src/main/io/serial_4way.c ****                 case cmd_DeviceReadEEprom:
+ 718:../cleanflight/src/main/io/serial_4way.c ****                 {
+ 719:../cleanflight/src/main/io/serial_4way.c ****                     ioMem.D_NUM_BYTES = ParamBuf[0];
+ 1773              	 .loc 1 719 0
+ 1774 0426 07F11C03 	 add r3,r7,#28
+ 1775 042a 1A78     	 ldrb r2,[r3]
+ 1776 042c 07F10C03 	 add r3,r7,#12
+ 1777 0430 1A70     	 strb r2,[r3]
+ 720:../cleanflight/src/main/io/serial_4way.c ****                     /*
+ 721:../cleanflight/src/main/io/serial_4way.c ****                     wtf.D_FLASH_ADDR_H = Adress_H;
+ 722:../cleanflight/src/main/io/serial_4way.c ****                     wtf.D_FLASH_ADDR_L = Adress_L;
+ 723:../cleanflight/src/main/io/serial_4way.c ****                     wtf.D_PTR_I = BUF_I;
+ 724:../cleanflight/src/main/io/serial_4way.c ****                     */
+ 725:../cleanflight/src/main/io/serial_4way.c ****                     switch (CurrentInterfaceMode)
+ 1778              	 .loc 1 725 0
+ 1779 0432 614B     	 ldr r3,.L179
+ 1780 0434 1B78     	 ldrb r3,[r3]
+ 1781 0436 022B     	 cmp r3,#2
+ 1782 0438 02D0     	 beq .L137
+ 1783 043a 032B     	 cmp r3,#3
+ 1784 043c 0DD0     	 beq .L138
+ 1785 043e 19E0     	 b .L170
+ 1786              	.L137:
+ 726:../cleanflight/src/main/io/serial_4way.c ****                     {
+ 727:../cleanflight/src/main/io/serial_4way.c ****                         #ifdef USE_SERIAL_4WAY_BLHELI_BOOTLOADER
+ 728:../cleanflight/src/main/io/serial_4way.c ****                         case imATM_BLB:
+ 729:../cleanflight/src/main/io/serial_4way.c ****                         {
+ 730:../cleanflight/src/main/io/serial_4way.c ****                             if (!BL_ReadEEprom(&ioMem))
+ 1787              	 .loc 1 730 0
+ 1788 0440 07F10C03 	 add r3,r7,#12
+ 1789 0444 1846     	 mov r0,r3
+ 1790 0446 FFF7FEFF 	 bl BL_ReadEEprom
+ 1791 044a 0346     	 mov r3,r0
+ 1792 044c 002B     	 cmp r3,#0
+ 1793 044e 03D1     	 bne .L139
+ 731:../cleanflight/src/main/io/serial_4way.c ****                             {
+ 732:../cleanflight/src/main/io/serial_4way.c ****                                 ACK_OUT = ACK_D_GENERAL_ERROR;
+ 1794              	 .loc 1 732 0
+ 1795 0450 0F23     	 movs r3,#15
+ 1796 0452 87F82F31 	 strb r3,[r7,#303]
+ 733:../cleanflight/src/main/io/serial_4way.c ****                             }
+ 734:../cleanflight/src/main/io/serial_4way.c ****                             break;
+ 1797              	 .loc 1 734 0
+ 1798 0456 10E0     	 b .L140
+ 1799              	.L139:
+ 1800 0458 0FE0     	 b .L140
+ 1801              	.L138:
+ 735:../cleanflight/src/main/io/serial_4way.c ****                         }
+ 736:../cleanflight/src/main/io/serial_4way.c ****                         #endif
+ 737:../cleanflight/src/main/io/serial_4way.c ****                         #ifdef USE_SERIAL_4WAY_SK_BOOTLOADER
+ 738:../cleanflight/src/main/io/serial_4way.c ****                         case imSK:
+ 739:../cleanflight/src/main/io/serial_4way.c ****                         {
+ 740:../cleanflight/src/main/io/serial_4way.c ****                             if (!Stk_ReadEEprom(&ioMem))
+ 1802              	 .loc 1 740 0
+ 1803 045a 07F10C03 	 add r3,r7,#12
+ 1804 045e 1846     	 mov r0,r3
+ 1805 0460 FFF7FEFF 	 bl Stk_ReadEEprom
+ 1806 0464 0346     	 mov r3,r0
+ 1807 0466 002B     	 cmp r3,#0
+ 1808 0468 03D1     	 bne .L141
+ 741:../cleanflight/src/main/io/serial_4way.c ****                             {
+ 742:../cleanflight/src/main/io/serial_4way.c ****                                 ACK_OUT = ACK_D_GENERAL_ERROR;
+ 1809              	 .loc 1 742 0
+ 1810 046a 0F23     	 movs r3,#15
+ 1811 046c 87F82F31 	 strb r3,[r7,#303]
+ 743:../cleanflight/src/main/io/serial_4way.c ****                             }
+ 744:../cleanflight/src/main/io/serial_4way.c ****                             break;
+ 1812              	 .loc 1 744 0
+ 1813 0470 03E0     	 b .L140
+ 1814              	.L141:
+ 1815 0472 02E0     	 b .L140
+ 1816              	.L170:
+ 745:../cleanflight/src/main/io/serial_4way.c ****                         }
+ 746:../cleanflight/src/main/io/serial_4way.c ****                         #endif
+ 747:../cleanflight/src/main/io/serial_4way.c ****                         default:
+ 748:../cleanflight/src/main/io/serial_4way.c ****                             ACK_OUT = ACK_I_INVALID_CMD;
+ 1817              	 .loc 1 748 0
+ 1818 0474 0223     	 movs r3,#2
+ 1819 0476 87F82F31 	 strb r3,[r7,#303]
+ 1820              	.L140:
+ 749:../cleanflight/src/main/io/serial_4way.c ****                     }
+ 750:../cleanflight/src/main/io/serial_4way.c ****                     if (ACK_OUT == ACK_OK)
+ 1821              	 .loc 1 750 0
+ 1822 047a 97F82F31 	 ldrb r3,[r7,#303]
+ 1823 047e 002B     	 cmp r3,#0
+ 1824 0480 09D1     	 bne .L142
+ 751:../cleanflight/src/main/io/serial_4way.c ****                     {
+ 752:../cleanflight/src/main/io/serial_4way.c ****                         O_PARAM_LEN = ioMem.D_NUM_BYTES;
+ 1825              	 .loc 1 752 0
+ 1826 0482 07F10C03 	 add r3,r7,#12
+ 1827 0486 1B78     	 ldrb r3,[r3]
+ 1828 0488 87F82E31 	 strb r3,[r7,#302]
+ 753:../cleanflight/src/main/io/serial_4way.c ****                         O_PARAM = (uint8_t *)&ParamBuf;
+ 1829              	 .loc 1 753 0
+ 1830 048c 07F11C03 	 add r3,r7,#28
+ 1831 0490 C7F82831 	 str r3,[r7,#296]
+ 754:../cleanflight/src/main/io/serial_4way.c ****                     }
+ 755:../cleanflight/src/main/io/serial_4way.c ****                     break;
+ 1832              	 .loc 1 755 0
+ 1833 0494 93E0     	 b .L80
+ 1834              	.L142:
+ 1835 0496 92E0     	 b .L80
+ 1836              	.L93:
+ 756:../cleanflight/src/main/io/serial_4way.c ****                 }
+ 757:../cleanflight/src/main/io/serial_4way.c **** 
+ 758:../cleanflight/src/main/io/serial_4way.c ****                 //*** Device Memory Write Ops ***
+ 759:../cleanflight/src/main/io/serial_4way.c ****                 case cmd_DeviceWrite:
+ 760:../cleanflight/src/main/io/serial_4way.c ****                 {
+ 761:../cleanflight/src/main/io/serial_4way.c ****                     ioMem.D_NUM_BYTES = I_PARAM_LEN;
+ 1837              	 .loc 1 761 0
+ 1838 0498 07F10C03 	 add r3,r7,#12
+ 1839 049c 97F81F21 	 ldrb r2,[r7,#287]
+ 1840 04a0 1A70     	 strb r2,[r3]
+ 762:../cleanflight/src/main/io/serial_4way.c ****                     /*
+ 763:../cleanflight/src/main/io/serial_4way.c ****                     wtf.D_FLASH_ADDR_H=Adress_H;
+ 764:../cleanflight/src/main/io/serial_4way.c ****                     wtf.D_FLASH_ADDR_L=Adress_L;
+ 765:../cleanflight/src/main/io/serial_4way.c ****                     wtf.D_PTR_I = BUF_I;
+ 766:../cleanflight/src/main/io/serial_4way.c ****                     */
+ 767:../cleanflight/src/main/io/serial_4way.c ****                     switch (CurrentInterfaceMode)
+ 1841              	 .loc 1 767 0
+ 1842 04a2 454B     	 ldr r3,.L179
+ 1843 04a4 1B78     	 ldrb r3,[r3]
+ 1844 04a6 013B     	 subs r3,r3,#1
+ 1845 04a8 032B     	 cmp r3,#3
+ 1846 04aa 00F28780 	 bhi .L174
+ 1847 04ae 01A2     	 adr r2,.L145
+ 1848 04b0 52F823F0 	 ldr pc,[r2,r3,lsl#2]
+ 1849              	 .p2align 2
+ 1850              	.L145:
+ 1851 04b4 C5040000 	 .word .L144+1
+ 1852 04b8 C5040000 	 .word .L144+1
+ 1853 04bc DF040000 	 .word .L146+1
+ 1854 04c0 C5040000 	 .word .L144+1
+ 1855              	 .p2align 1
+ 1856              	.L144:
+ 768:../cleanflight/src/main/io/serial_4way.c ****                     {
+ 769:../cleanflight/src/main/io/serial_4way.c ****                         #ifdef USE_SERIAL_4WAY_BLHELI_BOOTLOADER
+ 770:../cleanflight/src/main/io/serial_4way.c ****                         case imSIL_BLB:
+ 771:../cleanflight/src/main/io/serial_4way.c ****                         case imATM_BLB:
+ 772:../cleanflight/src/main/io/serial_4way.c ****                         case imARM_BLB:
+ 773:../cleanflight/src/main/io/serial_4way.c ****                         {
+ 774:../cleanflight/src/main/io/serial_4way.c ****                             if (!BL_WriteFlash(&ioMem)) {
+ 1857              	 .loc 1 774 0
+ 1858 04c4 07F10C03 	 add r3,r7,#12
+ 1859 04c8 1846     	 mov r0,r3
+ 1860 04ca FFF7FEFF 	 bl BL_WriteFlash
+ 1861 04ce 0346     	 mov r3,r0
+ 1862 04d0 002B     	 cmp r3,#0
+ 1863 04d2 03D1     	 bne .L147
+ 775:../cleanflight/src/main/io/serial_4way.c ****                                 ACK_OUT = ACK_D_GENERAL_ERROR;
+ 1864              	 .loc 1 775 0
+ 1865 04d4 0F23     	 movs r3,#15
+ 1866 04d6 87F82F31 	 strb r3,[r7,#303]
+ 776:../cleanflight/src/main/io/serial_4way.c ****                             }
+ 777:../cleanflight/src/main/io/serial_4way.c ****                             break;
+ 1867              	 .loc 1 777 0
+ 1868 04da 0DE0     	 b .L143
+ 1869              	.L147:
+ 1870 04dc 0CE0     	 b .L143
+ 1871              	.L146:
+ 778:../cleanflight/src/main/io/serial_4way.c ****                         }
+ 779:../cleanflight/src/main/io/serial_4way.c ****                         #endif
+ 780:../cleanflight/src/main/io/serial_4way.c ****                         #ifdef USE_SERIAL_4WAY_SK_BOOTLOADER
+ 781:../cleanflight/src/main/io/serial_4way.c ****                         case imSK:
+ 782:../cleanflight/src/main/io/serial_4way.c ****                         {
+ 783:../cleanflight/src/main/io/serial_4way.c ****                             if (!Stk_WriteFlash(&ioMem))
+ 1872              	 .loc 1 783 0
+ 1873 04de 07F10C03 	 add r3,r7,#12
+ 1874 04e2 1846     	 mov r0,r3
+ 1875 04e4 FFF7FEFF 	 bl Stk_WriteFlash
+ 1876 04e8 0346     	 mov r3,r0
+ 1877 04ea 002B     	 cmp r3,#0
+ 1878 04ec 03D1     	 bne .L148
+ 784:../cleanflight/src/main/io/serial_4way.c ****                             {
+ 785:../cleanflight/src/main/io/serial_4way.c ****                                 ACK_OUT = ACK_D_GENERAL_ERROR;
+ 1879              	 .loc 1 785 0
+ 1880 04ee 0F23     	 movs r3,#15
+ 1881 04f0 87F82F31 	 strb r3,[r7,#303]
+ 786:../cleanflight/src/main/io/serial_4way.c ****                             }
+ 787:../cleanflight/src/main/io/serial_4way.c ****                             break;
+ 1882              	 .loc 1 787 0
+ 1883 04f4 FFE7     	 b .L175
+ 1884              	.L148:
+ 1885              	.L175:
+ 1886 04f6 00BF     	 nop
+ 1887              	.L143:
+ 788:../cleanflight/src/main/io/serial_4way.c ****                         }
+ 789:../cleanflight/src/main/io/serial_4way.c ****                         #endif
+ 790:../cleanflight/src/main/io/serial_4way.c ****                     }
+ 791:../cleanflight/src/main/io/serial_4way.c ****                     break;
+ 1888              	 .loc 1 791 0 discriminator 3
+ 1889 04f8 60E0     	 b .L174
+ 1890              	.L95:
+ 792:../cleanflight/src/main/io/serial_4way.c ****                 }
+ 793:../cleanflight/src/main/io/serial_4way.c **** 
+ 794:../cleanflight/src/main/io/serial_4way.c ****                 case cmd_DeviceWriteEEprom:
+ 795:../cleanflight/src/main/io/serial_4way.c ****                 {
+ 796:../cleanflight/src/main/io/serial_4way.c ****                     ioMem.D_NUM_BYTES = I_PARAM_LEN;
+ 1891              	 .loc 1 796 0
+ 1892 04fa 07F10C03 	 add r3,r7,#12
+ 1893 04fe 97F81F21 	 ldrb r2,[r7,#287]
+ 1894 0502 1A70     	 strb r2,[r3]
+ 797:../cleanflight/src/main/io/serial_4way.c ****                     ACK_OUT = ACK_D_GENERAL_ERROR;
+ 1895              	 .loc 1 797 0
+ 1896 0504 0F23     	 movs r3,#15
+ 1897 0506 87F82F31 	 strb r3,[r7,#303]
+ 798:../cleanflight/src/main/io/serial_4way.c ****                     /*
+ 799:../cleanflight/src/main/io/serial_4way.c ****                     wtf.D_FLASH_ADDR_H=Adress_H;
+ 800:../cleanflight/src/main/io/serial_4way.c ****                     wtf.D_FLASH_ADDR_L=Adress_L;
+ 801:../cleanflight/src/main/io/serial_4way.c ****                     wtf.D_PTR_I = BUF_I;
+ 802:../cleanflight/src/main/io/serial_4way.c ****                     */
+ 803:../cleanflight/src/main/io/serial_4way.c ****                     switch (CurrentInterfaceMode)
+ 1898              	 .loc 1 803 0
+ 1899 050a 2B4B     	 ldr r3,.L179
+ 1900 050c 1B78     	 ldrb r3,[r3]
+ 1901 050e 022B     	 cmp r3,#2
+ 1902 0510 08D0     	 beq .L150
+ 1903 0512 032B     	 cmp r3,#3
+ 1904 0514 13D0     	 beq .L151
+ 1905 0516 012B     	 cmp r3,#1
+ 1906 0518 00D0     	 beq .L152
+ 804:../cleanflight/src/main/io/serial_4way.c ****                     {
+ 805:../cleanflight/src/main/io/serial_4way.c ****                         #ifdef USE_SERIAL_4WAY_BLHELI_BOOTLOADER
+ 806:../cleanflight/src/main/io/serial_4way.c ****                         case imSIL_BLB:
+ 807:../cleanflight/src/main/io/serial_4way.c ****                         {
+ 808:../cleanflight/src/main/io/serial_4way.c ****                             ACK_OUT = ACK_I_INVALID_CMD;
+ 809:../cleanflight/src/main/io/serial_4way.c ****                             break;
+ 810:../cleanflight/src/main/io/serial_4way.c ****                         }
+ 811:../cleanflight/src/main/io/serial_4way.c ****                         case imATM_BLB:
+ 812:../cleanflight/src/main/io/serial_4way.c ****                         {
+ 813:../cleanflight/src/main/io/serial_4way.c ****                             if (BL_WriteEEprom(&ioMem))
+ 814:../cleanflight/src/main/io/serial_4way.c ****                             {
+ 815:../cleanflight/src/main/io/serial_4way.c ****                                 ACK_OUT = ACK_OK;
+ 816:../cleanflight/src/main/io/serial_4way.c ****                             }
+ 817:../cleanflight/src/main/io/serial_4way.c ****                             break;
+ 818:../cleanflight/src/main/io/serial_4way.c ****                         }
+ 819:../cleanflight/src/main/io/serial_4way.c ****                         #endif
+ 820:../cleanflight/src/main/io/serial_4way.c ****                         #ifdef USE_SERIAL_4WAY_SK_BOOTLOADER
+ 821:../cleanflight/src/main/io/serial_4way.c ****                         case imSK:
+ 822:../cleanflight/src/main/io/serial_4way.c ****                         {
+ 823:../cleanflight/src/main/io/serial_4way.c ****                             if (Stk_WriteEEprom(&ioMem))
+ 824:../cleanflight/src/main/io/serial_4way.c ****                             {
+ 825:../cleanflight/src/main/io/serial_4way.c ****                                 ACK_OUT = ACK_OK;
+ 826:../cleanflight/src/main/io/serial_4way.c ****                             }
+ 827:../cleanflight/src/main/io/serial_4way.c ****                             break;
+ 828:../cleanflight/src/main/io/serial_4way.c ****                         }
+ 829:../cleanflight/src/main/io/serial_4way.c ****                         #endif
+ 830:../cleanflight/src/main/io/serial_4way.c ****                     }
+ 831:../cleanflight/src/main/io/serial_4way.c ****                     break;
+ 1907              	 .loc 1 831 0
+ 1908 051a 50E0     	 b .L80
+ 1909              	.L152:
+ 808:../cleanflight/src/main/io/serial_4way.c ****                             break;
+ 1910              	 .loc 1 808 0
+ 1911 051c 0223     	 movs r3,#2
+ 1912 051e 87F82F31 	 strb r3,[r7,#303]
+ 809:../cleanflight/src/main/io/serial_4way.c ****                         }
+ 1913              	 .loc 1 809 0
+ 1914 0522 19E0     	 b .L149
+ 1915              	.L150:
+ 813:../cleanflight/src/main/io/serial_4way.c ****                             {
+ 1916              	 .loc 1 813 0
+ 1917 0524 07F10C03 	 add r3,r7,#12
+ 1918 0528 1846     	 mov r0,r3
+ 1919 052a FFF7FEFF 	 bl BL_WriteEEprom
+ 1920 052e 0346     	 mov r3,r0
+ 1921 0530 002B     	 cmp r3,#0
+ 1922 0532 03D0     	 beq .L153
+ 815:../cleanflight/src/main/io/serial_4way.c ****                             }
+ 1923              	 .loc 1 815 0
+ 1924 0534 0023     	 movs r3,#0
+ 1925 0536 87F82F31 	 strb r3,[r7,#303]
+ 817:../cleanflight/src/main/io/serial_4way.c ****                         }
+ 1926              	 .loc 1 817 0
+ 1927 053a 0DE0     	 b .L149
+ 1928              	.L153:
+ 1929 053c 0CE0     	 b .L149
+ 1930              	.L151:
+ 823:../cleanflight/src/main/io/serial_4way.c ****                             {
+ 1931              	 .loc 1 823 0
+ 1932 053e 07F10C03 	 add r3,r7,#12
+ 1933 0542 1846     	 mov r0,r3
+ 1934 0544 FFF7FEFF 	 bl Stk_WriteEEprom
+ 1935 0548 0346     	 mov r3,r0
+ 1936 054a 002B     	 cmp r3,#0
+ 1937 054c 03D0     	 beq .L154
+ 825:../cleanflight/src/main/io/serial_4way.c ****                             }
+ 1938              	 .loc 1 825 0
+ 1939 054e 0023     	 movs r3,#0
+ 1940 0550 87F82F31 	 strb r3,[r7,#303]
+ 827:../cleanflight/src/main/io/serial_4way.c ****                         }
+ 1941              	 .loc 1 827 0
+ 1942 0554 FFE7     	 b .L176
+ 1943              	.L154:
+ 1944              	.L176:
+ 1945 0556 00BF     	 nop
+ 1946              	.L149:
+ 1947              	 .loc 1 831 0 discriminator 5
+ 1948 0558 31E0     	 b .L80
+ 1949              	.L97:
+ 832:../cleanflight/src/main/io/serial_4way.c ****                 }
+ 833:../cleanflight/src/main/io/serial_4way.c ****                 //*** Device Memory Verify Ops ***
+ 834:../cleanflight/src/main/io/serial_4way.c ****                 #ifdef USE_SERIAL_4WAY_BLHELI_BOOTLOADER
+ 835:../cleanflight/src/main/io/serial_4way.c ****                 case cmd_DeviceVerify:
+ 836:../cleanflight/src/main/io/serial_4way.c ****                 {
+ 837:../cleanflight/src/main/io/serial_4way.c ****                     switch (CurrentInterfaceMode)
+ 1950              	 .loc 1 837 0
+ 1951 055a 174B     	 ldr r3,.L179
+ 1952 055c 1B78     	 ldrb r3,[r3]
+ 1953 055e 042B     	 cmp r3,#4
+ 1954 0560 20D1     	 bne .L171
+ 838:../cleanflight/src/main/io/serial_4way.c ****                     {
+ 839:../cleanflight/src/main/io/serial_4way.c ****                         case imARM_BLB:
+ 840:../cleanflight/src/main/io/serial_4way.c ****                         {
+ 841:../cleanflight/src/main/io/serial_4way.c ****                             ioMem.D_NUM_BYTES = I_PARAM_LEN;
+ 1955              	 .loc 1 841 0
+ 1956 0562 07F10C03 	 add r3,r7,#12
+ 1957 0566 97F81F21 	 ldrb r2,[r7,#287]
+ 1958 056a 1A70     	 strb r2,[r3]
+ 842:../cleanflight/src/main/io/serial_4way.c ****                             /*
+ 843:../cleanflight/src/main/io/serial_4way.c ****                             wtf.D_FLASH_ADDR_H=Adress_H;
+ 844:../cleanflight/src/main/io/serial_4way.c ****                             wtf.D_FLASH_ADDR_L=Adress_L;
+ 845:../cleanflight/src/main/io/serial_4way.c ****                             wtf.D_PTR_I = BUF_I;
+ 846:../cleanflight/src/main/io/serial_4way.c ****                             */
+ 847:../cleanflight/src/main/io/serial_4way.c **** 
+ 848:../cleanflight/src/main/io/serial_4way.c ****                             ACK_OUT = BL_VerifyFlash(&ioMem);
+ 1959              	 .loc 1 848 0
+ 1960 056c 07F10C03 	 add r3,r7,#12
+ 1961 0570 1846     	 mov r0,r3
+ 1962 0572 FFF7FEFF 	 bl BL_VerifyFlash
+ 1963 0576 0346     	 mov r3,r0
+ 1964 0578 87F82F31 	 strb r3,[r7,#303]
+ 849:../cleanflight/src/main/io/serial_4way.c ****                             switch (ACK_OUT) {
+ 1965              	 .loc 1 849 0
+ 1966 057c 97F82F31 	 ldrb r3,[r7,#303]
+ 1967 0580 302B     	 cmp r3,#48
+ 1968 0582 02D0     	 beq .L158
+ 1969 0584 C02B     	 cmp r3,#192
+ 1970 0586 04D0     	 beq .L159
+ 1971 0588 07E0     	 b .L172
+ 1972              	.L158:
+ 850:../cleanflight/src/main/io/serial_4way.c ****                                 case brSUCCESS:
+ 851:../cleanflight/src/main/io/serial_4way.c ****                                     ACK_OUT = ACK_OK;
+ 1973              	 .loc 1 851 0
+ 1974 058a 0023     	 movs r3,#0
+ 1975 058c 87F82F31 	 strb r3,[r7,#303]
+ 852:../cleanflight/src/main/io/serial_4way.c ****                                     break;
+ 1976              	 .loc 1 852 0
+ 1977 0590 07E0     	 b .L160
+ 1978              	.L159:
+ 853:../cleanflight/src/main/io/serial_4way.c ****                                 case brERRORVERIFY:
+ 854:../cleanflight/src/main/io/serial_4way.c ****                                     ACK_OUT = ACK_I_VERIFY_ERROR;
+ 1979              	 .loc 1 854 0
+ 1980 0592 0423     	 movs r3,#4
+ 1981 0594 87F82F31 	 strb r3,[r7,#303]
+ 855:../cleanflight/src/main/io/serial_4way.c ****                                     break;
+ 1982              	 .loc 1 855 0
+ 1983 0598 03E0     	 b .L160
+ 1984              	.L172:
+ 856:../cleanflight/src/main/io/serial_4way.c ****                                 default:
+ 857:../cleanflight/src/main/io/serial_4way.c ****                                     ACK_OUT = ACK_D_GENERAL_ERROR;
+ 1985              	 .loc 1 857 0
+ 1986 059a 0F23     	 movs r3,#15
+ 1987 059c 87F82F31 	 strb r3,[r7,#303]
+ 858:../cleanflight/src/main/io/serial_4way.c ****                                     break;
+ 1988              	 .loc 1 858 0
+ 1989 05a0 00BF     	 nop
+ 1990              	.L160:
+ 859:../cleanflight/src/main/io/serial_4way.c ****                             }
+ 860:../cleanflight/src/main/io/serial_4way.c ****                             break;
+ 1991              	 .loc 1 860 0
+ 1992 05a2 03E0     	 b .L161
+ 1993              	.L171:
+ 861:../cleanflight/src/main/io/serial_4way.c ****                         }
+ 862:../cleanflight/src/main/io/serial_4way.c ****                         default:
+ 863:../cleanflight/src/main/io/serial_4way.c ****                         {
+ 864:../cleanflight/src/main/io/serial_4way.c ****                             ACK_OUT = ACK_I_INVALID_CMD;
+ 1994              	 .loc 1 864 0
+ 1995 05a4 0223     	 movs r3,#2
+ 1996 05a6 87F82F31 	 strb r3,[r7,#303]
+ 865:../cleanflight/src/main/io/serial_4way.c ****                             break;
+ 1997              	 .loc 1 865 0
+ 1998 05aa 00BF     	 nop
+ 1999              	.L161:
+ 866:../cleanflight/src/main/io/serial_4way.c ****                         }
+ 867:../cleanflight/src/main/io/serial_4way.c ****                     }
+ 868:../cleanflight/src/main/io/serial_4way.c ****                     break;
+ 2000              	 .loc 1 868 0 discriminator 7
+ 2001 05ac 07E0     	 b .L80
+ 2002              	.L81:
+ 869:../cleanflight/src/main/io/serial_4way.c ****                 }
+ 870:../cleanflight/src/main/io/serial_4way.c ****                 #endif
+ 871:../cleanflight/src/main/io/serial_4way.c ****                 default:
+ 872:../cleanflight/src/main/io/serial_4way.c ****                 {
+ 873:../cleanflight/src/main/io/serial_4way.c ****                     ACK_OUT = ACK_I_INVALID_CMD;
+ 2003              	 .loc 1 873 0
+ 2004 05ae 0223     	 movs r3,#2
+ 2005 05b0 87F82F31 	 strb r3,[r7,#303]
+ 2006 05b4 03E0     	 b .L80
+ 2007              	.L180:
+ 2008 05b6 00BF     	 .align 2
+ 2009              	.L179:
+ 2010 05b8 00000000 	 .word CurrentInterfaceMode
+ 2011              	.L174:
+ 791:../cleanflight/src/main/io/serial_4way.c ****                 }
+ 2012              	 .loc 1 791 0
+ 2013 05bc 00BF     	 nop
+ 2014              	.L80:
+ 874:../cleanflight/src/main/io/serial_4way.c ****                 }
+ 875:../cleanflight/src/main/io/serial_4way.c ****             }
+ 876:../cleanflight/src/main/io/serial_4way.c ****         }
+ 877:../cleanflight/src/main/io/serial_4way.c **** 
+ 878:../cleanflight/src/main/io/serial_4way.c ****         CRCout.word = 0;
+ 2015              	 .loc 1 878 0
+ 2016 05be 354B     	 ldr r3,.L181
+ 2017 05c0 0022     	 movs r2,#0
+ 2018 05c2 1A80     	 strh r2,[r3]
+ 879:../cleanflight/src/main/io/serial_4way.c **** 
+ 880:../cleanflight/src/main/io/serial_4way.c ****         RX_LED_OFF;
+ 2019              	 .loc 1 880 0
+ 2020 05c4 0020     	 movs r0,#0
+ 2021 05c6 0021     	 movs r1,#0
+ 2022 05c8 FFF7FEFF 	 bl ledSet
+ 881:../cleanflight/src/main/io/serial_4way.c **** 
+ 882:../cleanflight/src/main/io/serial_4way.c ****         serialBeginWrite(port);
+ 2023              	 .loc 1 882 0
+ 2024 05cc 324B     	 ldr r3,.L181+4
+ 2025 05ce 1B68     	 ldr r3,[r3]
+ 2026 05d0 1846     	 mov r0,r3
+ 2027 05d2 FFF7FEFF 	 bl serialBeginWrite
+ 883:../cleanflight/src/main/io/serial_4way.c ****         WriteByteCrc(cmd_Remote_Escape);
+ 2028              	 .loc 1 883 0
+ 2029 05d6 2E20     	 movs r0,#46
+ 2030 05d8 FFF7FEFF 	 bl WriteByteCrc
+ 884:../cleanflight/src/main/io/serial_4way.c ****         WriteByteCrc(CMD);
+ 2031              	 .loc 1 884 0
+ 2032 05dc 97F82031 	 ldrb r3,[r7,#288]
+ 2033 05e0 1846     	 mov r0,r3
+ 2034 05e2 FFF7FEFF 	 bl WriteByteCrc
+ 885:../cleanflight/src/main/io/serial_4way.c ****         WriteByteCrc(ioMem.D_FLASH_ADDR_H);
+ 2035              	 .loc 1 885 0
+ 2036 05e6 07F10C03 	 add r3,r7,#12
+ 2037 05ea 5B78     	 ldrb r3,[r3,#1]
+ 2038 05ec 1846     	 mov r0,r3
+ 2039 05ee FFF7FEFF 	 bl WriteByteCrc
+ 886:../cleanflight/src/main/io/serial_4way.c ****         WriteByteCrc(ioMem.D_FLASH_ADDR_L);
+ 2040              	 .loc 1 886 0
+ 2041 05f2 07F10C03 	 add r3,r7,#12
+ 2042 05f6 9B78     	 ldrb r3,[r3,#2]
+ 2043 05f8 1846     	 mov r0,r3
+ 2044 05fa FFF7FEFF 	 bl WriteByteCrc
+ 887:../cleanflight/src/main/io/serial_4way.c ****         WriteByteCrc(O_PARAM_LEN);
+ 2045              	 .loc 1 887 0
+ 2046 05fe 97F82E31 	 ldrb r3,[r7,#302]
+ 2047 0602 1846     	 mov r0,r3
+ 2048 0604 FFF7FEFF 	 bl WriteByteCrc
+ 888:../cleanflight/src/main/io/serial_4way.c **** 
+ 889:../cleanflight/src/main/io/serial_4way.c ****         i=O_PARAM_LEN;
+ 2049              	 .loc 1 889 0
+ 2050 0608 97F82E31 	 ldrb r3,[r7,#302]
+ 2051 060c 87F82231 	 strb r3,[r7,#290]
+ 2052              	.L163:
+ 890:../cleanflight/src/main/io/serial_4way.c ****         do {
+ 891:../cleanflight/src/main/io/serial_4way.c ****             while (!serialTxBytesFree(port));
+ 2053              	 .loc 1 891 0
+ 2054 0610 00BF     	 nop
+ 2055              	.L162:
+ 2056              	 .loc 1 891 0 is_stmt 0 discriminator 1
+ 2057 0612 214B     	 ldr r3,.L181+4
+ 2058 0614 1B68     	 ldr r3,[r3]
+ 2059 0616 1846     	 mov r0,r3
+ 2060 0618 FFF7FEFF 	 bl serialTxBytesFree
+ 2061 061c 0346     	 mov r3,r0
+ 2062 061e 002B     	 cmp r3,#0
+ 2063 0620 F7D0     	 beq .L162
+ 892:../cleanflight/src/main/io/serial_4way.c **** 
+ 893:../cleanflight/src/main/io/serial_4way.c ****             WriteByteCrc(*O_PARAM);
+ 2064              	 .loc 1 893 0 is_stmt 1
+ 2065 0622 D7F82831 	 ldr r3,[r7,#296]
+ 2066 0626 1B78     	 ldrb r3,[r3]
+ 2067 0628 1846     	 mov r0,r3
+ 2068 062a FFF7FEFF 	 bl WriteByteCrc
+ 894:../cleanflight/src/main/io/serial_4way.c ****             O_PARAM++;
+ 2069              	 .loc 1 894 0
+ 2070 062e D7F82831 	 ldr r3,[r7,#296]
+ 2071 0632 0133     	 adds r3,r3,#1
+ 2072 0634 C7F82831 	 str r3,[r7,#296]
+ 895:../cleanflight/src/main/io/serial_4way.c ****             i--;
+ 2073              	 .loc 1 895 0
+ 2074 0638 97F82231 	 ldrb r3,[r7,#290]
+ 2075 063c 013B     	 subs r3,r3,#1
+ 2076 063e 87F82231 	 strb r3,[r7,#290]
+ 896:../cleanflight/src/main/io/serial_4way.c ****         } while (i > 0);
+ 2077              	 .loc 1 896 0
+ 2078 0642 97F82231 	 ldrb r3,[r7,#290]
+ 2079 0646 002B     	 cmp r3,#0
+ 2080 0648 E2D1     	 bne .L163
+ 897:../cleanflight/src/main/io/serial_4way.c **** 
+ 898:../cleanflight/src/main/io/serial_4way.c ****         WriteByteCrc(ACK_OUT);
+ 2081              	 .loc 1 898 0
+ 2082 064a 97F82F31 	 ldrb r3,[r7,#303]
+ 2083 064e 1846     	 mov r0,r3
+ 2084 0650 FFF7FEFF 	 bl WriteByteCrc
+ 899:../cleanflight/src/main/io/serial_4way.c ****         WriteByte(CRCout.bytes[1]);
+ 2085              	 .loc 1 899 0
+ 2086 0654 0F4B     	 ldr r3,.L181
+ 2087 0656 5B78     	 ldrb r3,[r3,#1]
+ 2088 0658 1846     	 mov r0,r3
+ 2089 065a FFF7FEFF 	 bl WriteByte
+ 900:../cleanflight/src/main/io/serial_4way.c ****         WriteByte(CRCout.bytes[0]);
+ 2090              	 .loc 1 900 0
+ 2091 065e 0D4B     	 ldr r3,.L181
+ 2092 0660 1B78     	 ldrb r3,[r3]
+ 2093 0662 1846     	 mov r0,r3
+ 2094 0664 FFF7FEFF 	 bl WriteByte
+ 901:../cleanflight/src/main/io/serial_4way.c ****         serialEndWrite(port);
+ 2095              	 .loc 1 901 0
+ 2096 0668 0B4B     	 ldr r3,.L181+4
+ 2097 066a 1B68     	 ldr r3,[r3]
+ 2098 066c 1846     	 mov r0,r3
+ 2099 066e FFF7FEFF 	 bl serialEndWrite
+ 902:../cleanflight/src/main/io/serial_4way.c **** 
+ 903:../cleanflight/src/main/io/serial_4way.c ****         TX_LED_OFF;
+ 2100              	 .loc 1 903 0
+ 2101 0672 0020     	 movs r0,#0
+ 2102 0674 0021     	 movs r1,#0
+ 2103 0676 FFF7FEFF 	 bl ledSet
+ 904:../cleanflight/src/main/io/serial_4way.c ****         if (isExitScheduled) {
+ 2104              	 .loc 1 904 0
+ 2105 067a 97F82331 	 ldrb r3,[r7,#291]
+ 2106 067e 002B     	 cmp r3,#0
+ 2107 0680 02D0     	 beq .L164
+ 905:../cleanflight/src/main/io/serial_4way.c ****             esc4wayRelease();
+ 2108              	 .loc 1 905 0
+ 2109 0682 FFF7FEFF 	 bl esc4wayRelease
+ 906:../cleanflight/src/main/io/serial_4way.c ****             return;
+ 2110              	 .loc 1 906 0
+ 2111 0686 00E0     	 b .L173
+ 2112              	.L164:
+ 2113              	.LBE5:
+ 907:../cleanflight/src/main/io/serial_4way.c ****         }
+ 908:../cleanflight/src/main/io/serial_4way.c ****     };
+ 2114              	 .loc 1 908 0
+ 2115 0688 C6E4     	 b .L76
+ 2116              	.L173:
+ 909:../cleanflight/src/main/io/serial_4way.c **** }
+ 2117              	 .loc 1 909 0
+ 2118 068a 07F59877 	 add r7,r7,#304
+ 2119              	.LCFI75:
+ 2120              	 .cfi_def_cfa_offset 8
+ 2121 068e BD46     	 mov sp,r7
+ 2122              	.LCFI76:
+ 2123              	 .cfi_def_cfa_register 13
+ 2124              	 
+ 2125 0690 80BD     	 pop {r7,pc}
+ 2126              	.L182:
+ 2127 0692 00BF     	 .align 2
+ 2128              	.L181:
+ 2129 0694 00000000 	 .word CRCout
+ 2130 0698 00000000 	 .word port
+ 2131              	 .cfi_endproc
+ 2132              	.LFE553:
+ 2134              	 .text
+ 2135              	.Letext0:
+ 2136              	 .file 2 "d:\\xmc\\dave-ide-4.4.2-64bit\\eclipse\\arm-gcc-49\\arm-none-eabi\\include\\machine\\_default_types.h"
+ 2137              	 .file 3 "d:\\xmc\\dave-ide-4.4.2-64bit\\eclipse\\arm-gcc-49\\arm-none-eabi\\include\\stdint.h"
+ 2138              	 .file 4 "D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/lib/main/XMC4000/xmc4700.h"
+ 2139              	 .file 5 "D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/lib/main/XMC4000/XMCLib/inc/xmc4_gpio.h"
+ 2140              	 .file 6 "D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/lib/main/XMC4000/XMCLib/inc/xmc_usic.h"
+ 2141              	 .file 7 "D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/platform.h"
+ 2142              	 .file 8 "D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/lib/main/XMC4000/XMC4000_conf.h"
+ 2143              	 .file 9 "D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/drivers/resource.h"
+ 2144              	 .file 10 "D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/drivers/io_types.h"
+ 2145              	 .file 11 "D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/drivers/serial.h"
+ 2146              	 .file 12 "D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/drivers/timer.h"
+ 2147              	 .file 13 "D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/drivers/pwm_output.h"
+ 2148              	 .file 14 "D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/drivers/light_led.h"
+ 2149              	 .file 15 "D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/common/time.h"
+ 2150              	 .file 16 "D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/flight/mixer.h"
+ 2151              	 .file 17 "D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/io/serial_4way_impl.h"
+ 2152              	 .file 18 "D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/io/serial_4way.h"
+ 2153              	 .file 19 "D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/lib/main/CMSIS/Core/Include/core_cm4.h"
+ 2154              	 .file 20 "D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/lib/main/XMC4000/system_XMC4700.h"
+DEFINED SYMBOLS
+                            *ABS*:00000000 serial_4way.c
+    {standard input}:22     .bss.escCount:00000000 escCount
+    {standard input}:23     .bss.escCount:00000000 $d
+                            *COM*:00000020 escHardware
+                            *COM*:00000001 selected_esc
+                            *COM*:00000004 DeviceInfo
+    {standard input}:28     .text.isMcuConnected:00000000 $t
+    {standard input}:33     .text.isMcuConnected:00000000 isMcuConnected
+    {standard input}:70     .text.isMcuConnected:0000001c $d
+    {standard input}:75     .text.isEscHi:00000000 $t
+    {standard input}:80     .text.isEscHi:00000000 isEscHi
+    {standard input}:124    .text.isEscHi:0000002c $d
+    {standard input}:129    .text.isEscLo:00000000 $t
+    {standard input}:134    .text.isEscLo:00000000 isEscLo
+    {standard input}:182    .text.isEscLo:00000038 $d
+    {standard input}:187    .text.setEscHi:00000000 $t
+    {standard input}:192    .text.setEscHi:00000000 setEscHi
+    {standard input}:229    .text.setEscHi:00000020 $d
+    {standard input}:234    .text.setEscLo:00000000 $t
+    {standard input}:239    .text.setEscLo:00000000 setEscLo
+    {standard input}:276    .text.setEscLo:00000020 $d
+    {standard input}:281    .text.setEscInput:00000000 $t
+    {standard input}:286    .text.setEscInput:00000000 setEscInput
+    {standard input}:324    .text.setEscInput:00000020 $d
+    {standard input}:329    .text.setEscOutput:00000000 $t
+    {standard input}:334    .text.setEscOutput:00000000 setEscOutput
+    {standard input}:372    .text.setEscOutput:00000020 $d
+    {standard input}:377    .text.esc4wayInit:00000000 $t
+    {standard input}:382    .text.esc4wayInit:00000000 esc4wayInit
+    {standard input}:502    .text.esc4wayInit:000000b4 $d
+    {standard input}:508    .text.esc4wayRelease:00000000 $t
+    {standard input}:513    .text.esc4wayRelease:00000000 esc4wayRelease
+    {standard input}:618    .text.esc4wayRelease:0000008c $d
+    {standard input}:625    .text._crc_xmodem_update:00000000 $t
+    {standard input}:630    .text._crc_xmodem_update:00000000 _crc_xmodem_update
+    {standard input}:716    .bss.CurrentInterfaceMode:00000000 CurrentInterfaceMode
+    {standard input}:717    .bss.CurrentInterfaceMode:00000000 $d
+    {standard input}:719    .text.Connect:00000000 $t
+    {standard input}:723    .text.Connect:00000000 Connect
+    {standard input}:959    .text.Connect:00000178 $d
+    {standard input}:964    .bss.port:00000000 $d
+    {standard input}:967    .bss.port:00000000 port
+    {standard input}:970    .text.ReadByte:00000000 $t
+    {standard input}:974    .text.ReadByte:00000000 ReadByte
+    {standard input}:1011   .text.ReadByte:00000028 $d
+    {standard input}:1016   .bss.CRC_in:00000000 $d
+    {standard input}:1019   .bss.CRC_in:00000000 CRC_in
+    {standard input}:1022   .text.ReadByteCrc:00000000 $t
+    {standard input}:1026   .text.ReadByteCrc:00000000 ReadByteCrc
+    {standard input}:1073   .text.ReadByteCrc:00000030 $d
+    {standard input}:1078   .text.WriteByte:00000000 $t
+    {standard input}:1082   .text.WriteByte:00000000 WriteByte
+    {standard input}:1120   .text.WriteByte:00000020 $d
+    {standard input}:1125   .bss.CRCout:00000000 $d
+    {standard input}:1128   .bss.CRCout:00000000 CRCout
+    {standard input}:1131   .text.WriteByteCrc:00000000 $t
+    {standard input}:1135   .text.WriteByteCrc:00000000 WriteByteCrc
+    {standard input}:1181   .text.WriteByteCrc:00000030 $d
+    {standard input}:1186   .rodata:00000000 $d
+    {standard input}:1190   .text.esc4wayProcess:00000000 $t
+    {standard input}:1195   .text.esc4wayProcess:00000000 esc4wayProcess
+    {standard input}:1344   .text.esc4wayProcess:00000120 $d
+    {standard input}:1361   .text.esc4wayProcess:00000164 $t
+    {standard input}:1378   .text.esc4wayProcess:00000180 $d
+    {standard input}:1382   .text.esc4wayProcess:00000190 $t
+    {standard input}:1512   .text.esc4wayProcess:0000025c $d
+    {standard input}:1516   .text.esc4wayProcess:0000026c $t
+    {standard input}:1627   .text.esc4wayProcess:00000310 $d
+    {standard input}:1636   .text.esc4wayProcess:0000032c $t
+    {standard input}:1714   .text.esc4wayProcess:000003b8 $d
+    {standard input}:1718   .text.esc4wayProcess:000003c8 $t
+    {standard input}:1851   .text.esc4wayProcess:000004b4 $d
+    {standard input}:1855   .text.esc4wayProcess:000004c4 $t
+    {standard input}:2010   .text.esc4wayProcess:000005b8 $d
+    {standard input}:2013   .text.esc4wayProcess:000005bc $t
+    {standard input}:2129   .text.esc4wayProcess:00000694 $d
+                     .debug_frame:00000010 $d
+
+UNDEFINED SYMBOLS
+IORead
+IOHi
+IOLo
+IOConfigGPIO
+pwmDisableMotors
+memset
+pwmGetMotors
+IOGetByTag
+IOConfigGPIOAF
+pwmEnableMotors
+timerHardware
+Stk_ConnectEx
+BL_ConnectEx
+serialRxBytesWaiting
+serialRead
+serialWrite
+ledSet
+BL_SendCMDKeepAlive
+Stk_SignOn
+BL_SendCMDRunRestartBootloader
+Stk_Chip_Erase
+BL_PageErase
+BL_ReadFlash
+Stk_ReadFlash
+BL_ReadEEprom
+Stk_ReadEEprom
+BL_WriteFlash
+Stk_WriteFlash
+BL_WriteEEprom
+Stk_WriteEEprom
+BL_VerifyFlash
+serialBeginWrite
+serialTxBytesFree
+serialEndWrite

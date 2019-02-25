@@ -1,0 +1,1881 @@
+   1              	 .syntax unified
+   2              	 .cpu cortex-m4
+   3              	 .eabi_attribute 27,3
+   4              	 .fpu fpv4-sp-d16
+   5              	 .eabi_attribute 20,1
+   6              	 .eabi_attribute 21,1
+   7              	 .eabi_attribute 23,3
+   8              	 .eabi_attribute 24,1
+   9              	 .eabi_attribute 25,1
+  10              	 .eabi_attribute 26,1
+  11              	 .eabi_attribute 30,6
+  12              	 .eabi_attribute 34,1
+  13              	 .eabi_attribute 18,4
+  14              	 .thumb
+  15              	 .file "rcdevice.c"
+  16              	 .text
+  17              	.Ltext0:
+  18              	 .cfi_sections .debug_frame
+  19              	 .section .text.rcdeviceConfig,"ax",%progbits
+  20              	 .align 2
+  21              	 .thumb
+  22              	 .thumb_func
+  24              	rcdeviceConfig:
+  25              	.LFB533:
+  26              	 .file 1 "D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/pg/rcdevice.h"
+   1:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/pg\rcdevice.h **** /*
+   2:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/pg\rcdevice.h ****  * This file is part of Cleanflight and Betaflight.
+   3:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/pg\rcdevice.h ****  *
+   4:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/pg\rcdevice.h ****  * Cleanflight and Betaflight are free software. You can redistribute
+   5:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/pg\rcdevice.h ****  * this software and/or modify this software under the terms of the
+   6:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/pg\rcdevice.h ****  * GNU General Public License as published by the Free Software
+   7:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/pg\rcdevice.h ****  * Foundation, either version 3 of the License, or (at your option)
+   8:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/pg\rcdevice.h ****  * any later version.
+   9:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/pg\rcdevice.h ****  *
+  10:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/pg\rcdevice.h ****  * Cleanflight and Betaflight are distributed in the hope that they
+  11:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/pg\rcdevice.h ****  * will be useful, but WITHOUT ANY WARRANTY; without even the implied
+  12:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/pg\rcdevice.h ****  * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+  13:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/pg\rcdevice.h ****  * See the GNU General Public License for more details.
+  14:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/pg\rcdevice.h ****  *
+  15:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/pg\rcdevice.h ****  * You should have received a copy of the GNU General Public License
+  16:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/pg\rcdevice.h ****  * along with this software.
+  17:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/pg\rcdevice.h ****  *
+  18:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/pg\rcdevice.h ****  * If not, see <http://www.gnu.org/licenses/>.
+  19:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/pg\rcdevice.h ****  */
+  20:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/pg\rcdevice.h **** 
+  21:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/pg\rcdevice.h **** #pragma once
+  22:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/pg\rcdevice.h **** 
+  23:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/pg\rcdevice.h **** #include "pg/pg.h"
+  24:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/pg\rcdevice.h **** #include "common/time.h"
+  25:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/pg\rcdevice.h **** 
+  26:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/pg\rcdevice.h **** typedef struct rcdeviceConfig_s {
+  27:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/pg\rcdevice.h ****     uint8_t initDeviceAttempts;
+  28:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/pg\rcdevice.h ****     timeMs_t initDeviceAttemptInterval;
+  29:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/pg\rcdevice.h **** } rcdeviceConfig_t;
+  30:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/pg\rcdevice.h **** 
+  31:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/pg\rcdevice.h **** PG_DECLARE(rcdeviceConfig_t, rcdeviceConfig);...
+  27              	 .loc 1 31 0
+  28              	 .cfi_startproc
+  29              	 
+  30              	 
+  31              	 
+  32 0000 80B4     	 push {r7}
+  33              	.LCFI0:
+  34              	 .cfi_def_cfa_offset 4
+  35              	 .cfi_offset 7,-4
+  36 0002 00AF     	 add r7,sp,#0
+  37              	.LCFI1:
+  38              	 .cfi_def_cfa_register 7
+  39              	 .loc 1 31 0
+  40 0004 024B     	 ldr r3,.L3
+  41 0006 1846     	 mov r0,r3
+  42 0008 BD46     	 mov sp,r7
+  43              	.LCFI2:
+  44              	 .cfi_def_cfa_register 13
+  45              	 
+  46 000a 5DF8047B 	 ldr r7,[sp],#4
+  47              	.LCFI3:
+  48              	 .cfi_restore 7
+  49              	 .cfi_def_cfa_offset 0
+  50 000e 7047     	 bx lr
+  51              	.L4:
+  52              	 .align 2
+  53              	.L3:
+  54 0010 00000000 	 .word rcdeviceConfig_System
+  55              	 .cfi_endproc
+  56              	.LFE533:
+  58              	 .section .data.expectedResponsesLength,"aw",%progbits
+  59              	 .align 2
+  62              	expectedResponsesLength:
+  63 0000 00       	 .byte 0
+  64 0001 05       	 .byte 5
+  65 0002 02       	 .byte 2
+  66 0003 02       	 .byte 2
+  67 0004 03       	 .byte 3
+  68 0005 02       	 .byte 2
+  69 0006 04       	 .byte 4
+  70 0007 03       	 .byte 3
+  71              	 .comm watingResponseQueue,487,4
+  72              	 .section .bss.recvBuf,"aw",%nobits
+  73              	 .align 2
+  76              	recvBuf:
+  77 0000 00000000 	 .space 64
+  77      00000000 
+  77      00000000 
+  77      00000000 
+  77      00000000 
+  78              	 .section .text.runcamDeviceGetRespLen,"ax",%progbits
+  79              	 .align 2
+  80              	 .thumb
+  81              	 .thumb_func
+  83              	runcamDeviceGetRespLen:
+  84              	.LFB535:
+  85              	 .file 2 "../cleanflight/src/main/io/rcdevice.c"
+   1:../cleanflight/src/main/io/rcdevice.c **** /*
+   2:../cleanflight/src/main/io/rcdevice.c ****  * This file is part of Cleanflight and Betaflight.
+   3:../cleanflight/src/main/io/rcdevice.c ****  *
+   4:../cleanflight/src/main/io/rcdevice.c ****  * Cleanflight and Betaflight are free software. You can redistribute
+   5:../cleanflight/src/main/io/rcdevice.c ****  * this software and/or modify this software under the terms of the
+   6:../cleanflight/src/main/io/rcdevice.c ****  * GNU General Public License as published by the Free Software
+   7:../cleanflight/src/main/io/rcdevice.c ****  * Foundation, either version 3 of the License, or (at your option)
+   8:../cleanflight/src/main/io/rcdevice.c ****  * any later version.
+   9:../cleanflight/src/main/io/rcdevice.c ****  *
+  10:../cleanflight/src/main/io/rcdevice.c ****  * Cleanflight and Betaflight are distributed in the hope that they
+  11:../cleanflight/src/main/io/rcdevice.c ****  * will be useful, but WITHOUT ANY WARRANTY; without even the implied
+  12:../cleanflight/src/main/io/rcdevice.c ****  * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+  13:../cleanflight/src/main/io/rcdevice.c ****  * See the GNU General Public License for more details.
+  14:../cleanflight/src/main/io/rcdevice.c ****  *
+  15:../cleanflight/src/main/io/rcdevice.c ****  * You should have received a copy of the GNU General Public License
+  16:../cleanflight/src/main/io/rcdevice.c ****  * along with this software.
+  17:../cleanflight/src/main/io/rcdevice.c ****  *
+  18:../cleanflight/src/main/io/rcdevice.c ****  * If not, see <http://www.gnu.org/licenses/>.
+  19:../cleanflight/src/main/io/rcdevice.c ****  */
+  20:../cleanflight/src/main/io/rcdevice.c **** 
+  21:../cleanflight/src/main/io/rcdevice.c **** #include <stdbool.h>
+  22:../cleanflight/src/main/io/rcdevice.c **** #include <stdint.h>
+  23:../cleanflight/src/main/io/rcdevice.c **** #include <string.h>
+  24:../cleanflight/src/main/io/rcdevice.c **** 
+  25:../cleanflight/src/main/io/rcdevice.c **** #include "common/crc.h"
+  26:../cleanflight/src/main/io/rcdevice.c **** #include "common/maths.h"
+  27:../cleanflight/src/main/io/rcdevice.c **** #include "common/streambuf.h"
+  28:../cleanflight/src/main/io/rcdevice.c **** 
+  29:../cleanflight/src/main/io/rcdevice.c **** #include "drivers/time.h"
+  30:../cleanflight/src/main/io/rcdevice.c **** 
+  31:../cleanflight/src/main/io/rcdevice.c **** #include "io/serial.h"
+  32:../cleanflight/src/main/io/rcdevice.c **** 
+  33:../cleanflight/src/main/io/rcdevice.c **** #include "pg/rcdevice.h"
+  34:../cleanflight/src/main/io/rcdevice.c **** 
+  35:../cleanflight/src/main/io/rcdevice.c **** #include "rcdevice.h"
+  36:../cleanflight/src/main/io/rcdevice.c **** 
+  37:../cleanflight/src/main/io/rcdevice.c **** #ifdef USE_RCDEVICE
+  38:../cleanflight/src/main/io/rcdevice.c **** 
+  39:../cleanflight/src/main/io/rcdevice.c **** 
+  40:../cleanflight/src/main/io/rcdevice.c **** typedef struct runcamDeviceExpectedResponseLength_s {
+  41:../cleanflight/src/main/io/rcdevice.c ****     uint8_t command;
+  42:../cleanflight/src/main/io/rcdevice.c ****     uint8_t reponseLength;
+  43:../cleanflight/src/main/io/rcdevice.c **** } runcamDeviceExpectedResponseLength_t;
+  44:../cleanflight/src/main/io/rcdevice.c **** 
+  45:../cleanflight/src/main/io/rcdevice.c **** static runcamDeviceExpectedResponseLength_t expectedResponsesLength[] = {
+  46:../cleanflight/src/main/io/rcdevice.c ****     { RCDEVICE_PROTOCOL_COMMAND_GET_DEVICE_INFO,            5},
+  47:../cleanflight/src/main/io/rcdevice.c ****     { RCDEVICE_PROTOCOL_COMMAND_5KEY_SIMULATION_PRESS,      2},
+  48:../cleanflight/src/main/io/rcdevice.c ****     { RCDEVICE_PROTOCOL_COMMAND_5KEY_SIMULATION_RELEASE,    2},
+  49:../cleanflight/src/main/io/rcdevice.c ****     { RCDEVICE_PROTOCOL_COMMAND_5KEY_CONNECTION,            3},
+  50:../cleanflight/src/main/io/rcdevice.c **** };
+  51:../cleanflight/src/main/io/rcdevice.c **** 
+  52:../cleanflight/src/main/io/rcdevice.c **** rcdeviceWaitingResponseQueue watingResponseQueue;
+  53:../cleanflight/src/main/io/rcdevice.c **** static uint8_t recvBuf[RCDEVICE_PROTOCOL_MAX_PACKET_SIZE]; // all the response contexts using same 
+  54:../cleanflight/src/main/io/rcdevice.c **** 
+  55:../cleanflight/src/main/io/rcdevice.c **** static uint8_t runcamDeviceGetRespLen(uint8_t command)
+  56:../cleanflight/src/main/io/rcdevice.c **** {
+  86              	 .loc 2 56 0
+  87              	 .cfi_startproc
+  88              	 
+  89              	 
+  90              	 
+  91 0000 80B4     	 push {r7}
+  92              	.LCFI4:
+  93              	 .cfi_def_cfa_offset 4
+  94              	 .cfi_offset 7,-4
+  95 0002 85B0     	 sub sp,sp,#20
+  96              	.LCFI5:
+  97              	 .cfi_def_cfa_offset 24
+  98 0004 00AF     	 add r7,sp,#0
+  99              	.LCFI6:
+ 100              	 .cfi_def_cfa_register 7
+ 101 0006 0346     	 mov r3,r0
+ 102 0008 FB71     	 strb r3,[r7,#7]
+ 103              	.LBB2:
+  57:../cleanflight/src/main/io/rcdevice.c ****     for (unsigned int i = 0; i < ARRAYLEN(expectedResponsesLength); i++) {
+ 104              	 .loc 2 57 0
+ 105 000a 0023     	 movs r3,#0
+ 106 000c FB60     	 str r3,[r7,#12]
+ 107 000e 0FE0     	 b .L6
+ 108              	.L9:
+  58:../cleanflight/src/main/io/rcdevice.c ****         if (expectedResponsesLength[i].command == command) {
+ 109              	 .loc 2 58 0
+ 110 0010 0C4A     	 ldr r2,.L10
+ 111 0012 FB68     	 ldr r3,[r7,#12]
+ 112 0014 12F81330 	 ldrb r3,[r2,r3,lsl#1]
+ 113 0018 FA79     	 ldrb r2,[r7,#7]
+ 114 001a 9A42     	 cmp r2,r3
+ 115 001c 05D1     	 bne .L7
+  59:../cleanflight/src/main/io/rcdevice.c ****             return expectedResponsesLength[i].reponseLength;
+ 116              	 .loc 2 59 0
+ 117 001e 094A     	 ldr r2,.L10
+ 118 0020 FB68     	 ldr r3,[r7,#12]
+ 119 0022 5B00     	 lsls r3,r3,#1
+ 120 0024 1344     	 add r3,r3,r2
+ 121 0026 5B78     	 ldrb r3,[r3,#1]
+ 122 0028 06E0     	 b .L8
+ 123              	.L7:
+  57:../cleanflight/src/main/io/rcdevice.c ****     for (unsigned int i = 0; i < ARRAYLEN(expectedResponsesLength); i++) {
+ 124              	 .loc 2 57 0 discriminator 2
+ 125 002a FB68     	 ldr r3,[r7,#12]
+ 126 002c 0133     	 adds r3,r3,#1
+ 127 002e FB60     	 str r3,[r7,#12]
+ 128              	.L6:
+  57:../cleanflight/src/main/io/rcdevice.c ****     for (unsigned int i = 0; i < ARRAYLEN(expectedResponsesLength); i++) {
+ 129              	 .loc 2 57 0 is_stmt 0 discriminator 1
+ 130 0030 FB68     	 ldr r3,[r7,#12]
+ 131 0032 032B     	 cmp r3,#3
+ 132 0034 ECD9     	 bls .L9
+ 133              	.LBE2:
+  60:../cleanflight/src/main/io/rcdevice.c ****         }
+  61:../cleanflight/src/main/io/rcdevice.c ****     }
+  62:../cleanflight/src/main/io/rcdevice.c **** 
+  63:../cleanflight/src/main/io/rcdevice.c ****     return 0;
+ 134              	 .loc 2 63 0 is_stmt 1
+ 135 0036 0023     	 movs r3,#0
+ 136              	.L8:
+  64:../cleanflight/src/main/io/rcdevice.c **** }
+ 137              	 .loc 2 64 0
+ 138 0038 1846     	 mov r0,r3
+ 139 003a 1437     	 adds r7,r7,#20
+ 140              	.LCFI7:
+ 141              	 .cfi_def_cfa_offset 4
+ 142 003c BD46     	 mov sp,r7
+ 143              	.LCFI8:
+ 144              	 .cfi_def_cfa_register 13
+ 145              	 
+ 146 003e 5DF8047B 	 ldr r7,[sp],#4
+ 147              	.LCFI9:
+ 148              	 .cfi_restore 7
+ 149              	 .cfi_def_cfa_offset 0
+ 150 0042 7047     	 bx lr
+ 151              	.L11:
+ 152              	 .align 2
+ 153              	.L10:
+ 154 0044 00000000 	 .word expectedResponsesLength
+ 155              	 .cfi_endproc
+ 156              	.LFE535:
+ 158              	 .section .text.rcdeviceRespCtxQueuePushRespCtx,"ax",%progbits
+ 159              	 .align 2
+ 160              	 .thumb
+ 161              	 .thumb_func
+ 163              	rcdeviceRespCtxQueuePushRespCtx:
+ 164              	.LFB536:
+  65:../cleanflight/src/main/io/rcdevice.c **** 
+  66:../cleanflight/src/main/io/rcdevice.c **** static bool rcdeviceRespCtxQueuePushRespCtx(rcdeviceWaitingResponseQueue *queue, rcdeviceResponsePa
+  67:../cleanflight/src/main/io/rcdevice.c **** {
+ 165              	 .loc 2 67 0
+ 166              	 .cfi_startproc
+ 167              	 
+ 168              	 
+ 169 0000 80B5     	 push {r7,lr}
+ 170              	.LCFI10:
+ 171              	 .cfi_def_cfa_offset 8
+ 172              	 .cfi_offset 7,-8
+ 173              	 .cfi_offset 14,-4
+ 174 0002 84B0     	 sub sp,sp,#16
+ 175              	.LCFI11:
+ 176              	 .cfi_def_cfa_offset 24
+ 177 0004 00AF     	 add r7,sp,#0
+ 178              	.LCFI12:
+ 179              	 .cfi_def_cfa_register 7
+ 180 0006 7860     	 str r0,[r7,#4]
+ 181 0008 3960     	 str r1,[r7]
+  68:../cleanflight/src/main/io/rcdevice.c ****     if (queue == NULL || (queue->itemCount + 1) > MAX_WAITING_RESPONSES) {
+ 182              	 .loc 2 68 0
+ 183 000a 7B68     	 ldr r3,[r7,#4]
+ 184 000c 002B     	 cmp r3,#0
+ 185 000e 04D0     	 beq .L13
+ 186              	 .loc 2 68 0 is_stmt 0 discriminator 1
+ 187 0010 7B68     	 ldr r3,[r7,#4]
+ 188 0012 9B78     	 ldrb r3,[r3,#2]
+ 189 0014 0133     	 adds r3,r3,#1
+ 190 0016 052B     	 cmp r3,#5
+ 191 0018 01DD     	 ble .L14
+ 192              	.L13:
+  69:../cleanflight/src/main/io/rcdevice.c ****         return false;
+ 193              	 .loc 2 69 0 is_stmt 1
+ 194 001a 0023     	 movs r3,#0
+ 195 001c 23E0     	 b .L15
+ 196              	.L14:
+  70:../cleanflight/src/main/io/rcdevice.c ****     }
+  71:../cleanflight/src/main/io/rcdevice.c **** 
+  72:../cleanflight/src/main/io/rcdevice.c ****     queue->buffer[queue->tailPos] = *respCtx;
+ 197              	 .loc 2 72 0
+ 198 001e 7B68     	 ldr r3,[r7,#4]
+ 199 0020 5B78     	 ldrb r3,[r3,#1]
+ 200 0022 1946     	 mov r1,r3
+ 201 0024 7A68     	 ldr r2,[r7,#4]
+ 202 0026 0B46     	 mov r3,r1
+ 203 0028 5B00     	 lsls r3,r3,#1
+ 204 002a 0B44     	 add r3,r3,r1
+ 205 002c 5B01     	 lsls r3,r3,#5
+ 206 002e 1344     	 add r3,r3,r2
+ 207 0030 3A68     	 ldr r2,[r7]
+ 208 0032 0333     	 adds r3,r3,#3
+ 209 0034 1146     	 mov r1,r2
+ 210 0036 6022     	 movs r2,#96
+ 211 0038 1846     	 mov r0,r3
+ 212 003a FFF7FEFF 	 bl memcpy
+  73:../cleanflight/src/main/io/rcdevice.c **** 
+  74:../cleanflight/src/main/io/rcdevice.c ****     int newTailPos = queue->tailPos + 1;
+ 213              	 .loc 2 74 0
+ 214 003e 7B68     	 ldr r3,[r7,#4]
+ 215 0040 5B78     	 ldrb r3,[r3,#1]
+ 216 0042 0133     	 adds r3,r3,#1
+ 217 0044 FB60     	 str r3,[r7,#12]
+  75:../cleanflight/src/main/io/rcdevice.c ****     if (newTailPos >= MAX_WAITING_RESPONSES) {
+ 218              	 .loc 2 75 0
+ 219 0046 FB68     	 ldr r3,[r7,#12]
+ 220 0048 042B     	 cmp r3,#4
+ 221 004a 01DD     	 ble .L16
+  76:../cleanflight/src/main/io/rcdevice.c ****         newTailPos = 0;
+ 222              	 .loc 2 76 0
+ 223 004c 0023     	 movs r3,#0
+ 224 004e FB60     	 str r3,[r7,#12]
+ 225              	.L16:
+  77:../cleanflight/src/main/io/rcdevice.c ****     }
+  78:../cleanflight/src/main/io/rcdevice.c ****     queue->itemCount += 1;
+ 226              	 .loc 2 78 0
+ 227 0050 7B68     	 ldr r3,[r7,#4]
+ 228 0052 9B78     	 ldrb r3,[r3,#2]
+ 229 0054 0133     	 adds r3,r3,#1
+ 230 0056 DAB2     	 uxtb r2,r3
+ 231 0058 7B68     	 ldr r3,[r7,#4]
+ 232 005a 9A70     	 strb r2,[r3,#2]
+  79:../cleanflight/src/main/io/rcdevice.c ****     queue->tailPos = newTailPos;
+ 233              	 .loc 2 79 0
+ 234 005c FB68     	 ldr r3,[r7,#12]
+ 235 005e DAB2     	 uxtb r2,r3
+ 236 0060 7B68     	 ldr r3,[r7,#4]
+ 237 0062 5A70     	 strb r2,[r3,#1]
+  80:../cleanflight/src/main/io/rcdevice.c ****     
+  81:../cleanflight/src/main/io/rcdevice.c ****     return true;
+ 238              	 .loc 2 81 0
+ 239 0064 0123     	 movs r3,#1
+ 240              	.L15:
+  82:../cleanflight/src/main/io/rcdevice.c **** }
+ 241              	 .loc 2 82 0
+ 242 0066 1846     	 mov r0,r3
+ 243 0068 1037     	 adds r7,r7,#16
+ 244              	.LCFI13:
+ 245              	 .cfi_def_cfa_offset 8
+ 246 006a BD46     	 mov sp,r7
+ 247              	.LCFI14:
+ 248              	 .cfi_def_cfa_register 13
+ 249              	 
+ 250 006c 80BD     	 pop {r7,pc}
+ 251              	 .cfi_endproc
+ 252              	.LFE536:
+ 254 006e 00BF     	 .section .text.rcdeviceRespCtxQueuePeekFront,"ax",%progbits
+ 255              	 .align 2
+ 256              	 .thumb
+ 257              	 .thumb_func
+ 259              	rcdeviceRespCtxQueuePeekFront:
+ 260              	.LFB537:
+  83:../cleanflight/src/main/io/rcdevice.c **** 
+  84:../cleanflight/src/main/io/rcdevice.c **** static rcdeviceResponseParseContext_t* rcdeviceRespCtxQueuePeekFront(rcdeviceWaitingResponseQueue *
+  85:../cleanflight/src/main/io/rcdevice.c **** {
+ 261              	 .loc 2 85 0
+ 262              	 .cfi_startproc
+ 263              	 
+ 264              	 
+ 265              	 
+ 266 0000 80B4     	 push {r7}
+ 267              	.LCFI15:
+ 268              	 .cfi_def_cfa_offset 4
+ 269              	 .cfi_offset 7,-4
+ 270 0002 85B0     	 sub sp,sp,#20
+ 271              	.LCFI16:
+ 272              	 .cfi_def_cfa_offset 24
+ 273 0004 00AF     	 add r7,sp,#0
+ 274              	.LCFI17:
+ 275              	 .cfi_def_cfa_register 7
+ 276 0006 7860     	 str r0,[r7,#4]
+  86:../cleanflight/src/main/io/rcdevice.c ****     if (queue == NULL || queue->itemCount == 0) {
+ 277              	 .loc 2 86 0
+ 278 0008 7B68     	 ldr r3,[r7,#4]
+ 279 000a 002B     	 cmp r3,#0
+ 280 000c 03D0     	 beq .L18
+ 281              	 .loc 2 86 0 is_stmt 0 discriminator 1
+ 282 000e 7B68     	 ldr r3,[r7,#4]
+ 283 0010 9B78     	 ldrb r3,[r3,#2]
+ 284 0012 002B     	 cmp r3,#0
+ 285 0014 01D1     	 bne .L19
+ 286              	.L18:
+  87:../cleanflight/src/main/io/rcdevice.c ****         return NULL;
+ 287              	 .loc 2 87 0 is_stmt 1
+ 288 0016 0023     	 movs r3,#0
+ 289 0018 0BE0     	 b .L20
+ 290              	.L19:
+  88:../cleanflight/src/main/io/rcdevice.c ****     }
+  89:../cleanflight/src/main/io/rcdevice.c **** 
+  90:../cleanflight/src/main/io/rcdevice.c ****     rcdeviceResponseParseContext_t *ctx = &queue->buffer[queue->headPos];
+ 291              	 .loc 2 90 0
+ 292 001a 7B68     	 ldr r3,[r7,#4]
+ 293 001c 1B78     	 ldrb r3,[r3]
+ 294 001e 1A46     	 mov r2,r3
+ 295 0020 1346     	 mov r3,r2
+ 296 0022 5B00     	 lsls r3,r3,#1
+ 297 0024 1344     	 add r3,r3,r2
+ 298 0026 5B01     	 lsls r3,r3,#5
+ 299 0028 7A68     	 ldr r2,[r7,#4]
+ 300 002a 1344     	 add r3,r3,r2
+ 301 002c 0333     	 adds r3,r3,#3
+ 302 002e FB60     	 str r3,[r7,#12]
+  91:../cleanflight/src/main/io/rcdevice.c ****     return ctx;
+ 303              	 .loc 2 91 0
+ 304 0030 FB68     	 ldr r3,[r7,#12]
+ 305              	.L20:
+  92:../cleanflight/src/main/io/rcdevice.c **** }
+ 306              	 .loc 2 92 0
+ 307 0032 1846     	 mov r0,r3
+ 308 0034 1437     	 adds r7,r7,#20
+ 309              	.LCFI18:
+ 310              	 .cfi_def_cfa_offset 4
+ 311 0036 BD46     	 mov sp,r7
+ 312              	.LCFI19:
+ 313              	 .cfi_def_cfa_register 13
+ 314              	 
+ 315 0038 5DF8047B 	 ldr r7,[sp],#4
+ 316              	.LCFI20:
+ 317              	 .cfi_restore 7
+ 318              	 .cfi_def_cfa_offset 0
+ 319 003c 7047     	 bx lr
+ 320              	 .cfi_endproc
+ 321              	.LFE537:
+ 323 003e 00BF     	 .section .text.rcdeviceRespCtxQueueShift,"ax",%progbits
+ 324              	 .align 2
+ 325              	 .thumb
+ 326              	 .thumb_func
+ 328              	rcdeviceRespCtxQueueShift:
+ 329              	.LFB538:
+  93:../cleanflight/src/main/io/rcdevice.c **** 
+  94:../cleanflight/src/main/io/rcdevice.c **** static rcdeviceResponseParseContext_t* rcdeviceRespCtxQueueShift(rcdeviceWaitingResponseQueue *queu
+  95:../cleanflight/src/main/io/rcdevice.c **** {
+ 330              	 .loc 2 95 0
+ 331              	 .cfi_startproc
+ 332              	 
+ 333              	 
+ 334              	 
+ 335 0000 80B4     	 push {r7}
+ 336              	.LCFI21:
+ 337              	 .cfi_def_cfa_offset 4
+ 338              	 .cfi_offset 7,-4
+ 339 0002 85B0     	 sub sp,sp,#20
+ 340              	.LCFI22:
+ 341              	 .cfi_def_cfa_offset 24
+ 342 0004 00AF     	 add r7,sp,#0
+ 343              	.LCFI23:
+ 344              	 .cfi_def_cfa_register 7
+ 345 0006 7860     	 str r0,[r7,#4]
+  96:../cleanflight/src/main/io/rcdevice.c ****     if (queue == NULL || queue->itemCount == 0) {
+ 346              	 .loc 2 96 0
+ 347 0008 7B68     	 ldr r3,[r7,#4]
+ 348 000a 002B     	 cmp r3,#0
+ 349 000c 03D0     	 beq .L22
+ 350              	 .loc 2 96 0 is_stmt 0 discriminator 1
+ 351 000e 7B68     	 ldr r3,[r7,#4]
+ 352 0010 9B78     	 ldrb r3,[r3,#2]
+ 353 0012 002B     	 cmp r3,#0
+ 354 0014 01D1     	 bne .L23
+ 355              	.L22:
+  97:../cleanflight/src/main/io/rcdevice.c ****         return NULL;
+ 356              	 .loc 2 97 0 is_stmt 1
+ 357 0016 0023     	 movs r3,#0
+ 358 0018 1EE0     	 b .L24
+ 359              	.L23:
+  98:../cleanflight/src/main/io/rcdevice.c ****     }
+  99:../cleanflight/src/main/io/rcdevice.c **** 
+ 100:../cleanflight/src/main/io/rcdevice.c ****     rcdeviceResponseParseContext_t *ctx = &queue->buffer[queue->headPos];
+ 360              	 .loc 2 100 0
+ 361 001a 7B68     	 ldr r3,[r7,#4]
+ 362 001c 1B78     	 ldrb r3,[r3]
+ 363 001e 1A46     	 mov r2,r3
+ 364 0020 1346     	 mov r3,r2
+ 365 0022 5B00     	 lsls r3,r3,#1
+ 366 0024 1344     	 add r3,r3,r2
+ 367 0026 5B01     	 lsls r3,r3,#5
+ 368 0028 7A68     	 ldr r2,[r7,#4]
+ 369 002a 1344     	 add r3,r3,r2
+ 370 002c 0333     	 adds r3,r3,#3
+ 371 002e BB60     	 str r3,[r7,#8]
+ 101:../cleanflight/src/main/io/rcdevice.c ****     int newHeadPos = queue->headPos + 1;
+ 372              	 .loc 2 101 0
+ 373 0030 7B68     	 ldr r3,[r7,#4]
+ 374 0032 1B78     	 ldrb r3,[r3]
+ 375 0034 0133     	 adds r3,r3,#1
+ 376 0036 FB60     	 str r3,[r7,#12]
+ 102:../cleanflight/src/main/io/rcdevice.c ****     if (newHeadPos >= MAX_WAITING_RESPONSES) {
+ 377              	 .loc 2 102 0
+ 378 0038 FB68     	 ldr r3,[r7,#12]
+ 379 003a 042B     	 cmp r3,#4
+ 380 003c 01DD     	 ble .L25
+ 103:../cleanflight/src/main/io/rcdevice.c ****         newHeadPos = 0;
+ 381              	 .loc 2 103 0
+ 382 003e 0023     	 movs r3,#0
+ 383 0040 FB60     	 str r3,[r7,#12]
+ 384              	.L25:
+ 104:../cleanflight/src/main/io/rcdevice.c ****     }
+ 105:../cleanflight/src/main/io/rcdevice.c ****     queue->itemCount -= 1;
+ 385              	 .loc 2 105 0
+ 386 0042 7B68     	 ldr r3,[r7,#4]
+ 387 0044 9B78     	 ldrb r3,[r3,#2]
+ 388 0046 013B     	 subs r3,r3,#1
+ 389 0048 DAB2     	 uxtb r2,r3
+ 390 004a 7B68     	 ldr r3,[r7,#4]
+ 391 004c 9A70     	 strb r2,[r3,#2]
+ 106:../cleanflight/src/main/io/rcdevice.c ****     queue->headPos = newHeadPos;
+ 392              	 .loc 2 106 0
+ 393 004e FB68     	 ldr r3,[r7,#12]
+ 394 0050 DAB2     	 uxtb r2,r3
+ 395 0052 7B68     	 ldr r3,[r7,#4]
+ 396 0054 1A70     	 strb r2,[r3]
+ 107:../cleanflight/src/main/io/rcdevice.c **** 
+ 108:../cleanflight/src/main/io/rcdevice.c ****     return ctx;
+ 397              	 .loc 2 108 0
+ 398 0056 BB68     	 ldr r3,[r7,#8]
+ 399              	.L24:
+ 109:../cleanflight/src/main/io/rcdevice.c **** }
+ 400              	 .loc 2 109 0
+ 401 0058 1846     	 mov r0,r3
+ 402 005a 1437     	 adds r7,r7,#20
+ 403              	.LCFI24:
+ 404              	 .cfi_def_cfa_offset 4
+ 405 005c BD46     	 mov sp,r7
+ 406              	.LCFI25:
+ 407              	 .cfi_def_cfa_register 13
+ 408              	 
+ 409 005e 5DF8047B 	 ldr r7,[sp],#4
+ 410              	.LCFI26:
+ 411              	 .cfi_restore 7
+ 412              	 .cfi_def_cfa_offset 0
+ 413 0062 7047     	 bx lr
+ 414              	 .cfi_endproc
+ 415              	.LFE538:
+ 417              	 .section .text.runcamDeviceFlushRxBuffer,"ax",%progbits
+ 418              	 .align 2
+ 419              	 .thumb
+ 420              	 .thumb_func
+ 422              	runcamDeviceFlushRxBuffer:
+ 423              	.LFB539:
+ 110:../cleanflight/src/main/io/rcdevice.c **** 
+ 111:../cleanflight/src/main/io/rcdevice.c **** // every time send packet to device, and want to get something from device,
+ 112:../cleanflight/src/main/io/rcdevice.c **** // it'd better call the method to clear the rx buffer before the packet send,
+ 113:../cleanflight/src/main/io/rcdevice.c **** // else may be the useless data in rx buffer will cause the response decoding
+ 114:../cleanflight/src/main/io/rcdevice.c **** // failed.
+ 115:../cleanflight/src/main/io/rcdevice.c **** static void runcamDeviceFlushRxBuffer(runcamDevice_t *device)
+ 116:../cleanflight/src/main/io/rcdevice.c **** {
+ 424              	 .loc 2 116 0
+ 425              	 .cfi_startproc
+ 426              	 
+ 427              	 
+ 428 0000 80B5     	 push {r7,lr}
+ 429              	.LCFI27:
+ 430              	 .cfi_def_cfa_offset 8
+ 431              	 .cfi_offset 7,-8
+ 432              	 .cfi_offset 14,-4
+ 433 0002 82B0     	 sub sp,sp,#8
+ 434              	.LCFI28:
+ 435              	 .cfi_def_cfa_offset 16
+ 436 0004 00AF     	 add r7,sp,#0
+ 437              	.LCFI29:
+ 438              	 .cfi_def_cfa_register 7
+ 439 0006 7860     	 str r0,[r7,#4]
+ 117:../cleanflight/src/main/io/rcdevice.c ****     while (serialRxBytesWaiting(device->serialPort) > 0) {
+ 440              	 .loc 2 117 0
+ 441 0008 04E0     	 b .L27
+ 442              	.L28:
+ 118:../cleanflight/src/main/io/rcdevice.c ****         serialRead(device->serialPort);
+ 443              	 .loc 2 118 0
+ 444 000a 7B68     	 ldr r3,[r7,#4]
+ 445 000c 1B68     	 ldr r3,[r3]
+ 446 000e 1846     	 mov r0,r3
+ 447 0010 FFF7FEFF 	 bl serialRead
+ 448              	.L27:
+ 117:../cleanflight/src/main/io/rcdevice.c ****     while (serialRxBytesWaiting(device->serialPort) > 0) {
+ 449              	 .loc 2 117 0
+ 450 0014 7B68     	 ldr r3,[r7,#4]
+ 451 0016 1B68     	 ldr r3,[r3]
+ 452 0018 1846     	 mov r0,r3
+ 453 001a FFF7FEFF 	 bl serialRxBytesWaiting
+ 454 001e 0346     	 mov r3,r0
+ 455 0020 002B     	 cmp r3,#0
+ 456 0022 F2D1     	 bne .L28
+ 119:../cleanflight/src/main/io/rcdevice.c ****     }
+ 120:../cleanflight/src/main/io/rcdevice.c **** }
+ 457              	 .loc 2 120 0
+ 458 0024 0837     	 adds r7,r7,#8
+ 459              	.LCFI30:
+ 460              	 .cfi_def_cfa_offset 8
+ 461 0026 BD46     	 mov sp,r7
+ 462              	.LCFI31:
+ 463              	 .cfi_def_cfa_register 13
+ 464              	 
+ 465 0028 80BD     	 pop {r7,pc}
+ 466              	 .cfi_endproc
+ 467              	.LFE539:
+ 469 002a 00BF     	 .section .text.runcamDeviceSendPacket,"ax",%progbits
+ 470              	 .align 2
+ 471              	 .thumb
+ 472              	 .thumb_func
+ 474              	runcamDeviceSendPacket:
+ 475              	.LFB540:
+ 121:../cleanflight/src/main/io/rcdevice.c **** 
+ 122:../cleanflight/src/main/io/rcdevice.c **** // a common way to send packet to device
+ 123:../cleanflight/src/main/io/rcdevice.c **** static void runcamDeviceSendPacket(runcamDevice_t *device, uint8_t command, uint8_t *paramData, int
+ 124:../cleanflight/src/main/io/rcdevice.c **** {
+ 476              	 .loc 2 124 0
+ 477              	 .cfi_startproc
+ 478              	 
+ 479              	 
+ 480 0000 B0B5     	 push {r4,r5,r7,lr}
+ 481              	.LCFI32:
+ 482              	 .cfi_def_cfa_offset 16
+ 483              	 .cfi_offset 4,-16
+ 484              	 .cfi_offset 5,-12
+ 485              	 .cfi_offset 7,-8
+ 486              	 .cfi_offset 14,-4
+ 487 0002 86B0     	 sub sp,sp,#24
+ 488              	.LCFI33:
+ 489              	 .cfi_def_cfa_offset 40
+ 490 0004 00AF     	 add r7,sp,#0
+ 491              	.LCFI34:
+ 492              	 .cfi_def_cfa_register 7
+ 493 0006 F860     	 str r0,[r7,#12]
+ 494 0008 7A60     	 str r2,[r7,#4]
+ 495 000a 3B60     	 str r3,[r7]
+ 496 000c 0B46     	 mov r3,r1
+ 497 000e FB72     	 strb r3,[r7,#11]
+ 125:../cleanflight/src/main/io/rcdevice.c ****     // is this device open?
+ 126:../cleanflight/src/main/io/rcdevice.c ****     if (!device->serialPort) {
+ 498              	 .loc 2 126 0
+ 499 0010 FB68     	 ldr r3,[r7,#12]
+ 500 0012 1B68     	 ldr r3,[r3]
+ 501 0014 002B     	 cmp r3,#0
+ 502 0016 3FD0     	 beq .L29
+ 127:../cleanflight/src/main/io/rcdevice.c ****         return;
+ 128:../cleanflight/src/main/io/rcdevice.c ****     }
+ 129:../cleanflight/src/main/io/rcdevice.c **** 
+ 130:../cleanflight/src/main/io/rcdevice.c ****     sbuf_t buf;
+ 131:../cleanflight/src/main/io/rcdevice.c ****     // prepare pointer
+ 132:../cleanflight/src/main/io/rcdevice.c ****     buf.ptr = device->buffer;
+ 503              	 .loc 2 132 0
+ 504 0018 FB68     	 ldr r3,[r7,#12]
+ 505 001a 0433     	 adds r3,r3,#4
+ 506 001c 3B61     	 str r3,[r7,#16]
+ 133:../cleanflight/src/main/io/rcdevice.c ****     buf.end = ARRAYEND(device->buffer);
+ 507              	 .loc 2 133 0
+ 508 001e FB68     	 ldr r3,[r7,#12]
+ 509 0020 4433     	 adds r3,r3,#68
+ 510 0022 7B61     	 str r3,[r7,#20]
+ 134:../cleanflight/src/main/io/rcdevice.c **** 
+ 135:../cleanflight/src/main/io/rcdevice.c ****     sbufWriteU8(&buf, RCDEVICE_PROTOCOL_HEADER);
+ 511              	 .loc 2 135 0
+ 512 0024 07F11003 	 add r3,r7,#16
+ 513 0028 1846     	 mov r0,r3
+ 514 002a CC21     	 movs r1,#204
+ 515 002c FFF7FEFF 	 bl sbufWriteU8
+ 136:../cleanflight/src/main/io/rcdevice.c ****     sbufWriteU8(&buf, command);
+ 516              	 .loc 2 136 0
+ 517 0030 07F11002 	 add r2,r7,#16
+ 518 0034 FB7A     	 ldrb r3,[r7,#11]
+ 519 0036 1046     	 mov r0,r2
+ 520 0038 1946     	 mov r1,r3
+ 521 003a FFF7FEFF 	 bl sbufWriteU8
+ 137:../cleanflight/src/main/io/rcdevice.c **** 
+ 138:../cleanflight/src/main/io/rcdevice.c ****     if (paramData) {
+ 522              	 .loc 2 138 0
+ 523 003e 7B68     	 ldr r3,[r7,#4]
+ 524 0040 002B     	 cmp r3,#0
+ 525 0042 06D0     	 beq .L32
+ 139:../cleanflight/src/main/io/rcdevice.c ****         sbufWriteData(&buf, paramData, paramDataLen);
+ 526              	 .loc 2 139 0
+ 527 0044 07F11003 	 add r3,r7,#16
+ 528 0048 1846     	 mov r0,r3
+ 529 004a 7968     	 ldr r1,[r7,#4]
+ 530 004c 3A68     	 ldr r2,[r7]
+ 531 004e FFF7FEFF 	 bl sbufWriteData
+ 532              	.L32:
+ 140:../cleanflight/src/main/io/rcdevice.c ****     }
+ 141:../cleanflight/src/main/io/rcdevice.c **** 
+ 142:../cleanflight/src/main/io/rcdevice.c ****     // add crc over (all) data
+ 143:../cleanflight/src/main/io/rcdevice.c ****     crc8_dvb_s2_sbuf_append(&buf, device->buffer);
+ 533              	 .loc 2 143 0
+ 534 0052 FB68     	 ldr r3,[r7,#12]
+ 535 0054 0433     	 adds r3,r3,#4
+ 536 0056 07F11002 	 add r2,r7,#16
+ 537 005a 1046     	 mov r0,r2
+ 538 005c 1946     	 mov r1,r3
+ 539 005e FFF7FEFF 	 bl crc8_dvb_s2_sbuf_append
+ 144:../cleanflight/src/main/io/rcdevice.c **** 
+ 145:../cleanflight/src/main/io/rcdevice.c ****     // switch to reader
+ 146:../cleanflight/src/main/io/rcdevice.c ****     sbufSwitchToReader(&buf, device->buffer);
+ 540              	 .loc 2 146 0
+ 541 0062 FB68     	 ldr r3,[r7,#12]
+ 542 0064 0433     	 adds r3,r3,#4
+ 543 0066 07F11002 	 add r2,r7,#16
+ 544 006a 1046     	 mov r0,r2
+ 545 006c 1946     	 mov r1,r3
+ 546 006e FFF7FEFF 	 bl sbufSwitchToReader
+ 147:../cleanflight/src/main/io/rcdevice.c **** 
+ 148:../cleanflight/src/main/io/rcdevice.c ****     // send data if possible
+ 149:../cleanflight/src/main/io/rcdevice.c ****     serialWriteBuf(device->serialPort, sbufPtr(&buf), sbufBytesRemaining(&buf));
+ 547              	 .loc 2 149 0
+ 548 0072 FB68     	 ldr r3,[r7,#12]
+ 549 0074 1C68     	 ldr r4,[r3]
+ 550 0076 07F11003 	 add r3,r7,#16
+ 551 007a 1846     	 mov r0,r3
+ 552 007c FFF7FEFF 	 bl sbufPtr
+ 553 0080 0546     	 mov r5,r0
+ 554 0082 07F11003 	 add r3,r7,#16
+ 555 0086 1846     	 mov r0,r3
+ 556 0088 FFF7FEFF 	 bl sbufBytesRemaining
+ 557 008c 0346     	 mov r3,r0
+ 558 008e 2046     	 mov r0,r4
+ 559 0090 2946     	 mov r1,r5
+ 560 0092 1A46     	 mov r2,r3
+ 561 0094 FFF7FEFF 	 bl serialWriteBuf
+ 562              	.L29:
+ 150:../cleanflight/src/main/io/rcdevice.c **** }
+ 563              	 .loc 2 150 0
+ 564 0098 1837     	 adds r7,r7,#24
+ 565              	.LCFI35:
+ 566              	 .cfi_def_cfa_offset 16
+ 567 009a BD46     	 mov sp,r7
+ 568              	.LCFI36:
+ 569              	 .cfi_def_cfa_register 13
+ 570              	 
+ 571 009c B0BD     	 pop {r4,r5,r7,pc}
+ 572              	 .cfi_endproc
+ 573              	.LFE540:
+ 575 009e 00BF     	 .section .text.runcamDeviceSendRequestAndWaitingResp,"ax",%progbits
+ 576              	 .align 2
+ 577              	 .thumb
+ 578              	 .thumb_func
+ 580              	runcamDeviceSendRequestAndWaitingResp:
+ 581              	.LFB541:
+ 151:../cleanflight/src/main/io/rcdevice.c **** 
+ 152:../cleanflight/src/main/io/rcdevice.c **** // a common way to send a packet to device, and get response from the device.
+ 153:../cleanflight/src/main/io/rcdevice.c **** static void runcamDeviceSendRequestAndWaitingResp(runcamDevice_t *device, uint8_t commandID, uint8_
+ 154:../cleanflight/src/main/io/rcdevice.c **** {
+ 582              	 .loc 2 154 0
+ 583              	 .cfi_startproc
+ 584              	 
+ 585              	 
+ 586 0000 80B5     	 push {r7,lr}
+ 587              	.LCFI37:
+ 588              	 .cfi_def_cfa_offset 8
+ 589              	 .cfi_offset 7,-8
+ 590              	 .cfi_offset 14,-4
+ 591 0002 9CB0     	 sub sp,sp,#112
+ 592              	.LCFI38:
+ 593              	 .cfi_def_cfa_offset 120
+ 594 0004 00AF     	 add r7,sp,#0
+ 595              	.LCFI39:
+ 596              	 .cfi_def_cfa_register 7
+ 597 0006 F860     	 str r0,[r7,#12]
+ 598 0008 7A60     	 str r2,[r7,#4]
+ 599 000a 1A46     	 mov r2,r3
+ 600 000c 0B46     	 mov r3,r1
+ 601 000e FB72     	 strb r3,[r7,#11]
+ 602 0010 1346     	 mov r3,r2
+ 603 0012 BB72     	 strb r3,[r7,#10]
+ 155:../cleanflight/src/main/io/rcdevice.c ****     runcamDeviceFlushRxBuffer(device);
+ 604              	 .loc 2 155 0
+ 605 0014 F868     	 ldr r0,[r7,#12]
+ 606 0016 FFF7FEFF 	 bl runcamDeviceFlushRxBuffer
+ 156:../cleanflight/src/main/io/rcdevice.c **** 
+ 157:../cleanflight/src/main/io/rcdevice.c ****     rcdeviceResponseParseContext_t responseCtx;
+ 158:../cleanflight/src/main/io/rcdevice.c ****     memset(&responseCtx, 0, sizeof(rcdeviceResponseParseContext_t));
+ 607              	 .loc 2 158 0
+ 608 001a 07F11003 	 add r3,r7,#16
+ 609 001e 1846     	 mov r0,r3
+ 610 0020 0021     	 movs r1,#0
+ 611 0022 6022     	 movs r2,#96
+ 612 0024 FFF7FEFF 	 bl memset
+ 159:../cleanflight/src/main/io/rcdevice.c ****     responseCtx.recvBuf = recvBuf;
+ 613              	 .loc 2 159 0
+ 614 0028 204B     	 ldr r3,.L34
+ 615 002a C7F81330 	 str r3,[r7,#19]
+ 160:../cleanflight/src/main/io/rcdevice.c ****     responseCtx.command = commandID;
+ 616              	 .loc 2 160 0
+ 617 002e FB7A     	 ldrb r3,[r7,#11]
+ 618 0030 3B74     	 strb r3,[r7,#16]
+ 161:../cleanflight/src/main/io/rcdevice.c ****     responseCtx.maxRetryTimes = maxRetryTimes;
+ 619              	 .loc 2 161 0
+ 620 0032 FB6F     	 ldr r3,[r7,#124]
+ 621 0034 C7F86730 	 str r3,[r7,#103]
+ 162:../cleanflight/src/main/io/rcdevice.c ****     responseCtx.expectedRespLen = runcamDeviceGetRespLen(commandID);
+ 622              	 .loc 2 162 0
+ 623 0038 FB7A     	 ldrb r3,[r7,#11]
+ 624 003a 1846     	 mov r0,r3
+ 625 003c FFF7FEFF 	 bl runcamDeviceGetRespLen
+ 626 0040 0346     	 mov r3,r0
+ 627 0042 7B74     	 strb r3,[r7,#17]
+ 163:../cleanflight/src/main/io/rcdevice.c ****     responseCtx.timeout = tiemout;
+ 628              	 .loc 2 163 0
+ 629 0044 BB6F     	 ldr r3,[r7,#120]
+ 630 0046 C7F81730 	 str r3,[r7,#23]
+ 164:../cleanflight/src/main/io/rcdevice.c ****     responseCtx.timeoutTimestamp = millis() + tiemout;
+ 631              	 .loc 2 164 0
+ 632 004a FFF7FEFF 	 bl millis
+ 633 004e 0246     	 mov r2,r0
+ 634 0050 BB6F     	 ldr r3,[r7,#120]
+ 635 0052 1344     	 add r3,r3,r2
+ 636 0054 C7F81B30 	 str r3,[r7,#27]
+ 165:../cleanflight/src/main/io/rcdevice.c ****     responseCtx.parserFunc = parseFunc;
+ 637              	 .loc 2 165 0
+ 638 0058 D7F88430 	 ldr r3,[r7,#132]
+ 639 005c C7F81F30 	 str r3,[r7,#31]
+ 166:../cleanflight/src/main/io/rcdevice.c ****     responseCtx.device = device;
+ 640              	 .loc 2 166 0
+ 641 0060 FB68     	 ldr r3,[r7,#12]
+ 642 0062 C7F82330 	 str r3,[r7,#35]
+ 167:../cleanflight/src/main/io/rcdevice.c ****     responseCtx.protocolVer = RCDEVICE_PROTOCOL_VERSION_1_0;
+ 643              	 .loc 2 167 0
+ 644 0066 0123     	 movs r3,#1
+ 645 0068 87F86630 	 strb r3,[r7,#102]
+ 168:../cleanflight/src/main/io/rcdevice.c ****     memcpy(responseCtx.paramData, paramData, paramDataLen);
+ 646              	 .loc 2 168 0
+ 647 006c BA7A     	 ldrb r2,[r7,#10]
+ 648 006e 07F11003 	 add r3,r7,#16
+ 649 0072 1733     	 adds r3,r3,#23
+ 650 0074 1846     	 mov r0,r3
+ 651 0076 7968     	 ldr r1,[r7,#4]
+ 652 0078 FFF7FEFF 	 bl memcpy
+ 169:../cleanflight/src/main/io/rcdevice.c ****     responseCtx.paramDataLen = paramDataLen;
+ 653              	 .loc 2 169 0
+ 654 007c BB7A     	 ldrb r3,[r7,#10]
+ 655 007e 87F86530 	 strb r3,[r7,#101]
+ 170:../cleanflight/src/main/io/rcdevice.c ****     responseCtx.userInfo = userInfo;
+ 656              	 .loc 2 170 0
+ 657 0082 D7F88030 	 ldr r3,[r7,#128]
+ 658 0086 C7F86B30 	 str r3,[r7,#107]
+ 171:../cleanflight/src/main/io/rcdevice.c ****     rcdeviceRespCtxQueuePushRespCtx(&watingResponseQueue, &responseCtx);
+ 659              	 .loc 2 171 0
+ 660 008a 07F11003 	 add r3,r7,#16
+ 661 008e 0848     	 ldr r0,.L34+4
+ 662 0090 1946     	 mov r1,r3
+ 663 0092 FFF7FEFF 	 bl rcdeviceRespCtxQueuePushRespCtx
+ 172:../cleanflight/src/main/io/rcdevice.c **** 
+ 173:../cleanflight/src/main/io/rcdevice.c ****     // send packet
+ 174:../cleanflight/src/main/io/rcdevice.c ****     runcamDeviceSendPacket(device, commandID, paramData, paramDataLen);
+ 664              	 .loc 2 174 0
+ 665 0096 BB7A     	 ldrb r3,[r7,#10]
+ 666 0098 FA7A     	 ldrb r2,[r7,#11]
+ 667 009a F868     	 ldr r0,[r7,#12]
+ 668 009c 1146     	 mov r1,r2
+ 669 009e 7A68     	 ldr r2,[r7,#4]
+ 670 00a0 FFF7FEFF 	 bl runcamDeviceSendPacket
+ 175:../cleanflight/src/main/io/rcdevice.c **** }
+ 671              	 .loc 2 175 0
+ 672 00a4 7037     	 adds r7,r7,#112
+ 673              	.LCFI40:
+ 674              	 .cfi_def_cfa_offset 8
+ 675 00a6 BD46     	 mov sp,r7
+ 676              	.LCFI41:
+ 677              	 .cfi_def_cfa_register 13
+ 678              	 
+ 679 00a8 80BD     	 pop {r7,pc}
+ 680              	.L35:
+ 681 00aa 00BF     	 .align 2
+ 682              	.L34:
+ 683 00ac 00000000 	 .word recvBuf
+ 684 00b0 00000000 	 .word watingResponseQueue
+ 685              	 .cfi_endproc
+ 686              	.LFE541:
+ 688              	 .section .text.runcamDeviceParseV2DeviceInfo,"ax",%progbits
+ 689              	 .align 2
+ 690              	 .thumb
+ 691              	 .thumb_func
+ 693              	runcamDeviceParseV2DeviceInfo:
+ 694              	.LFB542:
+ 176:../cleanflight/src/main/io/rcdevice.c **** 
+ 177:../cleanflight/src/main/io/rcdevice.c **** static void runcamDeviceParseV2DeviceInfo(rcdeviceResponseParseContext_t *ctx)
+ 178:../cleanflight/src/main/io/rcdevice.c **** {
+ 695              	 .loc 2 178 0
+ 696              	 .cfi_startproc
+ 697              	 
+ 698              	 
+ 699              	 
+ 700 0000 80B4     	 push {r7}
+ 701              	.LCFI42:
+ 702              	 .cfi_def_cfa_offset 4
+ 703              	 .cfi_offset 7,-4
+ 704 0002 85B0     	 sub sp,sp,#20
+ 705              	.LCFI43:
+ 706              	 .cfi_def_cfa_offset 24
+ 707 0004 00AF     	 add r7,sp,#0
+ 708              	.LCFI44:
+ 709              	 .cfi_def_cfa_register 7
+ 710 0006 7860     	 str r0,[r7,#4]
+ 179:../cleanflight/src/main/io/rcdevice.c ****     if (ctx->result != RCDEVICE_RESP_SUCCESS) {
+ 711              	 .loc 2 179 0
+ 712 0008 7B68     	 ldr r3,[r7,#4]
+ 713 000a 93F85F30 	 ldrb r3,[r3,#95]
+ 714 000e 002B     	 cmp r3,#0
+ 715 0010 06D0     	 beq .L37
+ 180:../cleanflight/src/main/io/rcdevice.c ****         ctx->device->isReady = false;
+ 716              	 .loc 2 180 0
+ 717 0012 7B68     	 ldr r3,[r7,#4]
+ 718 0014 D3F81330 	 ldr r3,[r3,#19]
+ 719 0018 0022     	 movs r2,#0
+ 720 001a 83F84720 	 strb r2,[r3,#71]
+ 181:../cleanflight/src/main/io/rcdevice.c ****         return;
+ 721              	 .loc 2 181 0
+ 722 001e 24E0     	 b .L36
+ 723              	.L37:
+ 182:../cleanflight/src/main/io/rcdevice.c ****     }
+ 183:../cleanflight/src/main/io/rcdevice.c ****     runcamDevice_t *device = ctx->device;
+ 724              	 .loc 2 183 0
+ 725 0020 7B68     	 ldr r3,[r7,#4]
+ 726 0022 D3F81330 	 ldr r3,[r3,#19]
+ 727 0026 FB60     	 str r3,[r7,#12]
+ 184:../cleanflight/src/main/io/rcdevice.c ****     device->info.protocolVersion = ctx->recvBuf[1];
+ 728              	 .loc 2 184 0
+ 729 0028 7B68     	 ldr r3,[r7,#4]
+ 730 002a D3F80330 	 ldr r3,[r3,#3]
+ 731 002e 0133     	 adds r3,r3,#1
+ 732 0030 1A78     	 ldrb r2,[r3]
+ 733 0032 FB68     	 ldr r3,[r7,#12]
+ 734 0034 83F84420 	 strb r2,[r3,#68]
+ 185:../cleanflight/src/main/io/rcdevice.c **** 
+ 186:../cleanflight/src/main/io/rcdevice.c ****     uint8_t featureLowBits = ctx->recvBuf[2];
+ 735              	 .loc 2 186 0
+ 736 0038 7B68     	 ldr r3,[r7,#4]
+ 737 003a D3F80330 	 ldr r3,[r3,#3]
+ 738 003e 9B78     	 ldrb r3,[r3,#2]
+ 739 0040 FB72     	 strb r3,[r7,#11]
+ 187:../cleanflight/src/main/io/rcdevice.c ****     uint8_t featureHighBits = ctx->recvBuf[3];
+ 740              	 .loc 2 187 0
+ 741 0042 7B68     	 ldr r3,[r7,#4]
+ 742 0044 D3F80330 	 ldr r3,[r3,#3]
+ 743 0048 DB78     	 ldrb r3,[r3,#3]
+ 744 004a BB72     	 strb r3,[r7,#10]
+ 188:../cleanflight/src/main/io/rcdevice.c ****     device->info.features = (featureHighBits << 8) | featureLowBits;
+ 745              	 .loc 2 188 0
+ 746 004c BB7A     	 ldrb r3,[r7,#10]
+ 747 004e 1B02     	 lsls r3,r3,#8
+ 748 0050 9AB2     	 uxth r2,r3
+ 749 0052 FB7A     	 ldrb r3,[r7,#11]
+ 750 0054 9BB2     	 uxth r3,r3
+ 751 0056 1343     	 orrs r3,r3,r2
+ 752 0058 9BB2     	 uxth r3,r3
+ 753 005a 9AB2     	 uxth r2,r3
+ 754 005c FB68     	 ldr r3,[r7,#12]
+ 755 005e A3F84520 	 strh r2,[r3,#69]
+ 189:../cleanflight/src/main/io/rcdevice.c ****     device->isReady = true;
+ 756              	 .loc 2 189 0
+ 757 0062 FB68     	 ldr r3,[r7,#12]
+ 758 0064 0122     	 movs r2,#1
+ 759 0066 83F84720 	 strb r2,[r3,#71]
+ 760              	.L36:
+ 190:../cleanflight/src/main/io/rcdevice.c **** }
+ 761              	 .loc 2 190 0
+ 762 006a 1437     	 adds r7,r7,#20
+ 763              	.LCFI45:
+ 764              	 .cfi_def_cfa_offset 4
+ 765 006c BD46     	 mov sp,r7
+ 766              	.LCFI46:
+ 767              	 .cfi_def_cfa_register 13
+ 768              	 
+ 769 006e 5DF8047B 	 ldr r7,[sp],#4
+ 770              	.LCFI47:
+ 771              	 .cfi_restore 7
+ 772              	 .cfi_def_cfa_offset 0
+ 773 0072 7047     	 bx lr
+ 774              	 .cfi_endproc
+ 775              	.LFE542:
+ 777              	 .section .text.runcamDeviceGetDeviceInfo,"ax",%progbits
+ 778              	 .align 2
+ 779              	 .thumb
+ 780              	 .thumb_func
+ 782              	runcamDeviceGetDeviceInfo:
+ 783              	.LFB543:
+ 191:../cleanflight/src/main/io/rcdevice.c **** 
+ 192:../cleanflight/src/main/io/rcdevice.c **** // get the device info(firmware version, protocol version and features, see the
+ 193:../cleanflight/src/main/io/rcdevice.c **** // definition of runcamDeviceInfo_t to know more)
+ 194:../cleanflight/src/main/io/rcdevice.c **** static void runcamDeviceGetDeviceInfo(runcamDevice_t *device)
+ 195:../cleanflight/src/main/io/rcdevice.c **** {
+ 784              	 .loc 2 195 0
+ 785              	 .cfi_startproc
+ 786              	 
+ 787              	 
+ 788 0000 90B5     	 push {r4,r7,lr}
+ 789              	.LCFI48:
+ 790              	 .cfi_def_cfa_offset 12
+ 791              	 .cfi_offset 4,-12
+ 792              	 .cfi_offset 7,-8
+ 793              	 .cfi_offset 14,-4
+ 794 0002 87B0     	 sub sp,sp,#28
+ 795              	.LCFI49:
+ 796              	 .cfi_def_cfa_offset 40
+ 797 0004 04AF     	 add r7,sp,#16
+ 798              	.LCFI50:
+ 799              	 .cfi_def_cfa 7,24
+ 800 0006 7860     	 str r0,[r7,#4]
+ 196:../cleanflight/src/main/io/rcdevice.c ****     runcamDeviceSendRequestAndWaitingResp(device, RCDEVICE_PROTOCOL_COMMAND_GET_DEVICE_INFO, NULL, 
+ 801              	 .loc 2 196 0
+ 802 0008 FFF7FEFF 	 bl rcdeviceConfig
+ 803 000c 0346     	 mov r3,r0
+ 804 000e D3F80140 	 ldr r4,[r3,#1]
+ 805 0012 FFF7FEFF 	 bl rcdeviceConfig
+ 806 0016 0346     	 mov r3,r0
+ 807 0018 1B78     	 ldrb r3,[r3]
+ 808 001a 0094     	 str r4,[sp]
+ 809 001c 0193     	 str r3,[sp,#4]
+ 810 001e 0023     	 movs r3,#0
+ 811 0020 0293     	 str r3,[sp,#8]
+ 812 0022 054B     	 ldr r3,.L40
+ 813 0024 0393     	 str r3,[sp,#12]
+ 814 0026 7868     	 ldr r0,[r7,#4]
+ 815 0028 0021     	 movs r1,#0
+ 816 002a 0022     	 movs r2,#0
+ 817 002c 0023     	 movs r3,#0
+ 818 002e FFF7FEFF 	 bl runcamDeviceSendRequestAndWaitingResp
+ 197:../cleanflight/src/main/io/rcdevice.c **** }
+ 819              	 .loc 2 197 0
+ 820 0032 0C37     	 adds r7,r7,#12
+ 821              	.LCFI51:
+ 822              	 .cfi_def_cfa_offset 12
+ 823 0034 BD46     	 mov sp,r7
+ 824              	.LCFI52:
+ 825              	 .cfi_def_cfa_register 13
+ 826              	 
+ 827 0036 90BD     	 pop {r4,r7,pc}
+ 828              	.L41:
+ 829              	 .align 2
+ 830              	.L40:
+ 831 0038 00000000 	 .word runcamDeviceParseV2DeviceInfo
+ 832              	 .cfi_endproc
+ 833              	.LFE543:
+ 835              	 .section .text.runcamDeviceInit,"ax",%progbits
+ 836              	 .align 2
+ 837              	 .global runcamDeviceInit
+ 838              	 .thumb
+ 839              	 .thumb_func
+ 841              	runcamDeviceInit:
+ 842              	.LFB544:
+ 198:../cleanflight/src/main/io/rcdevice.c **** 
+ 199:../cleanflight/src/main/io/rcdevice.c **** // init the runcam device, it'll search the UART port with FUNCTION_RCDEVICE id
+ 200:../cleanflight/src/main/io/rcdevice.c **** // this function will delay 400ms in the first loop to wait the device prepared,
+ 201:../cleanflight/src/main/io/rcdevice.c **** // as we know, there are has some camera need about 200~400ms to initialization,
+ 202:../cleanflight/src/main/io/rcdevice.c **** // and then we can send/receive from it.
+ 203:../cleanflight/src/main/io/rcdevice.c **** void runcamDeviceInit(runcamDevice_t *device)
+ 204:../cleanflight/src/main/io/rcdevice.c **** {
+ 843              	 .loc 2 204 0
+ 844              	 .cfi_startproc
+ 845              	 
+ 846              	 
+ 847 0000 80B5     	 push {r7,lr}
+ 848              	.LCFI53:
+ 849              	 .cfi_def_cfa_offset 8
+ 850              	 .cfi_offset 7,-8
+ 851              	 .cfi_offset 14,-4
+ 852 0002 88B0     	 sub sp,sp,#32
+ 853              	.LCFI54:
+ 854              	 .cfi_def_cfa_offset 40
+ 855 0004 04AF     	 add r7,sp,#16
+ 856              	.LCFI55:
+ 857              	 .cfi_def_cfa 7,24
+ 858 0006 7860     	 str r0,[r7,#4]
+ 205:../cleanflight/src/main/io/rcdevice.c ****     device->isReady = false;
+ 859              	 .loc 2 205 0
+ 860 0008 7B68     	 ldr r3,[r7,#4]
+ 861 000a 0022     	 movs r2,#0
+ 862 000c 83F84720 	 strb r2,[r3,#71]
+ 206:../cleanflight/src/main/io/rcdevice.c ****     serialPortFunction_e portID = FUNCTION_RCDEVICE;
+ 863              	 .loc 2 206 0
+ 864 0010 4FF48043 	 mov r3,#16384
+ 865 0014 FB81     	 strh r3,[r7,#14]
+ 207:../cleanflight/src/main/io/rcdevice.c ****     serialPortConfig_t *portConfig = findSerialPortConfig(portID);
+ 866              	 .loc 2 207 0
+ 867 0016 FB89     	 ldrh r3,[r7,#14]
+ 868 0018 1846     	 mov r0,r3
+ 869 001a FFF7FEFF 	 bl findSerialPortConfig
+ 870 001e B860     	 str r0,[r7,#8]
+ 208:../cleanflight/src/main/io/rcdevice.c ****     if (portConfig != NULL) {
+ 871              	 .loc 2 208 0
+ 872 0020 BB68     	 ldr r3,[r7,#8]
+ 873 0022 002B     	 cmp r3,#0
+ 874 0024 1AD0     	 beq .L42
+ 209:../cleanflight/src/main/io/rcdevice.c ****         device->serialPort = openSerialPort(portConfig->identifier, portID, NULL, NULL, 115200, MOD
+ 875              	 .loc 2 209 0
+ 876 0026 BB68     	 ldr r3,[r7,#8]
+ 877 0028 9B78     	 ldrb r3,[r3,#2]
+ 878 002a 59B2     	 sxtb r1,r3
+ 879 002c FA89     	 ldrh r2,[r7,#14]
+ 880 002e 4FF4E133 	 mov r3,#115200
+ 881 0032 0093     	 str r3,[sp]
+ 882 0034 0323     	 movs r3,#3
+ 883 0036 0193     	 str r3,[sp,#4]
+ 884 0038 0023     	 movs r3,#0
+ 885 003a 0293     	 str r3,[sp,#8]
+ 886 003c 0846     	 mov r0,r1
+ 887 003e 1146     	 mov r1,r2
+ 888 0040 0022     	 movs r2,#0
+ 889 0042 0023     	 movs r3,#0
+ 890 0044 FFF7FEFF 	 bl openSerialPort
+ 891 0048 0246     	 mov r2,r0
+ 892 004a 7B68     	 ldr r3,[r7,#4]
+ 893 004c 1A60     	 str r2,[r3]
+ 210:../cleanflight/src/main/io/rcdevice.c **** 
+ 211:../cleanflight/src/main/io/rcdevice.c ****         if (device->serialPort != NULL) {
+ 894              	 .loc 2 211 0
+ 895 004e 7B68     	 ldr r3,[r7,#4]
+ 896 0050 1B68     	 ldr r3,[r3]
+ 897 0052 002B     	 cmp r3,#0
+ 898 0054 02D0     	 beq .L42
+ 212:../cleanflight/src/main/io/rcdevice.c ****             // send RCDEVICE_PROTOCOL_COMMAND_GET_DEVICE_INFO to device to retrive
+ 213:../cleanflight/src/main/io/rcdevice.c ****             // device info, e.g protocol version, supported features
+ 214:../cleanflight/src/main/io/rcdevice.c ****             runcamDeviceGetDeviceInfo(device);
+ 899              	 .loc 2 214 0
+ 900 0056 7868     	 ldr r0,[r7,#4]
+ 901 0058 FFF7FEFF 	 bl runcamDeviceGetDeviceInfo
+ 902              	.L42:
+ 215:../cleanflight/src/main/io/rcdevice.c ****         }
+ 216:../cleanflight/src/main/io/rcdevice.c ****     }
+ 217:../cleanflight/src/main/io/rcdevice.c **** }
+ 903              	 .loc 2 217 0
+ 904 005c 1037     	 adds r7,r7,#16
+ 905              	.LCFI56:
+ 906              	 .cfi_def_cfa_offset 8
+ 907 005e BD46     	 mov sp,r7
+ 908              	.LCFI57:
+ 909              	 .cfi_def_cfa_register 13
+ 910              	 
+ 911 0060 80BD     	 pop {r7,pc}
+ 912              	 .cfi_endproc
+ 913              	.LFE544:
+ 915 0062 00BF     	 .section .text.runcamDeviceSimulateCameraButton,"ax",%progbits
+ 916              	 .align 2
+ 917              	 .global runcamDeviceSimulateCameraButton
+ 918              	 .thumb
+ 919              	 .thumb_func
+ 921              	runcamDeviceSimulateCameraButton:
+ 922              	.LFB545:
+ 218:../cleanflight/src/main/io/rcdevice.c **** 
+ 219:../cleanflight/src/main/io/rcdevice.c **** bool runcamDeviceSimulateCameraButton(runcamDevice_t *device, uint8_t operation)
+ 220:../cleanflight/src/main/io/rcdevice.c **** {
+ 923              	 .loc 2 220 0
+ 924              	 .cfi_startproc
+ 925              	 
+ 926              	 
+ 927 0000 80B5     	 push {r7,lr}
+ 928              	.LCFI58:
+ 929              	 .cfi_def_cfa_offset 8
+ 930              	 .cfi_offset 7,-8
+ 931              	 .cfi_offset 14,-4
+ 932 0002 82B0     	 sub sp,sp,#8
+ 933              	.LCFI59:
+ 934              	 .cfi_def_cfa_offset 16
+ 935 0004 00AF     	 add r7,sp,#0
+ 936              	.LCFI60:
+ 937              	 .cfi_def_cfa_register 7
+ 938 0006 7860     	 str r0,[r7,#4]
+ 939 0008 0B46     	 mov r3,r1
+ 940 000a FB70     	 strb r3,[r7,#3]
+ 221:../cleanflight/src/main/io/rcdevice.c ****     if (device->info.protocolVersion == RCDEVICE_PROTOCOL_VERSION_1_0) {
+ 941              	 .loc 2 221 0
+ 942 000c 7B68     	 ldr r3,[r7,#4]
+ 943 000e 93F84430 	 ldrb r3,[r3,#68]
+ 944 0012 012B     	 cmp r3,#1
+ 945 0014 08D1     	 bne .L45
+ 222:../cleanflight/src/main/io/rcdevice.c ****         runcamDeviceSendPacket(device, RCDEVICE_PROTOCOL_COMMAND_CAMERA_CONTROL, &operation, sizeof
+ 946              	 .loc 2 222 0
+ 947 0016 FB1C     	 adds r3,r7,#3
+ 948 0018 7868     	 ldr r0,[r7,#4]
+ 949 001a 0121     	 movs r1,#1
+ 950 001c 1A46     	 mov r2,r3
+ 951 001e 0123     	 movs r3,#1
+ 952 0020 FFF7FEFF 	 bl runcamDeviceSendPacket
+ 223:../cleanflight/src/main/io/rcdevice.c ****     } else {
+ 224:../cleanflight/src/main/io/rcdevice.c ****         return false;
+ 225:../cleanflight/src/main/io/rcdevice.c ****     }
+ 226:../cleanflight/src/main/io/rcdevice.c **** 
+ 227:../cleanflight/src/main/io/rcdevice.c ****     return true;
+ 953              	 .loc 2 227 0
+ 954 0024 0123     	 movs r3,#1
+ 955 0026 00E0     	 b .L47
+ 956              	.L45:
+ 224:../cleanflight/src/main/io/rcdevice.c ****     }
+ 957              	 .loc 2 224 0
+ 958 0028 0023     	 movs r3,#0
+ 959              	.L47:
+ 228:../cleanflight/src/main/io/rcdevice.c **** }
+ 960              	 .loc 2 228 0
+ 961 002a 1846     	 mov r0,r3
+ 962 002c 0837     	 adds r7,r7,#8
+ 963              	.LCFI61:
+ 964              	 .cfi_def_cfa_offset 8
+ 965 002e BD46     	 mov sp,r7
+ 966              	.LCFI62:
+ 967              	 .cfi_def_cfa_register 13
+ 968              	 
+ 969 0030 80BD     	 pop {r7,pc}
+ 970              	 .cfi_endproc
+ 971              	.LFE545:
+ 973 0032 00BF     	 .section .text.runcamDeviceOpen5KeyOSDCableConnection,"ax",%progbits
+ 974              	 .align 2
+ 975              	 .global runcamDeviceOpen5KeyOSDCableConnection
+ 976              	 .thumb
+ 977              	 .thumb_func
+ 979              	runcamDeviceOpen5KeyOSDCableConnection:
+ 980              	.LFB546:
+ 229:../cleanflight/src/main/io/rcdevice.c **** 
+ 230:../cleanflight/src/main/io/rcdevice.c **** // every time start to control the OSD menu of camera, must call this method to
+ 231:../cleanflight/src/main/io/rcdevice.c **** // camera
+ 232:../cleanflight/src/main/io/rcdevice.c **** void runcamDeviceOpen5KeyOSDCableConnection(runcamDevice_t *device, rcdeviceRespParseFunc parseFunc
+ 233:../cleanflight/src/main/io/rcdevice.c **** {
+ 981              	 .loc 2 233 0
+ 982              	 .cfi_startproc
+ 983              	 
+ 984              	 
+ 985 0000 80B5     	 push {r7,lr}
+ 986              	.LCFI63:
+ 987              	 .cfi_def_cfa_offset 8
+ 988              	 .cfi_offset 7,-8
+ 989              	 .cfi_offset 14,-4
+ 990 0002 88B0     	 sub sp,sp,#32
+ 991              	.LCFI64:
+ 992              	 .cfi_def_cfa_offset 40
+ 993 0004 04AF     	 add r7,sp,#16
+ 994              	.LCFI65:
+ 995              	 .cfi_def_cfa 7,24
+ 996 0006 7860     	 str r0,[r7,#4]
+ 997 0008 3960     	 str r1,[r7]
+ 234:../cleanflight/src/main/io/rcdevice.c ****     uint8_t operation = RCDEVICE_PROTOCOL_5KEY_CONNECTION_OPEN;
+ 998              	 .loc 2 234 0
+ 999 000a 0123     	 movs r3,#1
+ 1000 000c FB73     	 strb r3,[r7,#15]
+ 235:../cleanflight/src/main/io/rcdevice.c ****     runcamDeviceSendRequestAndWaitingResp(device, RCDEVICE_PROTOCOL_COMMAND_5KEY_CONNECTION, &opera
+ 1001              	 .loc 2 235 0
+ 1002 000e 07F10F02 	 add r2,r7,#15
+ 1003 0012 C823     	 movs r3,#200
+ 1004 0014 0093     	 str r3,[sp]
+ 1005 0016 0023     	 movs r3,#0
+ 1006 0018 0193     	 str r3,[sp,#4]
+ 1007 001a 0023     	 movs r3,#0
+ 1008 001c 0293     	 str r3,[sp,#8]
+ 1009 001e 3B68     	 ldr r3,[r7]
+ 1010 0020 0393     	 str r3,[sp,#12]
+ 1011 0022 7868     	 ldr r0,[r7,#4]
+ 1012 0024 0421     	 movs r1,#4
+ 1013 0026 0123     	 movs r3,#1
+ 1014 0028 FFF7FEFF 	 bl runcamDeviceSendRequestAndWaitingResp
+ 236:../cleanflight/src/main/io/rcdevice.c **** }
+ 1015              	 .loc 2 236 0
+ 1016 002c 1037     	 adds r7,r7,#16
+ 1017              	.LCFI66:
+ 1018              	 .cfi_def_cfa_offset 8
+ 1019 002e BD46     	 mov sp,r7
+ 1020              	.LCFI67:
+ 1021              	 .cfi_def_cfa_register 13
+ 1022              	 
+ 1023 0030 80BD     	 pop {r7,pc}
+ 1024              	 .cfi_endproc
+ 1025              	.LFE546:
+ 1027 0032 00BF     	 .section .text.runcamDeviceClose5KeyOSDCableConnection,"ax",%progbits
+ 1028              	 .align 2
+ 1029              	 .global runcamDeviceClose5KeyOSDCableConnection
+ 1030              	 .thumb
+ 1031              	 .thumb_func
+ 1033              	runcamDeviceClose5KeyOSDCableConnection:
+ 1034              	.LFB547:
+ 237:../cleanflight/src/main/io/rcdevice.c **** 
+ 238:../cleanflight/src/main/io/rcdevice.c **** // when the control was stop, must call this method to the camera to disconnect
+ 239:../cleanflight/src/main/io/rcdevice.c **** // with camera.
+ 240:../cleanflight/src/main/io/rcdevice.c **** void runcamDeviceClose5KeyOSDCableConnection(runcamDevice_t *device, rcdeviceRespParseFunc parseFun
+ 241:../cleanflight/src/main/io/rcdevice.c **** {
+ 1035              	 .loc 2 241 0
+ 1036              	 .cfi_startproc
+ 1037              	 
+ 1038              	 
+ 1039 0000 80B5     	 push {r7,lr}
+ 1040              	.LCFI68:
+ 1041              	 .cfi_def_cfa_offset 8
+ 1042              	 .cfi_offset 7,-8
+ 1043              	 .cfi_offset 14,-4
+ 1044 0002 88B0     	 sub sp,sp,#32
+ 1045              	.LCFI69:
+ 1046              	 .cfi_def_cfa_offset 40
+ 1047 0004 04AF     	 add r7,sp,#16
+ 1048              	.LCFI70:
+ 1049              	 .cfi_def_cfa 7,24
+ 1050 0006 7860     	 str r0,[r7,#4]
+ 1051 0008 3960     	 str r1,[r7]
+ 242:../cleanflight/src/main/io/rcdevice.c ****     uint8_t operation = RCDEVICE_PROTOCOL_5KEY_CONNECTION_CLOSE;
+ 1052              	 .loc 2 242 0
+ 1053 000a 0223     	 movs r3,#2
+ 1054 000c FB73     	 strb r3,[r7,#15]
+ 243:../cleanflight/src/main/io/rcdevice.c ****     runcamDeviceSendRequestAndWaitingResp(device, RCDEVICE_PROTOCOL_COMMAND_5KEY_CONNECTION, &opera
+ 1055              	 .loc 2 243 0
+ 1056 000e 07F10F02 	 add r2,r7,#15
+ 1057 0012 C823     	 movs r3,#200
+ 1058 0014 0093     	 str r3,[sp]
+ 1059 0016 0023     	 movs r3,#0
+ 1060 0018 0193     	 str r3,[sp,#4]
+ 1061 001a 0023     	 movs r3,#0
+ 1062 001c 0293     	 str r3,[sp,#8]
+ 1063 001e 3B68     	 ldr r3,[r7]
+ 1064 0020 0393     	 str r3,[sp,#12]
+ 1065 0022 7868     	 ldr r0,[r7,#4]
+ 1066 0024 0421     	 movs r1,#4
+ 1067 0026 0123     	 movs r3,#1
+ 1068 0028 FFF7FEFF 	 bl runcamDeviceSendRequestAndWaitingResp
+ 244:../cleanflight/src/main/io/rcdevice.c **** }
+ 1069              	 .loc 2 244 0
+ 1070 002c 1037     	 adds r7,r7,#16
+ 1071              	.LCFI71:
+ 1072              	 .cfi_def_cfa_offset 8
+ 1073 002e BD46     	 mov sp,r7
+ 1074              	.LCFI72:
+ 1075              	 .cfi_def_cfa_register 13
+ 1076              	 
+ 1077 0030 80BD     	 pop {r7,pc}
+ 1078              	 .cfi_endproc
+ 1079              	.LFE547:
+ 1081 0032 00BF     	 .section .text.runcamDeviceSimulate5KeyOSDCableButtonPress,"ax",%progbits
+ 1082              	 .align 2
+ 1083              	 .global runcamDeviceSimulate5KeyOSDCableButtonPress
+ 1084              	 .thumb
+ 1085              	 .thumb_func
+ 1087              	runcamDeviceSimulate5KeyOSDCableButtonPress:
+ 1088              	.LFB548:
+ 245:../cleanflight/src/main/io/rcdevice.c **** 
+ 246:../cleanflight/src/main/io/rcdevice.c **** // simulate button press event of 5 key osd cable with special button
+ 247:../cleanflight/src/main/io/rcdevice.c **** void runcamDeviceSimulate5KeyOSDCableButtonPress(runcamDevice_t *device, uint8_t operation, rcdevic
+ 248:../cleanflight/src/main/io/rcdevice.c **** {
+ 1089              	 .loc 2 248 0
+ 1090              	 .cfi_startproc
+ 1091              	 
+ 1092              	 
+ 1093 0000 80B5     	 push {r7,lr}
+ 1094              	.LCFI73:
+ 1095              	 .cfi_def_cfa_offset 8
+ 1096              	 .cfi_offset 7,-8
+ 1097              	 .cfi_offset 14,-4
+ 1098 0002 88B0     	 sub sp,sp,#32
+ 1099              	.LCFI74:
+ 1100              	 .cfi_def_cfa_offset 40
+ 1101 0004 04AF     	 add r7,sp,#16
+ 1102              	.LCFI75:
+ 1103              	 .cfi_def_cfa 7,24
+ 1104 0006 F860     	 str r0,[r7,#12]
+ 1105 0008 0B46     	 mov r3,r1
+ 1106 000a 7A60     	 str r2,[r7,#4]
+ 1107 000c FB72     	 strb r3,[r7,#11]
+ 249:../cleanflight/src/main/io/rcdevice.c ****     if (operation == RCDEVICE_PROTOCOL_5KEY_SIMULATION_NONE) {
+ 1108              	 .loc 2 249 0
+ 1109 000e FB7A     	 ldrb r3,[r7,#11]
+ 1110 0010 002B     	 cmp r3,#0
+ 1111 0012 00D1     	 bne .L51
+ 250:../cleanflight/src/main/io/rcdevice.c ****         return;
+ 1112              	 .loc 2 250 0
+ 1113 0014 0EE0     	 b .L50
+ 1114              	.L51:
+ 251:../cleanflight/src/main/io/rcdevice.c ****     }
+ 252:../cleanflight/src/main/io/rcdevice.c **** 
+ 253:../cleanflight/src/main/io/rcdevice.c ****     runcamDeviceSendRequestAndWaitingResp(device, RCDEVICE_PROTOCOL_COMMAND_5KEY_SIMULATION_PRESS, 
+ 1115              	 .loc 2 253 0
+ 1116 0016 07F10B02 	 add r2,r7,#11
+ 1117 001a C823     	 movs r3,#200
+ 1118 001c 0093     	 str r3,[sp]
+ 1119 001e 0023     	 movs r3,#0
+ 1120 0020 0193     	 str r3,[sp,#4]
+ 1121 0022 0023     	 movs r3,#0
+ 1122 0024 0293     	 str r3,[sp,#8]
+ 1123 0026 7B68     	 ldr r3,[r7,#4]
+ 1124 0028 0393     	 str r3,[sp,#12]
+ 1125 002a F868     	 ldr r0,[r7,#12]
+ 1126 002c 0221     	 movs r1,#2
+ 1127 002e 0123     	 movs r3,#1
+ 1128 0030 FFF7FEFF 	 bl runcamDeviceSendRequestAndWaitingResp
+ 1129              	.L50:
+ 254:../cleanflight/src/main/io/rcdevice.c **** }
+ 1130              	 .loc 2 254 0
+ 1131 0034 1037     	 adds r7,r7,#16
+ 1132              	.LCFI76:
+ 1133              	 .cfi_def_cfa_offset 8
+ 1134 0036 BD46     	 mov sp,r7
+ 1135              	.LCFI77:
+ 1136              	 .cfi_def_cfa_register 13
+ 1137              	 
+ 1138 0038 80BD     	 pop {r7,pc}
+ 1139              	 .cfi_endproc
+ 1140              	.LFE548:
+ 1142 003a 00BF     	 .section .text.runcamDeviceSimulate5KeyOSDCableButtonRelease,"ax",%progbits
+ 1143              	 .align 2
+ 1144              	 .global runcamDeviceSimulate5KeyOSDCableButtonRelease
+ 1145              	 .thumb
+ 1146              	 .thumb_func
+ 1148              	runcamDeviceSimulate5KeyOSDCableButtonRelease:
+ 1149              	.LFB549:
+ 255:../cleanflight/src/main/io/rcdevice.c **** 
+ 256:../cleanflight/src/main/io/rcdevice.c **** // simulate button release event of 5 key osd cable
+ 257:../cleanflight/src/main/io/rcdevice.c **** void runcamDeviceSimulate5KeyOSDCableButtonRelease(runcamDevice_t *device, rcdeviceRespParseFunc pa
+ 258:../cleanflight/src/main/io/rcdevice.c **** {
+ 1150              	 .loc 2 258 0
+ 1151              	 .cfi_startproc
+ 1152              	 
+ 1153              	 
+ 1154 0000 80B5     	 push {r7,lr}
+ 1155              	.LCFI78:
+ 1156              	 .cfi_def_cfa_offset 8
+ 1157              	 .cfi_offset 7,-8
+ 1158              	 .cfi_offset 14,-4
+ 1159 0002 86B0     	 sub sp,sp,#24
+ 1160              	.LCFI79:
+ 1161              	 .cfi_def_cfa_offset 32
+ 1162 0004 04AF     	 add r7,sp,#16
+ 1163              	.LCFI80:
+ 1164              	 .cfi_def_cfa 7,16
+ 1165 0006 7860     	 str r0,[r7,#4]
+ 1166 0008 3960     	 str r1,[r7]
+ 259:../cleanflight/src/main/io/rcdevice.c ****     runcamDeviceSendRequestAndWaitingResp(device, RCDEVICE_PROTOCOL_COMMAND_5KEY_SIMULATION_RELEASE
+ 1167              	 .loc 2 259 0
+ 1168 000a C823     	 movs r3,#200
+ 1169 000c 0093     	 str r3,[sp]
+ 1170 000e 0023     	 movs r3,#0
+ 1171 0010 0193     	 str r3,[sp,#4]
+ 1172 0012 0023     	 movs r3,#0
+ 1173 0014 0293     	 str r3,[sp,#8]
+ 1174 0016 3B68     	 ldr r3,[r7]
+ 1175 0018 0393     	 str r3,[sp,#12]
+ 1176 001a 7868     	 ldr r0,[r7,#4]
+ 1177 001c 0321     	 movs r1,#3
+ 1178 001e 0022     	 movs r2,#0
+ 1179 0020 0023     	 movs r3,#0
+ 1180 0022 FFF7FEFF 	 bl runcamDeviceSendRequestAndWaitingResp
+ 260:../cleanflight/src/main/io/rcdevice.c **** }
+ 1181              	 .loc 2 260 0
+ 1182 0026 0837     	 adds r7,r7,#8
+ 1183              	.LCFI81:
+ 1184              	 .cfi_def_cfa_offset 8
+ 1185 0028 BD46     	 mov sp,r7
+ 1186              	.LCFI82:
+ 1187              	 .cfi_def_cfa_register 13
+ 1188              	 
+ 1189 002a 80BD     	 pop {r7,pc}
+ 1190              	 .cfi_endproc
+ 1191              	.LFE549:
+ 1193              	 .section .text.getWaitingResponse,"ax",%progbits
+ 1194              	 .align 2
+ 1195              	 .thumb
+ 1196              	 .thumb_func
+ 1198              	getWaitingResponse:
+ 1199              	.LFB550:
+ 261:../cleanflight/src/main/io/rcdevice.c **** 
+ 262:../cleanflight/src/main/io/rcdevice.c **** static rcdeviceResponseParseContext_t* getWaitingResponse(timeMs_t currentTimeMs)
+ 263:../cleanflight/src/main/io/rcdevice.c **** {
+ 1200              	 .loc 2 263 0
+ 1201              	 .cfi_startproc
+ 1202              	 
+ 1203              	 
+ 1204 0000 80B5     	 push {r7,lr}
+ 1205              	.LCFI83:
+ 1206              	 .cfi_def_cfa_offset 8
+ 1207              	 .cfi_offset 7,-8
+ 1208              	 .cfi_offset 14,-4
+ 1209 0002 84B0     	 sub sp,sp,#16
+ 1210              	.LCFI84:
+ 1211              	 .cfi_def_cfa_offset 24
+ 1212 0004 00AF     	 add r7,sp,#0
+ 1213              	.LCFI85:
+ 1214              	 .cfi_def_cfa_register 7
+ 1215 0006 7860     	 str r0,[r7,#4]
+ 264:../cleanflight/src/main/io/rcdevice.c ****     rcdeviceResponseParseContext_t *respCtx = rcdeviceRespCtxQueuePeekFront(&watingResponseQueue);
+ 1216              	 .loc 2 264 0
+ 1217 0008 2848     	 ldr r0,.L61
+ 1218 000a FFF7FEFF 	 bl rcdeviceRespCtxQueuePeekFront
+ 1219 000e F860     	 str r0,[r7,#12]
+ 265:../cleanflight/src/main/io/rcdevice.c ****     while (respCtx != NULL && respCtx->timeoutTimestamp != 0 && currentTimeMs > respCtx->timeoutTim
+ 1220              	 .loc 2 265 0
+ 1221 0010 38E0     	 b .L55
+ 1222              	.L59:
+ 266:../cleanflight/src/main/io/rcdevice.c ****         if (respCtx->maxRetryTimes > 0) {
+ 1223              	 .loc 2 266 0
+ 1224 0012 FB68     	 ldr r3,[r7,#12]
+ 1225 0014 D3F85730 	 ldr r3,[r3,#87]
+ 1226 0018 002B     	 cmp r3,#0
+ 1227 001a 1EDD     	 ble .L56
+ 267:../cleanflight/src/main/io/rcdevice.c ****             runcamDeviceSendPacket(respCtx->device, respCtx->command, respCtx->paramData, respCtx->
+ 1228              	 .loc 2 267 0
+ 1229 001c FB68     	 ldr r3,[r7,#12]
+ 1230 001e D3F81300 	 ldr r0,[r3,#19]
+ 1231 0022 FB68     	 ldr r3,[r7,#12]
+ 1232 0024 1978     	 ldrb r1,[r3]
+ 1233 0026 FB68     	 ldr r3,[r7,#12]
+ 1234 0028 03F11702 	 add r2,r3,#23
+ 1235 002c FB68     	 ldr r3,[r7,#12]
+ 1236 002e 93F85530 	 ldrb r3,[r3,#85]
+ 1237 0032 FFF7FEFF 	 bl runcamDeviceSendPacket
+ 268:../cleanflight/src/main/io/rcdevice.c ****             respCtx->timeoutTimestamp = currentTimeMs + respCtx->timeout;
+ 1238              	 .loc 2 268 0
+ 1239 0036 FB68     	 ldr r3,[r7,#12]
+ 1240 0038 D3F80720 	 ldr r2,[r3,#7]
+ 1241 003c 7B68     	 ldr r3,[r7,#4]
+ 1242 003e 1A44     	 add r2,r2,r3
+ 1243 0040 FB68     	 ldr r3,[r7,#12]
+ 1244 0042 C3F80B20 	 str r2,[r3,#11]
+ 269:../cleanflight/src/main/io/rcdevice.c ****             respCtx->maxRetryTimes -= 1;
+ 1245              	 .loc 2 269 0
+ 1246 0046 FB68     	 ldr r3,[r7,#12]
+ 1247 0048 D3F85730 	 ldr r3,[r3,#87]
+ 1248 004c 5A1E     	 subs r2,r3,#1
+ 1249 004e FB68     	 ldr r3,[r7,#12]
+ 1250 0050 C3F85720 	 str r2,[r3,#87]
+ 270:../cleanflight/src/main/io/rcdevice.c ****             respCtx = NULL;
+ 1251              	 .loc 2 270 0
+ 1252 0054 0023     	 movs r3,#0
+ 1253 0056 FB60     	 str r3,[r7,#12]
+ 271:../cleanflight/src/main/io/rcdevice.c ****             break;
+ 1254              	 .loc 2 271 0
+ 1255 0058 22E0     	 b .L57
+ 1256              	.L56:
+ 272:../cleanflight/src/main/io/rcdevice.c ****         } else {
+ 273:../cleanflight/src/main/io/rcdevice.c ****             respCtx->result = RCDEVICE_RESP_TIMEOUT;
+ 1257              	 .loc 2 273 0
+ 1258 005a FB68     	 ldr r3,[r7,#12]
+ 1259 005c 0222     	 movs r2,#2
+ 1260 005e 83F85F20 	 strb r2,[r3,#95]
+ 274:../cleanflight/src/main/io/rcdevice.c ****             if (respCtx->parserFunc != NULL) {
+ 1261              	 .loc 2 274 0
+ 1262 0062 FB68     	 ldr r3,[r7,#12]
+ 1263 0064 D3F80F30 	 ldr r3,[r3,#15]
+ 1264 0068 002B     	 cmp r3,#0
+ 1265 006a 04D0     	 beq .L58
+ 275:../cleanflight/src/main/io/rcdevice.c ****                 respCtx->parserFunc(respCtx);
+ 1266              	 .loc 2 275 0
+ 1267 006c FB68     	 ldr r3,[r7,#12]
+ 1268 006e D3F80F30 	 ldr r3,[r3,#15]
+ 1269 0072 F868     	 ldr r0,[r7,#12]
+ 1270 0074 9847     	 blx r3
+ 1271              	.L58:
+ 276:../cleanflight/src/main/io/rcdevice.c ****             }
+ 277:../cleanflight/src/main/io/rcdevice.c **** 
+ 278:../cleanflight/src/main/io/rcdevice.c ****             // dequeue and get next waiting response context
+ 279:../cleanflight/src/main/io/rcdevice.c ****             rcdeviceRespCtxQueueShift(&watingResponseQueue);
+ 1272              	 .loc 2 279 0
+ 1273 0076 0D48     	 ldr r0,.L61
+ 1274 0078 FFF7FEFF 	 bl rcdeviceRespCtxQueueShift
+ 280:../cleanflight/src/main/io/rcdevice.c ****             respCtx = rcdeviceRespCtxQueuePeekFront(&watingResponseQueue);
+ 1275              	 .loc 2 280 0
+ 1276 007c 0B48     	 ldr r0,.L61
+ 1277 007e FFF7FEFF 	 bl rcdeviceRespCtxQueuePeekFront
+ 1278 0082 F860     	 str r0,[r7,#12]
+ 1279              	.L55:
+ 265:../cleanflight/src/main/io/rcdevice.c ****         if (respCtx->maxRetryTimes > 0) {
+ 1280              	 .loc 2 265 0
+ 1281 0084 FB68     	 ldr r3,[r7,#12]
+ 1282 0086 002B     	 cmp r3,#0
+ 1283 0088 0AD0     	 beq .L57
+ 265:../cleanflight/src/main/io/rcdevice.c ****         if (respCtx->maxRetryTimes > 0) {
+ 1284              	 .loc 2 265 0 is_stmt 0 discriminator 1
+ 1285 008a FB68     	 ldr r3,[r7,#12]
+ 1286 008c D3F80B30 	 ldr r3,[r3,#11]
+ 1287 0090 002B     	 cmp r3,#0
+ 1288 0092 05D0     	 beq .L57
+ 265:../cleanflight/src/main/io/rcdevice.c ****         if (respCtx->maxRetryTimes > 0) {
+ 1289              	 .loc 2 265 0 discriminator 2
+ 1290 0094 FB68     	 ldr r3,[r7,#12]
+ 1291 0096 D3F80B20 	 ldr r2,[r3,#11]
+ 1292 009a 7B68     	 ldr r3,[r7,#4]
+ 1293 009c 9A42     	 cmp r2,r3
+ 1294 009e B8D3     	 bcc .L59
+ 1295              	.L57:
+ 281:../cleanflight/src/main/io/rcdevice.c ****         }
+ 282:../cleanflight/src/main/io/rcdevice.c ****     }
+ 283:../cleanflight/src/main/io/rcdevice.c **** 
+ 284:../cleanflight/src/main/io/rcdevice.c ****     return respCtx;
+ 1296              	 .loc 2 284 0 is_stmt 1
+ 1297 00a0 FB68     	 ldr r3,[r7,#12]
+ 285:../cleanflight/src/main/io/rcdevice.c **** }
+ 1298              	 .loc 2 285 0
+ 1299 00a2 1846     	 mov r0,r3
+ 1300 00a4 1037     	 adds r7,r7,#16
+ 1301              	.LCFI86:
+ 1302              	 .cfi_def_cfa_offset 8
+ 1303 00a6 BD46     	 mov sp,r7
+ 1304              	.LCFI87:
+ 1305              	 .cfi_def_cfa_register 13
+ 1306              	 
+ 1307 00a8 80BD     	 pop {r7,pc}
+ 1308              	.L62:
+ 1309 00aa 00BF     	 .align 2
+ 1310              	.L61:
+ 1311 00ac 00000000 	 .word watingResponseQueue
+ 1312              	 .cfi_endproc
+ 1313              	.LFE550:
+ 1315              	 .section .text.rcdeviceReceive,"ax",%progbits
+ 1316              	 .align 2
+ 1317              	 .global rcdeviceReceive
+ 1318              	 .thumb
+ 1319              	 .thumb_func
+ 1321              	rcdeviceReceive:
+ 1322              	.LFB551:
+ 286:../cleanflight/src/main/io/rcdevice.c **** 
+ 287:../cleanflight/src/main/io/rcdevice.c **** void rcdeviceReceive(timeUs_t currentTimeUs) 
+ 288:../cleanflight/src/main/io/rcdevice.c **** {
+ 1323              	 .loc 2 288 0
+ 1324              	 .cfi_startproc
+ 1325              	 
+ 1326              	 
+ 1327 0000 80B5     	 push {r7,lr}
+ 1328              	.LCFI88:
+ 1329              	 .cfi_def_cfa_offset 8
+ 1330              	 .cfi_offset 7,-8
+ 1331              	 .cfi_offset 14,-4
+ 1332 0002 86B0     	 sub sp,sp,#24
+ 1333              	.LCFI89:
+ 1334              	 .cfi_def_cfa_offset 32
+ 1335 0004 00AF     	 add r7,sp,#0
+ 1336              	.LCFI90:
+ 1337              	 .cfi_def_cfa_register 7
+ 1338 0006 7860     	 str r0,[r7,#4]
+ 289:../cleanflight/src/main/io/rcdevice.c ****     UNUSED(currentTimeUs);
+ 290:../cleanflight/src/main/io/rcdevice.c ****     rcdeviceResponseParseContext_t *respCtx = NULL;
+ 1339              	 .loc 2 290 0
+ 1340 0008 0023     	 movs r3,#0
+ 1341 000a FB60     	 str r3,[r7,#12]
+ 291:../cleanflight/src/main/io/rcdevice.c ****     while ((respCtx = getWaitingResponse(millis())) != NULL && serialRxBytesWaiting(respCtx->device
+ 1342              	 .loc 2 291 0
+ 1343 000c 53E0     	 b .L64
+ 1344              	.L70:
+ 1345              	.LBB3:
+ 292:../cleanflight/src/main/io/rcdevice.c ****         const uint8_t c = serialRead(respCtx->device->serialPort);
+ 1346              	 .loc 2 292 0
+ 1347 000e FB68     	 ldr r3,[r7,#12]
+ 1348 0010 D3F81330 	 ldr r3,[r3,#19]
+ 1349 0014 1B68     	 ldr r3,[r3]
+ 1350 0016 1846     	 mov r0,r3
+ 1351 0018 FFF7FEFF 	 bl serialRead
+ 1352 001c 0346     	 mov r3,r0
+ 1353 001e FB72     	 strb r3,[r7,#11]
+ 293:../cleanflight/src/main/io/rcdevice.c ****         respCtx->recvBuf[respCtx->recvRespLen] = c;
+ 1354              	 .loc 2 293 0
+ 1355 0020 FB68     	 ldr r3,[r7,#12]
+ 1356 0022 D3F80330 	 ldr r3,[r3,#3]
+ 1357 0026 FA68     	 ldr r2,[r7,#12]
+ 1358 0028 9278     	 ldrb r2,[r2,#2]
+ 1359 002a 1344     	 add r3,r3,r2
+ 1360 002c FA7A     	 ldrb r2,[r7,#11]
+ 1361 002e 1A70     	 strb r2,[r3]
+ 294:../cleanflight/src/main/io/rcdevice.c ****         respCtx->recvRespLen += 1;
+ 1362              	 .loc 2 294 0
+ 1363 0030 FB68     	 ldr r3,[r7,#12]
+ 1364 0032 9B78     	 ldrb r3,[r3,#2]
+ 1365 0034 0133     	 adds r3,r3,#1
+ 1366 0036 DAB2     	 uxtb r2,r3
+ 1367 0038 FB68     	 ldr r3,[r7,#12]
+ 1368 003a 9A70     	 strb r2,[r3,#2]
+ 295:../cleanflight/src/main/io/rcdevice.c ****         
+ 296:../cleanflight/src/main/io/rcdevice.c ****         // if data received done, trigger callback to parse response data, and update rcdevice stat
+ 297:../cleanflight/src/main/io/rcdevice.c ****         if (respCtx->recvRespLen == respCtx->expectedRespLen) {
+ 1369              	 .loc 2 297 0
+ 1370 003c FB68     	 ldr r3,[r7,#12]
+ 1371 003e 9A78     	 ldrb r2,[r3,#2]
+ 1372 0040 FB68     	 ldr r3,[r7,#12]
+ 1373 0042 5B78     	 ldrb r3,[r3,#1]
+ 1374 0044 9A42     	 cmp r2,r3
+ 1375 0046 36D1     	 bne .L64
+ 298:../cleanflight/src/main/io/rcdevice.c ****             // verify the crc value
+ 299:../cleanflight/src/main/io/rcdevice.c ****             if (respCtx->protocolVer == RCDEVICE_PROTOCOL_VERSION_1_0) {
+ 1376              	 .loc 2 299 0
+ 1377 0048 FB68     	 ldr r3,[r7,#12]
+ 1378 004a 93F85630 	 ldrb r3,[r3,#86]
+ 1379 004e 012B     	 cmp r3,#1
+ 1380 0050 24D1     	 bne .L65
+ 1381              	.LBB4:
+ 300:../cleanflight/src/main/io/rcdevice.c ****                 uint8_t crc = 0;
+ 1382              	 .loc 2 300 0
+ 1383 0052 0023     	 movs r3,#0
+ 1384 0054 FB75     	 strb r3,[r7,#23]
+ 1385              	.LBB5:
+ 301:../cleanflight/src/main/io/rcdevice.c ****                 for (int i = 0; i < respCtx->recvRespLen; i++) {
+ 1386              	 .loc 2 301 0
+ 1387 0056 0023     	 movs r3,#0
+ 1388 0058 3B61     	 str r3,[r7,#16]
+ 1389 005a 0FE0     	 b .L66
+ 1390              	.L67:
+ 302:../cleanflight/src/main/io/rcdevice.c ****                     crc = crc8_dvb_s2(crc, respCtx->recvBuf[i]);
+ 1391              	 .loc 2 302 0 discriminator 3
+ 1392 005c FB68     	 ldr r3,[r7,#12]
+ 1393 005e D3F80320 	 ldr r2,[r3,#3]
+ 1394 0062 3B69     	 ldr r3,[r7,#16]
+ 1395 0064 1344     	 add r3,r3,r2
+ 1396 0066 1B78     	 ldrb r3,[r3]
+ 1397 0068 FA7D     	 ldrb r2,[r7,#23]
+ 1398 006a 1046     	 mov r0,r2
+ 1399 006c 1946     	 mov r1,r3
+ 1400 006e FFF7FEFF 	 bl crc8_dvb_s2
+ 1401 0072 0346     	 mov r3,r0
+ 1402 0074 FB75     	 strb r3,[r7,#23]
+ 301:../cleanflight/src/main/io/rcdevice.c ****                 for (int i = 0; i < respCtx->recvRespLen; i++) {
+ 1403              	 .loc 2 301 0 discriminator 3
+ 1404 0076 3B69     	 ldr r3,[r7,#16]
+ 1405 0078 0133     	 adds r3,r3,#1
+ 1406 007a 3B61     	 str r3,[r7,#16]
+ 1407              	.L66:
+ 301:../cleanflight/src/main/io/rcdevice.c ****                 for (int i = 0; i < respCtx->recvRespLen; i++) {
+ 1408              	 .loc 2 301 0 is_stmt 0 discriminator 1
+ 1409 007c FB68     	 ldr r3,[r7,#12]
+ 1410 007e 9B78     	 ldrb r3,[r3,#2]
+ 1411 0080 1A46     	 mov r2,r3
+ 1412 0082 3B69     	 ldr r3,[r7,#16]
+ 1413 0084 9A42     	 cmp r2,r3
+ 1414 0086 E9DC     	 bgt .L67
+ 1415              	.LBE5:
+ 303:../cleanflight/src/main/io/rcdevice.c ****                 }
+ 304:../cleanflight/src/main/io/rcdevice.c ****                 respCtx->result = (crc == 0) ? RCDEVICE_RESP_SUCCESS : RCDEVICE_RESP_INCORRECT_CRC;
+ 1416              	 .loc 2 304 0 is_stmt 1
+ 1417 0088 FB7D     	 ldrb r3,[r7,#23]
+ 1418 008a 002B     	 cmp r3,#0
+ 1419 008c 14BF     	 ite ne
+ 1420 008e 0123     	 movne r3,#1
+ 1421 0090 0023     	 moveq r3,#0
+ 1422 0092 DBB2     	 uxtb r3,r3
+ 1423 0094 1A46     	 mov r2,r3
+ 1424 0096 FB68     	 ldr r3,[r7,#12]
+ 1425 0098 83F85F20 	 strb r2,[r3,#95]
+ 1426              	.L65:
+ 1427              	.LBE4:
+ 305:../cleanflight/src/main/io/rcdevice.c ****             }
+ 306:../cleanflight/src/main/io/rcdevice.c **** 
+ 307:../cleanflight/src/main/io/rcdevice.c ****             if (respCtx->parserFunc != NULL) {
+ 1428              	 .loc 2 307 0
+ 1429 009c FB68     	 ldr r3,[r7,#12]
+ 1430 009e D3F80F30 	 ldr r3,[r3,#15]
+ 1431 00a2 002B     	 cmp r3,#0
+ 1432 00a4 04D0     	 beq .L68
+ 308:../cleanflight/src/main/io/rcdevice.c ****                 respCtx->parserFunc(respCtx);
+ 1433              	 .loc 2 308 0
+ 1434 00a6 FB68     	 ldr r3,[r7,#12]
+ 1435 00a8 D3F80F30 	 ldr r3,[r3,#15]
+ 1436 00ac F868     	 ldr r0,[r7,#12]
+ 1437 00ae 9847     	 blx r3
+ 1438              	.L68:
+ 309:../cleanflight/src/main/io/rcdevice.c ****             }
+ 310:../cleanflight/src/main/io/rcdevice.c **** 
+ 311:../cleanflight/src/main/io/rcdevice.c ****             // dequeue current response context
+ 312:../cleanflight/src/main/io/rcdevice.c ****             rcdeviceRespCtxQueueShift(&watingResponseQueue);
+ 1439              	 .loc 2 312 0
+ 1440 00b0 0C48     	 ldr r0,.L71
+ 1441 00b2 FFF7FEFF 	 bl rcdeviceRespCtxQueueShift
+ 1442              	.L64:
+ 1443              	.LBE3:
+ 291:../cleanflight/src/main/io/rcdevice.c ****         const uint8_t c = serialRead(respCtx->device->serialPort);
+ 1444              	 .loc 2 291 0
+ 1445 00b6 FFF7FEFF 	 bl millis
+ 1446 00ba 0346     	 mov r3,r0
+ 1447 00bc 1846     	 mov r0,r3
+ 1448 00be FFF7FEFF 	 bl getWaitingResponse
+ 1449 00c2 F860     	 str r0,[r7,#12]
+ 1450 00c4 FB68     	 ldr r3,[r7,#12]
+ 1451 00c6 002B     	 cmp r3,#0
+ 1452 00c8 09D0     	 beq .L63
+ 291:../cleanflight/src/main/io/rcdevice.c ****         const uint8_t c = serialRead(respCtx->device->serialPort);
+ 1453              	 .loc 2 291 0 is_stmt 0 discriminator 1
+ 1454 00ca FB68     	 ldr r3,[r7,#12]
+ 1455 00cc D3F81330 	 ldr r3,[r3,#19]
+ 1456 00d0 1B68     	 ldr r3,[r3]
+ 1457 00d2 1846     	 mov r0,r3
+ 1458 00d4 FFF7FEFF 	 bl serialRxBytesWaiting
+ 1459 00d8 0346     	 mov r3,r0
+ 1460 00da 002B     	 cmp r3,#0
+ 1461 00dc 97D1     	 bne .L70
+ 1462              	.L63:
+ 313:../cleanflight/src/main/io/rcdevice.c ****         }
+ 314:../cleanflight/src/main/io/rcdevice.c ****     }
+ 315:../cleanflight/src/main/io/rcdevice.c **** }
+ 1463              	 .loc 2 315 0 is_stmt 1
+ 1464 00de 1837     	 adds r7,r7,#24
+ 1465              	.LCFI91:
+ 1466              	 .cfi_def_cfa_offset 8
+ 1467 00e0 BD46     	 mov sp,r7
+ 1468              	.LCFI92:
+ 1469              	 .cfi_def_cfa_register 13
+ 1470              	 
+ 1471 00e2 80BD     	 pop {r7,pc}
+ 1472              	.L72:
+ 1473              	 .align 2
+ 1474              	.L71:
+ 1475 00e4 00000000 	 .word watingResponseQueue
+ 1476              	 .cfi_endproc
+ 1477              	.LFE551:
+ 1479              	 .text
+ 1480              	.Letext0:
+ 1481              	 .file 3 "d:\\xmc\\dave-ide-4.4.2-64bit\\eclipse\\arm-gcc-49\\arm-none-eabi\\include\\machine\\_default_types.h"
+ 1482              	 .file 4 "d:\\xmc\\dave-ide-4.4.2-64bit\\eclipse\\arm-gcc-49\\arm-none-eabi\\include\\stdint.h"
+ 1483              	 .file 5 "D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/common/streambuf.h"
+ 1484              	 .file 6 "D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/lib/main/XMC4000/XMCLib/inc/xmc_usic.h"
+ 1485              	 .file 7 "D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/common/time.h"
+ 1486              	 .file 8 "D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/drivers/io_types.h"
+ 1487              	 .file 9 "D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/drivers/resource.h"
+ 1488              	 .file 10 "D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/drivers/serial.h"
+ 1489              	 .file 11 "D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/io/serial.h"
+ 1490              	 .file 12 "../cleanflight/src/main/io/rcdevice.h"
+ 1491              	 .file 13 "D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/lib/main/CMSIS/Core/Include/core_cm4.h"
+ 1492              	 .file 14 "D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/lib/main/XMC4000/system_XMC4700.h"
+DEFINED SYMBOLS
+                            *ABS*:00000000 rcdevice.c
+    {standard input}:20     .text.rcdeviceConfig:00000000 $t
+    {standard input}:24     .text.rcdeviceConfig:00000000 rcdeviceConfig
+    {standard input}:54     .text.rcdeviceConfig:00000010 $d
+    {standard input}:59     .data.expectedResponsesLength:00000000 $d
+    {standard input}:62     .data.expectedResponsesLength:00000000 expectedResponsesLength
+                            *COM*:000001e7 watingResponseQueue
+    {standard input}:73     .bss.recvBuf:00000000 $d
+    {standard input}:76     .bss.recvBuf:00000000 recvBuf
+    {standard input}:79     .text.runcamDeviceGetRespLen:00000000 $t
+    {standard input}:83     .text.runcamDeviceGetRespLen:00000000 runcamDeviceGetRespLen
+    {standard input}:154    .text.runcamDeviceGetRespLen:00000044 $d
+    {standard input}:159    .text.rcdeviceRespCtxQueuePushRespCtx:00000000 $t
+    {standard input}:163    .text.rcdeviceRespCtxQueuePushRespCtx:00000000 rcdeviceRespCtxQueuePushRespCtx
+    {standard input}:255    .text.rcdeviceRespCtxQueuePeekFront:00000000 $t
+    {standard input}:259    .text.rcdeviceRespCtxQueuePeekFront:00000000 rcdeviceRespCtxQueuePeekFront
+    {standard input}:324    .text.rcdeviceRespCtxQueueShift:00000000 $t
+    {standard input}:328    .text.rcdeviceRespCtxQueueShift:00000000 rcdeviceRespCtxQueueShift
+    {standard input}:418    .text.runcamDeviceFlushRxBuffer:00000000 $t
+    {standard input}:422    .text.runcamDeviceFlushRxBuffer:00000000 runcamDeviceFlushRxBuffer
+    {standard input}:470    .text.runcamDeviceSendPacket:00000000 $t
+    {standard input}:474    .text.runcamDeviceSendPacket:00000000 runcamDeviceSendPacket
+    {standard input}:576    .text.runcamDeviceSendRequestAndWaitingResp:00000000 $t
+    {standard input}:580    .text.runcamDeviceSendRequestAndWaitingResp:00000000 runcamDeviceSendRequestAndWaitingResp
+    {standard input}:683    .text.runcamDeviceSendRequestAndWaitingResp:000000ac $d
+    {standard input}:689    .text.runcamDeviceParseV2DeviceInfo:00000000 $t
+    {standard input}:693    .text.runcamDeviceParseV2DeviceInfo:00000000 runcamDeviceParseV2DeviceInfo
+    {standard input}:778    .text.runcamDeviceGetDeviceInfo:00000000 $t
+    {standard input}:782    .text.runcamDeviceGetDeviceInfo:00000000 runcamDeviceGetDeviceInfo
+    {standard input}:831    .text.runcamDeviceGetDeviceInfo:00000038 $d
+    {standard input}:836    .text.runcamDeviceInit:00000000 $t
+    {standard input}:841    .text.runcamDeviceInit:00000000 runcamDeviceInit
+    {standard input}:916    .text.runcamDeviceSimulateCameraButton:00000000 $t
+    {standard input}:921    .text.runcamDeviceSimulateCameraButton:00000000 runcamDeviceSimulateCameraButton
+    {standard input}:974    .text.runcamDeviceOpen5KeyOSDCableConnection:00000000 $t
+    {standard input}:979    .text.runcamDeviceOpen5KeyOSDCableConnection:00000000 runcamDeviceOpen5KeyOSDCableConnection
+    {standard input}:1028   .text.runcamDeviceClose5KeyOSDCableConnection:00000000 $t
+    {standard input}:1033   .text.runcamDeviceClose5KeyOSDCableConnection:00000000 runcamDeviceClose5KeyOSDCableConnection
+    {standard input}:1082   .text.runcamDeviceSimulate5KeyOSDCableButtonPress:00000000 $t
+    {standard input}:1087   .text.runcamDeviceSimulate5KeyOSDCableButtonPress:00000000 runcamDeviceSimulate5KeyOSDCableButtonPress
+    {standard input}:1143   .text.runcamDeviceSimulate5KeyOSDCableButtonRelease:00000000 $t
+    {standard input}:1148   .text.runcamDeviceSimulate5KeyOSDCableButtonRelease:00000000 runcamDeviceSimulate5KeyOSDCableButtonRelease
+    {standard input}:1194   .text.getWaitingResponse:00000000 $t
+    {standard input}:1198   .text.getWaitingResponse:00000000 getWaitingResponse
+    {standard input}:1311   .text.getWaitingResponse:000000ac $d
+    {standard input}:1316   .text.rcdeviceReceive:00000000 $t
+    {standard input}:1321   .text.rcdeviceReceive:00000000 rcdeviceReceive
+    {standard input}:1475   .text.rcdeviceReceive:000000e4 $d
+                     .debug_frame:00000010 $d
+
+UNDEFINED SYMBOLS
+rcdeviceConfig_System
+memcpy
+serialRead
+serialRxBytesWaiting
+sbufWriteU8
+sbufWriteData
+crc8_dvb_s2_sbuf_append
+sbufSwitchToReader
+sbufPtr
+sbufBytesRemaining
+serialWriteBuf
+memset
+millis
+findSerialPortConfig
+openSerialPort
+crc8_dvb_s2

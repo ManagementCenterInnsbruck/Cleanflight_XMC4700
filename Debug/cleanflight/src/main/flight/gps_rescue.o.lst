@@ -1,0 +1,3409 @@
+   1              	 .syntax unified
+   2              	 .cpu cortex-m4
+   3              	 .eabi_attribute 27,3
+   4              	 .fpu fpv4-sp-d16
+   5              	 .eabi_attribute 20,1
+   6              	 .eabi_attribute 21,1
+   7              	 .eabi_attribute 23,3
+   8              	 .eabi_attribute 24,1
+   9              	 .eabi_attribute 25,1
+  10              	 .eabi_attribute 26,1
+  11              	 .eabi_attribute 30,6
+  12              	 .eabi_attribute 34,1
+  13              	 .eabi_attribute 18,4
+  14              	 .thumb
+  15              	 .file "gps_rescue.c"
+  16              	 .text
+  17              	.Ltext0:
+  18              	 .cfi_sections .debug_frame
+  19              	 .section .text.constrain,"ax",%progbits
+  20              	 .align 2
+  21              	 .thumb
+  22              	 .thumb_func
+  24              	constrain:
+  25              	.LFB521:
+  26              	 .file 1 "D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/common/maths.h"
+   1:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/common\maths.h **** /*
+   2:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/common\maths.h ****  * This file is part of Cleanflight and Betaflight.
+   3:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/common\maths.h ****  *
+   4:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/common\maths.h ****  * Cleanflight and Betaflight are free software. You can redistribute
+   5:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/common\maths.h ****  * this software and/or modify this software under the terms of the
+   6:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/common\maths.h ****  * GNU General Public License as published by the Free Software
+   7:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/common\maths.h ****  * Foundation, either version 3 of the License, or (at your option)
+   8:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/common\maths.h ****  * any later version.
+   9:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/common\maths.h ****  *
+  10:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/common\maths.h ****  * Cleanflight and Betaflight are distributed in the hope that they
+  11:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/common\maths.h ****  * will be useful, but WITHOUT ANY WARRANTY; without even the implied
+  12:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/common\maths.h ****  * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+  13:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/common\maths.h ****  * See the GNU General Public License for more details.
+  14:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/common\maths.h ****  *
+  15:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/common\maths.h ****  * You should have received a copy of the GNU General Public License
+  16:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/common\maths.h ****  * along with this software.
+  17:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/common\maths.h ****  *
+  18:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/common\maths.h ****  * If not, see <http://www.gnu.org/licenses/>.
+  19:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/common\maths.h ****  */
+  20:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/common\maths.h **** 
+  21:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/common\maths.h **** #pragma once
+  22:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/common\maths.h **** 
+  23:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/common\maths.h **** #include <stdint.h>
+  24:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/common\maths.h **** 
+  25:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/common\maths.h **** #ifndef sq
+  26:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/common\maths.h **** #define sq(x) ((x)*(x))
+  27:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/common\maths.h **** #endif
+  28:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/common\maths.h **** #define power3(x) ((x)*(x)*(x))
+  29:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/common\maths.h **** 
+  30:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/common\maths.h **** // Undefine this for use libc sinf/cosf. Keep this defined to use fast sin/cos approximations
+  31:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/common\maths.h **** #define FAST_MATH             // order 9 approximation
+  32:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/common\maths.h **** #define VERY_FAST_MATH      // order 7 approximation
+  33:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/common\maths.h **** 
+  34:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/common\maths.h **** // Use floating point M_PI instead explicitly.
+  35:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/common\maths.h **** #define M_PIf       3.14159265358979323846f
+  36:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/common\maths.h **** 
+  37:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/common\maths.h **** #define RAD    (M_PIf / 180.0f)
+  38:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/common\maths.h **** #define DEGREES_TO_DECIDEGREES(angle) ((angle) * 10)
+  39:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/common\maths.h **** #define DECIDEGREES_TO_DEGREES(angle) ((angle) / 10)
+  40:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/common\maths.h **** #define DECIDEGREES_TO_RADIANS(angle) ((angle) / 10.0f * 0.0174532925f)
+  41:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/common\maths.h **** #define DEGREES_TO_RADIANS(angle) ((angle) * 0.0174532925f)
+  42:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/common\maths.h **** 
+  43:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/common\maths.h **** #define CM_S_TO_KM_H(centimetersPerSecond) ((centimetersPerSecond) * 36 / 1000)
+  44:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/common\maths.h **** #define CM_S_TO_MPH(centimetersPerSecond) ((centimetersPerSecond) * 10000 / 5080 / 88)
+  45:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/common\maths.h **** 
+  46:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/common\maths.h **** #define MIN(a,b) \
+  47:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/common\maths.h ****   __extension__ ({ __typeof__ (a) _a = (a); \
+  48:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/common\maths.h ****   __typeof__ (b) _b = (b); \
+  49:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/common\maths.h ****   _a < _b ? _a : _b; })
+  50:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/common\maths.h **** #define MAX(a,b) \
+  51:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/common\maths.h ****   __extension__ ({ __typeof__ (a) _a = (a); \
+  52:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/common\maths.h ****   __typeof__ (b) _b = (b); \
+  53:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/common\maths.h ****   _a > _b ? _a : _b; })
+  54:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/common\maths.h **** #define ABS(x) \
+  55:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/common\maths.h ****   __extension__ ({ __typeof__ (x) _x = (x); \
+  56:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/common\maths.h ****   _x > 0 ? _x : -_x; })
+  57:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/common\maths.h **** 
+  58:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/common\maths.h **** #define Q12 (1 << 12)
+  59:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/common\maths.h **** 
+  60:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/common\maths.h **** #define HZ_TO_INTERVAL_US(x) (1000000 / (x))
+  61:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/common\maths.h **** 
+  62:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/common\maths.h **** typedef int32_t fix12_t;
+  63:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/common\maths.h **** 
+  64:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/common\maths.h **** typedef struct stdev_s
+  65:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/common\maths.h **** {
+  66:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/common\maths.h ****     float m_oldM, m_newM, m_oldS, m_newS;
+  67:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/common\maths.h ****     int m_n;
+  68:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/common\maths.h **** } stdev_t;
+  69:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/common\maths.h **** 
+  70:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/common\maths.h **** // Floating point 3 vector.
+  71:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/common\maths.h **** typedef struct fp_vector {
+  72:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/common\maths.h ****     float X;
+  73:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/common\maths.h ****     float Y;
+  74:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/common\maths.h ****     float Z;
+  75:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/common\maths.h **** } t_fp_vector_def;
+  76:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/common\maths.h **** 
+  77:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/common\maths.h **** typedef union u_fp_vector {
+  78:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/common\maths.h ****     float A[3];
+  79:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/common\maths.h ****     t_fp_vector_def V;
+  80:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/common\maths.h **** } t_fp_vector;
+  81:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/common\maths.h **** 
+  82:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/common\maths.h **** // Floating point Euler angles.
+  83:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/common\maths.h **** // Be carefull, could be either of degrees or radians.
+  84:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/common\maths.h **** typedef struct fp_angles {
+  85:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/common\maths.h ****     float roll;
+  86:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/common\maths.h ****     float pitch;
+  87:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/common\maths.h ****     float yaw;
+  88:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/common\maths.h **** } fp_angles_def;
+  89:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/common\maths.h **** 
+  90:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/common\maths.h **** typedef union {
+  91:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/common\maths.h ****     float raw[3];
+  92:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/common\maths.h ****     fp_angles_def angles;
+  93:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/common\maths.h **** } fp_angles_t;
+  94:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/common\maths.h **** 
+  95:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/common\maths.h **** int gcd(int num, int denom);
+  96:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/common\maths.h **** float powerf(float base, int exp);
+  97:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/common\maths.h **** int32_t applyDeadband(int32_t value, int32_t deadband);
+  98:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/common\maths.h **** float fapplyDeadband(float value, float deadband);
+  99:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/common\maths.h **** 
+ 100:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/common\maths.h **** void devClear(stdev_t *dev);
+ 101:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/common\maths.h **** void devPush(stdev_t *dev, float x);
+ 102:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/common\maths.h **** float devVariance(stdev_t *dev);
+ 103:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/common\maths.h **** float devStandardDeviation(stdev_t *dev);
+ 104:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/common\maths.h **** float degreesToRadians(int16_t degrees);
+ 105:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/common\maths.h **** 
+ 106:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/common\maths.h **** int scaleRange(int x, int srcFrom, int srcTo, int destFrom, int destTo);
+ 107:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/common\maths.h **** float scaleRangef(float x, float srcFrom, float srcTo, float destFrom, float destTo);
+ 108:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/common\maths.h **** 
+ 109:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/common\maths.h **** void normalizeV(struct fp_vector *src, struct fp_vector *dest);
+ 110:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/common\maths.h **** 
+ 111:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/common\maths.h **** void rotateV(struct fp_vector *v, fp_angles_t *delta);
+ 112:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/common\maths.h **** void buildRotationMatrix(fp_angles_t *delta, float matrix[3][3]);
+ 113:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/common\maths.h **** 
+ 114:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/common\maths.h **** int32_t quickMedianFilter3(int32_t * v);
+ 115:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/common\maths.h **** int32_t quickMedianFilter5(int32_t * v);
+ 116:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/common\maths.h **** int32_t quickMedianFilter7(int32_t * v);
+ 117:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/common\maths.h **** int32_t quickMedianFilter9(int32_t * v);
+ 118:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/common\maths.h **** 
+ 119:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/common\maths.h **** float quickMedianFilter3f(float * v);
+ 120:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/common\maths.h **** float quickMedianFilter5f(float * v);
+ 121:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/common\maths.h **** float quickMedianFilter7f(float * v);
+ 122:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/common\maths.h **** float quickMedianFilter9f(float * v);
+ 123:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/common\maths.h **** 
+ 124:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/common\maths.h **** #if defined(FAST_MATH) || defined(VERY_FAST_MATH)
+ 125:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/common\maths.h **** float sin_approx(float x);
+ 126:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/common\maths.h **** float cos_approx(float x);
+ 127:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/common\maths.h **** float atan2_approx(float y, float x);
+ 128:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/common\maths.h **** float acos_approx(float x);
+ 129:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/common\maths.h **** #define tan_approx(x)       (sin_approx(x) / cos_approx(x))
+ 130:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/common\maths.h **** float exp_approx(float val);
+ 131:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/common\maths.h **** float log_approx(float val);
+ 132:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/common\maths.h **** float pow_approx(float a, float b);
+ 133:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/common\maths.h **** #else
+ 134:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/common\maths.h **** #define sin_approx(x)   sinf(x)
+ 135:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/common\maths.h **** #define cos_approx(x)   cosf(x)
+ 136:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/common\maths.h **** #define atan2_approx(y,x)   atan2f(y,x)
+ 137:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/common\maths.h **** #define acos_approx(x)      acosf(x)
+ 138:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/common\maths.h **** #define tan_approx(x)       tanf(x)
+ 139:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/common\maths.h **** #define exp_approx(x)       expf(x)
+ 140:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/common\maths.h **** #define log_approx(x)       logf(x)
+ 141:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/common\maths.h **** #define pow_approx(a, b)    powf(b, a)
+ 142:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/common\maths.h **** #endif
+ 143:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/common\maths.h **** 
+ 144:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/common\maths.h **** void arraySubInt32(int32_t *dest, int32_t *array1, int32_t *array2, int count);
+ 145:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/common\maths.h **** 
+ 146:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/common\maths.h **** int16_t qPercent(fix12_t q);
+ 147:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/common\maths.h **** int16_t qMultiply(fix12_t q, int16_t input);
+ 148:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/common\maths.h **** fix12_t qConstruct(int16_t num, int16_t den);
+ 149:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/common\maths.h **** 
+ 150:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/common\maths.h **** static inline int constrain(int amt, int low, int high)
+ 151:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/common\maths.h **** {
+  27              	 .loc 1 151 0
+  28              	 .cfi_startproc
+  29              	 
+  30              	 
+  31              	 
+  32 0000 80B4     	 push {r7}
+  33              	.LCFI0:
+  34              	 .cfi_def_cfa_offset 4
+  35              	 .cfi_offset 7,-4
+  36 0002 85B0     	 sub sp,sp,#20
+  37              	.LCFI1:
+  38              	 .cfi_def_cfa_offset 24
+  39 0004 00AF     	 add r7,sp,#0
+  40              	.LCFI2:
+  41              	 .cfi_def_cfa_register 7
+  42 0006 F860     	 str r0,[r7,#12]
+  43 0008 B960     	 str r1,[r7,#8]
+  44 000a 7A60     	 str r2,[r7,#4]
+ 152:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/common\maths.h ****     if (amt < low)
+  45              	 .loc 1 152 0
+  46 000c FA68     	 ldr r2,[r7,#12]
+  47 000e BB68     	 ldr r3,[r7,#8]
+  48 0010 9A42     	 cmp r2,r3
+  49 0012 01DA     	 bge .L2
+ 153:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/common\maths.h ****         return low;
+  50              	 .loc 1 153 0
+  51 0014 BB68     	 ldr r3,[r7,#8]
+  52 0016 06E0     	 b .L3
+  53              	.L2:
+ 154:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/common\maths.h ****     else if (amt > high)
+  54              	 .loc 1 154 0
+  55 0018 FA68     	 ldr r2,[r7,#12]
+  56 001a 7B68     	 ldr r3,[r7,#4]
+  57 001c 9A42     	 cmp r2,r3
+  58 001e 01DD     	 ble .L4
+ 155:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/common\maths.h ****         return high;
+  59              	 .loc 1 155 0
+  60 0020 7B68     	 ldr r3,[r7,#4]
+  61 0022 00E0     	 b .L3
+  62              	.L4:
+ 156:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/common\maths.h ****     else
+ 157:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/common\maths.h ****         return amt;
+  63              	 .loc 1 157 0
+  64 0024 FB68     	 ldr r3,[r7,#12]
+  65              	.L3:
+ 158:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/common\maths.h **** }
+  66              	 .loc 1 158 0
+  67 0026 1846     	 mov r0,r3
+  68 0028 1437     	 adds r7,r7,#20
+  69              	.LCFI3:
+  70              	 .cfi_def_cfa_offset 4
+  71 002a BD46     	 mov sp,r7
+  72              	.LCFI4:
+  73              	 .cfi_def_cfa_register 13
+  74              	 
+  75 002c 5DF8047B 	 ldr r7,[sp],#4
+  76              	.LCFI5:
+  77              	 .cfi_restore 7
+  78              	 .cfi_def_cfa_offset 0
+  79 0030 7047     	 bx lr
+  80              	 .cfi_endproc
+  81              	.LFE521:
+  83 0032 00BF     	 .section .text.constrainf,"ax",%progbits
+  84              	 .align 2
+  85              	 .thumb
+  86              	 .thumb_func
+  88              	constrainf:
+  89              	.LFB522:
+ 159:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/common\maths.h **** 
+ 160:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/common\maths.h **** static inline float constrainf(float amt, float low, float high)
+ 161:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/common\maths.h **** {
+  90              	 .loc 1 161 0
+  91              	 .cfi_startproc
+  92              	 
+  93              	 
+  94              	 
+  95 0000 80B4     	 push {r7}
+  96              	.LCFI6:
+  97              	 .cfi_def_cfa_offset 4
+  98              	 .cfi_offset 7,-4
+  99 0002 85B0     	 sub sp,sp,#20
+ 100              	.LCFI7:
+ 101              	 .cfi_def_cfa_offset 24
+ 102 0004 00AF     	 add r7,sp,#0
+ 103              	.LCFI8:
+ 104              	 .cfi_def_cfa_register 7
+ 105 0006 87ED030A 	 fsts s0,[r7,#12]
+ 106 000a C7ED020A 	 fsts s1,[r7,#8]
+ 107 000e 87ED011A 	 fsts s2,[r7,#4]
+ 162:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/common\maths.h ****     if (amt < low)
+ 108              	 .loc 1 162 0
+ 109 0012 97ED037A 	 flds s14,[r7,#12]
+ 110 0016 D7ED027A 	 flds s15,[r7,#8]
+ 111 001a B4EEE77A 	 fcmpes s14,s15
+ 112 001e F1EE10FA 	 fmstat
+ 113 0022 01D5     	 bpl .L13
+ 163:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/common\maths.h ****         return low;
+ 114              	 .loc 1 163 0
+ 115 0024 BB68     	 ldr r3,[r7,#8]
+ 116 0026 0BE0     	 b .L8
+ 117              	.L13:
+ 164:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/common\maths.h ****     else if (amt > high)
+ 118              	 .loc 1 164 0
+ 119 0028 97ED037A 	 flds s14,[r7,#12]
+ 120 002c D7ED017A 	 flds s15,[r7,#4]
+ 121 0030 B4EEE77A 	 fcmpes s14,s15
+ 122 0034 F1EE10FA 	 fmstat
+ 123 0038 01DD     	 ble .L14
+ 165:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/common\maths.h ****         return high;
+ 124              	 .loc 1 165 0
+ 125 003a 7B68     	 ldr r3,[r7,#4]
+ 126 003c 00E0     	 b .L8
+ 127              	.L14:
+ 166:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/common\maths.h ****     else
+ 167:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/common\maths.h ****         return amt;
+ 128              	 .loc 1 167 0
+ 129 003e FB68     	 ldr r3,[r7,#12]
+ 130              	.L8:
+ 131 0040 07EE903A 	 fmsr s15,r3
+ 168:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/common\maths.h **** }
+ 132              	 .loc 1 168 0
+ 133 0044 B0EE670A 	 fcpys s0,s15
+ 134 0048 1437     	 adds r7,r7,#20
+ 135              	.LCFI9:
+ 136              	 .cfi_def_cfa_offset 4
+ 137 004a BD46     	 mov sp,r7
+ 138              	.LCFI10:
+ 139              	 .cfi_def_cfa_register 13
+ 140              	 
+ 141 004c 5DF8047B 	 ldr r7,[sp],#4
+ 142              	.LCFI11:
+ 143              	 .cfi_restore 7
+ 144              	 .cfi_def_cfa_offset 0
+ 145 0050 7047     	 bx lr
+ 146              	 .cfi_endproc
+ 147              	.LFE522:
+ 149 0052 00BF     	 .section .text.rcControlsConfig,"ax",%progbits
+ 150              	 .align 2
+ 151              	 .thumb
+ 152              	 .thumb_func
+ 154              	rcControlsConfig:
+ 155              	.LFB537:
+ 156              	 .file 2 "D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/fc/rc_controls.h"
+   1:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/fc\rc_controls.h **** /*
+   2:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/fc\rc_controls.h ****  * This file is part of Cleanflight and Betaflight.
+   3:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/fc\rc_controls.h ****  *
+   4:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/fc\rc_controls.h ****  * Cleanflight and Betaflight are free software. You can redistribute
+   5:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/fc\rc_controls.h ****  * this software and/or modify this software under the terms of the
+   6:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/fc\rc_controls.h ****  * GNU General Public License as published by the Free Software
+   7:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/fc\rc_controls.h ****  * Foundation, either version 3 of the License, or (at your option)
+   8:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/fc\rc_controls.h ****  * any later version.
+   9:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/fc\rc_controls.h ****  *
+  10:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/fc\rc_controls.h ****  * Cleanflight and Betaflight are distributed in the hope that they
+  11:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/fc\rc_controls.h ****  * will be useful, but WITHOUT ANY WARRANTY; without even the implied
+  12:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/fc\rc_controls.h ****  * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+  13:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/fc\rc_controls.h ****  * See the GNU General Public License for more details.
+  14:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/fc\rc_controls.h ****  *
+  15:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/fc\rc_controls.h ****  * You should have received a copy of the GNU General Public License
+  16:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/fc\rc_controls.h ****  * along with this software.
+  17:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/fc\rc_controls.h ****  *
+  18:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/fc\rc_controls.h ****  * If not, see <http://www.gnu.org/licenses/>.
+  19:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/fc\rc_controls.h ****  */
+  20:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/fc\rc_controls.h **** 
+  21:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/fc\rc_controls.h **** #pragma once
+  22:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/fc\rc_controls.h **** 
+  23:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/fc\rc_controls.h **** #include <stdbool.h>
+  24:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/fc\rc_controls.h **** 
+  25:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/fc\rc_controls.h **** #include "common/filter.h"
+  26:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/fc\rc_controls.h **** #include "pg/pg.h"
+  27:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/fc\rc_controls.h **** 
+  28:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/fc\rc_controls.h **** typedef enum rc_alias {
+  29:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/fc\rc_controls.h ****     ROLL = 0,
+  30:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/fc\rc_controls.h ****     PITCH,
+  31:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/fc\rc_controls.h ****     YAW,
+  32:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/fc\rc_controls.h ****     THROTTLE,
+  33:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/fc\rc_controls.h ****     AUX1,
+  34:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/fc\rc_controls.h ****     AUX2,
+  35:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/fc\rc_controls.h ****     AUX3,
+  36:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/fc\rc_controls.h ****     AUX4,
+  37:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/fc\rc_controls.h ****     AUX5,
+  38:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/fc\rc_controls.h ****     AUX6,
+  39:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/fc\rc_controls.h ****     AUX7,
+  40:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/fc\rc_controls.h ****     AUX8
+  41:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/fc\rc_controls.h **** } rc_alias_e;
+  42:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/fc\rc_controls.h **** 
+  43:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/fc\rc_controls.h **** #define PRIMARY_CHANNEL_COUNT (THROTTLE + 1)
+  44:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/fc\rc_controls.h **** 
+  45:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/fc\rc_controls.h **** typedef enum {
+  46:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/fc\rc_controls.h ****     THROTTLE_LOW = 0,
+  47:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/fc\rc_controls.h ****     THROTTLE_HIGH
+  48:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/fc\rc_controls.h **** } throttleStatus_e;
+  49:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/fc\rc_controls.h **** 
+  50:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/fc\rc_controls.h **** #define AIRMODEDEADBAND 12
+  51:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/fc\rc_controls.h **** 
+  52:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/fc\rc_controls.h **** typedef enum {
+  53:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/fc\rc_controls.h ****     NOT_CENTERED = 0,
+  54:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/fc\rc_controls.h ****     CENTERED
+  55:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/fc\rc_controls.h **** } rollPitchStatus_e;
+  56:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/fc\rc_controls.h **** 
+  57:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/fc\rc_controls.h **** typedef enum {
+  58:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/fc\rc_controls.h ****     RC_SMOOTHING_OFF = 0,
+  59:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/fc\rc_controls.h ****     RC_SMOOTHING_DEFAULT,
+  60:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/fc\rc_controls.h ****     RC_SMOOTHING_AUTO,
+  61:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/fc\rc_controls.h ****     RC_SMOOTHING_MANUAL
+  62:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/fc\rc_controls.h **** } rcSmoothing_t;
+  63:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/fc\rc_controls.h **** 
+  64:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/fc\rc_controls.h **** typedef enum {
+  65:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/fc\rc_controls.h ****     RC_SMOOTHING_TYPE_INTERPOLATION,
+  66:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/fc\rc_controls.h ****     RC_SMOOTHING_TYPE_FILTER
+  67:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/fc\rc_controls.h **** } rcSmoothingType_e;
+  68:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/fc\rc_controls.h **** 
+  69:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/fc\rc_controls.h **** typedef enum {
+  70:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/fc\rc_controls.h ****     RC_SMOOTHING_INPUT_PT1,
+  71:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/fc\rc_controls.h ****     RC_SMOOTHING_INPUT_BIQUAD
+  72:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/fc\rc_controls.h **** } rcSmoothingInputFilter_e;
+  73:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/fc\rc_controls.h **** 
+  74:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/fc\rc_controls.h **** typedef enum {
+  75:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/fc\rc_controls.h ****     RC_SMOOTHING_DERIVATIVE_OFF,
+  76:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/fc\rc_controls.h ****     RC_SMOOTHING_DERIVATIVE_PT1,
+  77:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/fc\rc_controls.h ****     RC_SMOOTHING_DERIVATIVE_BIQUAD
+  78:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/fc\rc_controls.h **** } rcSmoothingDerivativeFilter_e;
+  79:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/fc\rc_controls.h **** 
+  80:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/fc\rc_controls.h **** typedef enum {
+  81:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/fc\rc_controls.h ****     RC_SMOOTHING_VALUE_INPUT_ACTIVE,
+  82:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/fc\rc_controls.h ****     RC_SMOOTHING_VALUE_DERIVATIVE_ACTIVE,
+  83:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/fc\rc_controls.h ****     RC_SMOOTHING_VALUE_AVERAGE_FRAME
+  84:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/fc\rc_controls.h **** } rcSmoothingInfoType_e;
+  85:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/fc\rc_controls.h **** 
+  86:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/fc\rc_controls.h **** #define ROL_LO (1 << (2 * ROLL))
+  87:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/fc\rc_controls.h **** #define ROL_CE (3 << (2 * ROLL))
+  88:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/fc\rc_controls.h **** #define ROL_HI (2 << (2 * ROLL))
+  89:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/fc\rc_controls.h **** #define PIT_LO (1 << (2 * PITCH))
+  90:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/fc\rc_controls.h **** #define PIT_CE (3 << (2 * PITCH))
+  91:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/fc\rc_controls.h **** #define PIT_HI (2 << (2 * PITCH))
+  92:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/fc\rc_controls.h **** #define YAW_LO (1 << (2 * YAW))
+  93:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/fc\rc_controls.h **** #define YAW_CE (3 << (2 * YAW))
+  94:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/fc\rc_controls.h **** #define YAW_HI (2 << (2 * YAW))
+  95:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/fc\rc_controls.h **** #define THR_LO (1 << (2 * THROTTLE))
+  96:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/fc\rc_controls.h **** #define THR_CE (3 << (2 * THROTTLE))
+  97:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/fc\rc_controls.h **** #define THR_HI (2 << (2 * THROTTLE))
+  98:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/fc\rc_controls.h **** 
+  99:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/fc\rc_controls.h **** #define CONTROL_RATE_CONFIG_RC_EXPO_MAX  100
+ 100:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/fc\rc_controls.h **** 
+ 101:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/fc\rc_controls.h **** #define CONTROL_RATE_CONFIG_RC_RATES_MAX  255
+ 102:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/fc\rc_controls.h **** 
+ 103:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/fc\rc_controls.h **** // (Super) rates are constrained to [0, 100] for Betaflight rates, so values higher than 100 won't 
+ 104:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/fc\rc_controls.h **** #define CONTROL_RATE_CONFIG_RATE_MAX  255
+ 105:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/fc\rc_controls.h **** 
+ 106:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/fc\rc_controls.h **** #define CONTROL_RATE_CONFIG_TPA_MAX              100
+ 107:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/fc\rc_controls.h **** 
+ 108:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/fc\rc_controls.h **** extern float rcCommand[4];
+ 109:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/fc\rc_controls.h **** 
+ 110:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/fc\rc_controls.h **** typedef struct rcSmoothingFilterTraining_s {
+ 111:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/fc\rc_controls.h ****     float sum;
+ 112:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/fc\rc_controls.h ****     int count;
+ 113:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/fc\rc_controls.h ****     uint16_t min;
+ 114:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/fc\rc_controls.h ****     uint16_t max;
+ 115:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/fc\rc_controls.h **** } rcSmoothingFilterTraining_t;
+ 116:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/fc\rc_controls.h **** 
+ 117:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/fc\rc_controls.h **** typedef union rcSmoothingFilterTypes_u {
+ 118:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/fc\rc_controls.h ****     pt1Filter_t pt1Filter;
+ 119:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/fc\rc_controls.h ****     biquadFilter_t biquadFilter;
+ 120:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/fc\rc_controls.h **** } rcSmoothingFilterTypes_t;
+ 121:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/fc\rc_controls.h **** 
+ 122:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/fc\rc_controls.h **** typedef struct rcSmoothingFilter_s {
+ 123:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/fc\rc_controls.h ****     bool filterInitialized;
+ 124:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/fc\rc_controls.h ****     rcSmoothingFilterTypes_t filter[4];
+ 125:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/fc\rc_controls.h ****     uint16_t inputCutoffFrequency;
+ 126:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/fc\rc_controls.h ****     uint16_t derivativeCutoffFrequency;
+ 127:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/fc\rc_controls.h ****     int averageFrameTimeUs;
+ 128:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/fc\rc_controls.h ****     rcSmoothingFilterTraining_t training;
+ 129:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/fc\rc_controls.h **** } rcSmoothingFilter_t;
+ 130:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/fc\rc_controls.h **** 
+ 131:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/fc\rc_controls.h **** typedef struct rcControlsConfig_s {
+ 132:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/fc\rc_controls.h ****     uint8_t deadband;                       // introduce a deadband around the stick center for pit
+ 133:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/fc\rc_controls.h ****     uint8_t yaw_deadband;                   // introduce a deadband around the stick center for yaw
+ 134:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/fc\rc_controls.h ****     uint8_t alt_hold_deadband;              // defines the neutral zone of throttle stick during al
+ 135:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/fc\rc_controls.h ****     uint8_t alt_hold_fast_change;           // when disabled, turn off the althold when throttle st
+ 136:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/fc\rc_controls.h ****     bool yaw_control_reversed;            // invert control direction of yaw
+ 137:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/fc\rc_controls.h **** } rcControlsConfig_t;
+ 138:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/fc\rc_controls.h **** 
+ 139:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/fc\rc_controls.h **** PG_DECLARE(rcControlsConfig_t, rcControlsConfig);
+ 157              	 .loc 2 139 0
+ 158              	 .cfi_startproc
+ 159              	 
+ 160              	 
+ 161              	 
+ 162 0000 80B4     	 push {r7}
+ 163              	.LCFI12:
+ 164              	 .cfi_def_cfa_offset 4
+ 165              	 .cfi_offset 7,-4
+ 166 0002 00AF     	 add r7,sp,#0
+ 167              	.LCFI13:
+ 168              	 .cfi_def_cfa_register 7
+ 169              	 .loc 2 139 0
+ 170 0004 024B     	 ldr r3,.L17
+ 171 0006 1846     	 mov r0,r3
+ 172 0008 BD46     	 mov sp,r7
+ 173              	.LCFI14:
+ 174              	 .cfi_def_cfa_register 13
+ 175              	 
+ 176 000a 5DF8047B 	 ldr r7,[sp],#4
+ 177              	.LCFI15:
+ 178              	 .cfi_restore 7
+ 179              	 .cfi_def_cfa_offset 0
+ 180 000e 7047     	 bx lr
+ 181              	.L18:
+ 182              	 .align 2
+ 183              	.L17:
+ 184 0010 00000000 	 .word rcControlsConfig_System
+ 185              	 .cfi_endproc
+ 186              	.LFE537:
+ 188              	 .section .text.failsafeConfig,"ax",%progbits
+ 189              	 .align 2
+ 190              	 .thumb
+ 191              	 .thumb_func
+ 193              	failsafeConfig:
+ 194              	.LFB546:
+ 195              	 .file 3 "D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/flight/failsafe.h"
+   1:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/flight\failsafe.h **** /*
+   2:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/flight\failsafe.h ****  * This file is part of Cleanflight and Betaflight.
+   3:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/flight\failsafe.h ****  *
+   4:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/flight\failsafe.h ****  * Cleanflight and Betaflight are free software. You can redistribute
+   5:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/flight\failsafe.h ****  * this software and/or modify this software under the terms of the
+   6:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/flight\failsafe.h ****  * GNU General Public License as published by the Free Software
+   7:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/flight\failsafe.h ****  * Foundation, either version 3 of the License, or (at your option)
+   8:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/flight\failsafe.h ****  * any later version.
+   9:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/flight\failsafe.h ****  *
+  10:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/flight\failsafe.h ****  * Cleanflight and Betaflight are distributed in the hope that they
+  11:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/flight\failsafe.h ****  * will be useful, but WITHOUT ANY WARRANTY; without even the implied
+  12:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/flight\failsafe.h ****  * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+  13:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/flight\failsafe.h ****  * See the GNU General Public License for more details.
+  14:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/flight\failsafe.h ****  *
+  15:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/flight\failsafe.h ****  * You should have received a copy of the GNU General Public License
+  16:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/flight\failsafe.h ****  * along with this software.
+  17:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/flight\failsafe.h ****  *
+  18:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/flight\failsafe.h ****  * If not, see <http://www.gnu.org/licenses/>.
+  19:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/flight\failsafe.h ****  */
+  20:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/flight\failsafe.h **** 
+  21:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/flight\failsafe.h **** #pragma once
+  22:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/flight\failsafe.h **** 
+  23:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/flight\failsafe.h **** #include "pg/pg.h"
+  24:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/flight\failsafe.h **** 
+  25:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/flight\failsafe.h **** #define FAILSAFE_POWER_ON_DELAY_US (1000 * 1000 * 5)
+  26:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/flight\failsafe.h **** #define MILLIS_PER_TENTH_SECOND      100
+  27:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/flight\failsafe.h **** #define MILLIS_PER_SECOND           1000
+  28:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/flight\failsafe.h **** #define PERIOD_OF_1_SECONDS            1 * MILLIS_PER_SECOND
+  29:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/flight\failsafe.h **** #define PERIOD_OF_3_SECONDS            3 * MILLIS_PER_SECOND
+  30:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/flight\failsafe.h **** #define PERIOD_OF_30_SECONDS          30 * MILLIS_PER_SECOND
+  31:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/flight\failsafe.h **** #define PERIOD_RXDATA_FAILURE        200    // millis
+  32:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/flight\failsafe.h **** #define PERIOD_RXDATA_RECOVERY       200    // millis
+  33:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/flight\failsafe.h **** 
+  34:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/flight\failsafe.h **** 
+  35:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/flight\failsafe.h **** typedef struct failsafeConfig_s {
+  36:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/flight\failsafe.h ****     uint16_t failsafe_throttle;             // Throttle level used for landing - specify value betw
+  37:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/flight\failsafe.h ****     uint16_t failsafe_throttle_low_delay;   // Time throttle stick must have been below 'min_check'
+  38:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/flight\failsafe.h ****     uint8_t failsafe_delay;                 // Guard time for failsafe activation after signal lost
+  39:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/flight\failsafe.h ****     uint8_t failsafe_off_delay;             // Time for Landing before motors stop in 0.1sec. 1 ste
+  40:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/flight\failsafe.h ****     uint8_t failsafe_switch_mode;           // failsafe switch action is 0: stage1 (identical to rc
+  41:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/flight\failsafe.h ****     uint8_t failsafe_procedure;             // selected full failsafe procedure is 0: auto-landing,
+  42:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/flight\failsafe.h **** } failsafeConfig_t;
+  43:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/flight\failsafe.h **** 
+  44:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/flight\failsafe.h **** PG_DECLARE(failsafeConfig_t, failsafeConfig);
+ 196              	 .loc 3 44 0
+ 197              	 .cfi_startproc
+ 198              	 
+ 199              	 
+ 200              	 
+ 201 0000 80B4     	 push {r7}
+ 202              	.LCFI16:
+ 203              	 .cfi_def_cfa_offset 4
+ 204              	 .cfi_offset 7,-4
+ 205 0002 00AF     	 add r7,sp,#0
+ 206              	.LCFI17:
+ 207              	 .cfi_def_cfa_register 7
+ 208              	 .loc 3 44 0
+ 209 0004 024B     	 ldr r3,.L21
+ 210 0006 1846     	 mov r0,r3
+ 211 0008 BD46     	 mov sp,r7
+ 212              	.LCFI18:
+ 213              	 .cfi_def_cfa_register 13
+ 214              	 
+ 215 000a 5DF8047B 	 ldr r7,[sp],#4
+ 216              	.LCFI19:
+ 217              	 .cfi_restore 7
+ 218              	 .cfi_def_cfa_offset 0
+ 219 000e 7047     	 bx lr
+ 220              	.L22:
+ 221              	 .align 2
+ 222              	.L21:
+ 223 0010 00000000 	 .word failsafeConfig_System
+ 224              	 .cfi_endproc
+ 225              	.LFE546:
+ 227              	 .section .text.rxConfig,"ax",%progbits
+ 228              	 .align 2
+ 229              	 .thumb
+ 230              	 .thumb_func
+ 232              	rxConfig:
+ 233              	.LFB555:
+ 234              	 .file 4 "D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/pg/rx.h"
+   1:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/pg\rx.h **** /*
+   2:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/pg\rx.h ****  * This file is part of Cleanflight and Betaflight.
+   3:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/pg\rx.h ****  *
+   4:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/pg\rx.h ****  * Cleanflight and Betaflight are free software. You can redistribute
+   5:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/pg\rx.h ****  * this software and/or modify this software under the terms of the
+   6:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/pg\rx.h ****  * GNU General Public License as published by the Free Software
+   7:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/pg\rx.h ****  * Foundation, either version 3 of the License, or (at your option)
+   8:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/pg\rx.h ****  * any later version.
+   9:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/pg\rx.h ****  *
+  10:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/pg\rx.h ****  * Cleanflight and Betaflight are distributed in the hope that they
+  11:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/pg\rx.h ****  * will be useful, but WITHOUT ANY WARRANTY; without even the implied
+  12:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/pg\rx.h ****  * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+  13:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/pg\rx.h ****  * See the GNU General Public License for more details.
+  14:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/pg\rx.h ****  *
+  15:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/pg\rx.h ****  * You should have received a copy of the GNU General Public License
+  16:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/pg\rx.h ****  * along with this software.
+  17:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/pg\rx.h ****  *
+  18:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/pg\rx.h ****  * If not, see <http://www.gnu.org/licenses/>.
+  19:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/pg\rx.h ****  */
+  20:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/pg\rx.h **** 
+  21:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/pg\rx.h **** #pragma once
+  22:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/pg\rx.h **** 
+  23:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/pg\rx.h **** #include "drivers/io_types.h"
+  24:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/pg\rx.h **** 
+  25:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/pg\rx.h **** #include "pg/pg.h"
+  26:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/pg\rx.h **** 
+  27:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/pg\rx.h **** typedef struct rxConfig_s {
+  28:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/pg\rx.h ****     uint8_t rcmap[RX_MAPPABLE_CHANNEL_COUNT];  // mapping of radio channels to internal RPYTA+ orde
+  29:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/pg\rx.h ****     uint8_t serialrx_provider;              // type of UART-based receiver (0 = spek 10, 1 = spek 1
+  30:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/pg\rx.h ****     uint8_t serialrx_inverted;              // invert the serial RX protocol compared to it's defau
+  31:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/pg\rx.h ****     uint8_t halfDuplex;                     // allow rx to operate in half duplex mode on F4, ignor
+  32:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/pg\rx.h ****     ioTag_t spektrum_bind_pin_override_ioTag;
+  33:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/pg\rx.h ****     ioTag_t spektrum_bind_plug_ioTag;
+  34:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/pg\rx.h ****     uint8_t spektrum_sat_bind;              // number of bind pulses for Spektrum satellite receive
+  35:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/pg\rx.h ****     uint8_t spektrum_sat_bind_autoreset;    // whenever we will reset (exit) binding mode after har
+  36:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/pg\rx.h ****     uint8_t rssi_channel;
+  37:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/pg\rx.h ****     uint8_t rssi_scale;
+  38:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/pg\rx.h ****     uint8_t rssi_invert;
+  39:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/pg\rx.h ****     uint16_t midrc;                         // Some radios have not a neutral point centered on 150
+  40:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/pg\rx.h ****     uint16_t mincheck;                      // minimum rc end
+  41:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/pg\rx.h ****     uint16_t maxcheck;                      // maximum rc end
+  42:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/pg\rx.h ****     uint8_t rcInterpolation;
+  43:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/pg\rx.h ****     uint8_t rcInterpolationChannels;
+  44:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/pg\rx.h ****     uint8_t rcInterpolationInterval;
+  45:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/pg\rx.h ****     uint8_t fpvCamAngleDegrees;             // Camera angle to be scaled into rc commands
+  46:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/pg\rx.h ****     uint8_t airModeActivateThreshold;       // Throttle setpoint percent where airmode gets activat
+  47:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/pg\rx.h **** 
+  48:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/pg\rx.h ****     uint16_t rx_min_usec;
+  49:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/pg\rx.h ****     uint16_t rx_max_usec;
+  50:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/pg\rx.h ****     uint8_t max_aux_channel;
+  51:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/pg\rx.h ****     uint8_t rssi_src_frame_errors;          // true to use frame drop flags in the rx protocol
+  52:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/pg\rx.h ****     int8_t rssi_offset;                     // offset applied to the RSSI value before it is return
+  53:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/pg\rx.h ****     uint8_t rc_smoothing_type;              // Determines the smoothing algorithm to use: INTERPOLA
+  54:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/pg\rx.h ****     uint8_t rc_smoothing_input_cutoff;      // Filter cutoff frequency for the input filter (0 = au
+  55:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/pg\rx.h ****     uint8_t rc_smoothing_derivative_cutoff; // Filter cutoff frequency for the setpoint weight deri
+  56:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/pg\rx.h ****     uint8_t rc_smoothing_debug_axis;        // Axis to log as debug values when debug_mode = RC_SMO
+  57:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/pg\rx.h ****     uint8_t rc_smoothing_input_type;        // Input filter type (0 = PT1, 1 = BIQUAD)
+  58:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/pg\rx.h ****     uint8_t rc_smoothing_derivative_type;   // Derivative filter type (0 = OFF, 1 = PT1, 2 = BIQUAD
+  59:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/pg\rx.h **** } rxConfig_t;
+  60:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/pg\rx.h **** 
+  61:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/pg\rx.h **** PG_DECLARE(rxConfig_t, rxConfig);
+ 235              	 .loc 4 61 0
+ 236              	 .cfi_startproc
+ 237              	 
+ 238              	 
+ 239              	 
+ 240 0000 80B4     	 push {r7}
+ 241              	.LCFI20:
+ 242              	 .cfi_def_cfa_offset 4
+ 243              	 .cfi_offset 7,-4
+ 244 0002 00AF     	 add r7,sp,#0
+ 245              	.LCFI21:
+ 246              	 .cfi_def_cfa_register 7
+ 247              	 .loc 4 61 0
+ 248 0004 024B     	 ldr r3,.L25
+ 249 0006 1846     	 mov r0,r3
+ 250 0008 BD46     	 mov sp,r7
+ 251              	.LCFI22:
+ 252              	 .cfi_def_cfa_register 13
+ 253              	 
+ 254 000a 5DF8047B 	 ldr r7,[sp],#4
+ 255              	.LCFI23:
+ 256              	 .cfi_restore 7
+ 257              	 .cfi_def_cfa_offset 0
+ 258 000e 7047     	 bx lr
+ 259              	.L26:
+ 260              	 .align 2
+ 261              	.L25:
+ 262 0010 00000000 	 .word rxConfig_System
+ 263              	 .cfi_endproc
+ 264              	.LFE555:
+ 266              	 .section .text.gpsRescueConfig,"ax",%progbits
+ 267              	 .align 2
+ 268              	 .thumb
+ 269              	 .thumb_func
+ 271              	gpsRescueConfig:
+ 272              	.LFB571:
+ 273              	 .file 5 "../cleanflight/src/main/flight/gps_rescue.h"
+   1:../cleanflight/src/main/flight/gps_rescue.h **** /*
+   2:../cleanflight/src/main/flight/gps_rescue.h ****  * This file is part of Betaflight.
+   3:../cleanflight/src/main/flight/gps_rescue.h ****  *
+   4:../cleanflight/src/main/flight/gps_rescue.h ****  * Betaflight is free software: you can redistribute it and/or modify
+   5:../cleanflight/src/main/flight/gps_rescue.h ****  * it under the terms of the GNU General Public License as published by
+   6:../cleanflight/src/main/flight/gps_rescue.h ****  * the Free Software Foundation, either version 3 of the License, or
+   7:../cleanflight/src/main/flight/gps_rescue.h ****  * (at your option) any later version.
+   8:../cleanflight/src/main/flight/gps_rescue.h ****  *
+   9:../cleanflight/src/main/flight/gps_rescue.h ****  * Betaflight is distributed in the hope that it will be useful,
+  10:../cleanflight/src/main/flight/gps_rescue.h ****  * but WITHOUT ANY WARRANTY; without even the implied warranty of
+  11:../cleanflight/src/main/flight/gps_rescue.h ****  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+  12:../cleanflight/src/main/flight/gps_rescue.h ****  * GNU General Public License for more details.
+  13:../cleanflight/src/main/flight/gps_rescue.h ****  *
+  14:../cleanflight/src/main/flight/gps_rescue.h ****  * You should have received a copy of the GNU General Public License
+  15:../cleanflight/src/main/flight/gps_rescue.h ****  * along with Betaflight. If not, see <http://www.gnu.org/licenses/>.
+  16:../cleanflight/src/main/flight/gps_rescue.h ****  */
+  17:../cleanflight/src/main/flight/gps_rescue.h ****  
+  18:../cleanflight/src/main/flight/gps_rescue.h **** #include "common/axis.h"
+  19:../cleanflight/src/main/flight/gps_rescue.h **** 
+  20:../cleanflight/src/main/flight/gps_rescue.h **** #include "pg/pg.h"
+  21:../cleanflight/src/main/flight/gps_rescue.h **** 
+  22:../cleanflight/src/main/flight/gps_rescue.h **** typedef enum {
+  23:../cleanflight/src/main/flight/gps_rescue.h ****     RESCUE_SANITY_OFF = 0,
+  24:../cleanflight/src/main/flight/gps_rescue.h ****     RESCUE_SANITY_ON,
+  25:../cleanflight/src/main/flight/gps_rescue.h ****     RESCUE_SANITY_FS_ONLY
+  26:../cleanflight/src/main/flight/gps_rescue.h **** } gpsRescueSanity_e;
+  27:../cleanflight/src/main/flight/gps_rescue.h **** 
+  28:../cleanflight/src/main/flight/gps_rescue.h **** typedef struct gpsRescue_s {
+  29:../cleanflight/src/main/flight/gps_rescue.h ****     uint16_t angle; //degrees
+  30:../cleanflight/src/main/flight/gps_rescue.h ****     uint16_t initialAltitude; //meters
+  31:../cleanflight/src/main/flight/gps_rescue.h ****     uint16_t descentDistance; //meters
+  32:../cleanflight/src/main/flight/gps_rescue.h ****     uint16_t rescueGroundspeed; // centimeters per second
+  33:../cleanflight/src/main/flight/gps_rescue.h ****     uint16_t throttleP, throttleI, throttleD;
+  34:../cleanflight/src/main/flight/gps_rescue.h ****     uint16_t yawP;
+  35:../cleanflight/src/main/flight/gps_rescue.h ****     uint16_t throttleMin;
+  36:../cleanflight/src/main/flight/gps_rescue.h ****     uint16_t throttleMax;
+  37:../cleanflight/src/main/flight/gps_rescue.h ****     uint16_t throttleHover;
+  38:../cleanflight/src/main/flight/gps_rescue.h ****     uint16_t velP, velI, velD;
+  39:../cleanflight/src/main/flight/gps_rescue.h ****     uint8_t minSats;
+  40:../cleanflight/src/main/flight/gps_rescue.h ****     gpsRescueSanity_e sanityChecks;
+  41:../cleanflight/src/main/flight/gps_rescue.h **** } gpsRescueConfig_t;
+  42:../cleanflight/src/main/flight/gps_rescue.h **** 
+  43:../cleanflight/src/main/flight/gps_rescue.h **** PG_DECLARE(gpsRescueConfig_t, gpsRescueConfig);
+ 274              	 .loc 5 43 0
+ 275              	 .cfi_startproc
+ 276              	 
+ 277              	 
+ 278              	 
+ 279 0000 80B4     	 push {r7}
+ 280              	.LCFI24:
+ 281              	 .cfi_def_cfa_offset 4
+ 282              	 .cfi_offset 7,-4
+ 283 0002 00AF     	 add r7,sp,#0
+ 284              	.LCFI25:
+ 285              	 .cfi_def_cfa_register 7
+ 286              	 .loc 5 43 0
+ 287 0004 024B     	 ldr r3,.L29
+ 288 0006 1846     	 mov r0,r3
+ 289 0008 BD46     	 mov sp,r7
+ 290              	.LCFI26:
+ 291              	 .cfi_def_cfa_register 13
+ 292              	 
+ 293 000a 5DF8047B 	 ldr r7,[sp],#4
+ 294              	.LCFI27:
+ 295              	 .cfi_restore 7
+ 296              	 .cfi_def_cfa_offset 0
+ 297 000e 7047     	 bx lr
+ 298              	.L30:
+ 299              	 .align 2
+ 300              	.L29:
+ 301 0010 00000000 	 .word gpsRescueConfig_System
+ 302              	 .cfi_endproc
+ 303              	.LFE571:
+ 305              	 .comm gpsRescueConfig_System,30,4
+ 306              	 .comm gpsRescueConfig_Copy,30,4
+ 307              	 .global gpsRescueConfig_Registry
+ 308              	 .section .pg_registry,"a",%progbits
+ 309              	 .align 2
+ 312              	gpsRescueConfig_Registry:
+ 313 0000 3700     	 .short 55
+ 314 0002 1E00     	 .short 30
+ 315 0004 00000000 	 .word gpsRescueConfig_System
+ 316 0008 00000000 	 .word gpsRescueConfig_Copy
+ 317 000c 00000000 	 .word 0
+ 318 0010 00000000 	 .word pgResetTemplate_gpsRescueConfig
+ 319              	 .global pgResetTemplate_gpsRescueConfig
+ 320              	 .section .pg_resetdata,"a",%progbits
+ 321              	 .align 1
+ 324              	pgResetTemplate_gpsRescueConfig:
+ 325 0000 2000     	 .short 32
+ 326 0002 3200     	 .short 50
+ 327 0004 C800     	 .short 200
+ 328 0006 D007     	 .short 2000
+ 329 0008 9600     	 .short 150
+ 330 000a 1400     	 .short 20
+ 331 000c 3200     	 .short 50
+ 332 000e 2800     	 .short 40
+ 333 0010 B004     	 .short 1200
+ 334 0012 4006     	 .short 1600
+ 335 0014 0005     	 .short 1280
+ 336 0016 5000     	 .short 80
+ 337 0018 1400     	 .short 20
+ 338 001a 0F00     	 .short 15
+ 339 001c 08       	 .byte 8
+ 340 001d 01       	 .byte 1
+ 341              	 .section .bss.rescueThrottle,"aw",%nobits
+ 342              	 .align 1
+ 345              	rescueThrottle:
+ 346 0000 0000     	 .space 2
+ 347              	 .section .bss.rescueYaw,"aw",%nobits
+ 348              	 .align 2
+ 351              	rescueYaw:
+ 352 0000 00000000 	 .space 4
+ 353              	 .global gpsRescueAngle
+ 354              	 .section .bss.gpsRescueAngle,"aw",%nobits
+ 355              	 .align 2
+ 358              	gpsRescueAngle:
+ 359 0000 00000000 	 .space 8
+ 359      00000000 
+ 360              	 .global hoverThrottle
+ 361              	 .section .bss.hoverThrottle,"aw",%nobits
+ 362              	 .align 1
+ 365              	hoverThrottle:
+ 366 0000 0000     	 .space 2
+ 367              	 .global averageThrottle
+ 368              	 .section .bss.averageThrottle,"aw",%nobits
+ 369              	 .align 2
+ 372              	averageThrottle:
+ 373 0000 00000000 	 .space 4
+ 374              	 .global altitudeError
+ 375              	 .section .bss.altitudeError,"aw",%nobits
+ 376              	 .align 2
+ 379              	altitudeError:
+ 380 0000 00000000 	 .space 4
+ 381              	 .global throttleSamples
+ 382              	 .section .bss.throttleSamples,"aw",%nobits
+ 383              	 .align 2
+ 386              	throttleSamples:
+ 387 0000 00000000 	 .space 4
+ 388              	 .section .bss.newGPSData,"aw",%nobits
+ 391              	newGPSData:
+ 392 0000 00       	 .space 1
+ 393              	 .comm rescueState,47,4
+ 394              	 .section .text.rescueNewGpsData,"ax",%progbits
+ 395              	 .align 2
+ 396              	 .global rescueNewGpsData
+ 397              	 .thumb
+ 398              	 .thumb_func
+ 400              	rescueNewGpsData:
+ 401              	.LFB573:
+ 402              	 .file 6 "../cleanflight/src/main/flight/gps_rescue.c"
+   1:../cleanflight/src/main/flight/gps_rescue.c **** /*
+   2:../cleanflight/src/main/flight/gps_rescue.c ****  * This file is part of Betaflight.
+   3:../cleanflight/src/main/flight/gps_rescue.c ****  *
+   4:../cleanflight/src/main/flight/gps_rescue.c ****  * Betaflight is free software: you can redistribute it and/or modify
+   5:../cleanflight/src/main/flight/gps_rescue.c ****  * it under the terms of the GNU General Public License as published by
+   6:../cleanflight/src/main/flight/gps_rescue.c ****  * the Free Software Foundation, either version 3 of the License, or
+   7:../cleanflight/src/main/flight/gps_rescue.c ****  * (at your option) any later version.
+   8:../cleanflight/src/main/flight/gps_rescue.c ****  *
+   9:../cleanflight/src/main/flight/gps_rescue.c ****  * Betaflight is distributed in the hope that it will be useful,
+  10:../cleanflight/src/main/flight/gps_rescue.c ****  * but WITHOUT ANY WARRANTY; without even the implied warranty of
+  11:../cleanflight/src/main/flight/gps_rescue.c ****  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+  12:../cleanflight/src/main/flight/gps_rescue.c ****  * GNU General Public License for more details.
+  13:../cleanflight/src/main/flight/gps_rescue.c ****  *
+  14:../cleanflight/src/main/flight/gps_rescue.c ****  * You should have received a copy of the GNU General Public License
+  15:../cleanflight/src/main/flight/gps_rescue.c ****  * along with Betaflight. If not, see <http://www.gnu.org/licenses/>.
+  16:../cleanflight/src/main/flight/gps_rescue.c ****  */
+  17:../cleanflight/src/main/flight/gps_rescue.c **** 
+  18:../cleanflight/src/main/flight/gps_rescue.c **** #include <stdint.h>
+  19:../cleanflight/src/main/flight/gps_rescue.c **** #include <math.h>
+  20:../cleanflight/src/main/flight/gps_rescue.c **** 
+  21:../cleanflight/src/main/flight/gps_rescue.c **** #include "platform.h"
+  22:../cleanflight/src/main/flight/gps_rescue.c **** 
+  23:../cleanflight/src/main/flight/gps_rescue.c **** #ifdef USE_GPS_RESCUE
+  24:../cleanflight/src/main/flight/gps_rescue.c **** 
+  25:../cleanflight/src/main/flight/gps_rescue.c **** #include "build/debug.h"
+  26:../cleanflight/src/main/flight/gps_rescue.c **** 
+  27:../cleanflight/src/main/flight/gps_rescue.c **** #include "common/axis.h"
+  28:../cleanflight/src/main/flight/gps_rescue.c **** #include "common/maths.h"
+  29:../cleanflight/src/main/flight/gps_rescue.c **** 
+  30:../cleanflight/src/main/flight/gps_rescue.c **** #include "drivers/time.h"
+  31:../cleanflight/src/main/flight/gps_rescue.c **** 
+  32:../cleanflight/src/main/flight/gps_rescue.c **** #include "io/gps.h"
+  33:../cleanflight/src/main/flight/gps_rescue.c **** 
+  34:../cleanflight/src/main/flight/gps_rescue.c **** #include "fc/config.h"
+  35:../cleanflight/src/main/flight/gps_rescue.c **** #include "fc/fc_core.h"
+  36:../cleanflight/src/main/flight/gps_rescue.c **** #include "fc/rc_controls.h"
+  37:../cleanflight/src/main/flight/gps_rescue.c **** #include "fc/rc_modes.h"
+  38:../cleanflight/src/main/flight/gps_rescue.c **** #include "fc/runtime_config.h"
+  39:../cleanflight/src/main/flight/gps_rescue.c **** 
+  40:../cleanflight/src/main/flight/gps_rescue.c **** #include "flight/failsafe.h"
+  41:../cleanflight/src/main/flight/gps_rescue.c **** #include "flight/imu.h"
+  42:../cleanflight/src/main/flight/gps_rescue.c **** #include "flight/pid.h"
+  43:../cleanflight/src/main/flight/gps_rescue.c **** #include "flight/position.h"
+  44:../cleanflight/src/main/flight/gps_rescue.c **** 
+  45:../cleanflight/src/main/flight/gps_rescue.c **** #include "pg/pg.h"
+  46:../cleanflight/src/main/flight/gps_rescue.c **** #include "pg/pg_ids.h"
+  47:../cleanflight/src/main/flight/gps_rescue.c **** 
+  48:../cleanflight/src/main/flight/gps_rescue.c **** #include "rx/rx.h"
+  49:../cleanflight/src/main/flight/gps_rescue.c **** 
+  50:../cleanflight/src/main/flight/gps_rescue.c **** #include "sensors/acceleration.h"
+  51:../cleanflight/src/main/flight/gps_rescue.c **** 
+  52:../cleanflight/src/main/flight/gps_rescue.c **** #include "gps_rescue.h"
+  53:../cleanflight/src/main/flight/gps_rescue.c **** 
+  54:../cleanflight/src/main/flight/gps_rescue.c **** #define GPS_RESCUE_MAX_YAW_RATE       360  // deg/sec max yaw rate
+  55:../cleanflight/src/main/flight/gps_rescue.c **** #define GPS_RESCUE_RATE_SCALE_DEGREES 45   // Scale the commanded yaw rate when the error is less t
+  56:../cleanflight/src/main/flight/gps_rescue.c **** 
+  57:../cleanflight/src/main/flight/gps_rescue.c **** PG_REGISTER_WITH_RESET_TEMPLATE(gpsRescueConfig_t, gpsRescueConfig, PG_GPS_RESCUE, 0);
+  58:../cleanflight/src/main/flight/gps_rescue.c **** 
+  59:../cleanflight/src/main/flight/gps_rescue.c **** PG_RESET_TEMPLATE(gpsRescueConfig_t, gpsRescueConfig,
+  60:../cleanflight/src/main/flight/gps_rescue.c ****     .angle = 32,
+  61:../cleanflight/src/main/flight/gps_rescue.c ****     .initialAltitude = 50,
+  62:../cleanflight/src/main/flight/gps_rescue.c ****     .descentDistance = 200,
+  63:../cleanflight/src/main/flight/gps_rescue.c ****     .rescueGroundspeed = 2000,
+  64:../cleanflight/src/main/flight/gps_rescue.c ****     .throttleP = 150,
+  65:../cleanflight/src/main/flight/gps_rescue.c ****     .throttleI = 20,
+  66:../cleanflight/src/main/flight/gps_rescue.c ****     .throttleD = 50,
+  67:../cleanflight/src/main/flight/gps_rescue.c ****     .velP = 80,
+  68:../cleanflight/src/main/flight/gps_rescue.c ****     .velI = 20,
+  69:../cleanflight/src/main/flight/gps_rescue.c ****     .velD = 15,
+  70:../cleanflight/src/main/flight/gps_rescue.c ****     .yawP = 40,
+  71:../cleanflight/src/main/flight/gps_rescue.c ****     .throttleMin = 1200,
+  72:../cleanflight/src/main/flight/gps_rescue.c ****     .throttleMax = 1600,
+  73:../cleanflight/src/main/flight/gps_rescue.c ****     .throttleHover = 1280,
+  74:../cleanflight/src/main/flight/gps_rescue.c ****     .sanityChecks = RESCUE_SANITY_ON,
+  75:../cleanflight/src/main/flight/gps_rescue.c ****     .minSats = 8
+  76:../cleanflight/src/main/flight/gps_rescue.c **** );
+  77:../cleanflight/src/main/flight/gps_rescue.c **** 
+  78:../cleanflight/src/main/flight/gps_rescue.c **** static uint16_t rescueThrottle;
+  79:../cleanflight/src/main/flight/gps_rescue.c **** static float    rescueYaw;
+  80:../cleanflight/src/main/flight/gps_rescue.c **** 
+  81:../cleanflight/src/main/flight/gps_rescue.c **** int32_t       gpsRescueAngle[ANGLE_INDEX_COUNT] = { 0, 0 };
+  82:../cleanflight/src/main/flight/gps_rescue.c **** uint16_t      hoverThrottle = 0;
+  83:../cleanflight/src/main/flight/gps_rescue.c **** float         averageThrottle = 0.0;
+  84:../cleanflight/src/main/flight/gps_rescue.c **** float         altitudeError = 0.0;
+  85:../cleanflight/src/main/flight/gps_rescue.c **** uint32_t      throttleSamples = 0;
+  86:../cleanflight/src/main/flight/gps_rescue.c **** 
+  87:../cleanflight/src/main/flight/gps_rescue.c **** static bool newGPSData = false;
+  88:../cleanflight/src/main/flight/gps_rescue.c **** 
+  89:../cleanflight/src/main/flight/gps_rescue.c **** rescueState_s rescueState;
+  90:../cleanflight/src/main/flight/gps_rescue.c **** 
+  91:../cleanflight/src/main/flight/gps_rescue.c **** /*
+  92:../cleanflight/src/main/flight/gps_rescue.c ****  If we have new GPS data, update home heading
+  93:../cleanflight/src/main/flight/gps_rescue.c ****  if possible and applicable.
+  94:../cleanflight/src/main/flight/gps_rescue.c **** */
+  95:../cleanflight/src/main/flight/gps_rescue.c **** void rescueNewGpsData(void)
+  96:../cleanflight/src/main/flight/gps_rescue.c **** {
+ 403              	 .loc 6 96 0
+ 404              	 .cfi_startproc
+ 405              	 
+ 406              	 
+ 407 0000 80B5     	 push {r7,lr}
+ 408              	.LCFI28:
+ 409              	 .cfi_def_cfa_offset 8
+ 410              	 .cfi_offset 7,-8
+ 411              	 .cfi_offset 14,-4
+ 412 0002 00AF     	 add r7,sp,#0
+ 413              	.LCFI29:
+ 414              	 .cfi_def_cfa_register 7
+  97:../cleanflight/src/main/flight/gps_rescue.c ****     if (!ARMING_FLAG(ARMED))
+ 415              	 .loc 6 97 0
+ 416 0004 054B     	 ldr r3,.L33
+ 417 0006 1B78     	 ldrb r3,[r3]
+ 418 0008 03F00103 	 and r3,r3,#1
+ 419 000c 002B     	 cmp r3,#0
+ 420 000e 01D1     	 bne .L32
+  98:../cleanflight/src/main/flight/gps_rescue.c **** 	GPS_reset_home_position();
+ 421              	 .loc 6 98 0
+ 422 0010 FFF7FEFF 	 bl GPS_reset_home_position
+ 423              	.L32:
+  99:../cleanflight/src/main/flight/gps_rescue.c ****     newGPSData = true;
+ 424              	 .loc 6 99 0
+ 425 0014 024B     	 ldr r3,.L33+4
+ 426 0016 0122     	 movs r2,#1
+ 427 0018 1A70     	 strb r2,[r3]
+ 100:../cleanflight/src/main/flight/gps_rescue.c **** }
+ 428              	 .loc 6 100 0
+ 429 001a 80BD     	 pop {r7,pc}
+ 430              	.L34:
+ 431              	 .align 2
+ 432              	.L33:
+ 433 001c 00000000 	 .word armingFlags
+ 434 0020 00000000 	 .word newGPSData
+ 435              	 .cfi_endproc
+ 436              	.LFE573:
+ 438              	 .global __aeabi_f2d
+ 439              	 .global __aeabi_dmul
+ 440              	 .global __aeabi_dcmpgt
+ 441              	 .section .text.updateGPSRescueState,"ax",%progbits
+ 442              	 .align 2
+ 443              	 .global updateGPSRescueState
+ 444              	 .thumb
+ 445              	 .thumb_func
+ 447              	updateGPSRescueState:
+ 448              	.LFB574:
+ 101:../cleanflight/src/main/flight/gps_rescue.c **** 
+ 102:../cleanflight/src/main/flight/gps_rescue.c **** /*
+ 103:../cleanflight/src/main/flight/gps_rescue.c ****     Determine what phase we are in, determine if all criteria are met to move to the next phase
+ 104:../cleanflight/src/main/flight/gps_rescue.c **** */
+ 105:../cleanflight/src/main/flight/gps_rescue.c **** void updateGPSRescueState(void)
+ 106:../cleanflight/src/main/flight/gps_rescue.c **** {
+ 449              	 .loc 6 106 0
+ 450              	 .cfi_startproc
+ 451              	 
+ 452              	 
+ 453 0000 B0B5     	 push {r4,r5,r7,lr}
+ 454              	.LCFI30:
+ 455              	 .cfi_def_cfa_offset 16
+ 456              	 .cfi_offset 4,-16
+ 457              	 .cfi_offset 5,-12
+ 458              	 .cfi_offset 7,-8
+ 459              	 .cfi_offset 14,-4
+ 460 0002 88B0     	 sub sp,sp,#32
+ 461              	.LCFI31:
+ 462              	 .cfi_def_cfa_offset 48
+ 463 0004 00AF     	 add r7,sp,#0
+ 464              	.LCFI32:
+ 465              	 .cfi_def_cfa_register 7
+ 107:../cleanflight/src/main/flight/gps_rescue.c ****     if (!FLIGHT_MODE(GPS_RESCUE_MODE)) {
+ 466              	 .loc 6 107 0
+ 467 0006 A44B     	 ldr r3,.L61
+ 468 0008 1B88     	 ldrh r3,[r3]
+ 469 000a 03F40063 	 and r3,r3,#2048
+ 470 000e 002B     	 cmp r3,#0
+ 471 0010 02D1     	 bne .L36
+ 108:../cleanflight/src/main/flight/gps_rescue.c ****         rescueStop();
+ 472              	 .loc 6 108 0
+ 473 0012 FFF7FEFF 	 bl rescueStop
+ 474 0016 0BE0     	 b .L37
+ 475              	.L36:
+ 109:../cleanflight/src/main/flight/gps_rescue.c ****     } else if (FLIGHT_MODE(GPS_RESCUE_MODE) && rescueState.phase == RESCUE_IDLE) {
+ 476              	 .loc 6 109 0
+ 477 0018 9F4B     	 ldr r3,.L61
+ 478 001a 1B88     	 ldrh r3,[r3]
+ 479 001c 03F40063 	 and r3,r3,#2048
+ 480 0020 002B     	 cmp r3,#0
+ 481 0022 05D0     	 beq .L37
+ 482              	 .loc 6 109 0 is_stmt 0 discriminator 1
+ 483 0024 9D4B     	 ldr r3,.L61+4
+ 484 0026 1B78     	 ldrb r3,[r3]
+ 485 0028 002B     	 cmp r3,#0
+ 486 002a 01D1     	 bne .L37
+ 110:../cleanflight/src/main/flight/gps_rescue.c ****         rescueStart();
+ 487              	 .loc 6 110 0 is_stmt 1
+ 488 002c FFF7FEFF 	 bl rescueStart
+ 489              	.L37:
+ 111:../cleanflight/src/main/flight/gps_rescue.c ****     }
+ 112:../cleanflight/src/main/flight/gps_rescue.c **** 
+ 113:../cleanflight/src/main/flight/gps_rescue.c ****     rescueState.isFailsafe = failsafeIsActive();
+ 490              	 .loc 6 113 0
+ 491 0030 FFF7FEFF 	 bl failsafeIsActive
+ 492 0034 0346     	 mov r3,r0
+ 493 0036 1A46     	 mov r2,r3
+ 494 0038 984B     	 ldr r3,.L61+4
+ 495 003a 83F82E20 	 strb r2,[r3,#46]
+ 114:../cleanflight/src/main/flight/gps_rescue.c **** 
+ 115:../cleanflight/src/main/flight/gps_rescue.c ****     sensorUpdate();
+ 496              	 .loc 6 115 0
+ 497 003e FFF7FEFF 	 bl sensorUpdate
+ 116:../cleanflight/src/main/flight/gps_rescue.c **** 
+ 117:../cleanflight/src/main/flight/gps_rescue.c ****     switch (rescueState.phase) {
+ 498              	 .loc 6 117 0
+ 499 0042 964B     	 ldr r3,.L61+4
+ 500 0044 1B78     	 ldrb r3,[r3]
+ 501 0046 072B     	 cmp r3,#7
+ 502 0048 00F28A81 	 bhi .L60
+ 503 004c 01A2     	 adr r2,.L40
+ 504 004e 52F823F0 	 ldr pc,[r2,r3,lsl#2]
+ 505 0052 00BF     	 .p2align 2
+ 506              	.L40:
+ 507 0054 75000000 	 .word .L39+1
+ 508 0058 7B000000 	 .word .L41+1
+ 509 005c D1000000 	 .word .L42+1
+ 510 0060 61010000 	 .word .L43+1
+ 511 0064 E1010000 	 .word .L44+1
+ 512 0068 A9020000 	 .word .L45+1
+ 513 006c 4F030000 	 .word .L46+1
+ 514 0070 49030000 	 .word .L47+1
+ 515              	 .p2align 1
+ 516              	.L39:
+ 517              	.LBB2:
+ 118:../cleanflight/src/main/flight/gps_rescue.c ****     case RESCUE_IDLE:
+ 119:../cleanflight/src/main/flight/gps_rescue.c ****         idleTasks();
+ 518              	 .loc 6 119 0
+ 519 0074 FFF7FEFF 	 bl idleTasks
+ 120:../cleanflight/src/main/flight/gps_rescue.c ****         break;
+ 520              	 .loc 6 120 0
+ 521 0078 73E1     	 b .L48
+ 522              	.L41:
+ 121:../cleanflight/src/main/flight/gps_rescue.c ****     case RESCUE_INITIALIZE:
+ 122:../cleanflight/src/main/flight/gps_rescue.c ****         if (hoverThrottle == 0) { //no actual throttle data yet, let's use the default.
+ 523              	 .loc 6 122 0
+ 524 007a 894B     	 ldr r3,.L61+8
+ 525 007c 1B88     	 ldrh r3,[r3]
+ 526 007e 002B     	 cmp r3,#0
+ 527 0080 06D1     	 bne .L49
+ 123:../cleanflight/src/main/flight/gps_rescue.c ****             hoverThrottle = gpsRescueConfig()->throttleHover;
+ 528              	 .loc 6 123 0
+ 529 0082 FFF7FEFF 	 bl gpsRescueConfig
+ 530 0086 0346     	 mov r3,r0
+ 531 0088 9B8A     	 ldrh r3,[r3,#20]
+ 532 008a 9AB2     	 uxth r2,r3
+ 533 008c 844B     	 ldr r3,.L61+8
+ 534 008e 1A80     	 strh r2,[r3]
+ 535              	.L49:
+ 124:../cleanflight/src/main/flight/gps_rescue.c ****         }
+ 125:../cleanflight/src/main/flight/gps_rescue.c **** 
+ 126:../cleanflight/src/main/flight/gps_rescue.c ****         // Minimum distance detection (100m).  Disarm regardless of sanity check configuration.  Re
+ 127:../cleanflight/src/main/flight/gps_rescue.c ****         if (rescueState.sensor.distanceToHome < 100) {
+ 536              	 .loc 6 127 0
+ 537 0090 824B     	 ldr r3,.L61+4
+ 538 0092 5B89     	 ldrh r3,[r3,#10]
+ 539 0094 9BB2     	 uxth r3,r3
+ 540 0096 632B     	 cmp r3,#99
+ 541 0098 17D8     	 bhi .L50
+ 128:../cleanflight/src/main/flight/gps_rescue.c ****             // Never allow rescue mode to engage as a failsafe within 100 meters or when disarmed.
+ 129:../cleanflight/src/main/flight/gps_rescue.c ****             if (rescueState.isFailsafe || !ARMING_FLAG(ARMED)) {
+ 542              	 .loc 6 129 0
+ 543 009a 804B     	 ldr r3,.L61+4
+ 544 009c 93F82E30 	 ldrb r3,[r3,#46]
+ 545 00a0 002B     	 cmp r3,#0
+ 546 00a2 05D1     	 bne .L51
+ 547              	 .loc 6 129 0 is_stmt 0 discriminator 1
+ 548 00a4 7F4B     	 ldr r3,.L61+12
+ 549 00a6 1B78     	 ldrb r3,[r3]
+ 550 00a8 03F00103 	 and r3,r3,#1
+ 551 00ac 002B     	 cmp r3,#0
+ 552 00ae 09D1     	 bne .L52
+ 553              	.L51:
+ 130:../cleanflight/src/main/flight/gps_rescue.c ****                 rescueState.failure = RESCUE_TOO_CLOSE;
+ 554              	 .loc 6 130 0 is_stmt 1
+ 555 00b0 7A4B     	 ldr r3,.L61+4
+ 556 00b2 0322     	 movs r2,#3
+ 557 00b4 5A70     	 strb r2,[r3,#1]
+ 131:../cleanflight/src/main/flight/gps_rescue.c ****                 setArmingDisabled(ARMING_DISABLED_ARM_SWITCH);
+ 558              	 .loc 6 131 0
+ 559 00b6 4FF40020 	 mov r0,#524288
+ 560 00ba FFF7FEFF 	 bl setArmingDisabled
+ 132:../cleanflight/src/main/flight/gps_rescue.c ****                 disarm();
+ 561              	 .loc 6 132 0
+ 562 00be FFF7FEFF 	 bl disarm
+ 563 00c2 02E0     	 b .L50
+ 564              	.L52:
+ 133:../cleanflight/src/main/flight/gps_rescue.c ****             } else {
+ 134:../cleanflight/src/main/flight/gps_rescue.c ****                 // Leave it up to the sanity check setting
+ 135:../cleanflight/src/main/flight/gps_rescue.c ****                 rescueState.failure = RESCUE_TOO_CLOSE;
+ 565              	 .loc 6 135 0
+ 566 00c4 754B     	 ldr r3,.L61+4
+ 567 00c6 0322     	 movs r2,#3
+ 568 00c8 5A70     	 strb r2,[r3,#1]
+ 569              	.L50:
+ 136:../cleanflight/src/main/flight/gps_rescue.c ****             }
+ 137:../cleanflight/src/main/flight/gps_rescue.c ****         }
+ 138:../cleanflight/src/main/flight/gps_rescue.c **** 
+ 139:../cleanflight/src/main/flight/gps_rescue.c ****         rescueState.phase = RESCUE_ATTAIN_ALT;
+ 570              	 .loc 6 139 0
+ 571 00ca 744B     	 ldr r3,.L61+4
+ 572 00cc 0222     	 movs r2,#2
+ 573 00ce 1A70     	 strb r2,[r3]
+ 574              	.L42:
+ 575              	.LBB3:
+ 140:../cleanflight/src/main/flight/gps_rescue.c ****         FALLTHROUGH;
+ 141:../cleanflight/src/main/flight/gps_rescue.c ****     case RESCUE_ATTAIN_ALT:
+ 142:../cleanflight/src/main/flight/gps_rescue.c ****         // Get to a safe altitude at a low velocity ASAP
+ 143:../cleanflight/src/main/flight/gps_rescue.c ****         if (ABS(rescueState.intent.targetAltitude - rescueState.sensor.currentAltitude) < 1000) {
+ 576              	 .loc 6 143 0
+ 577 00d0 724B     	 ldr r3,.L61+4
+ 578 00d2 D3F82320 	 ldr r2,[r3,#35]
+ 579 00d6 714B     	 ldr r3,.L61+4
+ 580 00d8 D3F80630 	 ldr r3,[r3,#6]
+ 581 00dc D31A     	 subs r3,r2,r3
+ 582 00de FB61     	 str r3,[r7,#28]
+ 583 00e0 FB69     	 ldr r3,[r7,#28]
+ 584 00e2 002B     	 cmp r3,#0
+ 585 00e4 B8BF     	 it lt
+ 586 00e6 5B42     	 rsblt r3,r3,#0
+ 587              	.LBE3:
+ 588 00e8 B3F57A7F 	 cmp r3,#1000
+ 589 00ec 02DA     	 bge .L53
+ 144:../cleanflight/src/main/flight/gps_rescue.c ****             rescueState.phase = RESCUE_CROSSTRACK;
+ 590              	 .loc 6 144 0
+ 591 00ee 6B4B     	 ldr r3,.L61+4
+ 592 00f0 0322     	 movs r2,#3
+ 593 00f2 1A70     	 strb r2,[r3]
+ 594              	.L53:
+ 145:../cleanflight/src/main/flight/gps_rescue.c ****         }
+ 146:../cleanflight/src/main/flight/gps_rescue.c **** 
+ 147:../cleanflight/src/main/flight/gps_rescue.c ****         rescueState.intent.targetGroundspeed = 500;
+ 595              	 .loc 6 147 0
+ 596 00f4 694B     	 ldr r3,.L61+4
+ 597 00f6 0022     	 movs r2,#0
+ 598 00f8 62F00B02 	 orn r2,r2,#11
+ 599 00fc 83F82720 	 strb r2,[r3,#39]
+ 600 0100 0022     	 movs r2,#0
+ 601 0102 42F00102 	 orr r2,r2,#1
+ 602 0106 83F82820 	 strb r2,[r3,#40]
+ 603 010a 0022     	 movs r2,#0
+ 604 010c 83F82920 	 strb r2,[r3,#41]
+ 605 0110 0022     	 movs r2,#0
+ 606 0112 83F82A20 	 strb r2,[r3,#42]
+ 607              	.LBB4:
+ 148:../cleanflight/src/main/flight/gps_rescue.c ****         rescueState.intent.targetAltitude = MAX(gpsRescueConfig()->initialAltitude * 100, rescueSta
+ 608              	 .loc 6 148 0
+ 609 0116 FFF7FEFF 	 bl gpsRescueConfig
+ 610 011a 0346     	 mov r3,r0
+ 611 011c 5B88     	 ldrh r3,[r3,#2]
+ 612 011e 9BB2     	 uxth r3,r3
+ 613 0120 1A46     	 mov r2,r3
+ 614 0122 6423     	 movs r3,#100
+ 615 0124 03FB02F3 	 mul r3,r3,r2
+ 616 0128 BB61     	 str r3,[r7,#24]
+ 617 012a 5C4B     	 ldr r3,.L61+4
+ 618 012c D3F80230 	 ldr r3,[r3,#2]
+ 619 0130 03F2DC53 	 addw r3,r3,#1500
+ 620 0134 7B61     	 str r3,[r7,#20]
+ 621 0136 7A69     	 ldr r2,[r7,#20]
+ 622 0138 BB69     	 ldr r3,[r7,#24]
+ 623 013a 9342     	 cmp r3,r2
+ 624 013c B8BF     	 it lt
+ 625 013e 1346     	 movlt r3,r2
+ 626              	.LBE4:
+ 627 0140 564A     	 ldr r2,.L61+4
+ 628 0142 C2F82330 	 str r3,[r2,#35]
+ 149:../cleanflight/src/main/flight/gps_rescue.c ****         rescueState.intent.crosstrack = true;
+ 629              	 .loc 6 149 0
+ 630 0146 554B     	 ldr r3,.L61+4
+ 631 0148 0122     	 movs r2,#1
+ 632 014a 83F82D20 	 strb r2,[r3,#45]
+ 150:../cleanflight/src/main/flight/gps_rescue.c ****         rescueState.intent.minAngleDeg = 10;
+ 633              	 .loc 6 150 0
+ 634 014e 534B     	 ldr r3,.L61+4
+ 635 0150 0A22     	 movs r2,#10
+ 636 0152 83F82B20 	 strb r2,[r3,#43]
+ 151:../cleanflight/src/main/flight/gps_rescue.c ****         rescueState.intent.maxAngleDeg = 15;
+ 637              	 .loc 6 151 0
+ 638 0156 514B     	 ldr r3,.L61+4
+ 639 0158 0F22     	 movs r2,#15
+ 640 015a 83F82C20 	 strb r2,[r3,#44]
+ 152:../cleanflight/src/main/flight/gps_rescue.c ****         break;
+ 641              	 .loc 6 152 0
+ 642 015e 00E1     	 b .L48
+ 643              	.L43:
+ 153:../cleanflight/src/main/flight/gps_rescue.c ****     case RESCUE_CROSSTRACK:
+ 154:../cleanflight/src/main/flight/gps_rescue.c ****         if (rescueState.sensor.distanceToHome < gpsRescueConfig()->descentDistance) {
+ 644              	 .loc 6 154 0
+ 645 0160 4E4B     	 ldr r3,.L61+4
+ 646 0162 5B89     	 ldrh r3,[r3,#10]
+ 647 0164 9CB2     	 uxth r4,r3
+ 648 0166 FFF7FEFF 	 bl gpsRescueConfig
+ 649 016a 0346     	 mov r3,r0
+ 650 016c 9B88     	 ldrh r3,[r3,#4]
+ 651 016e 9BB2     	 uxth r3,r3
+ 652 0170 9C42     	 cmp r4,r3
+ 653 0172 02D2     	 bcs .L54
+ 155:../cleanflight/src/main/flight/gps_rescue.c ****             rescueState.phase = RESCUE_LANDING_APPROACH;
+ 654              	 .loc 6 155 0
+ 655 0174 494B     	 ldr r3,.L61+4
+ 656 0176 0422     	 movs r2,#4
+ 657 0178 1A70     	 strb r2,[r3]
+ 658              	.L54:
+ 156:../cleanflight/src/main/flight/gps_rescue.c ****         }
+ 157:../cleanflight/src/main/flight/gps_rescue.c **** 
+ 158:../cleanflight/src/main/flight/gps_rescue.c ****         // We can assume at this point that we are at or above our RTH height, so we need to try an
+ 159:../cleanflight/src/main/flight/gps_rescue.c ****         // Is our altitude way off?  We should probably kick back to phase RESCUE_ATTAIN_ALT
+ 160:../cleanflight/src/main/flight/gps_rescue.c ****         rescueState.intent.targetGroundspeed = gpsRescueConfig()->rescueGroundspeed;
+ 659              	 .loc 6 160 0
+ 660 017a FFF7FEFF 	 bl gpsRescueConfig
+ 661 017e 0346     	 mov r3,r0
+ 662 0180 DB88     	 ldrh r3,[r3,#6]
+ 663 0182 9BB2     	 uxth r3,r3
+ 664 0184 1A46     	 mov r2,r3
+ 665 0186 454B     	 ldr r3,.L61+4
+ 666 0188 C3F82720 	 str r2,[r3,#39]
+ 667              	.LBB5:
+ 161:../cleanflight/src/main/flight/gps_rescue.c ****         rescueState.intent.targetAltitude = MAX(gpsRescueConfig()->initialAltitude * 100, rescueSta
+ 668              	 .loc 6 161 0
+ 669 018c FFF7FEFF 	 bl gpsRescueConfig
+ 670 0190 0346     	 mov r3,r0
+ 671 0192 5B88     	 ldrh r3,[r3,#2]
+ 672 0194 9BB2     	 uxth r3,r3
+ 673 0196 1A46     	 mov r2,r3
+ 674 0198 6423     	 movs r3,#100
+ 675 019a 03FB02F3 	 mul r3,r3,r2
+ 676 019e 3B61     	 str r3,[r7,#16]
+ 677 01a0 3E4B     	 ldr r3,.L61+4
+ 678 01a2 D3F80230 	 ldr r3,[r3,#2]
+ 679 01a6 03F2DC53 	 addw r3,r3,#1500
+ 680 01aa FB60     	 str r3,[r7,#12]
+ 681 01ac FA68     	 ldr r2,[r7,#12]
+ 682 01ae 3B69     	 ldr r3,[r7,#16]
+ 683 01b0 9342     	 cmp r3,r2
+ 684 01b2 B8BF     	 it lt
+ 685 01b4 1346     	 movlt r3,r2
+ 686              	.LBE5:
+ 687 01b6 394A     	 ldr r2,.L61+4
+ 688 01b8 C2F82330 	 str r3,[r2,#35]
+ 162:../cleanflight/src/main/flight/gps_rescue.c ****         rescueState.intent.crosstrack = true;
+ 689              	 .loc 6 162 0
+ 690 01bc 374B     	 ldr r3,.L61+4
+ 691 01be 0122     	 movs r2,#1
+ 692 01c0 83F82D20 	 strb r2,[r3,#45]
+ 163:../cleanflight/src/main/flight/gps_rescue.c ****         rescueState.intent.minAngleDeg = 15;
+ 693              	 .loc 6 163 0
+ 694 01c4 354B     	 ldr r3,.L61+4
+ 695 01c6 0F22     	 movs r2,#15
+ 696 01c8 83F82B20 	 strb r2,[r3,#43]
+ 164:../cleanflight/src/main/flight/gps_rescue.c ****         rescueState.intent.maxAngleDeg = gpsRescueConfig()->angle;
+ 697              	 .loc 6 164 0
+ 698 01cc FFF7FEFF 	 bl gpsRescueConfig
+ 699 01d0 0346     	 mov r3,r0
+ 700 01d2 1B88     	 ldrh r3,[r3]
+ 701 01d4 9BB2     	 uxth r3,r3
+ 702 01d6 DAB2     	 uxtb r2,r3
+ 703 01d8 304B     	 ldr r3,.L61+4
+ 704 01da 83F82C20 	 strb r2,[r3,#44]
+ 165:../cleanflight/src/main/flight/gps_rescue.c ****         break;
+ 705              	 .loc 6 165 0
+ 706 01de C0E0     	 b .L48
+ 707              	.L44:
+ 166:../cleanflight/src/main/flight/gps_rescue.c ****     case RESCUE_LANDING_APPROACH:
+ 167:../cleanflight/src/main/flight/gps_rescue.c ****         // We are getting close to home in the XY plane, get Z where it needs to be to move to land
+ 168:../cleanflight/src/main/flight/gps_rescue.c ****         if (rescueState.sensor.distanceToHome < 10 && rescueState.sensor.currentAltitude <= 1000) {
+ 708              	 .loc 6 168 0
+ 709 01e0 2E4B     	 ldr r3,.L61+4
+ 710 01e2 5B89     	 ldrh r3,[r3,#10]
+ 711 01e4 9BB2     	 uxth r3,r3
+ 712 01e6 092B     	 cmp r3,#9
+ 713 01e8 08D8     	 bhi .L55
+ 714              	 .loc 6 168 0 is_stmt 0 discriminator 1
+ 715 01ea 2C4B     	 ldr r3,.L61+4
+ 716 01ec D3F80630 	 ldr r3,[r3,#6]
+ 717 01f0 B3F57A7F 	 cmp r3,#1000
+ 718 01f4 02DC     	 bgt .L55
+ 169:../cleanflight/src/main/flight/gps_rescue.c ****             rescueState.phase = RESCUE_LANDING;
+ 719              	 .loc 6 169 0 is_stmt 1
+ 720 01f6 294B     	 ldr r3,.L61+4
+ 721 01f8 0522     	 movs r2,#5
+ 722 01fa 1A70     	 strb r2,[r3]
+ 723              	.L55:
+ 170:../cleanflight/src/main/flight/gps_rescue.c ****         }
+ 171:../cleanflight/src/main/flight/gps_rescue.c **** 
+ 172:../cleanflight/src/main/flight/gps_rescue.c ****         // Only allow new altitude and new speed to be equal or lower than the current values (to p
+ 173:../cleanflight/src/main/flight/gps_rescue.c ****         int32_t newAlt = gpsRescueConfig()->initialAltitude * 100  * rescueState.sensor.distanceToH
+ 724              	 .loc 6 173 0
+ 725 01fc FFF7FEFF 	 bl gpsRescueConfig
+ 726 0200 0346     	 mov r3,r0
+ 727 0202 5B88     	 ldrh r3,[r3,#2]
+ 728 0204 9BB2     	 uxth r3,r3
+ 729 0206 1A46     	 mov r2,r3
+ 730 0208 6423     	 movs r3,#100
+ 731 020a 03FB02F3 	 mul r3,r3,r2
+ 732 020e 234A     	 ldr r2,.L61+4
+ 733 0210 5289     	 ldrh r2,[r2,#10]
+ 734 0212 92B2     	 uxth r2,r2
+ 735 0214 02FB03F4 	 mul r4,r2,r3
+ 736 0218 FFF7FEFF 	 bl gpsRescueConfig
+ 737 021c 0346     	 mov r3,r0
+ 738 021e 9B88     	 ldrh r3,[r3,#4]
+ 739 0220 9BB2     	 uxth r3,r3
+ 740 0222 94FBF3F3 	 sdiv r3,r4,r3
+ 741 0226 BB60     	 str r3,[r7,#8]
+ 174:../cleanflight/src/main/flight/gps_rescue.c ****         int32_t newSpeed = gpsRescueConfig()->rescueGroundspeed * rescueState.sensor.distanceToHome
+ 742              	 .loc 6 174 0
+ 743 0228 FFF7FEFF 	 bl gpsRescueConfig
+ 744 022c 0346     	 mov r3,r0
+ 745 022e DB88     	 ldrh r3,[r3,#6]
+ 746 0230 9BB2     	 uxth r3,r3
+ 747 0232 1A46     	 mov r2,r3
+ 748 0234 194B     	 ldr r3,.L61+4
+ 749 0236 5B89     	 ldrh r3,[r3,#10]
+ 750 0238 9BB2     	 uxth r3,r3
+ 751 023a 03FB02F4 	 mul r4,r3,r2
+ 752 023e FFF7FEFF 	 bl gpsRescueConfig
+ 753 0242 0346     	 mov r3,r0
+ 754 0244 9B88     	 ldrh r3,[r3,#4]
+ 755 0246 9BB2     	 uxth r3,r3
+ 756 0248 94FBF3F3 	 sdiv r3,r4,r3
+ 757 024c 7B60     	 str r3,[r7,#4]
+ 175:../cleanflight/src/main/flight/gps_rescue.c **** 
+ 176:../cleanflight/src/main/flight/gps_rescue.c ****         rescueState.intent.targetAltitude = constrain(newAlt, 100, rescueState.intent.targetAltitud
+ 758              	 .loc 6 176 0
+ 759 024e 134B     	 ldr r3,.L61+4
+ 760 0250 D3F82330 	 ldr r3,[r3,#35]
+ 761 0254 B868     	 ldr r0,[r7,#8]
+ 762 0256 6421     	 movs r1,#100
+ 763 0258 1A46     	 mov r2,r3
+ 764 025a FFF7FEFF 	 bl constrain
+ 765 025e 0246     	 mov r2,r0
+ 766 0260 0E4B     	 ldr r3,.L61+4
+ 767 0262 C3F82320 	 str r2,[r3,#35]
+ 177:../cleanflight/src/main/flight/gps_rescue.c ****         rescueState.intent.targetGroundspeed = constrain(newSpeed, 100, rescueState.intent.targetGr
+ 768              	 .loc 6 177 0
+ 769 0266 0D4B     	 ldr r3,.L61+4
+ 770 0268 D3F82730 	 ldr r3,[r3,#39]
+ 771 026c 7868     	 ldr r0,[r7,#4]
+ 772 026e 6421     	 movs r1,#100
+ 773 0270 1A46     	 mov r2,r3
+ 774 0272 FFF7FEFF 	 bl constrain
+ 775 0276 0246     	 mov r2,r0
+ 776 0278 084B     	 ldr r3,.L61+4
+ 777 027a C3F82720 	 str r2,[r3,#39]
+ 178:../cleanflight/src/main/flight/gps_rescue.c ****         rescueState.intent.crosstrack = true;
+ 778              	 .loc 6 178 0
+ 779 027e 074B     	 ldr r3,.L61+4
+ 780 0280 0122     	 movs r2,#1
+ 781 0282 83F82D20 	 strb r2,[r3,#45]
+ 179:../cleanflight/src/main/flight/gps_rescue.c ****         rescueState.intent.minAngleDeg = 10;
+ 782              	 .loc 6 179 0
+ 783 0286 054B     	 ldr r3,.L61+4
+ 784 0288 0A22     	 movs r2,#10
+ 785 028a 83F82B20 	 strb r2,[r3,#43]
+ 180:../cleanflight/src/main/flight/gps_rescue.c ****         rescueState.intent.maxAngleDeg = 20;
+ 786              	 .loc 6 180 0
+ 787 028e 034B     	 ldr r3,.L61+4
+ 788 0290 1422     	 movs r2,#20
+ 789 0292 83F82C20 	 strb r2,[r3,#44]
+ 181:../cleanflight/src/main/flight/gps_rescue.c ****         break;
+ 790              	 .loc 6 181 0
+ 791 0296 64E0     	 b .L48
+ 792              	.L62:
+ 793              	 .align 2
+ 794              	.L61:
+ 795 0298 00000000 	 .word flightModeFlags
+ 796 029c 00000000 	 .word rescueState
+ 797 02a0 00000000 	 .word hoverThrottle
+ 798 02a4 00000000 	 .word armingFlags
+ 799              	.L45:
+ 182:../cleanflight/src/main/flight/gps_rescue.c ****     case RESCUE_LANDING:
+ 183:../cleanflight/src/main/flight/gps_rescue.c ****         // We have reached the XYZ envelope to be considered at "home".  We need to land gently and
+ 184:../cleanflight/src/main/flight/gps_rescue.c ****         // At this point, do not let the target altitude go up anymore, so if we overshoot, we dont
+ 185:../cleanflight/src/main/flight/gps_rescue.c **** 
+ 186:../cleanflight/src/main/flight/gps_rescue.c ****         // If we are over 120% of average magnitude, just disarm since we're pretty much home
+ 187:../cleanflight/src/main/flight/gps_rescue.c ****         if (rescueState.sensor.accMagnitude > rescueState.sensor.accMagnitudeAvg * 1.5) {
+ 800              	 .loc 6 187 0
+ 801 02a8 354B     	 ldr r3,.L63
+ 802 02aa D3F81B30 	 ldr r3,[r3,#27]
+ 803 02ae 1846     	 mov r0,r3
+ 804 02b0 FFF7FEFF 	 bl __aeabi_f2d
+ 805 02b4 0446     	 mov r4,r0
+ 806 02b6 0D46     	 mov r5,r1
+ 807 02b8 314B     	 ldr r3,.L63
+ 808 02ba D3F81F30 	 ldr r3,[r3,#31]
+ 809 02be 1846     	 mov r0,r3
+ 810 02c0 FFF7FEFF 	 bl __aeabi_f2d
+ 811 02c4 0246     	 mov r2,r0
+ 812 02c6 0B46     	 mov r3,r1
+ 813 02c8 1046     	 mov r0,r2
+ 814 02ca 1946     	 mov r1,r3
+ 815 02cc 4FF00002 	 mov r2,#0
+ 816 02d0 2C4B     	 ldr r3,.L63+4
+ 817 02d2 FFF7FEFF 	 bl __aeabi_dmul
+ 818 02d6 0246     	 mov r2,r0
+ 819 02d8 0B46     	 mov r3,r1
+ 820 02da 2046     	 mov r0,r4
+ 821 02dc 2946     	 mov r1,r5
+ 822 02de FFF7FEFF 	 bl __aeabi_dcmpgt
+ 823 02e2 0346     	 mov r3,r0
+ 824 02e4 002B     	 cmp r3,#0
+ 825 02e6 08D0     	 beq .L56
+ 188:../cleanflight/src/main/flight/gps_rescue.c ****             setArmingDisabled(ARMING_DISABLED_ARM_SWITCH);
+ 826              	 .loc 6 188 0
+ 827 02e8 4FF40020 	 mov r0,#524288
+ 828 02ec FFF7FEFF 	 bl setArmingDisabled
+ 189:../cleanflight/src/main/flight/gps_rescue.c ****             disarm();
+ 829              	 .loc 6 189 0
+ 830 02f0 FFF7FEFF 	 bl disarm
+ 190:../cleanflight/src/main/flight/gps_rescue.c ****             rescueState.phase = RESCUE_COMPLETE;
+ 831              	 .loc 6 190 0
+ 832 02f4 224B     	 ldr r3,.L63
+ 833 02f6 0722     	 movs r2,#7
+ 834 02f8 1A70     	 strb r2,[r3]
+ 835              	.L56:
+ 191:../cleanflight/src/main/flight/gps_rescue.c ****         }
+ 192:../cleanflight/src/main/flight/gps_rescue.c **** 
+ 193:../cleanflight/src/main/flight/gps_rescue.c ****         rescueState.intent.targetGroundspeed = 0;
+ 836              	 .loc 6 193 0
+ 837 02fa 214B     	 ldr r3,.L63
+ 838 02fc 0022     	 movs r2,#0
+ 839 02fe 83F82720 	 strb r2,[r3,#39]
+ 840 0302 0022     	 movs r2,#0
+ 841 0304 83F82820 	 strb r2,[r3,#40]
+ 842 0308 0022     	 movs r2,#0
+ 843 030a 83F82920 	 strb r2,[r3,#41]
+ 844 030e 0022     	 movs r2,#0
+ 845 0310 83F82A20 	 strb r2,[r3,#42]
+ 194:../cleanflight/src/main/flight/gps_rescue.c ****         rescueState.intent.targetAltitude = 0;
+ 846              	 .loc 6 194 0
+ 847 0314 1A4B     	 ldr r3,.L63
+ 848 0316 0022     	 movs r2,#0
+ 849 0318 83F82320 	 strb r2,[r3,#35]
+ 850 031c 0022     	 movs r2,#0
+ 851 031e 83F82420 	 strb r2,[r3,#36]
+ 852 0322 0022     	 movs r2,#0
+ 853 0324 83F82520 	 strb r2,[r3,#37]
+ 854 0328 0022     	 movs r2,#0
+ 855 032a 83F82620 	 strb r2,[r3,#38]
+ 195:../cleanflight/src/main/flight/gps_rescue.c ****         rescueState.intent.crosstrack = true;
+ 856              	 .loc 6 195 0
+ 857 032e 144B     	 ldr r3,.L63
+ 858 0330 0122     	 movs r2,#1
+ 859 0332 83F82D20 	 strb r2,[r3,#45]
+ 196:../cleanflight/src/main/flight/gps_rescue.c ****         rescueState.intent.minAngleDeg = 0;
+ 860              	 .loc 6 196 0
+ 861 0336 124B     	 ldr r3,.L63
+ 862 0338 0022     	 movs r2,#0
+ 863 033a 83F82B20 	 strb r2,[r3,#43]
+ 197:../cleanflight/src/main/flight/gps_rescue.c ****         rescueState.intent.maxAngleDeg = 15;
+ 864              	 .loc 6 197 0
+ 865 033e 104B     	 ldr r3,.L63
+ 866 0340 0F22     	 movs r2,#15
+ 867 0342 83F82C20 	 strb r2,[r3,#44]
+ 198:../cleanflight/src/main/flight/gps_rescue.c ****         break;
+ 868              	 .loc 6 198 0
+ 869 0346 0CE0     	 b .L48
+ 870              	.L47:
+ 199:../cleanflight/src/main/flight/gps_rescue.c ****     case RESCUE_COMPLETE:
+ 200:../cleanflight/src/main/flight/gps_rescue.c ****         rescueStop();
+ 871              	 .loc 6 200 0
+ 872 0348 FFF7FEFF 	 bl rescueStop
+ 201:../cleanflight/src/main/flight/gps_rescue.c ****         break;
+ 873              	 .loc 6 201 0
+ 874 034c 09E0     	 b .L48
+ 875              	.L46:
+ 202:../cleanflight/src/main/flight/gps_rescue.c ****     case RESCUE_ABORT:
+ 203:../cleanflight/src/main/flight/gps_rescue.c ****         setArmingDisabled(ARMING_DISABLED_ARM_SWITCH);
+ 876              	 .loc 6 203 0
+ 877 034e 4FF40020 	 mov r0,#524288
+ 878 0352 FFF7FEFF 	 bl setArmingDisabled
+ 204:../cleanflight/src/main/flight/gps_rescue.c ****         disarm();
+ 879              	 .loc 6 204 0
+ 880 0356 FFF7FEFF 	 bl disarm
+ 205:../cleanflight/src/main/flight/gps_rescue.c ****         rescueStop();
+ 881              	 .loc 6 205 0
+ 882 035a FFF7FEFF 	 bl rescueStop
+ 206:../cleanflight/src/main/flight/gps_rescue.c ****         break;
+ 883              	 .loc 6 206 0
+ 884 035e 00E0     	 b .L48
+ 885              	.L60:
+ 207:../cleanflight/src/main/flight/gps_rescue.c ****     default:
+ 208:../cleanflight/src/main/flight/gps_rescue.c ****         break;
+ 886              	 .loc 6 208 0
+ 887 0360 00BF     	 nop
+ 888              	.L48:
+ 889              	.LBE2:
+ 209:../cleanflight/src/main/flight/gps_rescue.c ****     }
+ 210:../cleanflight/src/main/flight/gps_rescue.c **** 
+ 211:../cleanflight/src/main/flight/gps_rescue.c ****     performSanityChecks();
+ 890              	 .loc 6 211 0
+ 891 0362 FFF7FEFF 	 bl performSanityChecks
+ 212:../cleanflight/src/main/flight/gps_rescue.c **** 
+ 213:../cleanflight/src/main/flight/gps_rescue.c ****     if (rescueState.phase != RESCUE_IDLE) {
+ 892              	 .loc 6 213 0
+ 893 0366 064B     	 ldr r3,.L63
+ 894 0368 1B78     	 ldrb r3,[r3]
+ 895 036a 002B     	 cmp r3,#0
+ 896 036c 01D0     	 beq .L58
+ 214:../cleanflight/src/main/flight/gps_rescue.c ****         rescueAttainPosition();
+ 897              	 .loc 6 214 0
+ 898 036e FFF7FEFF 	 bl rescueAttainPosition
+ 899              	.L58:
+ 215:../cleanflight/src/main/flight/gps_rescue.c ****     }
+ 216:../cleanflight/src/main/flight/gps_rescue.c **** 
+ 217:../cleanflight/src/main/flight/gps_rescue.c ****     newGPSData = false;
+ 900              	 .loc 6 217 0
+ 901 0372 054B     	 ldr r3,.L63+8
+ 902 0374 0022     	 movs r2,#0
+ 903 0376 1A70     	 strb r2,[r3]
+ 218:../cleanflight/src/main/flight/gps_rescue.c **** }
+ 904              	 .loc 6 218 0
+ 905 0378 2037     	 adds r7,r7,#32
+ 906              	.LCFI33:
+ 907              	 .cfi_def_cfa_offset 16
+ 908 037a BD46     	 mov sp,r7
+ 909              	.LCFI34:
+ 910              	 .cfi_def_cfa_register 13
+ 911              	 
+ 912 037c B0BD     	 pop {r4,r5,r7,pc}
+ 913              	.L64:
+ 914 037e 00BF     	 .align 2
+ 915              	.L63:
+ 916 0380 00000000 	 .word rescueState
+ 917 0384 0000F83F 	 .word 1073217536
+ 918 0388 00000000 	 .word newGPSData
+ 919              	 .cfi_endproc
+ 920              	.LFE574:
+ 922              	 .global __aeabi_d2f
+ 923              	 .section .text.sensorUpdate,"ax",%progbits
+ 924              	 .align 2
+ 925              	 .global sensorUpdate
+ 926              	 .thumb
+ 927              	 .thumb_func
+ 929              	sensorUpdate:
+ 930              	.LFB575:
+ 219:../cleanflight/src/main/flight/gps_rescue.c **** 
+ 220:../cleanflight/src/main/flight/gps_rescue.c **** void sensorUpdate()
+ 221:../cleanflight/src/main/flight/gps_rescue.c **** {
+ 931              	 .loc 6 221 0
+ 932              	 .cfi_startproc
+ 933              	 
+ 934              	 
+ 935 0000 80B5     	 push {r7,lr}
+ 936              	.LCFI35:
+ 937              	 .cfi_def_cfa_offset 8
+ 938              	 .cfi_offset 7,-8
+ 939              	 .cfi_offset 14,-4
+ 940 0002 82B0     	 sub sp,sp,#8
+ 941              	.LCFI36:
+ 942              	 .cfi_def_cfa_offset 16
+ 943 0004 00AF     	 add r7,sp,#0
+ 944              	.LCFI37:
+ 945              	 .cfi_def_cfa_register 7
+ 222:../cleanflight/src/main/flight/gps_rescue.c ****     rescueState.sensor.currentAltitude = getEstimatedAltitude();
+ 946              	 .loc 6 222 0
+ 947 0006 FFF7FEFF 	 bl getEstimatedAltitude
+ 948 000a 0246     	 mov r2,r0
+ 949 000c 664B     	 ldr r3,.L67
+ 950 000e C3F80620 	 str r2,[r3,#6]
+ 223:../cleanflight/src/main/flight/gps_rescue.c **** 
+ 224:../cleanflight/src/main/flight/gps_rescue.c ****     // Calculate altitude velocity
+ 225:../cleanflight/src/main/flight/gps_rescue.c ****     static uint32_t previousTimeUs;
+ 226:../cleanflight/src/main/flight/gps_rescue.c ****     static int32_t previousAltitude;
+ 227:../cleanflight/src/main/flight/gps_rescue.c **** 
+ 228:../cleanflight/src/main/flight/gps_rescue.c ****     const uint32_t currentTimeUs = micros();
+ 951              	 .loc 6 228 0
+ 952 0012 FFF7FEFF 	 bl micros
+ 953 0016 7860     	 str r0,[r7,#4]
+ 229:../cleanflight/src/main/flight/gps_rescue.c ****     const float dTime = currentTimeUs - previousTimeUs;
+ 954              	 .loc 6 229 0
+ 955 0018 644B     	 ldr r3,.L67+4
+ 956 001a 1B68     	 ldr r3,[r3]
+ 957 001c 7A68     	 ldr r2,[r7,#4]
+ 958 001e D31A     	 subs r3,r2,r3
+ 959 0020 07EE903A 	 fmsr s15,r3
+ 960 0024 F8EE677A 	 fuitos s15,s15
+ 961 0028 C7ED007A 	 fsts s15,[r7]
+ 230:../cleanflight/src/main/flight/gps_rescue.c **** 
+ 231:../cleanflight/src/main/flight/gps_rescue.c ****     if (newGPSData) { // Calculate velocity at lowest common denominator
+ 962              	 .loc 6 231 0
+ 963 002c 604B     	 ldr r3,.L67+8
+ 964 002e 1B78     	 ldrb r3,[r3]
+ 965 0030 002B     	 cmp r3,#0
+ 966 0032 00F0B580 	 beq .L65
+ 232:../cleanflight/src/main/flight/gps_rescue.c ****         rescueState.sensor.distanceToHome = GPS_distanceToHome;
+ 967              	 .loc 6 232 0
+ 968 0036 5F4B     	 ldr r3,.L67+12
+ 969 0038 1A88     	 ldrh r2,[r3]
+ 970 003a 5B4B     	 ldr r3,.L67
+ 971 003c 5A81     	 strh r2,[r3,#10]
+ 233:../cleanflight/src/main/flight/gps_rescue.c ****         rescueState.sensor.directionToHome = GPS_directionToHome;
+ 972              	 .loc 6 233 0
+ 973 003e 5E4B     	 ldr r3,.L67+16
+ 974 0040 1A88     	 ldrh r2,[r3]
+ 975 0042 594B     	 ldr r3,.L67
+ 976 0044 DA81     	 strh r2,[r3,#14]
+ 234:../cleanflight/src/main/flight/gps_rescue.c ****         rescueState.sensor.numSat = gpsSol.numSat;
+ 977              	 .loc 6 234 0
+ 978 0046 5D4B     	 ldr r3,.L67+20
+ 979 0048 9A7C     	 ldrb r2,[r3,#18]
+ 980 004a 574B     	 ldr r3,.L67
+ 981 004c 9A74     	 strb r2,[r3,#18]
+ 235:../cleanflight/src/main/flight/gps_rescue.c ****         rescueState.sensor.groundSpeed = gpsSol.groundSpeed;
+ 982              	 .loc 6 235 0
+ 983 004e 5B4B     	 ldr r3,.L67+20
+ 984 0050 9B89     	 ldrh r3,[r3,#12]
+ 985 0052 9AB2     	 uxth r2,r3
+ 986 0054 544B     	 ldr r3,.L67
+ 987 0056 1A82     	 strh r2,[r3,#16]
+ 236:../cleanflight/src/main/flight/gps_rescue.c **** 
+ 237:../cleanflight/src/main/flight/gps_rescue.c ****         rescueState.sensor.zVelocity = (rescueState.sensor.currentAltitude - previousAltitude) * 10
+ 988              	 .loc 6 237 0
+ 989 0058 534B     	 ldr r3,.L67
+ 990 005a D3F80620 	 ldr r2,[r3,#6]
+ 991 005e 584B     	 ldr r3,.L67+24
+ 992 0060 1B68     	 ldr r3,[r3]
+ 993 0062 D31A     	 subs r3,r2,r3
+ 994 0064 07EE903A 	 fmsr s15,r3
+ 995 0068 F8EEE77A 	 fsitos s15,s15
+ 996 006c 9FED557A 	 flds s14,.L67+28
+ 997 0070 27EE877A 	 fmuls s14,s15,s14
+ 998 0074 D7ED007A 	 flds s15,[r7]
+ 999 0078 C7EE277A 	 fdivs s15,s14,s15
+ 1000 007c 4A4B     	 ldr r3,.L67
+ 1001 007e 1333     	 adds r3,r3,#19
+ 1002 0080 17EE902A 	 fmrs r2,s15
+ 1003 0084 1A60     	 str r2,[r3]
+ 238:../cleanflight/src/main/flight/gps_rescue.c ****         rescueState.sensor.zVelocityAvg = 0.8f * rescueState.sensor.zVelocityAvg + rescueState.sens
+ 1004              	 .loc 6 238 0
+ 1005 0086 484B     	 ldr r3,.L67
+ 1006 0088 D3F81730 	 ldr r3,[r3,#23]
+ 1007 008c DFED4E7A 	 flds s15,.L67+32
+ 1008 0090 07EE103A 	 fmsr s14,r3
+ 1009 0094 27EE277A 	 fmuls s14,s14,s15
+ 1010 0098 434B     	 ldr r3,.L67
+ 1011 009a D3F81330 	 ldr r3,[r3,#19]
+ 1012 009e DFED4B7A 	 flds s15,.L67+36
+ 1013 00a2 06EE903A 	 fmsr s13,r3
+ 1014 00a6 66EEA77A 	 fmuls s15,s13,s15
+ 1015 00aa 77EE277A 	 fadds s15,s14,s15
+ 1016 00ae 3E4B     	 ldr r3,.L67
+ 1017 00b0 1733     	 adds r3,r3,#23
+ 1018 00b2 17EE902A 	 fmrs r2,s15
+ 1019 00b6 1A60     	 str r2,[r3]
+ 239:../cleanflight/src/main/flight/gps_rescue.c **** 
+ 240:../cleanflight/src/main/flight/gps_rescue.c ****         rescueState.sensor.accMagnitude = (float) sqrt(sq(acc.accADC[Z]) + sq(acc.accADC[X]) + sq(a
+ 1020              	 .loc 6 240 0
+ 1021 00b8 454B     	 ldr r3,.L67+40
+ 1022 00ba D3F82D20 	 ldr r2,[r3,#45]
+ 1023 00be 1346     	 mov r3,r2
+ 1024 00c0 1A46     	 mov r2,r3
+ 1025 00c2 434B     	 ldr r3,.L67+40
+ 1026 00c4 D3F82D30 	 ldr r3,[r3,#45]
+ 1027 00c8 07EE902A 	 fmsr s15,r2
+ 1028 00cc 07EE103A 	 fmsr s14,r3
+ 1029 00d0 27EE877A 	 fmuls s14,s15,s14
+ 1030 00d4 3E4B     	 ldr r3,.L67+40
+ 1031 00d6 D3F82520 	 ldr r2,[r3,#37]
+ 1032 00da 1346     	 mov r3,r2
+ 1033 00dc 1A46     	 mov r2,r3
+ 1034 00de 3C4B     	 ldr r3,.L67+40
+ 1035 00e0 D3F82530 	 ldr r3,[r3,#37]
+ 1036 00e4 07EE902A 	 fmsr s15,r2
+ 1037 00e8 06EE903A 	 fmsr s13,r3
+ 1038 00ec 67EEA67A 	 fmuls s15,s15,s13
+ 1039 00f0 37EE277A 	 fadds s14,s14,s15
+ 1040 00f4 364B     	 ldr r3,.L67+40
+ 1041 00f6 D3F82920 	 ldr r2,[r3,#41]
+ 1042 00fa 1346     	 mov r3,r2
+ 1043 00fc 1A46     	 mov r2,r3
+ 1044 00fe 344B     	 ldr r3,.L67+40
+ 1045 0100 D3F82930 	 ldr r3,[r3,#41]
+ 1046 0104 07EE902A 	 fmsr s15,r2
+ 1047 0108 06EE903A 	 fmsr s13,r3
+ 1048 010c 67EEA66A 	 fmuls s13,s15,s13
+ 1049 0110 2F4B     	 ldr r3,.L67+40
+ 1050 0112 B3F81130 	 ldrh r3,[r3,#17]
+ 1051 0116 9BB2     	 uxth r3,r3
+ 1052 0118 1A46     	 mov r2,r3
+ 1053 011a 2D4B     	 ldr r3,.L67+40
+ 1054 011c B3F81130 	 ldrh r3,[r3,#17]
+ 1055 0120 9BB2     	 uxth r3,r3
+ 1056 0122 03FB02F3 	 mul r3,r3,r2
+ 1057 0126 07EE903A 	 fmsr s15,r3
+ 1058 012a F8EEE77A 	 fsitos s15,s15
+ 1059 012e C6EEA77A 	 fdivs s15,s13,s15
+ 1060 0132 77EE277A 	 fadds s15,s14,s15
+ 1061 0136 17EE900A 	 fmrs r0,s15
+ 1062 013a FFF7FEFF 	 bl __aeabi_f2d
+ 1063 013e 0246     	 mov r2,r0
+ 1064 0140 0B46     	 mov r3,r1
+ 1065 0142 1046     	 mov r0,r2
+ 1066 0144 1946     	 mov r1,r3
+ 1067 0146 FFF7FEFF 	 bl sqrt
+ 1068 014a 0246     	 mov r2,r0
+ 1069 014c 0B46     	 mov r3,r1
+ 1070 014e 1046     	 mov r0,r2
+ 1071 0150 1946     	 mov r1,r3
+ 1072 0152 FFF7FEFF 	 bl __aeabi_d2f
+ 1073 0156 0246     	 mov r2,r0
+ 1074 0158 134B     	 ldr r3,.L67
+ 1075 015a 1B33     	 adds r3,r3,#27
+ 1076 015c 1A60     	 str r2,[r3]
+ 241:../cleanflight/src/main/flight/gps_rescue.c ****         rescueState.sensor.accMagnitudeAvg = (rescueState.sensor.accMagnitudeAvg * 0.8f) + (rescueS
+ 1077              	 .loc 6 241 0
+ 1078 015e 124B     	 ldr r3,.L67
+ 1079 0160 D3F81F30 	 ldr r3,[r3,#31]
+ 1080 0164 DFED187A 	 flds s15,.L67+32
+ 1081 0168 07EE103A 	 fmsr s14,r3
+ 1082 016c 27EE277A 	 fmuls s14,s14,s15
+ 1083 0170 0D4B     	 ldr r3,.L67
+ 1084 0172 D3F81B30 	 ldr r3,[r3,#27]
+ 1085 0176 DFED157A 	 flds s15,.L67+36
+ 1086 017a 06EE903A 	 fmsr s13,r3
+ 1087 017e 66EEA77A 	 fmuls s15,s13,s15
+ 1088 0182 77EE277A 	 fadds s15,s14,s15
+ 1089 0186 084B     	 ldr r3,.L67
+ 1090 0188 1F33     	 adds r3,r3,#31
+ 1091 018a 17EE902A 	 fmrs r2,s15
+ 1092 018e 1A60     	 str r2,[r3]
+ 242:../cleanflight/src/main/flight/gps_rescue.c **** 
+ 243:../cleanflight/src/main/flight/gps_rescue.c ****         previousAltitude = rescueState.sensor.currentAltitude;
+ 1093              	 .loc 6 243 0
+ 1094 0190 054B     	 ldr r3,.L67
+ 1095 0192 D3F80630 	 ldr r3,[r3,#6]
+ 1096 0196 0A4A     	 ldr r2,.L67+24
+ 1097 0198 1360     	 str r3,[r2]
+ 244:../cleanflight/src/main/flight/gps_rescue.c ****         previousTimeUs = currentTimeUs;
+ 1098              	 .loc 6 244 0
+ 1099 019a 044A     	 ldr r2,.L67+4
+ 1100 019c 7B68     	 ldr r3,[r7,#4]
+ 1101 019e 1360     	 str r3,[r2]
+ 1102              	.L65:
+ 245:../cleanflight/src/main/flight/gps_rescue.c ****     }
+ 246:../cleanflight/src/main/flight/gps_rescue.c **** }
+ 1103              	 .loc 6 246 0
+ 1104 01a0 0837     	 adds r7,r7,#8
+ 1105              	.LCFI38:
+ 1106              	 .cfi_def_cfa_offset 8
+ 1107 01a2 BD46     	 mov sp,r7
+ 1108              	.LCFI39:
+ 1109              	 .cfi_def_cfa_register 13
+ 1110              	 
+ 1111 01a4 80BD     	 pop {r7,pc}
+ 1112              	.L68:
+ 1113 01a6 00BF     	 .align 2
+ 1114              	.L67:
+ 1115 01a8 00000000 	 .word rescueState
+ 1116 01ac 00000000 	 .word previousTimeUs.13984
+ 1117 01b0 00000000 	 .word newGPSData
+ 1118 01b4 00000000 	 .word GPS_distanceToHome
+ 1119 01b8 00000000 	 .word GPS_directionToHome
+ 1120 01bc 00000000 	 .word gpsSol
+ 1121 01c0 00000000 	 .word previousAltitude.13985
+ 1122 01c4 00247449 	 .word 1232348160
+ 1123 01c8 CDCC4C3F 	 .word 1061997773
+ 1124 01cc CDCC4C3E 	 .word 1045220557
+ 1125 01d0 00000000 	 .word acc
+ 1126              	 .cfi_endproc
+ 1127              	.LFE575:
+ 1129              	 .section .text.performSanityChecks,"ax",%progbits
+ 1130              	 .align 2
+ 1131              	 .global performSanityChecks
+ 1132              	 .thumb
+ 1133              	 .thumb_func
+ 1135              	performSanityChecks:
+ 1136              	.LFB576:
+ 247:../cleanflight/src/main/flight/gps_rescue.c **** 
+ 248:../cleanflight/src/main/flight/gps_rescue.c **** void performSanityChecks()
+ 249:../cleanflight/src/main/flight/gps_rescue.c **** {
+ 1137              	 .loc 6 249 0
+ 1138              	 .cfi_startproc
+ 1139              	 
+ 1140              	 
+ 1141 0000 B0B5     	 push {r4,r5,r7,lr}
+ 1142              	.LCFI40:
+ 1143              	 .cfi_def_cfa_offset 16
+ 1144              	 .cfi_offset 4,-16
+ 1145              	 .cfi_offset 5,-12
+ 1146              	 .cfi_offset 7,-8
+ 1147              	 .cfi_offset 14,-4
+ 1148 0002 82B0     	 sub sp,sp,#8
+ 1149              	.LCFI41:
+ 1150              	 .cfi_def_cfa_offset 24
+ 1151 0004 00AF     	 add r7,sp,#0
+ 1152              	.LCFI42:
+ 1153              	 .cfi_def_cfa_register 7
+ 250:../cleanflight/src/main/flight/gps_rescue.c ****     if (rescueState.phase == RESCUE_IDLE) {
+ 1154              	 .loc 6 250 0
+ 1155 0006 434B     	 ldr r3,.L81
+ 1156 0008 1B78     	 ldrb r3,[r3]
+ 1157 000a 002B     	 cmp r3,#0
+ 1158 000c 03D1     	 bne .L70
+ 251:../cleanflight/src/main/flight/gps_rescue.c ****         rescueState.failure = RESCUE_HEALTHY;
+ 1159              	 .loc 6 251 0
+ 1160 000e 414B     	 ldr r3,.L81
+ 1161 0010 0022     	 movs r2,#0
+ 1162 0012 5A70     	 strb r2,[r3,#1]
+ 252:../cleanflight/src/main/flight/gps_rescue.c **** 
+ 253:../cleanflight/src/main/flight/gps_rescue.c ****         return;
+ 1163              	 .loc 6 253 0
+ 1164 0014 7AE0     	 b .L69
+ 1165              	.L70:
+ 254:../cleanflight/src/main/flight/gps_rescue.c ****     }
+ 255:../cleanflight/src/main/flight/gps_rescue.c **** 
+ 256:../cleanflight/src/main/flight/gps_rescue.c ****     // Do not abort until each of these items is fully tested
+ 257:../cleanflight/src/main/flight/gps_rescue.c ****     if (rescueState.failure != RESCUE_HEALTHY) {
+ 1166              	 .loc 6 257 0
+ 1167 0016 3F4B     	 ldr r3,.L81
+ 1168 0018 5B78     	 ldrb r3,[r3,#1]
+ 1169 001a 002B     	 cmp r3,#0
+ 1170 001c 13D0     	 beq .L72
+ 258:../cleanflight/src/main/flight/gps_rescue.c ****         if (gpsRescueConfig()->sanityChecks == RESCUE_SANITY_ON
+ 1171              	 .loc 6 258 0
+ 1172 001e FFF7FEFF 	 bl gpsRescueConfig
+ 1173 0022 0346     	 mov r3,r0
+ 1174 0024 5B7F     	 ldrb r3,[r3,#29]
+ 1175 0026 012B     	 cmp r3,#1
+ 1176 0028 0AD0     	 beq .L73
+ 259:../cleanflight/src/main/flight/gps_rescue.c ****             || (gpsRescueConfig()->sanityChecks == RESCUE_SANITY_FS_ONLY && rescueState.isFailsafe 
+ 1177              	 .loc 6 259 0
+ 1178 002a FFF7FEFF 	 bl gpsRescueConfig
+ 1179 002e 0346     	 mov r3,r0
+ 1180 0030 5B7F     	 ldrb r3,[r3,#29]
+ 1181 0032 022B     	 cmp r3,#2
+ 1182 0034 07D1     	 bne .L72
+ 1183              	 .loc 6 259 0 is_stmt 0 discriminator 1
+ 1184 0036 374B     	 ldr r3,.L81
+ 1185 0038 93F82E30 	 ldrb r3,[r3,#46]
+ 1186 003c 002B     	 cmp r3,#0
+ 1187 003e 02D0     	 beq .L72
+ 1188              	.L73:
+ 260:../cleanflight/src/main/flight/gps_rescue.c ****             rescueState.phase = RESCUE_ABORT;
+ 1189              	 .loc 6 260 0 is_stmt 1
+ 1190 0040 344B     	 ldr r3,.L81
+ 1191 0042 0622     	 movs r2,#6
+ 1192 0044 1A70     	 strb r2,[r3]
+ 1193              	.L72:
+ 261:../cleanflight/src/main/flight/gps_rescue.c ****         }
+ 262:../cleanflight/src/main/flight/gps_rescue.c ****     }
+ 263:../cleanflight/src/main/flight/gps_rescue.c **** 
+ 264:../cleanflight/src/main/flight/gps_rescue.c ****     // Check if crash recovery mode is active, disarm if so.
+ 265:../cleanflight/src/main/flight/gps_rescue.c ****     if (crashRecoveryModeActive()) {
+ 1194              	 .loc 6 265 0
+ 1195 0046 FFF7FEFF 	 bl crashRecoveryModeActive
+ 1196 004a 0346     	 mov r3,r0
+ 1197 004c 002B     	 cmp r3,#0
+ 1198 004e 02D0     	 beq .L74
+ 266:../cleanflight/src/main/flight/gps_rescue.c ****         rescueState.failure = RESCUE_CRASH_DETECTED;
+ 1199              	 .loc 6 266 0
+ 1200 0050 304B     	 ldr r3,.L81
+ 1201 0052 0222     	 movs r2,#2
+ 1202 0054 5A70     	 strb r2,[r3,#1]
+ 1203              	.L74:
+ 267:../cleanflight/src/main/flight/gps_rescue.c ****     }
+ 268:../cleanflight/src/main/flight/gps_rescue.c **** 
+ 269:../cleanflight/src/main/flight/gps_rescue.c ****     //  Things that should run at a low refresh rate (such as flyaway detection, etc)
+ 270:../cleanflight/src/main/flight/gps_rescue.c ****     //  This runs at ~1hz
+ 271:../cleanflight/src/main/flight/gps_rescue.c **** 
+ 272:../cleanflight/src/main/flight/gps_rescue.c ****     static uint32_t previousTimeUs;
+ 273:../cleanflight/src/main/flight/gps_rescue.c **** 
+ 274:../cleanflight/src/main/flight/gps_rescue.c ****     const uint32_t currentTimeUs = micros();
+ 1204              	 .loc 6 274 0
+ 1205 0056 FFF7FEFF 	 bl micros
+ 1206 005a 7860     	 str r0,[r7,#4]
+ 275:../cleanflight/src/main/flight/gps_rescue.c ****     const uint32_t dTime = currentTimeUs - previousTimeUs;
+ 1207              	 .loc 6 275 0
+ 1208 005c 2E4B     	 ldr r3,.L81+4
+ 1209 005e 1B68     	 ldr r3,[r3]
+ 1210 0060 7A68     	 ldr r2,[r7,#4]
+ 1211 0062 D31A     	 subs r3,r2,r3
+ 1212 0064 3B60     	 str r3,[r7]
+ 276:../cleanflight/src/main/flight/gps_rescue.c **** 
+ 277:../cleanflight/src/main/flight/gps_rescue.c ****     if (dTime < 1000000) { //1hz
+ 1213              	 .loc 6 277 0
+ 1214 0066 3B68     	 ldr r3,[r7]
+ 1215 0068 2C4A     	 ldr r2,.L81+8
+ 1216 006a 9342     	 cmp r3,r2
+ 1217 006c 00D8     	 bhi .L75
+ 278:../cleanflight/src/main/flight/gps_rescue.c ****         return;
+ 1218              	 .loc 6 278 0
+ 1219 006e 4DE0     	 b .L69
+ 1220              	.L75:
+ 279:../cleanflight/src/main/flight/gps_rescue.c ****     }
+ 280:../cleanflight/src/main/flight/gps_rescue.c **** 
+ 281:../cleanflight/src/main/flight/gps_rescue.c ****     previousTimeUs = currentTimeUs;
+ 1221              	 .loc 6 281 0
+ 1222 0070 294A     	 ldr r2,.L81+4
+ 1223 0072 7B68     	 ldr r3,[r7,#4]
+ 1224 0074 1360     	 str r3,[r2]
+ 282:../cleanflight/src/main/flight/gps_rescue.c **** 
+ 283:../cleanflight/src/main/flight/gps_rescue.c ****      // Stalled movement detection
+ 284:../cleanflight/src/main/flight/gps_rescue.c ****     static int8_t gsI = 0;
+ 285:../cleanflight/src/main/flight/gps_rescue.c **** 
+ 286:../cleanflight/src/main/flight/gps_rescue.c ****     gsI = constrain(gsI + (rescueState.sensor.groundSpeed < 150) ? 1 : -1, -10, 10);
+ 1225              	 .loc 6 286 0
+ 1226 0076 2A4B     	 ldr r3,.L81+12
+ 1227 0078 1B78     	 ldrb r3,[r3]
+ 1228 007a 5BB2     	 sxtb r3,r3
+ 1229 007c 254A     	 ldr r2,.L81
+ 1230 007e 128A     	 ldrh r2,[r2,#16]
+ 1231 0080 92B2     	 uxth r2,r2
+ 1232 0082 952A     	 cmp r2,#149
+ 1233 0084 94BF     	 ite ls
+ 1234 0086 0122     	 movls r2,#1
+ 1235 0088 0022     	 movhi r2,#0
+ 1236 008a D2B2     	 uxtb r2,r2
+ 1237 008c 1344     	 add r3,r3,r2
+ 1238 008e 002B     	 cmp r3,#0
+ 1239 0090 01D0     	 beq .L76
+ 1240              	 .loc 6 286 0 is_stmt 0 discriminator 1
+ 1241 0092 0123     	 movs r3,#1
+ 1242 0094 01E0     	 b .L77
+ 1243              	.L76:
+ 1244              	 .loc 6 286 0 discriminator 2
+ 1245 0096 4FF0FF33 	 mov r3,#-1
+ 1246              	.L77:
+ 1247              	 .loc 6 286 0 discriminator 4
+ 1248 009a 1846     	 mov r0,r3
+ 1249 009c 6FF00901 	 mvn r1,#9
+ 1250 00a0 0A22     	 movs r2,#10
+ 1251 00a2 FFF7FEFF 	 bl constrain
+ 1252 00a6 0346     	 mov r3,r0
+ 1253 00a8 DAB2     	 uxtb r2,r3
+ 1254 00aa 1D4B     	 ldr r3,.L81+12
+ 1255 00ac 1A70     	 strb r2,[r3]
+ 287:../cleanflight/src/main/flight/gps_rescue.c **** 
+ 288:../cleanflight/src/main/flight/gps_rescue.c ****     if (gsI == 10) {
+ 1256              	 .loc 6 288 0 is_stmt 1 discriminator 4
+ 1257 00ae 1C4B     	 ldr r3,.L81+12
+ 1258 00b0 1B78     	 ldrb r3,[r3]
+ 1259 00b2 5BB2     	 sxtb r3,r3
+ 1260 00b4 0A2B     	 cmp r3,#10
+ 1261 00b6 02D1     	 bne .L78
+ 289:../cleanflight/src/main/flight/gps_rescue.c ****         rescueState.failure = RESCUE_CRASH_DETECTED;
+ 1262              	 .loc 6 289 0
+ 1263 00b8 164B     	 ldr r3,.L81
+ 1264 00ba 0222     	 movs r2,#2
+ 1265 00bc 5A70     	 strb r2,[r3,#1]
+ 1266              	.L78:
+ 290:../cleanflight/src/main/flight/gps_rescue.c ****     }
+ 291:../cleanflight/src/main/flight/gps_rescue.c **** 
+ 292:../cleanflight/src/main/flight/gps_rescue.c ****     // Minimum sat detection
+ 293:../cleanflight/src/main/flight/gps_rescue.c ****     static int8_t msI = 0;
+ 294:../cleanflight/src/main/flight/gps_rescue.c **** 
+ 295:../cleanflight/src/main/flight/gps_rescue.c ****     msI = constrain(msI + (rescueState.sensor.numSat < gpsRescueConfig()->minSats) ? 1 : -1, -5, 5)
+ 1267              	 .loc 6 295 0
+ 1268 00be 194B     	 ldr r3,.L81+16
+ 1269 00c0 1B78     	 ldrb r3,[r3]
+ 1270 00c2 5CB2     	 sxtb r4,r3
+ 1271 00c4 134B     	 ldr r3,.L81
+ 1272 00c6 9D7C     	 ldrb r5,[r3,#18]
+ 1273 00c8 FFF7FEFF 	 bl gpsRescueConfig
+ 1274 00cc 0346     	 mov r3,r0
+ 1275 00ce 1B7F     	 ldrb r3,[r3,#28]
+ 1276 00d0 9D42     	 cmp r5,r3
+ 1277 00d2 34BF     	 ite cc
+ 1278 00d4 0123     	 movcc r3,#1
+ 1279 00d6 0023     	 movcs r3,#0
+ 1280 00d8 DBB2     	 uxtb r3,r3
+ 1281 00da 2344     	 add r3,r3,r4
+ 1282 00dc 002B     	 cmp r3,#0
+ 1283 00de 01D0     	 beq .L79
+ 1284              	 .loc 6 295 0 is_stmt 0 discriminator 1
+ 1285 00e0 0123     	 movs r3,#1
+ 1286 00e2 01E0     	 b .L80
+ 1287              	.L79:
+ 1288              	 .loc 6 295 0 discriminator 2
+ 1289 00e4 4FF0FF33 	 mov r3,#-1
+ 1290              	.L80:
+ 1291              	 .loc 6 295 0 discriminator 4
+ 1292 00e8 1846     	 mov r0,r3
+ 1293 00ea 6FF00401 	 mvn r1,#4
+ 1294 00ee 0522     	 movs r2,#5
+ 1295 00f0 FFF7FEFF 	 bl constrain
+ 1296 00f4 0346     	 mov r3,r0
+ 1297 00f6 DAB2     	 uxtb r2,r3
+ 1298 00f8 0A4B     	 ldr r3,.L81+16
+ 1299 00fa 1A70     	 strb r2,[r3]
+ 296:../cleanflight/src/main/flight/gps_rescue.c **** 
+ 297:../cleanflight/src/main/flight/gps_rescue.c ****     if (msI == 5) {
+ 1300              	 .loc 6 297 0 is_stmt 1 discriminator 4
+ 1301 00fc 094B     	 ldr r3,.L81+16
+ 1302 00fe 1B78     	 ldrb r3,[r3]
+ 1303 0100 5BB2     	 sxtb r3,r3
+ 1304 0102 052B     	 cmp r3,#5
+ 1305 0104 02D1     	 bne .L69
+ 298:../cleanflight/src/main/flight/gps_rescue.c ****         rescueState.failure = RESCUE_FLYAWAY;
+ 1306              	 .loc 6 298 0
+ 1307 0106 034B     	 ldr r3,.L81
+ 1308 0108 0122     	 movs r2,#1
+ 1309 010a 5A70     	 strb r2,[r3,#1]
+ 1310              	.L69:
+ 299:../cleanflight/src/main/flight/gps_rescue.c ****     }
+ 300:../cleanflight/src/main/flight/gps_rescue.c **** }
+ 1311              	 .loc 6 300 0
+ 1312 010c 0837     	 adds r7,r7,#8
+ 1313              	.LCFI43:
+ 1314              	 .cfi_def_cfa_offset 16
+ 1315 010e BD46     	 mov sp,r7
+ 1316              	.LCFI44:
+ 1317              	 .cfi_def_cfa_register 13
+ 1318              	 
+ 1319 0110 B0BD     	 pop {r4,r5,r7,pc}
+ 1320              	.L82:
+ 1321 0112 00BF     	 .align 2
+ 1322              	.L81:
+ 1323 0114 00000000 	 .word rescueState
+ 1324 0118 00000000 	 .word previousTimeUs.13990
+ 1325 011c 3F420F00 	 .word 999999
+ 1326 0120 00000000 	 .word gsI.13993
+ 1327 0124 00000000 	 .word msI.13994
+ 1328              	 .cfi_endproc
+ 1329              	.LFE576:
+ 1331              	 .section .text.rescueStart,"ax",%progbits
+ 1332              	 .align 2
+ 1333              	 .global rescueStart
+ 1334              	 .thumb
+ 1335              	 .thumb_func
+ 1337              	rescueStart:
+ 1338              	.LFB577:
+ 301:../cleanflight/src/main/flight/gps_rescue.c **** 
+ 302:../cleanflight/src/main/flight/gps_rescue.c **** void rescueStart()
+ 303:../cleanflight/src/main/flight/gps_rescue.c **** {
+ 1339              	 .loc 6 303 0
+ 1340              	 .cfi_startproc
+ 1341              	 
+ 1342              	 
+ 1343              	 
+ 1344 0000 80B4     	 push {r7}
+ 1345              	.LCFI45:
+ 1346              	 .cfi_def_cfa_offset 4
+ 1347              	 .cfi_offset 7,-4
+ 1348 0002 00AF     	 add r7,sp,#0
+ 1349              	.LCFI46:
+ 1350              	 .cfi_def_cfa_register 7
+ 304:../cleanflight/src/main/flight/gps_rescue.c ****     rescueState.phase = RESCUE_INITIALIZE;
+ 1351              	 .loc 6 304 0
+ 1352 0004 034B     	 ldr r3,.L84
+ 1353 0006 0122     	 movs r2,#1
+ 1354 0008 1A70     	 strb r2,[r3]
+ 305:../cleanflight/src/main/flight/gps_rescue.c **** }
+ 1355              	 .loc 6 305 0
+ 1356 000a BD46     	 mov sp,r7
+ 1357              	.LCFI47:
+ 1358              	 .cfi_def_cfa_register 13
+ 1359              	 
+ 1360 000c 5DF8047B 	 ldr r7,[sp],#4
+ 1361              	.LCFI48:
+ 1362              	 .cfi_restore 7
+ 1363              	 .cfi_def_cfa_offset 0
+ 1364 0010 7047     	 bx lr
+ 1365              	.L85:
+ 1366 0012 00BF     	 .align 2
+ 1367              	.L84:
+ 1368 0014 00000000 	 .word rescueState
+ 1369              	 .cfi_endproc
+ 1370              	.LFE577:
+ 1372              	 .section .text.rescueStop,"ax",%progbits
+ 1373              	 .align 2
+ 1374              	 .global rescueStop
+ 1375              	 .thumb
+ 1376              	 .thumb_func
+ 1378              	rescueStop:
+ 1379              	.LFB578:
+ 306:../cleanflight/src/main/flight/gps_rescue.c **** 
+ 307:../cleanflight/src/main/flight/gps_rescue.c **** void rescueStop()
+ 308:../cleanflight/src/main/flight/gps_rescue.c **** {
+ 1380              	 .loc 6 308 0
+ 1381              	 .cfi_startproc
+ 1382              	 
+ 1383              	 
+ 1384              	 
+ 1385 0000 80B4     	 push {r7}
+ 1386              	.LCFI49:
+ 1387              	 .cfi_def_cfa_offset 4
+ 1388              	 .cfi_offset 7,-4
+ 1389 0002 00AF     	 add r7,sp,#0
+ 1390              	.LCFI50:
+ 1391              	 .cfi_def_cfa_register 7
+ 309:../cleanflight/src/main/flight/gps_rescue.c ****     rescueState.phase = RESCUE_IDLE;
+ 1392              	 .loc 6 309 0
+ 1393 0004 034B     	 ldr r3,.L87
+ 1394 0006 0022     	 movs r2,#0
+ 1395 0008 1A70     	 strb r2,[r3]
+ 310:../cleanflight/src/main/flight/gps_rescue.c **** }
+ 1396              	 .loc 6 310 0
+ 1397 000a BD46     	 mov sp,r7
+ 1398              	.LCFI51:
+ 1399              	 .cfi_def_cfa_register 13
+ 1400              	 
+ 1401 000c 5DF8047B 	 ldr r7,[sp],#4
+ 1402              	.LCFI52:
+ 1403              	 .cfi_restore 7
+ 1404              	 .cfi_def_cfa_offset 0
+ 1405 0010 7047     	 bx lr
+ 1406              	.L88:
+ 1407 0012 00BF     	 .align 2
+ 1408              	.L87:
+ 1409 0014 00000000 	 .word rescueState
+ 1410              	 .cfi_endproc
+ 1411              	.LFE578:
+ 1413              	 .global __aeabi_dcmplt
+ 1414              	 .global __aeabi_ui2d
+ 1415              	 .section .text.idleTasks,"ax",%progbits
+ 1416              	 .align 2
+ 1417              	 .global idleTasks
+ 1418              	 .thumb
+ 1419              	 .thumb_func
+ 1421              	idleTasks:
+ 1422              	.LFB579:
+ 311:../cleanflight/src/main/flight/gps_rescue.c **** 
+ 312:../cleanflight/src/main/flight/gps_rescue.c **** // Things that need to run regardless of GPS rescue mode being enabled or not
+ 313:../cleanflight/src/main/flight/gps_rescue.c **** void idleTasks()
+ 314:../cleanflight/src/main/flight/gps_rescue.c **** {
+ 1423              	 .loc 6 314 0
+ 1424              	 .cfi_startproc
+ 1425              	 
+ 1426              	 
+ 1427 0000 80B5     	 push {r7,lr}
+ 1428              	.LCFI53:
+ 1429              	 .cfi_def_cfa_offset 8
+ 1430              	 .cfi_offset 7,-8
+ 1431              	 .cfi_offset 14,-4
+ 1432 0002 88B0     	 sub sp,sp,#32
+ 1433              	.LCFI54:
+ 1434              	 .cfi_def_cfa_offset 40
+ 1435 0004 00AF     	 add r7,sp,#0
+ 1436              	.LCFI55:
+ 1437              	 .cfi_def_cfa_register 7
+ 315:../cleanflight/src/main/flight/gps_rescue.c ****     // Do not calculate any of the idle task values when we are not flying
+ 316:../cleanflight/src/main/flight/gps_rescue.c ****     if (!ARMING_FLAG(ARMED)) {
+ 1438              	 .loc 6 316 0
+ 1439 0006 684B     	 ldr r3,.L101+16
+ 1440 0008 1B78     	 ldrb r3,[r3]
+ 1441 000a 03F00103 	 and r3,r3,#1
+ 1442 000e 002B     	 cmp r3,#0
+ 1443 0010 00D1     	 bne .L90
+ 317:../cleanflight/src/main/flight/gps_rescue.c ****         return;
+ 1444              	 .loc 6 317 0
+ 1445 0012 BCE0     	 b .L89
+ 1446              	.L90:
+ 318:../cleanflight/src/main/flight/gps_rescue.c ****     }
+ 319:../cleanflight/src/main/flight/gps_rescue.c **** 
+ 320:../cleanflight/src/main/flight/gps_rescue.c ****     // Don't update any rescue flight statistics if we haven't applied a proper altitude offset yet
+ 321:../cleanflight/src/main/flight/gps_rescue.c ****     if (!isAltitudeOffset()) {
+ 1447              	 .loc 6 321 0
+ 1448 0014 FFF7FEFF 	 bl isAltitudeOffset
+ 1449 0018 0346     	 mov r3,r0
+ 1450 001a 83F00103 	 eor r3,r3,#1
+ 1451 001e DBB2     	 uxtb r3,r3
+ 1452 0020 002B     	 cmp r3,#0
+ 1453 0022 00D0     	 beq .L92
+ 322:../cleanflight/src/main/flight/gps_rescue.c ****         return;
+ 1454              	 .loc 6 322 0 discriminator 2
+ 1455 0024 B3E0     	 b .L89
+ 1456              	.L92:
+ 323:../cleanflight/src/main/flight/gps_rescue.c ****     }
+ 324:../cleanflight/src/main/flight/gps_rescue.c **** 
+ 325:../cleanflight/src/main/flight/gps_rescue.c ****     gpsRescueAngle[AI_PITCH] = 0;
+ 1457              	 .loc 6 325 0
+ 1458 0026 614B     	 ldr r3,.L101+20
+ 1459 0028 0022     	 movs r2,#0
+ 1460 002a 5A60     	 str r2,[r3,#4]
+ 326:../cleanflight/src/main/flight/gps_rescue.c ****     gpsRescueAngle[AI_ROLL] = 0;
+ 1461              	 .loc 6 326 0
+ 1462 002c 5F4B     	 ldr r3,.L101+20
+ 1463 002e 0022     	 movs r2,#0
+ 1464 0030 1A60     	 str r2,[r3]
+ 1465              	.LBB6:
+ 327:../cleanflight/src/main/flight/gps_rescue.c **** 
+ 328:../cleanflight/src/main/flight/gps_rescue.c ****     // Store the max altitude we see not during RTH so we know our fly-back minimum alt
+ 329:../cleanflight/src/main/flight/gps_rescue.c ****     rescueState.sensor.maxAltitude = MAX(rescueState.sensor.currentAltitude, rescueState.sensor.max
+ 1466              	 .loc 6 329 0
+ 1467 0032 5F4B     	 ldr r3,.L101+24
+ 1468 0034 D3F80630 	 ldr r3,[r3,#6]
+ 1469 0038 FB61     	 str r3,[r7,#28]
+ 1470 003a 5D4B     	 ldr r3,.L101+24
+ 1471 003c D3F80230 	 ldr r3,[r3,#2]
+ 1472 0040 BB61     	 str r3,[r7,#24]
+ 1473 0042 BA69     	 ldr r2,[r7,#24]
+ 1474 0044 FB69     	 ldr r3,[r7,#28]
+ 1475 0046 9342     	 cmp r3,r2
+ 1476 0048 B8BF     	 it lt
+ 1477 004a 1346     	 movlt r3,r2
+ 1478              	.LBE6:
+ 1479 004c 584A     	 ldr r2,.L101+24
+ 1480 004e C2F80230 	 str r3,[r2,#2]
+ 1481              	.LBB7:
+ 330:../cleanflight/src/main/flight/gps_rescue.c ****     // Store the max distance to home during normal flight so we know if a flyaway is happening
+ 331:../cleanflight/src/main/flight/gps_rescue.c ****     rescueState.sensor.maxDistanceToHome = MAX(rescueState.sensor.distanceToHome, rescueState.senso
+ 1482              	 .loc 6 331 0
+ 1483 0052 574B     	 ldr r3,.L101+24
+ 1484 0054 9A7A     	 ldrb r2,[r3,#10]
+ 1485 0056 DB7A     	 ldrb r3,[r3,#11]
+ 1486 0058 1B02     	 lsls r3,r3,#8
+ 1487 005a 1343     	 orrs r3,r3,r2
+ 1488 005c FB82     	 strh r3,[r7,#22]
+ 1489 005e 544B     	 ldr r3,.L101+24
+ 1490 0060 1A7B     	 ldrb r2,[r3,#12]
+ 1491 0062 5B7B     	 ldrb r3,[r3,#13]
+ 1492 0064 1B02     	 lsls r3,r3,#8
+ 1493 0066 1343     	 orrs r3,r3,r2
+ 1494 0068 BB82     	 strh r3,[r7,#20]
+ 1495 006a BA8A     	 ldrh r2,[r7,#20]
+ 1496 006c FB8A     	 ldrh r3,[r7,#22]
+ 1497 006e 9342     	 cmp r3,r2
+ 1498 0070 38BF     	 it cc
+ 1499 0072 1346     	 movcc r3,r2
+ 1500 0074 9BB2     	 uxth r3,r3
+ 1501              	.LBE7:
+ 1502 0076 9AB2     	 uxth r2,r3
+ 1503 0078 4D4B     	 ldr r3,.L101+24
+ 1504 007a 9A81     	 strh r2,[r3,#12]
+ 332:../cleanflight/src/main/flight/gps_rescue.c **** 
+ 333:../cleanflight/src/main/flight/gps_rescue.c ****     rescueThrottle = rcCommand[THROTTLE];
+ 1505              	 .loc 6 333 0
+ 1506 007c 4D4B     	 ldr r3,.L101+28
+ 1507 007e D3ED037A 	 flds s15,[r3,#12]
+ 1508 0082 FCEEE77A 	 ftouizs s15,s15
+ 1509 0086 C7ED017A 	 fsts s15,[r7,#4]
+ 1510 008a BB88     	 ldrh r3,[r7,#4]
+ 1511 008c 9AB2     	 uxth r2,r3
+ 1512 008e 4A4B     	 ldr r3,.L101+32
+ 1513 0090 1A80     	 strh r2,[r3]
+ 334:../cleanflight/src/main/flight/gps_rescue.c **** 
+ 335:../cleanflight/src/main/flight/gps_rescue.c ****     //to do: have a default value for hoverThrottle
+ 336:../cleanflight/src/main/flight/gps_rescue.c ****     
+ 337:../cleanflight/src/main/flight/gps_rescue.c ****     // FIXME: GPS Rescue throttle handling should take into account min_check as the
+ 338:../cleanflight/src/main/flight/gps_rescue.c ****     // active throttle is from min_check through PWM_RANGE_MAX. Currently adjusting for this
+ 339:../cleanflight/src/main/flight/gps_rescue.c ****     // in gpsRescueGetThrottle() but it would be better handled here.
+ 340:../cleanflight/src/main/flight/gps_rescue.c **** 
+ 341:../cleanflight/src/main/flight/gps_rescue.c ****     float ct = getCosTiltAngle();
+ 1514              	 .loc 6 341 0
+ 1515 0092 FFF7FEFF 	 bl getCosTiltAngle
+ 1516 0096 3861     	 str r0,[r7,#16]
+ 342:../cleanflight/src/main/flight/gps_rescue.c ****     if (ct > 0.5 && ct < 0.96 && throttleSamples < 1E6 && rescueThrottle > 1070) { //5 to 45 degree
+ 1517              	 .loc 6 342 0
+ 1518 0098 D7ED047A 	 flds s15,[r7,#16]
+ 1519 009c B6EE007A 	 fconsts s14,#96
+ 1520 00a0 F4EEC77A 	 fcmpes s15,s14
+ 1521 00a4 F1EE10FA 	 fmstat
+ 1522 00a8 71DD     	 ble .L89
+ 1523              	 .loc 6 342 0 is_stmt 0 discriminator 1
+ 1524 00aa 3869     	 ldr r0,[r7,#16]
+ 1525 00ac FFF7FEFF 	 bl __aeabi_f2d
+ 1526 00b0 0246     	 mov r2,r0
+ 1527 00b2 0B46     	 mov r3,r1
+ 1528 00b4 1046     	 mov r0,r2
+ 1529 00b6 1946     	 mov r1,r3
+ 1530 00b8 37A3     	 adr r3,.L101
+ 1531 00ba D3E90023 	 ldrd r2,[r3]
+ 1532 00be FFF7FEFF 	 bl __aeabi_dcmplt
+ 1533 00c2 0346     	 mov r3,r0
+ 1534 00c4 002B     	 cmp r3,#0
+ 1535 00c6 62D0     	 beq .L89
+ 1536              	 .loc 6 342 0 discriminator 2
+ 1537 00c8 3C4B     	 ldr r3,.L101+36
+ 1538 00ca 1B68     	 ldr r3,[r3]
+ 1539 00cc 1846     	 mov r0,r3
+ 1540 00ce FFF7FEFF 	 bl __aeabi_ui2d
+ 1541 00d2 0246     	 mov r2,r0
+ 1542 00d4 0B46     	 mov r3,r1
+ 1543 00d6 1046     	 mov r0,r2
+ 1544 00d8 1946     	 mov r1,r3
+ 1545 00da 31A3     	 adr r3,.L101+8
+ 1546 00dc D3E90023 	 ldrd r2,[r3]
+ 1547 00e0 FFF7FEFF 	 bl __aeabi_dcmplt
+ 1548 00e4 0346     	 mov r3,r0
+ 1549 00e6 002B     	 cmp r3,#0
+ 1550 00e8 51D0     	 beq .L89
+ 1551              	 .loc 6 342 0 discriminator 3
+ 1552 00ea 334B     	 ldr r3,.L101+32
+ 1553 00ec 1B88     	 ldrh r3,[r3]
+ 1554 00ee 40F22E42 	 movw r2,#1070
+ 1555 00f2 9342     	 cmp r3,r2
+ 1556 00f4 4BD9     	 bls .L89
+ 1557              	.LBB8:
+ 343:../cleanflight/src/main/flight/gps_rescue.c ****         //TO DO: only sample when acceleration is low
+ 344:../cleanflight/src/main/flight/gps_rescue.c ****         uint16_t adjustedThrottle = 1000 + (rescueThrottle - PWM_RANGE_MIN) * ct;
+ 1558              	 .loc 6 344 0 is_stmt 1
+ 1559 00f6 304B     	 ldr r3,.L101+32
+ 1560 00f8 1B88     	 ldrh r3,[r3]
+ 1561 00fa A3F57A73 	 sub r3,r3,#1000
+ 1562 00fe 07EE903A 	 fmsr s15,r3
+ 1563 0102 B8EEE77A 	 fsitos s14,s15
+ 1564 0106 D7ED047A 	 flds s15,[r7,#16]
+ 1565 010a 67EE277A 	 fmuls s15,s14,s15
+ 1566 010e 9FED2C7A 	 flds s14,.L101+40
+ 1567 0112 77EE877A 	 fadds s15,s15,s14
+ 1568 0116 FCEEE77A 	 ftouizs s15,s15
+ 1569 011a C7ED017A 	 fsts s15,[r7,#4]
+ 1570 011e BB88     	 ldrh r3,[r7,#4]
+ 1571 0120 FB81     	 strh r3,[r7,#14]
+ 345:../cleanflight/src/main/flight/gps_rescue.c ****         if (throttleSamples == 0) {
+ 1572              	 .loc 6 345 0
+ 1573 0122 264B     	 ldr r3,.L101+36
+ 1574 0124 1B68     	 ldr r3,[r3]
+ 1575 0126 002B     	 cmp r3,#0
+ 1576 0128 08D1     	 bne .L96
+ 346:../cleanflight/src/main/flight/gps_rescue.c ****             averageThrottle = adjustedThrottle;
+ 1577              	 .loc 6 346 0
+ 1578 012a FB89     	 ldrh r3,[r7,#14]
+ 1579 012c 07EE903A 	 fmsr s15,r3
+ 1580 0130 F8EE677A 	 fuitos s15,s15
+ 1581 0134 234B     	 ldr r3,.L101+44
+ 1582 0136 C3ED007A 	 fsts s15,[r3]
+ 1583 013a 1AE0     	 b .L97
+ 1584              	.L96:
+ 347:../cleanflight/src/main/flight/gps_rescue.c ****         } else {
+ 348:../cleanflight/src/main/flight/gps_rescue.c ****             averageThrottle += (adjustedThrottle - averageThrottle) / (throttleSamples + 1);
+ 1585              	 .loc 6 348 0
+ 1586 013c FB89     	 ldrh r3,[r7,#14]
+ 1587 013e 07EE903A 	 fmsr s15,r3
+ 1588 0142 B8EEE77A 	 fsitos s14,s15
+ 1589 0146 1F4B     	 ldr r3,.L101+44
+ 1590 0148 D3ED007A 	 flds s15,[r3]
+ 1591 014c 37EE677A 	 fsubs s14,s14,s15
+ 1592 0150 1A4B     	 ldr r3,.L101+36
+ 1593 0152 1B68     	 ldr r3,[r3]
+ 1594 0154 0133     	 adds r3,r3,#1
+ 1595 0156 07EE903A 	 fmsr s15,r3
+ 1596 015a F8EE677A 	 fuitos s15,s15
+ 1597 015e 87EE277A 	 fdivs s14,s14,s15
+ 1598 0162 184B     	 ldr r3,.L101+44
+ 1599 0164 D3ED007A 	 flds s15,[r3]
+ 1600 0168 77EE277A 	 fadds s15,s14,s15
+ 1601 016c 154B     	 ldr r3,.L101+44
+ 1602 016e C3ED007A 	 fsts s15,[r3]
+ 1603              	.L97:
+ 349:../cleanflight/src/main/flight/gps_rescue.c ****         }
+ 350:../cleanflight/src/main/flight/gps_rescue.c ****         hoverThrottle = lrintf(averageThrottle);
+ 1604              	 .loc 6 350 0
+ 1605 0172 144B     	 ldr r3,.L101+44
+ 1606 0174 1B68     	 ldr r3,[r3]
+ 1607 0176 1846     	 mov r0,r3
+ 1608 0178 FFF7FEFF 	 bl lrintf
+ 1609 017c 0346     	 mov r3,r0
+ 1610 017e 9AB2     	 uxth r2,r3
+ 1611 0180 114B     	 ldr r3,.L101+48
+ 1612 0182 1A80     	 strh r2,[r3]
+ 351:../cleanflight/src/main/flight/gps_rescue.c ****         throttleSamples++;
+ 1613              	 .loc 6 351 0
+ 1614 0184 0D4B     	 ldr r3,.L101+36
+ 1615 0186 1B68     	 ldr r3,[r3]
+ 1616 0188 0133     	 adds r3,r3,#1
+ 1617 018a 0C4A     	 ldr r2,.L101+36
+ 1618 018c 1360     	 str r3,[r2]
+ 1619              	.L89:
+ 1620              	.LBE8:
+ 352:../cleanflight/src/main/flight/gps_rescue.c ****     }
+ 353:../cleanflight/src/main/flight/gps_rescue.c **** 
+ 354:../cleanflight/src/main/flight/gps_rescue.c **** }
+ 1621              	 .loc 6 354 0
+ 1622 018e 2037     	 adds r7,r7,#32
+ 1623              	.LCFI56:
+ 1624              	 .cfi_def_cfa_offset 8
+ 1625 0190 BD46     	 mov sp,r7
+ 1626              	.LCFI57:
+ 1627              	 .cfi_def_cfa_register 13
+ 1628              	 
+ 1629 0192 80BD     	 pop {r7,pc}
+ 1630              	.L102:
+ 1631 0194 AFF30080 	 .align 3
+ 1632              	.L101:
+ 1633 0198 B81E85EB 	 .word -343597384
+ 1634 019c 51B8EE3F 	 .word 1072609361
+ 1635 01a0 00000000 	 .word 0
+ 1636 01a4 80842E41 	 .word 1093567616
+ 1637 01a8 00000000 	 .word armingFlags
+ 1638 01ac 00000000 	 .word gpsRescueAngle
+ 1639 01b0 00000000 	 .word rescueState
+ 1640 01b4 00000000 	 .word rcCommand
+ 1641 01b8 00000000 	 .word rescueThrottle
+ 1642 01bc 00000000 	 .word throttleSamples
+ 1643 01c0 00007A44 	 .word 1148846080
+ 1644 01c4 00000000 	 .word averageThrottle
+ 1645 01c8 00000000 	 .word hoverThrottle
+ 1646              	 .cfi_endproc
+ 1647              	.LFE579:
+ 1649 01cc AFF30080 	 .section .text.rescueAttainPosition,"ax",%progbits
+ 1650              	 .align 2
+ 1651              	 .global rescueAttainPosition
+ 1652              	 .thumb
+ 1653              	 .thumb_func
+ 1655              	rescueAttainPosition:
+ 1656              	.LFB580:
+ 355:../cleanflight/src/main/flight/gps_rescue.c **** 
+ 356:../cleanflight/src/main/flight/gps_rescue.c **** void rescueAttainPosition()
+ 357:../cleanflight/src/main/flight/gps_rescue.c **** {
+ 1657              	 .loc 6 357 0
+ 1658              	 .cfi_startproc
+ 1659              	 
+ 1660              	 
+ 1661 0000 B0B5     	 push {r4,r5,r7,lr}
+ 1662              	.LCFI58:
+ 1663              	 .cfi_def_cfa_offset 16
+ 1664              	 .cfi_offset 4,-16
+ 1665              	 .cfi_offset 5,-12
+ 1666              	 .cfi_offset 7,-8
+ 1667              	 .cfi_offset 14,-4
+ 1668 0002 8AB0     	 sub sp,sp,#40
+ 1669              	.LCFI59:
+ 1670              	 .cfi_def_cfa_offset 56
+ 1671 0004 00AF     	 add r7,sp,#0
+ 1672              	.LCFI60:
+ 1673              	 .cfi_def_cfa_register 7
+ 358:../cleanflight/src/main/flight/gps_rescue.c ****     // Point to home if that is in our intent
+ 359:../cleanflight/src/main/flight/gps_rescue.c ****     if (rescueState.intent.crosstrack) {
+ 1674              	 .loc 6 359 0
+ 1675 0006 7C4B     	 ldr r3,.L112
+ 1676 0008 93F82D30 	 ldrb r3,[r3,#45]
+ 1677 000c 002B     	 cmp r3,#0
+ 1678 000e 07D0     	 beq .L104
+ 360:../cleanflight/src/main/flight/gps_rescue.c ****         setBearing(rescueState.sensor.directionToHome);
+ 1679              	 .loc 6 360 0
+ 1680 0010 794B     	 ldr r3,.L112
+ 1681 0012 B3F90E30 	 ldrsh r3,[r3,#14]
+ 1682 0016 9BB2     	 uxth r3,r3
+ 1683 0018 1BB2     	 sxth r3,r3
+ 1684 001a 1846     	 mov r0,r3
+ 1685 001c FFF7FEFF 	 bl setBearing
+ 1686              	.L104:
+ 361:../cleanflight/src/main/flight/gps_rescue.c ****     }
+ 362:../cleanflight/src/main/flight/gps_rescue.c **** 
+ 363:../cleanflight/src/main/flight/gps_rescue.c ****     if (!newGPSData) {
+ 1687              	 .loc 6 363 0
+ 1688 0020 764B     	 ldr r3,.L112+4
+ 1689 0022 1B78     	 ldrb r3,[r3]
+ 1690 0024 83F00103 	 eor r3,r3,#1
+ 1691 0028 DBB2     	 uxtb r3,r3
+ 1692 002a 002B     	 cmp r3,#0
+ 1693 002c 00D0     	 beq .L105
+ 364:../cleanflight/src/main/flight/gps_rescue.c ****         return;
+ 1694              	 .loc 6 364 0
+ 1695 002e 8BE1     	 b .L103
+ 1696              	.L105:
+ 365:../cleanflight/src/main/flight/gps_rescue.c ****     }
+ 366:../cleanflight/src/main/flight/gps_rescue.c **** 
+ 367:../cleanflight/src/main/flight/gps_rescue.c **** 
+ 368:../cleanflight/src/main/flight/gps_rescue.c ****     /**
+ 369:../cleanflight/src/main/flight/gps_rescue.c ****         Speed controller
+ 370:../cleanflight/src/main/flight/gps_rescue.c ****     */
+ 371:../cleanflight/src/main/flight/gps_rescue.c ****     static float previousSpeedError = 0;
+ 372:../cleanflight/src/main/flight/gps_rescue.c ****     static int16_t speedIntegral = 0;
+ 373:../cleanflight/src/main/flight/gps_rescue.c **** 
+ 374:../cleanflight/src/main/flight/gps_rescue.c ****     const int16_t speedError = (rescueState.intent.targetGroundspeed - rescueState.sensor.groundSpe
+ 1697              	 .loc 6 374 0
+ 1698 0030 714B     	 ldr r3,.L112
+ 1699 0032 D3F82730 	 ldr r3,[r3,#39]
+ 1700 0036 704A     	 ldr r2,.L112
+ 1701 0038 128A     	 ldrh r2,[r2,#16]
+ 1702 003a 92B2     	 uxth r2,r2
+ 1703 003c 9B1A     	 subs r3,r3,r2
+ 1704 003e 704A     	 ldr r2,.L112+8
+ 1705 0040 82FB0312 	 smull r1,r2,r2,r3
+ 1706 0044 5211     	 asrs r2,r2,#5
+ 1707 0046 DB17     	 asrs r3,r3,#31
+ 1708 0048 D31A     	 subs r3,r2,r3
+ 1709 004a FB84     	 strh r3,[r7,#38]
+ 375:../cleanflight/src/main/flight/gps_rescue.c ****     const int16_t speedDerivative = speedError - previousSpeedError;
+ 1710              	 .loc 6 375 0
+ 1711 004c B7F92630 	 ldrsh r3,[r7,#38]
+ 1712 0050 07EE903A 	 fmsr s15,r3
+ 1713 0054 B8EEE77A 	 fsitos s14,s15
+ 1714 0058 6A4B     	 ldr r3,.L112+12
+ 1715 005a D3ED007A 	 flds s15,[r3]
+ 1716 005e 77EE677A 	 fsubs s15,s14,s15
+ 1717 0062 FDEEE77A 	 ftosizs s15,s15
+ 1718 0066 C7ED017A 	 fsts s15,[r7,#4]
+ 1719 006a BB88     	 ldrh r3,[r7,#4]
+ 1720 006c BB84     	 strh r3,[r7,#36]
+ 376:../cleanflight/src/main/flight/gps_rescue.c **** 
+ 377:../cleanflight/src/main/flight/gps_rescue.c ****     speedIntegral = constrain(speedIntegral + speedError, -100, 100);
+ 1721              	 .loc 6 377 0
+ 1722 006e 664B     	 ldr r3,.L112+16
+ 1723 0070 1B88     	 ldrh r3,[r3]
+ 1724 0072 1AB2     	 sxth r2,r3
+ 1725 0074 B7F92630 	 ldrsh r3,[r7,#38]
+ 1726 0078 1344     	 add r3,r3,r2
+ 1727 007a 1846     	 mov r0,r3
+ 1728 007c 6FF06301 	 mvn r1,#99
+ 1729 0080 6422     	 movs r2,#100
+ 1730 0082 FFF7FEFF 	 bl constrain
+ 1731 0086 0346     	 mov r3,r0
+ 1732 0088 9AB2     	 uxth r2,r3
+ 1733 008a 5F4B     	 ldr r3,.L112+16
+ 1734 008c 1A80     	 strh r2,[r3]
+ 378:../cleanflight/src/main/flight/gps_rescue.c **** 
+ 379:../cleanflight/src/main/flight/gps_rescue.c ****     previousSpeedError = speedError;
+ 1735              	 .loc 6 379 0
+ 1736 008e B7F92630 	 ldrsh r3,[r7,#38]
+ 1737 0092 07EE903A 	 fmsr s15,r3
+ 1738 0096 F8EEE77A 	 fsitos s15,s15
+ 1739 009a 5A4B     	 ldr r3,.L112+12
+ 1740 009c C3ED007A 	 fsts s15,[r3]
+ 380:../cleanflight/src/main/flight/gps_rescue.c **** 
+ 381:../cleanflight/src/main/flight/gps_rescue.c ****     int16_t angleAdjustment =  gpsRescueConfig()->velP * speedError + (gpsRescueConfig()->velI * sp
+ 1741              	 .loc 6 381 0
+ 1742 00a0 FFF7FEFF 	 bl gpsRescueConfig
+ 1743 00a4 0346     	 mov r3,r0
+ 1744 00a6 DB8A     	 ldrh r3,[r3,#22]
+ 1745 00a8 9AB2     	 uxth r2,r3
+ 1746 00aa FB8C     	 ldrh r3,[r7,#38]
+ 1747 00ac 12FB03F3 	 smulbb r3,r2,r3
+ 1748 00b0 9CB2     	 uxth r4,r3
+ 1749 00b2 FFF7FEFF 	 bl gpsRescueConfig
+ 1750 00b6 0346     	 mov r3,r0
+ 1751 00b8 5B8B     	 ldrh r3,[r3,#26]
+ 1752 00ba 9AB2     	 uxth r2,r3
+ 1753 00bc BB8C     	 ldrh r3,[r7,#36]
+ 1754 00be 12FB03F3 	 smulbb r3,r2,r3
+ 1755 00c2 9BB2     	 uxth r3,r3
+ 1756 00c4 2344     	 add r3,r3,r4
+ 1757 00c6 9CB2     	 uxth r4,r3
+ 1758 00c8 FFF7FEFF 	 bl gpsRescueConfig
+ 1759 00cc 0346     	 mov r3,r0
+ 1760 00ce 1B8B     	 ldrh r3,[r3,#24]
+ 1761 00d0 9BB2     	 uxth r3,r3
+ 1762 00d2 1A46     	 mov r2,r3
+ 1763 00d4 4C4B     	 ldr r3,.L112+16
+ 1764 00d6 1B88     	 ldrh r3,[r3]
+ 1765 00d8 1BB2     	 sxth r3,r3
+ 1766 00da 03FB02F3 	 mul r3,r3,r2
+ 1767 00de 484A     	 ldr r2,.L112+8
+ 1768 00e0 82FB0312 	 smull r1,r2,r2,r3
+ 1769 00e4 5211     	 asrs r2,r2,#5
+ 1770 00e6 DB17     	 asrs r3,r3,#31
+ 1771 00e8 D31A     	 subs r3,r2,r3
+ 1772 00ea 9BB2     	 uxth r3,r3
+ 1773 00ec 2344     	 add r3,r3,r4
+ 1774 00ee 9BB2     	 uxth r3,r3
+ 1775 00f0 7B84     	 strh r3,[r7,#34]
+ 382:../cleanflight/src/main/flight/gps_rescue.c **** 
+ 383:../cleanflight/src/main/flight/gps_rescue.c ****     gpsRescueAngle[AI_PITCH] = constrain(gpsRescueAngle[AI_PITCH] + MIN(angleAdjustment, 80), rescu
+ 1776              	 .loc 6 383 0
+ 1777 00f2 464B     	 ldr r3,.L112+20
+ 1778 00f4 5A68     	 ldr r2,[r3,#4]
+ 1779              	.LBB9:
+ 1780 00f6 7B8C     	 ldrh r3,[r7,#34]
+ 1781 00f8 3B84     	 strh r3,[r7,#32]
+ 1782 00fa 5023     	 movs r3,#80
+ 1783 00fc FB61     	 str r3,[r7,#28]
+ 1784 00fe B7F92010 	 ldrsh r1,[r7,#32]
+ 1785 0102 FB69     	 ldr r3,[r7,#28]
+ 1786 0104 8B42     	 cmp r3,r1
+ 1787 0106 A8BF     	 it ge
+ 1788 0108 0B46     	 movge r3,r1
+ 1789              	.LBE9:
+ 1790 010a D118     	 adds r1,r2,r3
+ 1791 010c 3A4B     	 ldr r3,.L112
+ 1792 010e 93F82B30 	 ldrb r3,[r3,#43]
+ 1793 0112 1A46     	 mov r2,r3
+ 1794 0114 6423     	 movs r3,#100
+ 1795 0116 03FB02F2 	 mul r2,r3,r2
+ 1796 011a 374B     	 ldr r3,.L112
+ 1797 011c 93F82C30 	 ldrb r3,[r3,#44]
+ 1798 0120 1846     	 mov r0,r3
+ 1799 0122 6423     	 movs r3,#100
+ 1800 0124 03FB00F3 	 mul r3,r3,r0
+ 1801 0128 0846     	 mov r0,r1
+ 1802 012a 1146     	 mov r1,r2
+ 1803 012c 1A46     	 mov r2,r3
+ 1804 012e FFF7FEFF 	 bl constrain
+ 1805 0132 0246     	 mov r2,r0
+ 1806 0134 354B     	 ldr r3,.L112+20
+ 1807 0136 5A60     	 str r2,[r3,#4]
+ 384:../cleanflight/src/main/flight/gps_rescue.c **** 
+ 385:../cleanflight/src/main/flight/gps_rescue.c ****     float ct = cos(DECIDEGREES_TO_RADIANS(gpsRescueAngle[AI_PITCH] / 10));
+ 1808              	 .loc 6 385 0
+ 1809 0138 344B     	 ldr r3,.L112+20
+ 1810 013a 5B68     	 ldr r3,[r3,#4]
+ 1811 013c 344A     	 ldr r2,.L112+24
+ 1812 013e 82FB0312 	 smull r1,r2,r2,r3
+ 1813 0142 9210     	 asrs r2,r2,#2
+ 1814 0144 DB17     	 asrs r3,r3,#31
+ 1815 0146 D31A     	 subs r3,r2,r3
+ 1816 0148 07EE903A 	 fmsr s15,r3
+ 1817 014c F8EEE77A 	 fsitos s15,s15
+ 1818 0150 B2EE047A 	 fconsts s14,#36
+ 1819 0154 C7EE877A 	 fdivs s15,s15,s14
+ 1820 0158 9FED2E7A 	 flds s14,.L112+28
+ 1821 015c 67EE877A 	 fmuls s15,s15,s14
+ 1822 0160 17EE900A 	 fmrs r0,s15
+ 1823 0164 FFF7FEFF 	 bl __aeabi_f2d
+ 1824 0168 0246     	 mov r2,r0
+ 1825 016a 0B46     	 mov r3,r1
+ 1826 016c 1046     	 mov r0,r2
+ 1827 016e 1946     	 mov r1,r3
+ 1828 0170 FFF7FEFF 	 bl cos
+ 1829 0174 0246     	 mov r2,r0
+ 1830 0176 0B46     	 mov r3,r1
+ 1831 0178 1046     	 mov r0,r2
+ 1832 017a 1946     	 mov r1,r3
+ 1833 017c FFF7FEFF 	 bl __aeabi_d2f
+ 1834 0180 0346     	 mov r3,r0
+ 1835 0182 BB61     	 str r3,[r7,#24]
+ 386:../cleanflight/src/main/flight/gps_rescue.c **** 
+ 387:../cleanflight/src/main/flight/gps_rescue.c ****     /**
+ 388:../cleanflight/src/main/flight/gps_rescue.c ****         Altitude controller
+ 389:../cleanflight/src/main/flight/gps_rescue.c ****     */
+ 390:../cleanflight/src/main/flight/gps_rescue.c ****     static float previousAltitudeError = 0;
+ 391:../cleanflight/src/main/flight/gps_rescue.c ****     static int16_t altitudeIntegral = 0;
+ 392:../cleanflight/src/main/flight/gps_rescue.c **** 
+ 393:../cleanflight/src/main/flight/gps_rescue.c ****     const int16_t altitudeError = (rescueState.intent.targetAltitude - rescueState.sensor.currentAl
+ 1836              	 .loc 6 393 0
+ 1837 0184 1C4B     	 ldr r3,.L112
+ 1838 0186 D3F82320 	 ldr r2,[r3,#35]
+ 1839 018a 1B4B     	 ldr r3,.L112
+ 1840 018c D3F80630 	 ldr r3,[r3,#6]
+ 1841 0190 D31A     	 subs r3,r2,r3
+ 1842 0192 1B4A     	 ldr r2,.L112+8
+ 1843 0194 82FB0312 	 smull r1,r2,r2,r3
+ 1844 0198 5211     	 asrs r2,r2,#5
+ 1845 019a DB17     	 asrs r3,r3,#31
+ 1846 019c D31A     	 subs r3,r2,r3
+ 1847 019e FB82     	 strh r3,[r7,#22]
+ 394:../cleanflight/src/main/flight/gps_rescue.c ****     const int16_t altitudeDerivative = altitudeError - previousAltitudeError;
+ 1848              	 .loc 6 394 0
+ 1849 01a0 B7F91630 	 ldrsh r3,[r7,#22]
+ 1850 01a4 07EE903A 	 fmsr s15,r3
+ 1851 01a8 B8EEE77A 	 fsitos s14,s15
+ 1852 01ac 1A4B     	 ldr r3,.L112+32
+ 1853 01ae D3ED007A 	 flds s15,[r3]
+ 1854 01b2 77EE677A 	 fsubs s15,s14,s15
+ 1855 01b6 FDEEE77A 	 ftosizs s15,s15
+ 1856 01ba C7ED017A 	 fsts s15,[r7,#4]
+ 1857 01be BB88     	 ldrh r3,[r7,#4]
+ 1858 01c0 BB82     	 strh r3,[r7,#20]
+ 1859              	.LBB10:
+ 395:../cleanflight/src/main/flight/gps_rescue.c **** 
+ 396:../cleanflight/src/main/flight/gps_rescue.c ****     // Only allow integral windup within +-15m absolute altitude error
+ 397:../cleanflight/src/main/flight/gps_rescue.c ****     if (ABS(altitudeError) < 25) {
+ 1860              	 .loc 6 397 0
+ 1861 01c2 FB8A     	 ldrh r3,[r7,#22]
+ 1862 01c4 7B82     	 strh r3,[r7,#18]
+ 1863 01c6 B7F91230 	 ldrsh r3,[r7,#18]
+ 1864 01ca 002B     	 cmp r3,#0
+ 1865 01cc B8BF     	 it lt
+ 1866 01ce 5B42     	 rsblt r3,r3,#0
+ 1867              	.LBE10:
+ 1868 01d0 182B     	 cmp r3,#24
+ 1869 01d2 25DC     	 bgt .L107
+ 398:../cleanflight/src/main/flight/gps_rescue.c ****         altitudeIntegral = constrain(altitudeIntegral + altitudeError, -250, 250);
+ 1870              	 .loc 6 398 0
+ 1871 01d4 114B     	 ldr r3,.L112+36
+ 1872 01d6 1B88     	 ldrh r3,[r3]
+ 1873 01d8 1AB2     	 sxth r2,r3
+ 1874 01da B7F91630 	 ldrsh r3,[r7,#22]
+ 1875 01de 1344     	 add r3,r3,r2
+ 1876 01e0 1846     	 mov r0,r3
+ 1877 01e2 6FF0F901 	 mvn r1,#249
+ 1878 01e6 FA22     	 movs r2,#250
+ 1879 01e8 FFF7FEFF 	 bl constrain
+ 1880 01ec 0346     	 mov r3,r0
+ 1881 01ee 9AB2     	 uxth r2,r3
+ 1882 01f0 0A4B     	 ldr r3,.L112+36
+ 1883 01f2 1A80     	 strh r2,[r3]
+ 1884 01f4 17E0     	 b .L108
+ 1885              	.L113:
+ 1886 01f6 00BF     	 .align 2
+ 1887              	.L112:
+ 1888 01f8 00000000 	 .word rescueState
+ 1889 01fc 00000000 	 .word newGPSData
+ 1890 0200 1F85EB51 	 .word 1374389535
+ 1891 0204 00000000 	 .word previousSpeedError.14011
+ 1892 0208 00000000 	 .word speedIntegral.14012
+ 1893 020c 00000000 	 .word gpsRescueAngle
+ 1894 0210 67666666 	 .word 1717986919
+ 1895 0214 35FA8E3C 	 .word 1016003125
+ 1896 0218 00000000 	 .word previousAltitudeError.14020
+ 1897 021c 00000000 	 .word altitudeIntegral.14021
+ 1898              	.L107:
+ 399:../cleanflight/src/main/flight/gps_rescue.c ****     } else {
+ 400:../cleanflight/src/main/flight/gps_rescue.c ****         altitudeIntegral = 0;
+ 1899              	 .loc 6 400 0
+ 1900 0220 4B4B     	 ldr r3,.L114
+ 1901 0222 0022     	 movs r2,#0
+ 1902 0224 1A80     	 strh r2,[r3]
+ 1903              	.L108:
+ 401:../cleanflight/src/main/flight/gps_rescue.c ****     }
+ 402:../cleanflight/src/main/flight/gps_rescue.c **** 
+ 403:../cleanflight/src/main/flight/gps_rescue.c ****     previousAltitudeError = altitudeError;
+ 1904              	 .loc 6 403 0
+ 1905 0226 B7F91630 	 ldrsh r3,[r7,#22]
+ 1906 022a 07EE903A 	 fmsr s15,r3
+ 1907 022e F8EEE77A 	 fsitos s15,s15
+ 1908 0232 484B     	 ldr r3,.L114+4
+ 1909 0234 C3ED007A 	 fsts s15,[r3]
+ 404:../cleanflight/src/main/flight/gps_rescue.c **** 
+ 405:../cleanflight/src/main/flight/gps_rescue.c ****     int16_t altitudeAdjustment = (gpsRescueConfig()->throttleP * altitudeError + (gpsRescueConfig()
+ 1910              	 .loc 6 405 0
+ 1911 0238 FFF7FEFF 	 bl gpsRescueConfig
+ 1912 023c 0346     	 mov r3,r0
+ 1913 023e 1B89     	 ldrh r3,[r3,#8]
+ 1914 0240 9BB2     	 uxth r3,r3
+ 1915 0242 1A46     	 mov r2,r3
+ 1916 0244 B7F91630 	 ldrsh r3,[r7,#22]
+ 1917 0248 03FB02F4 	 mul r4,r3,r2
+ 1918 024c FFF7FEFF 	 bl gpsRescueConfig
+ 1919 0250 0346     	 mov r3,r0
+ 1920 0252 5B89     	 ldrh r3,[r3,#10]
+ 1921 0254 9BB2     	 uxth r3,r3
+ 1922 0256 1A46     	 mov r2,r3
+ 1923 0258 3D4B     	 ldr r3,.L114
+ 1924 025a 1B88     	 ldrh r3,[r3]
+ 1925 025c 1BB2     	 sxth r3,r3
+ 1926 025e 03FB02F3 	 mul r3,r3,r2
+ 1927 0262 3D4A     	 ldr r2,.L114+8
+ 1928 0264 82FB0312 	 smull r1,r2,r2,r3
+ 1929 0268 9210     	 asrs r2,r2,#2
+ 1930 026a DB17     	 asrs r3,r3,#31
+ 1931 026c D51A     	 subs r5,r2,r3
+ 1932 026e FFF7FEFF 	 bl gpsRescueConfig
+ 1933 0272 0346     	 mov r3,r0
+ 1934 0274 9B89     	 ldrh r3,[r3,#12]
+ 1935 0276 9BB2     	 uxth r3,r3
+ 1936 0278 03FB05F3 	 mul r3,r3,r5
+ 1937 027c B7F91420 	 ldrsh r2,[r7,#20]
+ 1938 0280 02FB03F3 	 mul r3,r2,r3
+ 1939 0284 2344     	 add r3,r3,r4
+ 1940 0286 07EE903A 	 fmsr s15,r3
+ 1941 028a B8EEE77A 	 fsitos s14,s15
+ 1942 028e D7ED067A 	 flds s15,[r7,#24]
+ 1943 0292 C7EE277A 	 fdivs s15,s14,s15
+ 1944 0296 B3EE047A 	 fconsts s14,#52
+ 1945 029a C7EE877A 	 fdivs s15,s15,s14
+ 1946 029e FDEEE77A 	 ftosizs s15,s15
+ 1947 02a2 C7ED017A 	 fsts s15,[r7,#4]
+ 1948 02a6 BB88     	 ldrh r3,[r7,#4]
+ 1949 02a8 3B82     	 strh r3,[r7,#16]
+ 406:../cleanflight/src/main/flight/gps_rescue.c ****     int16_t hoverAdjustment = (hoverThrottle - 1000) / ct;
+ 1950              	 .loc 6 406 0
+ 1951 02aa 2C4B     	 ldr r3,.L114+12
+ 1952 02ac 1B88     	 ldrh r3,[r3]
+ 1953 02ae A3F57A73 	 sub r3,r3,#1000
+ 1954 02b2 07EE903A 	 fmsr s15,r3
+ 1955 02b6 B8EEE77A 	 fsitos s14,s15
+ 1956 02ba D7ED067A 	 flds s15,[r7,#24]
+ 1957 02be C7EE277A 	 fdivs s15,s14,s15
+ 1958 02c2 FDEEE77A 	 ftosizs s15,s15
+ 1959 02c6 C7ED017A 	 fsts s15,[r7,#4]
+ 1960 02ca BB88     	 ldrh r3,[r7,#4]
+ 1961 02cc FB81     	 strh r3,[r7,#14]
+ 407:../cleanflight/src/main/flight/gps_rescue.c **** 
+ 408:../cleanflight/src/main/flight/gps_rescue.c ****     rescueThrottle = constrain(1000 + altitudeAdjustment + hoverAdjustment, gpsRescueConfig()->thro
+ 1962              	 .loc 6 408 0
+ 1963 02ce B7F91030 	 ldrsh r3,[r7,#16]
+ 1964 02d2 03F57A72 	 add r2,r3,#1000
+ 1965 02d6 B7F90E30 	 ldrsh r3,[r7,#14]
+ 1966 02da D418     	 adds r4,r2,r3
+ 1967 02dc FFF7FEFF 	 bl gpsRescueConfig
+ 1968 02e0 0346     	 mov r3,r0
+ 1969 02e2 1B8A     	 ldrh r3,[r3,#16]
+ 1970 02e4 9BB2     	 uxth r3,r3
+ 1971 02e6 1D46     	 mov r5,r3
+ 1972 02e8 FFF7FEFF 	 bl gpsRescueConfig
+ 1973 02ec 0346     	 mov r3,r0
+ 1974 02ee 5B8A     	 ldrh r3,[r3,#18]
+ 1975 02f0 9BB2     	 uxth r3,r3
+ 1976 02f2 2046     	 mov r0,r4
+ 1977 02f4 2946     	 mov r1,r5
+ 1978 02f6 1A46     	 mov r2,r3
+ 1979 02f8 FFF7FEFF 	 bl constrain
+ 1980 02fc 0346     	 mov r3,r0
+ 1981 02fe 9AB2     	 uxth r2,r3
+ 1982 0300 174B     	 ldr r3,.L114+16
+ 1983 0302 1A80     	 strh r2,[r3]
+ 409:../cleanflight/src/main/flight/gps_rescue.c **** 
+ 410:../cleanflight/src/main/flight/gps_rescue.c ****     DEBUG_SET(DEBUG_RTH, 0, rescueThrottle);
+ 1984              	 .loc 6 410 0
+ 1985 0304 174B     	 ldr r3,.L114+20
+ 1986 0306 1B78     	 ldrb r3,[r3]
+ 1987 0308 252B     	 cmp r3,#37
+ 1988 030a 04D1     	 bne .L109
+ 1989              	 .loc 6 410 0 is_stmt 0 discriminator 1
+ 1990 030c 144B     	 ldr r3,.L114+16
+ 1991 030e 1B88     	 ldrh r3,[r3]
+ 1992 0310 9AB2     	 uxth r2,r3
+ 1993 0312 154B     	 ldr r3,.L114+24
+ 1994 0314 1A80     	 strh r2,[r3]
+ 1995              	.L109:
+ 411:../cleanflight/src/main/flight/gps_rescue.c ****     DEBUG_SET(DEBUG_RTH, 1, gpsRescueAngle[AI_PITCH]);
+ 1996              	 .loc 6 411 0 is_stmt 1
+ 1997 0316 134B     	 ldr r3,.L114+20
+ 1998 0318 1B78     	 ldrb r3,[r3]
+ 1999 031a 252B     	 cmp r3,#37
+ 2000 031c 04D1     	 bne .L110
+ 2001              	 .loc 6 411 0 is_stmt 0 discriminator 1
+ 2002 031e 134B     	 ldr r3,.L114+28
+ 2003 0320 5B68     	 ldr r3,[r3,#4]
+ 2004 0322 9AB2     	 uxth r2,r3
+ 2005 0324 104B     	 ldr r3,.L114+24
+ 2006 0326 5A80     	 strh r2,[r3,#2]
+ 2007              	.L110:
+ 412:../cleanflight/src/main/flight/gps_rescue.c ****     DEBUG_SET(DEBUG_RTH, 2, altitudeAdjustment);
+ 2008              	 .loc 6 412 0 is_stmt 1
+ 2009 0328 0E4B     	 ldr r3,.L114+20
+ 2010 032a 1B78     	 ldrb r3,[r3]
+ 2011 032c 252B     	 cmp r3,#37
+ 2012 032e 02D1     	 bne .L111
+ 2013              	 .loc 6 412 0 is_stmt 0 discriminator 1
+ 2014 0330 0D4A     	 ldr r2,.L114+24
+ 2015 0332 3B8A     	 ldrh r3,[r7,#16]
+ 2016 0334 9380     	 strh r3,[r2,#4]
+ 2017              	.L111:
+ 413:../cleanflight/src/main/flight/gps_rescue.c ****     DEBUG_SET(DEBUG_RTH, 3, rescueState.failure);
+ 2018              	 .loc 6 413 0 is_stmt 1
+ 2019 0336 0B4B     	 ldr r3,.L114+20
+ 2020 0338 1B78     	 ldrb r3,[r3]
+ 2021 033a 252B     	 cmp r3,#37
+ 2022 033c 04D1     	 bne .L103
+ 2023              	 .loc 6 413 0 is_stmt 0 discriminator 1
+ 2024 033e 0C4B     	 ldr r3,.L114+32
+ 2025 0340 5B78     	 ldrb r3,[r3,#1]
+ 2026 0342 9AB2     	 uxth r2,r3
+ 2027 0344 084B     	 ldr r3,.L114+24
+ 2028 0346 DA80     	 strh r2,[r3,#6]
+ 2029              	.L103:
+ 414:../cleanflight/src/main/flight/gps_rescue.c **** }
+ 2030              	 .loc 6 414 0 is_stmt 1
+ 2031 0348 2837     	 adds r7,r7,#40
+ 2032              	.LCFI61:
+ 2033              	 .cfi_def_cfa_offset 16
+ 2034 034a BD46     	 mov sp,r7
+ 2035              	.LCFI62:
+ 2036              	 .cfi_def_cfa_register 13
+ 2037              	 
+ 2038 034c B0BD     	 pop {r4,r5,r7,pc}
+ 2039              	.L115:
+ 2040 034e 00BF     	 .align 2
+ 2041              	.L114:
+ 2042 0350 00000000 	 .word altitudeIntegral.14021
+ 2043 0354 00000000 	 .word previousAltitudeError.14020
+ 2044 0358 67666666 	 .word 1717986919
+ 2045 035c 00000000 	 .word hoverThrottle
+ 2046 0360 00000000 	 .word rescueThrottle
+ 2047 0364 00000000 	 .word debugMode
+ 2048 0368 00000000 	 .word debug
+ 2049 036c 00000000 	 .word gpsRescueAngle
+ 2050 0370 00000000 	 .word rescueState
+ 2051              	 .cfi_endproc
+ 2052              	.LFE580:
+ 2054              	 .section .text.setBearing,"ax",%progbits
+ 2055              	 .align 2
+ 2056              	 .global setBearing
+ 2057              	 .thumb
+ 2058              	 .thumb_func
+ 2060              	setBearing:
+ 2061              	.LFB581:
+ 415:../cleanflight/src/main/flight/gps_rescue.c **** 
+ 416:../cleanflight/src/main/flight/gps_rescue.c **** // Very similar to maghold function on betaflight/cleanflight
+ 417:../cleanflight/src/main/flight/gps_rescue.c **** void setBearing(int16_t desiredHeading)
+ 418:../cleanflight/src/main/flight/gps_rescue.c **** {
+ 2062              	 .loc 6 418 0
+ 2063              	 .cfi_startproc
+ 2064              	 
+ 2065              	 
+ 2066 0000 80B5     	 push {r7,lr}
+ 2067              	.LCFI63:
+ 2068              	 .cfi_def_cfa_offset 8
+ 2069              	 .cfi_offset 7,-8
+ 2070              	 .cfi_offset 14,-4
+ 2071 0002 84B0     	 sub sp,sp,#16
+ 2072              	.LCFI64:
+ 2073              	 .cfi_def_cfa_offset 24
+ 2074 0004 00AF     	 add r7,sp,#0
+ 2075              	.LCFI65:
+ 2076              	 .cfi_def_cfa_register 7
+ 2077 0006 0346     	 mov r3,r0
+ 2078 0008 FB80     	 strh r3,[r7,#6]
+ 419:../cleanflight/src/main/flight/gps_rescue.c ****     float errorAngle = (attitude.values.yaw / 10.0f) - desiredHeading;
+ 2079              	 .loc 6 419 0
+ 2080 000a 354B     	 ldr r3,.L126
+ 2081 000c B3F90430 	 ldrsh r3,[r3,#4]
+ 2082 0010 9BB2     	 uxth r3,r3
+ 2083 0012 1BB2     	 sxth r3,r3
+ 2084 0014 07EE903A 	 fmsr s15,r3
+ 2085 0018 F8EEE77A 	 fsitos s15,s15
+ 2086 001c B2EE047A 	 fconsts s14,#36
+ 2087 0020 87EE877A 	 fdivs s14,s15,s14
+ 2088 0024 B7F90630 	 ldrsh r3,[r7,#6]
+ 2089 0028 07EE903A 	 fmsr s15,r3
+ 2090 002c F8EEE77A 	 fsitos s15,s15
+ 2091 0030 77EE677A 	 fsubs s15,s14,s15
+ 2092 0034 C7ED037A 	 fsts s15,[r7,#12]
+ 420:../cleanflight/src/main/flight/gps_rescue.c **** 
+ 421:../cleanflight/src/main/flight/gps_rescue.c ****     // Determine the most efficient direction to rotate
+ 422:../cleanflight/src/main/flight/gps_rescue.c ****     if (errorAngle <= -180) {
+ 2093              	 .loc 6 422 0
+ 2094 0038 D7ED037A 	 flds s15,[r7,#12]
+ 2095 003c 9FED297A 	 flds s14,.L126+4
+ 2096 0040 F4EEC77A 	 fcmpes s15,s14
+ 2097 0044 F1EE10FA 	 fmstat
+ 2098 0048 08D8     	 bhi .L125
+ 423:../cleanflight/src/main/flight/gps_rescue.c ****         errorAngle += 360;
+ 2099              	 .loc 6 423 0
+ 2100 004a D7ED037A 	 flds s15,[r7,#12]
+ 2101 004e 9FED267A 	 flds s14,.L126+8
+ 2102 0052 77EE877A 	 fadds s15,s15,s14
+ 2103 0056 C7ED037A 	 fsts s15,[r7,#12]
+ 2104 005a 10E0     	 b .L119
+ 2105              	.L125:
+ 424:../cleanflight/src/main/flight/gps_rescue.c ****     } else if (errorAngle > 180) {
+ 2106              	 .loc 6 424 0
+ 2107 005c D7ED037A 	 flds s15,[r7,#12]
+ 2108 0060 9FED227A 	 flds s14,.L126+12
+ 2109 0064 F4EEC77A 	 fcmpes s15,s14
+ 2110 0068 F1EE10FA 	 fmstat
+ 2111 006c 07DD     	 ble .L119
+ 425:../cleanflight/src/main/flight/gps_rescue.c ****         errorAngle -= 360;
+ 2112              	 .loc 6 425 0
+ 2113 006e D7ED037A 	 flds s15,[r7,#12]
+ 2114 0072 9FED1D7A 	 flds s14,.L126+8
+ 2115 0076 77EEC77A 	 fsubs s15,s15,s14
+ 2116 007a C7ED037A 	 fsts s15,[r7,#12]
+ 2117              	.L119:
+ 426:../cleanflight/src/main/flight/gps_rescue.c ****     }
+ 427:../cleanflight/src/main/flight/gps_rescue.c **** 
+ 428:../cleanflight/src/main/flight/gps_rescue.c ****     errorAngle *= -GET_DIRECTION(rcControlsConfig()->yaw_control_reversed);
+ 2118              	 .loc 6 428 0
+ 2119 007e FFF7FEFF 	 bl rcControlsConfig
+ 2120 0082 0346     	 mov r3,r0
+ 2121 0084 1B79     	 ldrb r3,[r3,#4]
+ 2122 0086 002B     	 cmp r3,#0
+ 2123 0088 01D0     	 beq .L121
+ 2124              	 .loc 6 428 0 is_stmt 0 discriminator 1
+ 2125 008a 0123     	 movs r3,#1
+ 2126 008c 01E0     	 b .L122
+ 2127              	.L121:
+ 2128              	 .loc 6 428 0 discriminator 2
+ 2129 008e 4FF0FF33 	 mov r3,#-1
+ 2130              	.L122:
+ 2131              	 .loc 6 428 0 discriminator 4
+ 2132 0092 07EE903A 	 fmsr s15,r3
+ 2133 0096 F8EEE77A 	 fsitos s15,s15
+ 2134 009a 97ED037A 	 flds s14,[r7,#12]
+ 2135 009e 67EE277A 	 fmuls s15,s14,s15
+ 2136 00a2 C7ED037A 	 fsts s15,[r7,#12]
+ 429:../cleanflight/src/main/flight/gps_rescue.c ****         
+ 430:../cleanflight/src/main/flight/gps_rescue.c ****     // Calculate a desired yaw rate based on a maximum limit beyond
+ 431:../cleanflight/src/main/flight/gps_rescue.c ****     // an error window and then scale the requested rate down inside
+ 432:../cleanflight/src/main/flight/gps_rescue.c ****     // the window as error approaches 0.
+ 433:../cleanflight/src/main/flight/gps_rescue.c ****     rescueYaw = -constrainf(errorAngle / GPS_RESCUE_RATE_SCALE_DEGREES * GPS_RESCUE_MAX_YAW_RATE, -
+ 2137              	 .loc 6 433 0 is_stmt 1 discriminator 4
+ 2138 00a6 D7ED037A 	 flds s15,[r7,#12]
+ 2139 00aa 9FED117A 	 flds s14,.L126+16
+ 2140 00ae C7EE877A 	 fdivs s15,s15,s14
+ 2141 00b2 9FED0D7A 	 flds s14,.L126+8
+ 2142 00b6 67EE877A 	 fmuls s15,s15,s14
+ 2143 00ba B0EE670A 	 fcpys s0,s15
+ 2144 00be DFED0D0A 	 flds s1,.L126+20
+ 2145 00c2 9FED091A 	 flds s2,.L126+8
+ 2146 00c6 FFF7FEFF 	 bl constrainf
+ 2147 00ca F0EE407A 	 fcpys s15,s0
+ 2148 00ce F1EE677A 	 fnegs s15,s15
+ 2149 00d2 094B     	 ldr r3,.L126+24
+ 2150 00d4 C3ED007A 	 fsts s15,[r3]
+ 434:../cleanflight/src/main/flight/gps_rescue.c **** }
+ 2151              	 .loc 6 434 0 discriminator 4
+ 2152 00d8 1037     	 adds r7,r7,#16
+ 2153              	.LCFI66:
+ 2154              	 .cfi_def_cfa_offset 8
+ 2155 00da BD46     	 mov sp,r7
+ 2156              	.LCFI67:
+ 2157              	 .cfi_def_cfa_register 13
+ 2158              	 
+ 2159 00dc 80BD     	 pop {r7,pc}
+ 2160              	.L127:
+ 2161 00de 00BF     	 .align 2
+ 2162              	.L126:
+ 2163 00e0 00000000 	 .word attitude
+ 2164 00e4 000034C3 	 .word -1020002304
+ 2165 00e8 0000B443 	 .word 1135869952
+ 2166 00ec 00003443 	 .word 1127481344
+ 2167 00f0 00003442 	 .word 1110704128
+ 2168 00f4 0000B4C3 	 .word -1011613696
+ 2169 00f8 00000000 	 .word rescueYaw
+ 2170              	 .cfi_endproc
+ 2171              	.LFE581:
+ 2173              	 .section .text.gpsRescueGetYawRate,"ax",%progbits
+ 2174              	 .align 2
+ 2175              	 .global gpsRescueGetYawRate
+ 2176              	 .thumb
+ 2177              	 .thumb_func
+ 2179              	gpsRescueGetYawRate:
+ 2180              	.LFB582:
+ 435:../cleanflight/src/main/flight/gps_rescue.c **** 
+ 436:../cleanflight/src/main/flight/gps_rescue.c **** float gpsRescueGetYawRate(void)
+ 437:../cleanflight/src/main/flight/gps_rescue.c **** {
+ 2181              	 .loc 6 437 0
+ 2182              	 .cfi_startproc
+ 2183              	 
+ 2184              	 
+ 2185              	 
+ 2186 0000 80B4     	 push {r7}
+ 2187              	.LCFI68:
+ 2188              	 .cfi_def_cfa_offset 4
+ 2189              	 .cfi_offset 7,-4
+ 2190 0002 00AF     	 add r7,sp,#0
+ 2191              	.LCFI69:
+ 2192              	 .cfi_def_cfa_register 7
+ 438:../cleanflight/src/main/flight/gps_rescue.c ****     return rescueYaw;
+ 2193              	 .loc 6 438 0
+ 2194 0004 034B     	 ldr r3,.L130
+ 2195 0006 1B68     	 ldr r3,[r3]
+ 439:../cleanflight/src/main/flight/gps_rescue.c **** }
+ 2196              	 .loc 6 439 0
+ 2197 0008 1846     	 mov r0,r3
+ 2198 000a BD46     	 mov sp,r7
+ 2199              	.LCFI70:
+ 2200              	 .cfi_def_cfa_register 13
+ 2201              	 
+ 2202 000c 5DF8047B 	 ldr r7,[sp],#4
+ 2203              	.LCFI71:
+ 2204              	 .cfi_restore 7
+ 2205              	 .cfi_def_cfa_offset 0
+ 2206 0010 7047     	 bx lr
+ 2207              	.L131:
+ 2208 0012 00BF     	 .align 2
+ 2209              	.L130:
+ 2210 0014 00000000 	 .word rescueYaw
+ 2211              	 .cfi_endproc
+ 2212              	.LFE582:
+ 2214              	 .section .text.gpsRescueGetThrottle,"ax",%progbits
+ 2215              	 .align 2
+ 2216              	 .global gpsRescueGetThrottle
+ 2217              	 .thumb
+ 2218              	 .thumb_func
+ 2220              	gpsRescueGetThrottle:
+ 2221              	.LFB583:
+ 440:../cleanflight/src/main/flight/gps_rescue.c **** 
+ 441:../cleanflight/src/main/flight/gps_rescue.c **** float gpsRescueGetThrottle(void)
+ 442:../cleanflight/src/main/flight/gps_rescue.c **** {
+ 2222              	 .loc 6 442 0
+ 2223              	 .cfi_startproc
+ 2224              	 
+ 2225              	 
+ 2226 0000 80B5     	 push {r7,lr}
+ 2227              	.LCFI72:
+ 2228              	 .cfi_def_cfa_offset 8
+ 2229              	 .cfi_offset 7,-8
+ 2230              	 .cfi_offset 14,-4
+ 2231 0002 2DED028B 	 fstmfdd sp!,{d8}
+ 2232              	.LCFI73:
+ 2233              	 .cfi_def_cfa_offset 16
+ 2234              	 .cfi_offset 80,-16
+ 2235              	 .cfi_offset 81,-12
+ 2236 0006 86B0     	 sub sp,sp,#24
+ 2237              	.LCFI74:
+ 2238              	 .cfi_def_cfa_offset 40
+ 2239 0008 02AF     	 add r7,sp,#8
+ 2240              	.LCFI75:
+ 2241              	 .cfi_def_cfa 7,32
+ 443:../cleanflight/src/main/flight/gps_rescue.c ****     // Calculated a desired commanded throttle scaled from 0.0 to 1.0 for use in the mixer.
+ 444:../cleanflight/src/main/flight/gps_rescue.c ****     // We need to compensate for min_check since the throttle value set by gps rescue
+ 445:../cleanflight/src/main/flight/gps_rescue.c ****     // is based on the raw rcCommand value commanded by the pilot.
+ 446:../cleanflight/src/main/flight/gps_rescue.c ****     float commandedThrottle = scaleRangef(rescueThrottle, MAX(rxConfig()->mincheck, PWM_RANGE_MIN),
+ 2242              	 .loc 6 446 0
+ 2243 000a 1C4B     	 ldr r3,.L134
+ 2244 000c 1B88     	 ldrh r3,[r3]
+ 2245 000e 07EE903A 	 fmsr s15,r3
+ 2246 0012 B8EE678A 	 fuitos s16,s15
+ 2247              	.LBB11:
+ 2248 0016 FFF7FEFF 	 bl rxConfig
+ 2249 001a 0346     	 mov r3,r0
+ 2250 001c 1A7D     	 ldrb r2,[r3,#20]
+ 2251 001e 5B7D     	 ldrb r3,[r3,#21]
+ 2252 0020 1B02     	 lsls r3,r3,#8
+ 2253 0022 1343     	 orrs r3,r3,r2
+ 2254 0024 FB81     	 strh r3,[r7,#14]
+ 2255 0026 4FF47A73 	 mov r3,#1000
+ 2256 002a BB60     	 str r3,[r7,#8]
+ 2257 002c FA89     	 ldrh r2,[r7,#14]
+ 2258 002e BB68     	 ldr r3,[r7,#8]
+ 2259 0030 9342     	 cmp r3,r2
+ 2260 0032 B8BF     	 it lt
+ 2261 0034 1346     	 movlt r3,r2
+ 2262              	.LBE11:
+ 2263 0036 07EE903A 	 fmsr s15,r3
+ 2264 003a F8EEE77A 	 fsitos s15,s15
+ 2265 003e 4FF07E53 	 mov r3,#1065353216
+ 2266 0042 0093     	 str r3,[sp]
+ 2267 0044 18EE100A 	 fmrs r0,s16
+ 2268 0048 17EE901A 	 fmrs r1,s15
+ 2269 004c 0C4A     	 ldr r2,.L134+4
+ 2270 004e 4FF00003 	 mov r3,#0
+ 2271 0052 FFF7FEFF 	 bl scaleRangef
+ 2272 0056 7860     	 str r0,[r7,#4]
+ 447:../cleanflight/src/main/flight/gps_rescue.c ****     commandedThrottle = constrainf(commandedThrottle, 0.0f, 1.0f);
+ 2273              	 .loc 6 447 0
+ 2274 0058 97ED010A 	 flds s0,[r7,#4]
+ 2275 005c DFED090A 	 flds s1,.L134+8
+ 2276 0060 B7EE001A 	 fconsts s2,#112
+ 2277 0064 FFF7FEFF 	 bl constrainf
+ 2278 0068 87ED010A 	 fsts s0,[r7,#4]
+ 448:../cleanflight/src/main/flight/gps_rescue.c ****     
+ 449:../cleanflight/src/main/flight/gps_rescue.c ****     return commandedThrottle;
+ 2279              	 .loc 6 449 0
+ 2280 006c 7B68     	 ldr r3,[r7,#4]
+ 450:../cleanflight/src/main/flight/gps_rescue.c **** }
+ 2281              	 .loc 6 450 0
+ 2282 006e 1846     	 mov r0,r3
+ 2283 0070 1037     	 adds r7,r7,#16
+ 2284              	.LCFI76:
+ 2285              	 .cfi_def_cfa_offset 16
+ 2286 0072 BD46     	 mov sp,r7
+ 2287              	.LCFI77:
+ 2288              	 .cfi_def_cfa_register 13
+ 2289              	 
+ 2290 0074 BDEC028B 	 fldmfdd sp!,{d8}
+ 2291              	.LCFI78:
+ 2292              	 .cfi_restore 80
+ 2293              	 .cfi_restore 81
+ 2294              	 .cfi_def_cfa_offset 8
+ 2295 0078 80BD     	 pop {r7,pc}
+ 2296              	.L135:
+ 2297 007a 00BF     	 .align 2
+ 2298              	.L134:
+ 2299 007c 00000000 	 .word rescueThrottle
+ 2300 0080 0000FA44 	 .word 1157234688
+ 2301 0084 00000000 	 .word 0
+ 2302              	 .cfi_endproc
+ 2303              	.LFE583:
+ 2305              	 .section .text.gpsRescueIsConfigured,"ax",%progbits
+ 2306              	 .align 2
+ 2307              	 .global gpsRescueIsConfigured
+ 2308              	 .thumb
+ 2309              	 .thumb_func
+ 2311              	gpsRescueIsConfigured:
+ 2312              	.LFB584:
+ 451:../cleanflight/src/main/flight/gps_rescue.c **** 
+ 452:../cleanflight/src/main/flight/gps_rescue.c **** bool gpsRescueIsConfigured(void)
+ 453:../cleanflight/src/main/flight/gps_rescue.c **** {
+ 2313              	 .loc 6 453 0
+ 2314              	 .cfi_startproc
+ 2315              	 
+ 2316              	 
+ 2317 0000 80B5     	 push {r7,lr}
+ 2318              	.LCFI79:
+ 2319              	 .cfi_def_cfa_offset 8
+ 2320              	 .cfi_offset 7,-8
+ 2321              	 .cfi_offset 14,-4
+ 2322 0002 00AF     	 add r7,sp,#0
+ 2323              	.LCFI80:
+ 2324              	 .cfi_def_cfa_register 7
+ 454:../cleanflight/src/main/flight/gps_rescue.c ****     return failsafeConfig()->failsafe_procedure == FAILSAFE_PROCEDURE_GPS_RESCUE || isModeActivatio
+ 2325              	 .loc 6 454 0
+ 2326 0004 FFF7FEFF 	 bl failsafeConfig
+ 2327 0008 0346     	 mov r3,r0
+ 2328 000a DB79     	 ldrb r3,[r3,#7]
+ 2329 000c 022B     	 cmp r3,#2
+ 2330 000e 05D0     	 beq .L137
+ 2331              	 .loc 6 454 0 is_stmt 0 discriminator 2
+ 2332 0010 0A20     	 movs r0,#10
+ 2333 0012 FFF7FEFF 	 bl isModeActivationConditionPresent
+ 2334 0016 0346     	 mov r3,r0
+ 2335 0018 002B     	 cmp r3,#0
+ 2336 001a 01D0     	 beq .L138
+ 2337              	.L137:
+ 2338              	 .loc 6 454 0 discriminator 3
+ 2339 001c 0123     	 movs r3,#1
+ 2340 001e 00E0     	 b .L139
+ 2341              	.L138:
+ 2342              	 .loc 6 454 0 discriminator 4
+ 2343 0020 0023     	 movs r3,#0
+ 2344              	.L139:
+ 2345              	 .loc 6 454 0 discriminator 6
+ 2346 0022 03F00103 	 and r3,r3,#1
+ 2347 0026 DBB2     	 uxtb r3,r3
+ 455:../cleanflight/src/main/flight/gps_rescue.c **** }
+ 2348              	 .loc 6 455 0 is_stmt 1 discriminator 6
+ 2349 0028 1846     	 mov r0,r3
+ 2350 002a 80BD     	 pop {r7,pc}
+ 2351              	 .cfi_endproc
+ 2352              	.LFE584:
+ 2354              	 .section .bss.previousTimeUs.13984,"aw",%nobits
+ 2355              	 .align 2
+ 2358              	previousTimeUs.13984:
+ 2359 0000 00000000 	 .space 4
+ 2360              	 .section .bss.previousAltitude.13985,"aw",%nobits
+ 2361              	 .align 2
+ 2364              	previousAltitude.13985:
+ 2365 0000 00000000 	 .space 4
+ 2366              	 .section .bss.previousTimeUs.13990,"aw",%nobits
+ 2367              	 .align 2
+ 2370              	previousTimeUs.13990:
+ 2371 0000 00000000 	 .space 4
+ 2372              	 .section .bss.gsI.13993,"aw",%nobits
+ 2375              	gsI.13993:
+ 2376 0000 00       	 .space 1
+ 2377              	 .section .bss.msI.13994,"aw",%nobits
+ 2380              	msI.13994:
+ 2381 0000 00       	 .space 1
+ 2382              	 .section .bss.previousSpeedError.14011,"aw",%nobits
+ 2383              	 .align 2
+ 2386              	previousSpeedError.14011:
+ 2387 0000 00000000 	 .space 4
+ 2388              	 .section .bss.speedIntegral.14012,"aw",%nobits
+ 2389              	 .align 1
+ 2392              	speedIntegral.14012:
+ 2393 0000 0000     	 .space 2
+ 2394              	 .section .bss.previousAltitudeError.14020,"aw",%nobits
+ 2395              	 .align 2
+ 2398              	previousAltitudeError.14020:
+ 2399 0000 00000000 	 .space 4
+ 2400              	 .section .bss.altitudeIntegral.14021,"aw",%nobits
+ 2401              	 .align 1
+ 2404              	altitudeIntegral.14021:
+ 2405 0000 0000     	 .space 2
+ 2406              	 .text
+ 2407              	.Letext0:
+ 2408              	 .file 7 "d:\\xmc\\dave-ide-4.4.2-64bit\\eclipse\\arm-gcc-49\\arm-none-eabi\\include\\machine\\_default_types.h"
+ 2409              	 .file 8 "d:\\xmc\\dave-ide-4.4.2-64bit\\eclipse\\arm-gcc-49\\arm-none-eabi\\include\\stdint.h"
+ 2410              	 .file 9 "D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/lib/main/XMC4000/xmc4700.h"
+ 2411              	 .file 10 "D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/lib/main/XMC4000/XMCLib/inc/xmc_usic.h"
+ 2412              	 .file 11 "D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/platform.h"
+ 2413              	 .file 12 "D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/build/debug.h"
+ 2414              	 .file 13 "D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/common/axis.h"
+ 2415              	 .file 14 "D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/pg/pg.h"
+ 2416              	 .file 15 "D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/common/time.h"
+ 2417              	 .file 16 "D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/io/gps.h"
+ 2418              	 .file 17 "D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/fc/config.h"
+ 2419              	 .file 18 "D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/fc/fc_core.h"
+ 2420              	 .file 19 "D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/fc/rc_modes.h"
+ 2421              	 .file 20 "D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/fc/runtime_config.h"
+ 2422              	 .file 21 "D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/flight/imu.h"
+ 2423              	 .file 22 "D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/flight/pid.h"
+ 2424              	 .file 23 "D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/drivers/io_types.h"
+ 2425              	 .file 24 "D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/rx/rx.h"
+ 2426              	 .file 25 "D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/drivers/bus_i2c.h"
+ 2427              	 .file 26 "D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/drivers/bus.h"
+ 2428              	 .file 27 "D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/drivers/sensor.h"
+ 2429              	 .file 28 "D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/drivers/accgyro/accgyro.h"
+ 2430              	 .file 29 "D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/drivers/accgyro/accgyro_mpu.h"
+ 2431              	 .file 30 "D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/sensors/gyro.h"
+ 2432              	 .file 31 "D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/sensors/sensors.h"
+ 2433              	 .file 32 "D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/sensors/acceleration.h"
+ 2434              	 .file 33 "D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/lib/main/CMSIS/Core/Include/core_cm4.h"
+ 2435              	 .file 34 "D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/lib/main/XMC4000/system_XMC4700.h"
+DEFINED SYMBOLS
+                            *ABS*:00000000 gps_rescue.c
+    {standard input}:20     .text.constrain:00000000 $t
+    {standard input}:24     .text.constrain:00000000 constrain
+    {standard input}:84     .text.constrainf:00000000 $t
+    {standard input}:88     .text.constrainf:00000000 constrainf
+    {standard input}:150    .text.rcControlsConfig:00000000 $t
+    {standard input}:154    .text.rcControlsConfig:00000000 rcControlsConfig
+    {standard input}:184    .text.rcControlsConfig:00000010 $d
+    {standard input}:189    .text.failsafeConfig:00000000 $t
+    {standard input}:193    .text.failsafeConfig:00000000 failsafeConfig
+    {standard input}:223    .text.failsafeConfig:00000010 $d
+    {standard input}:228    .text.rxConfig:00000000 $t
+    {standard input}:232    .text.rxConfig:00000000 rxConfig
+    {standard input}:262    .text.rxConfig:00000010 $d
+    {standard input}:267    .text.gpsRescueConfig:00000000 $t
+    {standard input}:271    .text.gpsRescueConfig:00000000 gpsRescueConfig
+    {standard input}:301    .text.gpsRescueConfig:00000010 $d
+                            *COM*:0000001e gpsRescueConfig_System
+                            *COM*:0000001e gpsRescueConfig_Copy
+    {standard input}:312    .pg_registry:00000000 gpsRescueConfig_Registry
+    {standard input}:309    .pg_registry:00000000 $d
+    {standard input}:324    .pg_resetdata:00000000 pgResetTemplate_gpsRescueConfig
+    {standard input}:321    .pg_resetdata:00000000 $d
+    {standard input}:342    .bss.rescueThrottle:00000000 $d
+    {standard input}:345    .bss.rescueThrottle:00000000 rescueThrottle
+    {standard input}:348    .bss.rescueYaw:00000000 $d
+    {standard input}:351    .bss.rescueYaw:00000000 rescueYaw
+    {standard input}:358    .bss.gpsRescueAngle:00000000 gpsRescueAngle
+    {standard input}:355    .bss.gpsRescueAngle:00000000 $d
+    {standard input}:365    .bss.hoverThrottle:00000000 hoverThrottle
+    {standard input}:362    .bss.hoverThrottle:00000000 $d
+    {standard input}:372    .bss.averageThrottle:00000000 averageThrottle
+    {standard input}:369    .bss.averageThrottle:00000000 $d
+    {standard input}:379    .bss.altitudeError:00000000 altitudeError
+    {standard input}:376    .bss.altitudeError:00000000 $d
+    {standard input}:386    .bss.throttleSamples:00000000 throttleSamples
+    {standard input}:383    .bss.throttleSamples:00000000 $d
+    {standard input}:391    .bss.newGPSData:00000000 newGPSData
+    {standard input}:392    .bss.newGPSData:00000000 $d
+                            *COM*:0000002f rescueState
+    {standard input}:395    .text.rescueNewGpsData:00000000 $t
+    {standard input}:400    .text.rescueNewGpsData:00000000 rescueNewGpsData
+    {standard input}:433    .text.rescueNewGpsData:0000001c $d
+    {standard input}:442    .text.updateGPSRescueState:00000000 $t
+    {standard input}:447    .text.updateGPSRescueState:00000000 updateGPSRescueState
+    {standard input}:1378   .text.rescueStop:00000000 rescueStop
+    {standard input}:1337   .text.rescueStart:00000000 rescueStart
+    {standard input}:929    .text.sensorUpdate:00000000 sensorUpdate
+    {standard input}:507    .text.updateGPSRescueState:00000054 $d
+    {standard input}:515    .text.updateGPSRescueState:00000074 $t
+    {standard input}:1421   .text.idleTasks:00000000 idleTasks
+    {standard input}:795    .text.updateGPSRescueState:00000298 $d
+    {standard input}:801    .text.updateGPSRescueState:000002a8 $t
+    {standard input}:1135   .text.performSanityChecks:00000000 performSanityChecks
+    {standard input}:1655   .text.rescueAttainPosition:00000000 rescueAttainPosition
+    {standard input}:916    .text.updateGPSRescueState:00000380 $d
+    {standard input}:924    .text.sensorUpdate:00000000 $t
+    {standard input}:1115   .text.sensorUpdate:000001a8 $d
+    {standard input}:2358   .bss.previousTimeUs.13984:00000000 previousTimeUs.13984
+    {standard input}:2364   .bss.previousAltitude.13985:00000000 previousAltitude.13985
+    {standard input}:1130   .text.performSanityChecks:00000000 $t
+    {standard input}:1323   .text.performSanityChecks:00000114 $d
+    {standard input}:2370   .bss.previousTimeUs.13990:00000000 previousTimeUs.13990
+    {standard input}:2375   .bss.gsI.13993:00000000 gsI.13993
+    {standard input}:2380   .bss.msI.13994:00000000 msI.13994
+    {standard input}:1332   .text.rescueStart:00000000 $t
+    {standard input}:1368   .text.rescueStart:00000014 $d
+    {standard input}:1373   .text.rescueStop:00000000 $t
+    {standard input}:1409   .text.rescueStop:00000014 $d
+    {standard input}:1416   .text.idleTasks:00000000 $t
+    {standard input}:1633   .text.idleTasks:00000198 $d
+    {standard input}:1650   .text.rescueAttainPosition:00000000 $t
+    {standard input}:2060   .text.setBearing:00000000 setBearing
+    {standard input}:1888   .text.rescueAttainPosition:000001f8 $d
+    {standard input}:2386   .bss.previousSpeedError.14011:00000000 previousSpeedError.14011
+    {standard input}:2392   .bss.speedIntegral.14012:00000000 speedIntegral.14012
+    {standard input}:2398   .bss.previousAltitudeError.14020:00000000 previousAltitudeError.14020
+    {standard input}:2404   .bss.altitudeIntegral.14021:00000000 altitudeIntegral.14021
+    {standard input}:1900   .text.rescueAttainPosition:00000220 $t
+    {standard input}:2042   .text.rescueAttainPosition:00000350 $d
+    {standard input}:2055   .text.setBearing:00000000 $t
+    {standard input}:2163   .text.setBearing:000000e0 $d
+    {standard input}:2174   .text.gpsRescueGetYawRate:00000000 $t
+    {standard input}:2179   .text.gpsRescueGetYawRate:00000000 gpsRescueGetYawRate
+    {standard input}:2210   .text.gpsRescueGetYawRate:00000014 $d
+    {standard input}:2215   .text.gpsRescueGetThrottle:00000000 $t
+    {standard input}:2220   .text.gpsRescueGetThrottle:00000000 gpsRescueGetThrottle
+    {standard input}:2299   .text.gpsRescueGetThrottle:0000007c $d
+    {standard input}:2306   .text.gpsRescueIsConfigured:00000000 $t
+    {standard input}:2311   .text.gpsRescueIsConfigured:00000000 gpsRescueIsConfigured
+    {standard input}:2355   .bss.previousTimeUs.13984:00000000 $d
+    {standard input}:2361   .bss.previousAltitude.13985:00000000 $d
+    {standard input}:2367   .bss.previousTimeUs.13990:00000000 $d
+    {standard input}:2376   .bss.gsI.13993:00000000 $d
+    {standard input}:2381   .bss.msI.13994:00000000 $d
+    {standard input}:2383   .bss.previousSpeedError.14011:00000000 $d
+    {standard input}:2389   .bss.speedIntegral.14012:00000000 $d
+    {standard input}:2395   .bss.previousAltitudeError.14020:00000000 $d
+    {standard input}:2401   .bss.altitudeIntegral.14021:00000000 $d
+                     .debug_frame:00000010 $d
+    {standard input}:1649   .text.idleTasks:000001cc $t
+
+UNDEFINED SYMBOLS
+rcControlsConfig_System
+failsafeConfig_System
+rxConfig_System
+GPS_reset_home_position
+armingFlags
+__aeabi_f2d
+__aeabi_dmul
+__aeabi_dcmpgt
+failsafeIsActive
+setArmingDisabled
+disarm
+flightModeFlags
+__aeabi_d2f
+getEstimatedAltitude
+micros
+sqrt
+GPS_distanceToHome
+GPS_directionToHome
+gpsSol
+acc
+crashRecoveryModeActive
+__aeabi_dcmplt
+__aeabi_ui2d
+isAltitudeOffset
+getCosTiltAngle
+lrintf
+rcCommand
+cos
+debugMode
+debug
+attitude
+scaleRangef
+isModeActivationConditionPresent

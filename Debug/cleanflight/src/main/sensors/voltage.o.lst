@@ -1,0 +1,1300 @@
+   1              	 .syntax unified
+   2              	 .cpu cortex-m4
+   3              	 .eabi_attribute 27,3
+   4              	 .fpu fpv4-sp-d16
+   5              	 .eabi_attribute 20,1
+   6              	 .eabi_attribute 21,1
+   7              	 .eabi_attribute 23,3
+   8              	 .eabi_attribute 24,1
+   9              	 .eabi_attribute 25,1
+  10              	 .eabi_attribute 26,1
+  11              	 .eabi_attribute 30,6
+  12              	 .eabi_attribute 34,1
+  13              	 .eabi_attribute 18,4
+  14              	 .thumb
+  15              	 .file "voltage.c"
+  16              	 .text
+  17              	.Ltext0:
+  18              	 .cfi_sections .debug_frame
+  19              	 .section .text.voltageSensorADCConfig,"ax",%progbits
+  20              	 .align 2
+  21              	 .thumb
+  22              	 .thumb_func
+  24              	voltageSensorADCConfig:
+  25              	.LFB529:
+  26              	 .file 1 "D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/sensors/voltage.h"
+   1:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/sensors\voltage.h **** /*
+   2:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/sensors\voltage.h ****  * This file is part of Cleanflight and Betaflight.
+   3:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/sensors\voltage.h ****  *
+   4:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/sensors\voltage.h ****  * Cleanflight and Betaflight are free software. You can redistribute
+   5:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/sensors\voltage.h ****  * this software and/or modify this software under the terms of the
+   6:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/sensors\voltage.h ****  * GNU General Public License as published by the Free Software
+   7:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/sensors\voltage.h ****  * Foundation, either version 3 of the License, or (at your option)
+   8:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/sensors\voltage.h ****  * any later version.
+   9:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/sensors\voltage.h ****  *
+  10:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/sensors\voltage.h ****  * Cleanflight and Betaflight are distributed in the hope that they
+  11:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/sensors\voltage.h ****  * will be useful, but WITHOUT ANY WARRANTY; without even the implied
+  12:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/sensors\voltage.h ****  * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+  13:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/sensors\voltage.h ****  * See the GNU General Public License for more details.
+  14:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/sensors\voltage.h ****  *
+  15:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/sensors\voltage.h ****  * You should have received a copy of the GNU General Public License
+  16:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/sensors\voltage.h ****  * along with this software.
+  17:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/sensors\voltage.h ****  *
+  18:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/sensors\voltage.h ****  * If not, see <http://www.gnu.org/licenses/>.
+  19:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/sensors\voltage.h ****  */
+  20:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/sensors\voltage.h **** 
+  21:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/sensors\voltage.h **** #pragma once
+  22:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/sensors\voltage.h **** 
+  23:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/sensors\voltage.h **** #include "voltage_ids.h"
+  24:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/sensors\voltage.h **** 
+  25:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/sensors\voltage.h **** //
+  26:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/sensors\voltage.h **** // meters
+  27:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/sensors\voltage.h **** //
+  28:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/sensors\voltage.h **** 
+  29:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/sensors\voltage.h **** typedef enum {
+  30:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/sensors\voltage.h ****     VOLTAGE_METER_NONE = 0,
+  31:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/sensors\voltage.h ****     VOLTAGE_METER_ADC,
+  32:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/sensors\voltage.h ****     VOLTAGE_METER_ESC,
+  33:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/sensors\voltage.h ****     VOLTAGE_METER_COUNT
+  34:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/sensors\voltage.h **** } voltageMeterSource_e;
+  35:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/sensors\voltage.h **** 
+  36:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/sensors\voltage.h **** extern const char * const voltageMeterSourceNames[VOLTAGE_METER_COUNT];
+  37:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/sensors\voltage.h **** 
+  38:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/sensors\voltage.h **** // WARNING - do not mix usage of VOLTAGE_METER_* and VOLTAGE_SENSOR_*, they are separate concerns.
+  39:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/sensors\voltage.h **** 
+  40:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/sensors\voltage.h **** typedef struct voltageMeter_s {
+  41:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/sensors\voltage.h ****     uint16_t filtered;                      // voltage in 0.1V steps
+  42:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/sensors\voltage.h ****     uint16_t unfiltered;                    // voltage in 0.1V steps
+  43:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/sensors\voltage.h ****     bool lowVoltageCutoff;
+  44:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/sensors\voltage.h **** } voltageMeter_t;
+  45:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/sensors\voltage.h **** 
+  46:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/sensors\voltage.h **** 
+  47:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/sensors\voltage.h **** //
+  48:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/sensors\voltage.h **** // sensors
+  49:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/sensors\voltage.h **** //
+  50:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/sensors\voltage.h **** 
+  51:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/sensors\voltage.h **** typedef enum {
+  52:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/sensors\voltage.h ****     VOLTAGE_SENSOR_TYPE_ADC_RESISTOR_DIVIDER = 0,
+  53:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/sensors\voltage.h ****     VOLTAGE_SENSOR_TYPE_ESC
+  54:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/sensors\voltage.h **** } voltageSensorType_e;
+  55:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/sensors\voltage.h **** 
+  56:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/sensors\voltage.h **** 
+  57:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/sensors\voltage.h **** //
+  58:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/sensors\voltage.h **** // adc sensors
+  59:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/sensors\voltage.h **** //
+  60:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/sensors\voltage.h **** 
+  61:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/sensors\voltage.h **** #define VBAT_SCALE_MIN 0
+  62:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/sensors\voltage.h **** #define VBAT_SCALE_MAX 255
+  63:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/sensors\voltage.h **** 
+  64:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/sensors\voltage.h **** #define VBAT_DIVIDER_MIN 1
+  65:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/sensors\voltage.h **** #define VBAT_DIVIDER_MAX 255
+  66:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/sensors\voltage.h **** 
+  67:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/sensors\voltage.h **** #define VBAT_MULTIPLIER_MIN 1
+  68:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/sensors\voltage.h **** #define VBAT_MULTIPLIER_MAX 255
+  69:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/sensors\voltage.h **** 
+  70:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/sensors\voltage.h **** #ifndef VBAT_LPF_FREQ
+  71:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/sensors\voltage.h **** #define VBAT_LPF_FREQ  0.1f
+  72:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/sensors\voltage.h **** #endif
+  73:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/sensors\voltage.h **** 
+  74:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/sensors\voltage.h **** #ifndef MAX_VOLTAGE_SENSOR_ADC
+  75:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/sensors\voltage.h **** #define MAX_VOLTAGE_SENSOR_ADC 1 // VBAT - some boards have external, 12V, 9V and 5V meters.
+  76:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/sensors\voltage.h **** #endif
+  77:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/sensors\voltage.h **** 
+  78:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/sensors\voltage.h **** #define VOLTAGE_METER_ID_ESC_COUNT 12
+  79:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/sensors\voltage.h **** 
+  80:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/sensors\voltage.h **** typedef enum {
+  81:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/sensors\voltage.h ****     VOLTAGE_SENSOR_ADC_VBAT = 0,
+  82:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/sensors\voltage.h ****     VOLTAGE_SENSOR_ADC_12V = 1,
+  83:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/sensors\voltage.h ****     VOLTAGE_SENSOR_ADC_9V = 2,
+  84:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/sensors\voltage.h ****     VOLTAGE_SENSOR_ADC_5V = 3
+  85:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/sensors\voltage.h **** } voltageSensorADC_e; // see also voltageMeterADCtoIDMap
+  86:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/sensors\voltage.h **** 
+  87:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/sensors\voltage.h **** 
+  88:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/sensors\voltage.h **** typedef struct voltageSensorADCConfig_s {
+  89:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/sensors\voltage.h ****     uint8_t vbatscale;                      // adjust this to match battery voltage to reported val
+  90:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/sensors\voltage.h ****     uint8_t vbatresdivval;                  // resistor divider R2 (default NAZE 10(K))
+  91:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/sensors\voltage.h ****     uint8_t vbatresdivmultiplier;           // multiplier for scale (e.g. 2.5:1 ratio with multipli
+  92:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/sensors\voltage.h **** } voltageSensorADCConfig_t;
+  93:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/sensors\voltage.h **** 
+  94:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/sensors\voltage.h **** PG_DECLARE_ARRAY(voltageSensorADCConfig_t, MAX_VOLTAGE_SENSOR_ADC, voltageSensorADCConfig);
+  27              	 .loc 1 94 0
+  28              	 .cfi_startproc
+  29              	 
+  30              	 
+  31              	 
+  32 0000 80B4     	 push {r7}
+  33              	.LCFI0:
+  34              	 .cfi_def_cfa_offset 4
+  35              	 .cfi_offset 7,-4
+  36 0002 83B0     	 sub sp,sp,#12
+  37              	.LCFI1:
+  38              	 .cfi_def_cfa_offset 16
+  39 0004 00AF     	 add r7,sp,#0
+  40              	.LCFI2:
+  41              	 .cfi_def_cfa_register 7
+  42 0006 7860     	 str r0,[r7,#4]
+  43              	 .loc 1 94 0
+  44 0008 7A68     	 ldr r2,[r7,#4]
+  45 000a 1346     	 mov r3,r2
+  46 000c 5B00     	 lsls r3,r3,#1
+  47 000e 1344     	 add r3,r3,r2
+  48 0010 034A     	 ldr r2,.L3
+  49 0012 1344     	 add r3,r3,r2
+  50 0014 1846     	 mov r0,r3
+  51 0016 0C37     	 adds r7,r7,#12
+  52              	.LCFI3:
+  53              	 .cfi_def_cfa_offset 4
+  54 0018 BD46     	 mov sp,r7
+  55              	.LCFI4:
+  56              	 .cfi_def_cfa_register 13
+  57              	 
+  58 001a 5DF8047B 	 ldr r7,[sp],#4
+  59              	.LCFI5:
+  60              	 .cfi_restore 7
+  61              	 .cfi_def_cfa_offset 0
+  62 001e 7047     	 bx lr
+  63              	.L4:
+  64              	 .align 2
+  65              	.L3:
+  66 0020 00000000 	 .word voltageSensorADCConfig_SystemArray
+  67              	 .cfi_endproc
+  68              	.LFE529:
+  70              	 .global voltageMeterSourceNames
+  71              	 .section .rodata
+  72              	 .align 2
+  73              	.LC0:
+  74 0000 4E4F4E45 	 .ascii "NONE\000"
+  74      00
+  75 0005 000000   	 .align 2
+  76              	.LC1:
+  77 0008 41444300 	 .ascii "ADC\000"
+  78              	 .align 2
+  79              	.LC2:
+  80 000c 45534300 	 .ascii "ESC\000"
+  81              	 .section .rodata.voltageMeterSourceNames,"a",%progbits
+  82              	 .align 2
+  85              	voltageMeterSourceNames:
+  86 0000 00000000 	 .word .LC0
+  87 0004 08000000 	 .word .LC1
+  88 0008 0C000000 	 .word .LC2
+  89              	 .global voltageMeterIds
+  90              	 .section .rodata.voltageMeterIds,"a",%progbits
+  91              	 .align 2
+  94              	voltageMeterIds:
+  95 0000 0A       	 .byte 10
+  96              	 .global supportedVoltageMeterCount
+  97 0001 000000   	 .section .rodata.supportedVoltageMeterCount,"a",%progbits
+ 100              	supportedVoltageMeterCount:
+ 101 0000 01       	 .byte 1
+ 102              	 .section .text.voltageMeterReset,"ax",%progbits
+ 103              	 .align 2
+ 104              	 .global voltageMeterReset
+ 105              	 .thumb
+ 106              	 .thumb_func
+ 108              	voltageMeterReset:
+ 109              	.LFB534:
+ 110              	 .file 2 "../cleanflight/src/main/sensors/voltage.c"
+   1:../cleanflight/src/main/sensors/voltage.c **** /*
+   2:../cleanflight/src/main/sensors/voltage.c ****  * This file is part of Cleanflight and Betaflight.
+   3:../cleanflight/src/main/sensors/voltage.c ****  *
+   4:../cleanflight/src/main/sensors/voltage.c ****  * Cleanflight and Betaflight are free software. You can redistribute
+   5:../cleanflight/src/main/sensors/voltage.c ****  * this software and/or modify this software under the terms of the
+   6:../cleanflight/src/main/sensors/voltage.c ****  * GNU General Public License as published by the Free Software
+   7:../cleanflight/src/main/sensors/voltage.c ****  * Foundation, either version 3 of the License, or (at your option)
+   8:../cleanflight/src/main/sensors/voltage.c ****  * any later version.
+   9:../cleanflight/src/main/sensors/voltage.c ****  *
+  10:../cleanflight/src/main/sensors/voltage.c ****  * Cleanflight and Betaflight are distributed in the hope that they
+  11:../cleanflight/src/main/sensors/voltage.c ****  * will be useful, but WITHOUT ANY WARRANTY; without even the implied
+  12:../cleanflight/src/main/sensors/voltage.c ****  * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+  13:../cleanflight/src/main/sensors/voltage.c ****  * See the GNU General Public License for more details.
+  14:../cleanflight/src/main/sensors/voltage.c ****  *
+  15:../cleanflight/src/main/sensors/voltage.c ****  * You should have received a copy of the GNU General Public License
+  16:../cleanflight/src/main/sensors/voltage.c ****  * along with this software.
+  17:../cleanflight/src/main/sensors/voltage.c ****  *
+  18:../cleanflight/src/main/sensors/voltage.c ****  * If not, see <http://www.gnu.org/licenses/>.
+  19:../cleanflight/src/main/sensors/voltage.c ****  */
+  20:../cleanflight/src/main/sensors/voltage.c **** 
+  21:../cleanflight/src/main/sensors/voltage.c **** #include "stdbool.h"
+  22:../cleanflight/src/main/sensors/voltage.c **** #include "stdint.h"
+  23:../cleanflight/src/main/sensors/voltage.c **** #include "string.h"
+  24:../cleanflight/src/main/sensors/voltage.c **** 
+  25:../cleanflight/src/main/sensors/voltage.c **** #include "platform.h"
+  26:../cleanflight/src/main/sensors/voltage.c **** 
+  27:../cleanflight/src/main/sensors/voltage.c **** #include "build/build_config.h"
+  28:../cleanflight/src/main/sensors/voltage.c **** 
+  29:../cleanflight/src/main/sensors/voltage.c **** #include "common/maths.h"
+  30:../cleanflight/src/main/sensors/voltage.c **** #include "common/filter.h"
+  31:../cleanflight/src/main/sensors/voltage.c **** #include "common/utils.h"
+  32:../cleanflight/src/main/sensors/voltage.c **** 
+  33:../cleanflight/src/main/sensors/voltage.c **** #include "drivers/adc.h"
+  34:../cleanflight/src/main/sensors/voltage.c **** 
+  35:../cleanflight/src/main/sensors/voltage.c **** #include "pg/pg.h"
+  36:../cleanflight/src/main/sensors/voltage.c **** #include "pg/pg_ids.h"
+  37:../cleanflight/src/main/sensors/voltage.c **** #include "config/config_reset.h"
+  38:../cleanflight/src/main/sensors/voltage.c **** 
+  39:../cleanflight/src/main/sensors/voltage.c **** #include "sensors/adcinternal.h"
+  40:../cleanflight/src/main/sensors/voltage.c **** #include "sensors/voltage.h"
+  41:../cleanflight/src/main/sensors/voltage.c **** #include "sensors/esc_sensor.h"
+  42:../cleanflight/src/main/sensors/voltage.c **** 
+  43:../cleanflight/src/main/sensors/voltage.c **** const char * const voltageMeterSourceNames[VOLTAGE_METER_COUNT] = {
+  44:../cleanflight/src/main/sensors/voltage.c ****     "NONE", "ADC", "ESC"
+  45:../cleanflight/src/main/sensors/voltage.c **** };
+  46:../cleanflight/src/main/sensors/voltage.c **** 
+  47:../cleanflight/src/main/sensors/voltage.c **** const uint8_t voltageMeterIds[] = {
+  48:../cleanflight/src/main/sensors/voltage.c ****     VOLTAGE_METER_ID_BATTERY_1,
+  49:../cleanflight/src/main/sensors/voltage.c **** #ifdef ADC_POWER_12V
+  50:../cleanflight/src/main/sensors/voltage.c ****     VOLTAGE_METER_ID_12V_1,
+  51:../cleanflight/src/main/sensors/voltage.c **** #endif
+  52:../cleanflight/src/main/sensors/voltage.c **** #ifdef ADC_POWER_9V
+  53:../cleanflight/src/main/sensors/voltage.c ****     VOLTAGE_METER_ID_9V_1,
+  54:../cleanflight/src/main/sensors/voltage.c **** #endif
+  55:../cleanflight/src/main/sensors/voltage.c **** #ifdef ADC_POWER_5V
+  56:../cleanflight/src/main/sensors/voltage.c ****     VOLTAGE_METER_ID_5V_1,
+  57:../cleanflight/src/main/sensors/voltage.c **** #endif
+  58:../cleanflight/src/main/sensors/voltage.c **** #ifdef USE_ESC_SENSOR
+  59:../cleanflight/src/main/sensors/voltage.c ****     VOLTAGE_METER_ID_ESC_COMBINED_1,
+  60:../cleanflight/src/main/sensors/voltage.c ****     VOLTAGE_METER_ID_ESC_MOTOR_1,
+  61:../cleanflight/src/main/sensors/voltage.c ****     VOLTAGE_METER_ID_ESC_MOTOR_2,
+  62:../cleanflight/src/main/sensors/voltage.c ****     VOLTAGE_METER_ID_ESC_MOTOR_3,
+  63:../cleanflight/src/main/sensors/voltage.c ****     VOLTAGE_METER_ID_ESC_MOTOR_4,
+  64:../cleanflight/src/main/sensors/voltage.c ****     VOLTAGE_METER_ID_ESC_MOTOR_5,
+  65:../cleanflight/src/main/sensors/voltage.c ****     VOLTAGE_METER_ID_ESC_MOTOR_6,
+  66:../cleanflight/src/main/sensors/voltage.c ****     VOLTAGE_METER_ID_ESC_MOTOR_7,
+  67:../cleanflight/src/main/sensors/voltage.c ****     VOLTAGE_METER_ID_ESC_MOTOR_8,
+  68:../cleanflight/src/main/sensors/voltage.c ****     VOLTAGE_METER_ID_ESC_MOTOR_9,
+  69:../cleanflight/src/main/sensors/voltage.c ****     VOLTAGE_METER_ID_ESC_MOTOR_10,
+  70:../cleanflight/src/main/sensors/voltage.c ****     VOLTAGE_METER_ID_ESC_MOTOR_11,
+  71:../cleanflight/src/main/sensors/voltage.c ****     VOLTAGE_METER_ID_ESC_MOTOR_12,
+  72:../cleanflight/src/main/sensors/voltage.c **** #endif
+  73:../cleanflight/src/main/sensors/voltage.c **** };
+  74:../cleanflight/src/main/sensors/voltage.c **** 
+  75:../cleanflight/src/main/sensors/voltage.c **** const uint8_t supportedVoltageMeterCount = ARRAYLEN(voltageMeterIds);
+  76:../cleanflight/src/main/sensors/voltage.c **** 
+  77:../cleanflight/src/main/sensors/voltage.c **** 
+  78:../cleanflight/src/main/sensors/voltage.c **** //
+  79:../cleanflight/src/main/sensors/voltage.c **** // ADC/ESC shared
+  80:../cleanflight/src/main/sensors/voltage.c **** //
+  81:../cleanflight/src/main/sensors/voltage.c **** 
+  82:../cleanflight/src/main/sensors/voltage.c **** void voltageMeterReset(voltageMeter_t *meter)
+  83:../cleanflight/src/main/sensors/voltage.c **** {
+ 111              	 .loc 2 83 0
+ 112              	 .cfi_startproc
+ 113              	 
+ 114              	 
+ 115              	 
+ 116 0000 80B4     	 push {r7}
+ 117              	.LCFI6:
+ 118              	 .cfi_def_cfa_offset 4
+ 119              	 .cfi_offset 7,-4
+ 120 0002 83B0     	 sub sp,sp,#12
+ 121              	.LCFI7:
+ 122              	 .cfi_def_cfa_offset 16
+ 123 0004 00AF     	 add r7,sp,#0
+ 124              	.LCFI8:
+ 125              	 .cfi_def_cfa_register 7
+ 126 0006 7860     	 str r0,[r7,#4]
+  84:../cleanflight/src/main/sensors/voltage.c ****     meter->filtered = 0;
+ 127              	 .loc 2 84 0
+ 128 0008 7B68     	 ldr r3,[r7,#4]
+ 129 000a 0022     	 movs r2,#0
+ 130 000c 1A70     	 strb r2,[r3]
+ 131 000e 0022     	 movs r2,#0
+ 132 0010 5A70     	 strb r2,[r3,#1]
+  85:../cleanflight/src/main/sensors/voltage.c ****     meter->unfiltered = 0;
+ 133              	 .loc 2 85 0
+ 134 0012 7B68     	 ldr r3,[r7,#4]
+ 135 0014 0022     	 movs r2,#0
+ 136 0016 9A70     	 strb r2,[r3,#2]
+ 137 0018 0022     	 movs r2,#0
+ 138 001a DA70     	 strb r2,[r3,#3]
+  86:../cleanflight/src/main/sensors/voltage.c **** }
+ 139              	 .loc 2 86 0
+ 140 001c 0C37     	 adds r7,r7,#12
+ 141              	.LCFI9:
+ 142              	 .cfi_def_cfa_offset 4
+ 143 001e BD46     	 mov sp,r7
+ 144              	.LCFI10:
+ 145              	 .cfi_def_cfa_register 13
+ 146              	 
+ 147 0020 5DF8047B 	 ldr r7,[sp],#4
+ 148              	.LCFI11:
+ 149              	 .cfi_restore 7
+ 150              	 .cfi_def_cfa_offset 0
+ 151 0024 7047     	 bx lr
+ 152              	 .cfi_endproc
+ 153              	.LFE534:
+ 155              	 .comm voltageMeterADCStates,40,4
+ 156 0026 00BF     	 .section .text.getVoltageMeterADC,"ax",%progbits
+ 157              	 .align 2
+ 158              	 .global getVoltageMeterADC
+ 159              	 .thumb
+ 160              	 .thumb_func
+ 162              	getVoltageMeterADC:
+ 163              	.LFB535:
+  87:../cleanflight/src/main/sensors/voltage.c **** //
+  88:../cleanflight/src/main/sensors/voltage.c **** // ADC
+  89:../cleanflight/src/main/sensors/voltage.c **** //
+  90:../cleanflight/src/main/sensors/voltage.c **** 
+  91:../cleanflight/src/main/sensors/voltage.c **** #ifndef VBAT_SCALE_DEFAULT
+  92:../cleanflight/src/main/sensors/voltage.c **** #define VBAT_SCALE_DEFAULT 110
+  93:../cleanflight/src/main/sensors/voltage.c **** #endif
+  94:../cleanflight/src/main/sensors/voltage.c **** 
+  95:../cleanflight/src/main/sensors/voltage.c **** #ifndef VBAT_RESDIVVAL_DEFAULT
+  96:../cleanflight/src/main/sensors/voltage.c **** #define VBAT_RESDIVVAL_DEFAULT 10
+  97:../cleanflight/src/main/sensors/voltage.c **** #endif
+  98:../cleanflight/src/main/sensors/voltage.c **** 
+  99:../cleanflight/src/main/sensors/voltage.c **** #ifndef VBAT_RESDIVMULTIPLIER_DEFAULT
+ 100:../cleanflight/src/main/sensors/voltage.c **** #define VBAT_RESDIVMULTIPLIER_DEFAULT 1
+ 101:../cleanflight/src/main/sensors/voltage.c **** #endif
+ 102:../cleanflight/src/main/sensors/voltage.c **** 
+ 103:../cleanflight/src/main/sensors/voltage.c **** typedef struct voltageMeterADCState_s {
+ 104:../cleanflight/src/main/sensors/voltage.c ****     uint16_t voltageFiltered;         // battery voltage in 0.1V steps (filtered)
+ 105:../cleanflight/src/main/sensors/voltage.c ****     uint16_t voltageUnfiltered;       // battery voltage in 0.1V steps (unfiltered)
+ 106:../cleanflight/src/main/sensors/voltage.c ****     biquadFilter_t filter;
+ 107:../cleanflight/src/main/sensors/voltage.c **** } voltageMeterADCState_t;
+ 108:../cleanflight/src/main/sensors/voltage.c **** 
+ 109:../cleanflight/src/main/sensors/voltage.c **** extern voltageMeterADCState_t voltageMeterADCStates[MAX_VOLTAGE_SENSOR_ADC];
+ 110:../cleanflight/src/main/sensors/voltage.c **** 
+ 111:../cleanflight/src/main/sensors/voltage.c **** voltageMeterADCState_t voltageMeterADCStates[MAX_VOLTAGE_SENSOR_ADC];
+ 112:../cleanflight/src/main/sensors/voltage.c **** 
+ 113:../cleanflight/src/main/sensors/voltage.c **** voltageMeterADCState_t *getVoltageMeterADC(uint8_t index)
+ 114:../cleanflight/src/main/sensors/voltage.c **** {
+ 164              	 .loc 2 114 0
+ 165              	 .cfi_startproc
+ 166              	 
+ 167              	 
+ 168              	 
+ 169 0000 80B4     	 push {r7}
+ 170              	.LCFI12:
+ 171              	 .cfi_def_cfa_offset 4
+ 172              	 .cfi_offset 7,-4
+ 173 0002 83B0     	 sub sp,sp,#12
+ 174              	.LCFI13:
+ 175              	 .cfi_def_cfa_offset 16
+ 176 0004 00AF     	 add r7,sp,#0
+ 177              	.LCFI14:
+ 178              	 .cfi_def_cfa_register 7
+ 179 0006 0346     	 mov r3,r0
+ 180 0008 FB71     	 strb r3,[r7,#7]
+ 115:../cleanflight/src/main/sensors/voltage.c ****     return &voltageMeterADCStates[index];
+ 181              	 .loc 2 115 0
+ 182 000a FA79     	 ldrb r2,[r7,#7]
+ 183 000c 1346     	 mov r3,r2
+ 184 000e 9B00     	 lsls r3,r3,#2
+ 185 0010 1344     	 add r3,r3,r2
+ 186 0012 DB00     	 lsls r3,r3,#3
+ 187 0014 034A     	 ldr r2,.L8
+ 188 0016 1344     	 add r3,r3,r2
+ 116:../cleanflight/src/main/sensors/voltage.c **** }
+ 189              	 .loc 2 116 0
+ 190 0018 1846     	 mov r0,r3
+ 191 001a 0C37     	 adds r7,r7,#12
+ 192              	.LCFI15:
+ 193              	 .cfi_def_cfa_offset 4
+ 194 001c BD46     	 mov sp,r7
+ 195              	.LCFI16:
+ 196              	 .cfi_def_cfa_register 13
+ 197              	 
+ 198 001e 5DF8047B 	 ldr r7,[sp],#4
+ 199              	.LCFI17:
+ 200              	 .cfi_restore 7
+ 201              	 .cfi_def_cfa_offset 0
+ 202 0022 7047     	 bx lr
+ 203              	.L9:
+ 204              	 .align 2
+ 205              	.L8:
+ 206 0024 00000000 	 .word voltageMeterADCStates
+ 207              	 .cfi_endproc
+ 208              	.LFE535:
+ 210              	 .comm voltageSensorADCConfig_SystemArray,3,4
+ 211              	 .comm voltageSensorADCConfig_CopyArray,3,4
+ 212              	 .global voltageSensorADCConfig_Registry
+ 213              	 .section .pg_registry,"a",%progbits
+ 214              	 .align 2
+ 217              	voltageSensorADCConfig_Registry:
+ 218 0000 0201     	 .short 258
+ 219 0002 0300     	 .short 3
+ 220 0004 00000000 	 .word voltageSensorADCConfig_SystemArray
+ 221 0008 00000000 	 .word voltageSensorADCConfig_CopyArray
+ 222 000c 00000000 	 .word 0
+ 223 0010 00000000 	 .word pgResetFn_voltageSensorADCConfig
+ 224              	 .section .text.pgResetFn_voltageSensorADCConfig,"ax",%progbits
+ 225              	 .align 2
+ 226              	 .global pgResetFn_voltageSensorADCConfig
+ 227              	 .thumb
+ 228              	 .thumb_func
+ 230              	pgResetFn_voltageSensorADCConfig:
+ 231              	.LFB536:
+ 117:../cleanflight/src/main/sensors/voltage.c **** 
+ 118:../cleanflight/src/main/sensors/voltage.c **** PG_REGISTER_ARRAY_WITH_RESET_FN(voltageSensorADCConfig_t, MAX_VOLTAGE_SENSOR_ADC, voltageSensorADCC
+ 119:../cleanflight/src/main/sensors/voltage.c **** 
+ 120:../cleanflight/src/main/sensors/voltage.c **** void pgResetFn_voltageSensorADCConfig(voltageSensorADCConfig_t *instance)
+ 121:../cleanflight/src/main/sensors/voltage.c **** {
+ 232              	 .loc 2 121 0
+ 233              	 .cfi_startproc
+ 234              	 
+ 235              	 
+ 236              	 
+ 237 0000 80B4     	 push {r7}
+ 238              	.LCFI18:
+ 239              	 .cfi_def_cfa_offset 4
+ 240              	 .cfi_offset 7,-4
+ 241 0002 85B0     	 sub sp,sp,#20
+ 242              	.LCFI19:
+ 243              	 .cfi_def_cfa_offset 24
+ 244 0004 00AF     	 add r7,sp,#0
+ 245              	.LCFI20:
+ 246              	 .cfi_def_cfa_register 7
+ 247 0006 7860     	 str r0,[r7,#4]
+ 248              	.LBB2:
+ 122:../cleanflight/src/main/sensors/voltage.c ****     for (int i = 0; i < MAX_VOLTAGE_SENSOR_ADC; i++) {
+ 249              	 .loc 2 122 0
+ 250 0008 0023     	 movs r3,#0
+ 251 000a FB60     	 str r3,[r7,#12]
+ 252 000c 0DE0     	 b .L11
+ 253              	.L12:
+ 254              	.LBB3:
+ 123:../cleanflight/src/main/sensors/voltage.c ****         RESET_CONFIG(voltageSensorADCConfig_t, &instance[i],
+ 255              	 .loc 2 123 0 discriminator 3
+ 256 000e FA68     	 ldr r2,[r7,#12]
+ 257 0010 1346     	 mov r3,r2
+ 258 0012 5B00     	 lsls r3,r3,#1
+ 259 0014 1344     	 add r3,r3,r2
+ 260 0016 7A68     	 ldr r2,[r7,#4]
+ 261 0018 1344     	 add r3,r3,r2
+ 262 001a 084A     	 ldr r2,.L13
+ 263 001c 1188     	 ldrh r1,[r2]
+ 264 001e 9278     	 ldrb r2,[r2,#2]
+ 265 0020 1980     	 strh r1,[r3]
+ 266 0022 9A70     	 strb r2,[r3,#2]
+ 267              	.LBE3:
+ 122:../cleanflight/src/main/sensors/voltage.c ****     for (int i = 0; i < MAX_VOLTAGE_SENSOR_ADC; i++) {
+ 268              	 .loc 2 122 0 discriminator 3
+ 269 0024 FB68     	 ldr r3,[r7,#12]
+ 270 0026 0133     	 adds r3,r3,#1
+ 271 0028 FB60     	 str r3,[r7,#12]
+ 272              	.L11:
+ 122:../cleanflight/src/main/sensors/voltage.c ****     for (int i = 0; i < MAX_VOLTAGE_SENSOR_ADC; i++) {
+ 273              	 .loc 2 122 0 is_stmt 0 discriminator 1
+ 274 002a FB68     	 ldr r3,[r7,#12]
+ 275 002c 002B     	 cmp r3,#0
+ 276 002e EEDD     	 ble .L12
+ 277              	.LBE2:
+ 124:../cleanflight/src/main/sensors/voltage.c ****             .vbatscale = VBAT_SCALE_DEFAULT,
+ 125:../cleanflight/src/main/sensors/voltage.c ****             .vbatresdivval = VBAT_RESDIVVAL_DEFAULT,
+ 126:../cleanflight/src/main/sensors/voltage.c ****             .vbatresdivmultiplier = VBAT_RESDIVMULTIPLIER_DEFAULT,
+ 127:../cleanflight/src/main/sensors/voltage.c ****         );
+ 128:../cleanflight/src/main/sensors/voltage.c ****     }
+ 129:../cleanflight/src/main/sensors/voltage.c **** }
+ 278              	 .loc 2 129 0 is_stmt 1
+ 279 0030 1437     	 adds r7,r7,#20
+ 280              	.LCFI21:
+ 281              	 .cfi_def_cfa_offset 4
+ 282 0032 BD46     	 mov sp,r7
+ 283              	.LCFI22:
+ 284              	 .cfi_def_cfa_register 13
+ 285              	 
+ 286 0034 5DF8047B 	 ldr r7,[sp],#4
+ 287              	.LCFI23:
+ 288              	 .cfi_restore 7
+ 289              	 .cfi_def_cfa_offset 0
+ 290 0038 7047     	 bx lr
+ 291              	.L14:
+ 292 003a 00BF     	 .align 2
+ 293              	.L13:
+ 294 003c 00000000 	 .word _reset_template_127.11980
+ 295              	 .cfi_endproc
+ 296              	.LFE536:
+ 298              	 .section .rodata.voltageMeterAdcChannelMap,"a",%progbits
+ 299              	 .align 2
+ 302              	voltageMeterAdcChannelMap:
+ 303 0000 00       	 .space 1
+ 304 0001 000000   	 .section .text.voltageAdcToVoltage,"ax",%progbits
+ 305              	 .align 2
+ 306              	 .thumb
+ 307              	 .thumb_func
+ 309              	voltageAdcToVoltage:
+ 310              	.LFB537:
+ 130:../cleanflight/src/main/sensors/voltage.c **** 
+ 131:../cleanflight/src/main/sensors/voltage.c **** 
+ 132:../cleanflight/src/main/sensors/voltage.c **** static const uint8_t voltageMeterAdcChannelMap[] = {
+ 133:../cleanflight/src/main/sensors/voltage.c ****     ADC_BATTERY,
+ 134:../cleanflight/src/main/sensors/voltage.c **** #ifdef ADC_POWER_12V
+ 135:../cleanflight/src/main/sensors/voltage.c ****     ADC_POWER_12V,
+ 136:../cleanflight/src/main/sensors/voltage.c **** #endif
+ 137:../cleanflight/src/main/sensors/voltage.c **** #ifdef ADC_POWER_9V
+ 138:../cleanflight/src/main/sensors/voltage.c ****     ADC_POWER_9V,
+ 139:../cleanflight/src/main/sensors/voltage.c **** #endif
+ 140:../cleanflight/src/main/sensors/voltage.c **** #ifdef ADC_POWER_5V
+ 141:../cleanflight/src/main/sensors/voltage.c ****     ADC_POWER_5V,
+ 142:../cleanflight/src/main/sensors/voltage.c **** #endif
+ 143:../cleanflight/src/main/sensors/voltage.c **** };
+ 144:../cleanflight/src/main/sensors/voltage.c **** 
+ 145:../cleanflight/src/main/sensors/voltage.c **** STATIC_UNIT_TESTED uint16_t voltageAdcToVoltage(const uint16_t src, const voltageSensorADCConfig_t 
+ 146:../cleanflight/src/main/sensors/voltage.c **** {
+ 311              	 .loc 2 146 0
+ 312              	 .cfi_startproc
+ 313              	 
+ 314              	 
+ 315 0000 90B5     	 push {r4,r7,lr}
+ 316              	.LCFI24:
+ 317              	 .cfi_def_cfa_offset 12
+ 318              	 .cfi_offset 4,-12
+ 319              	 .cfi_offset 7,-8
+ 320              	 .cfi_offset 14,-4
+ 321 0002 83B0     	 sub sp,sp,#12
+ 322              	.LCFI25:
+ 323              	 .cfi_def_cfa_offset 24
+ 324 0004 00AF     	 add r7,sp,#0
+ 325              	.LCFI26:
+ 326              	 .cfi_def_cfa_register 7
+ 327 0006 0346     	 mov r3,r0
+ 328 0008 3960     	 str r1,[r7]
+ 329 000a FB80     	 strh r3,[r7,#6]
+ 147:../cleanflight/src/main/sensors/voltage.c ****     // calculate battery voltage based on ADC reading
+ 148:../cleanflight/src/main/sensors/voltage.c ****     // result is Vbatt in 0.1V steps. 3.3V = ADC Vref, 0xFFF = 12bit adc, 110 = 10:1 voltage divide
+ 149:../cleanflight/src/main/sensors/voltage.c ****     return ((((uint32_t)src * config->vbatscale * getVrefMv() / 100 + (0xFFF * 5)) / (0xFFF * confi
+ 330              	 .loc 2 149 0
+ 331 000c FB88     	 ldrh r3,[r7,#6]
+ 332 000e 3A68     	 ldr r2,[r7]
+ 333 0010 1278     	 ldrb r2,[r2]
+ 334 0012 02FB03F4 	 mul r4,r2,r3
+ 335 0016 FFF7FEFF 	 bl getVrefMv
+ 336 001a 0346     	 mov r3,r0
+ 337 001c 03FB04F3 	 mul r3,r3,r4
+ 338 0020 0B4A     	 ldr r2,.L17
+ 339 0022 A2FB0323 	 umull r2,r3,r2,r3
+ 340 0026 5B09     	 lsrs r3,r3,#5
+ 341 0028 03F59F43 	 add r3,r3,#20352
+ 342 002c 7B33     	 adds r3,r3,#123
+ 343 002e 3A68     	 ldr r2,[r7]
+ 344 0030 5278     	 ldrb r2,[r2,#1]
+ 345 0032 1146     	 mov r1,r2
+ 346 0034 0A46     	 mov r2,r1
+ 347 0036 1203     	 lsls r2,r2,#12
+ 348 0038 521A     	 subs r2,r2,r1
+ 349 003a B3FBF2F3 	 udiv r3,r3,r2
+ 350 003e 3A68     	 ldr r2,[r7]
+ 351 0040 9278     	 ldrb r2,[r2,#2]
+ 352 0042 B3FBF2F3 	 udiv r3,r3,r2
+ 353 0046 9BB2     	 uxth r3,r3
+ 150:../cleanflight/src/main/sensors/voltage.c **** }
+ 354              	 .loc 2 150 0
+ 355 0048 1846     	 mov r0,r3
+ 356 004a 0C37     	 adds r7,r7,#12
+ 357              	.LCFI27:
+ 358              	 .cfi_def_cfa_offset 12
+ 359 004c BD46     	 mov sp,r7
+ 360              	.LCFI28:
+ 361              	 .cfi_def_cfa_register 13
+ 362              	 
+ 363 004e 90BD     	 pop {r4,r7,pc}
+ 364              	.L18:
+ 365              	 .align 2
+ 366              	.L17:
+ 367 0050 1F85EB51 	 .word 1374389535
+ 368              	 .cfi_endproc
+ 369              	.LFE537:
+ 371              	 .section .text.voltageMeterADCRefresh,"ax",%progbits
+ 372              	 .align 2
+ 373              	 .global voltageMeterADCRefresh
+ 374              	 .thumb
+ 375              	 .thumb_func
+ 377              	voltageMeterADCRefresh:
+ 378              	.LFB538:
+ 151:../cleanflight/src/main/sensors/voltage.c **** 
+ 152:../cleanflight/src/main/sensors/voltage.c **** void voltageMeterADCRefresh(void)
+ 153:../cleanflight/src/main/sensors/voltage.c **** {
+ 379              	 .loc 2 153 0
+ 380              	 .cfi_startproc
+ 381              	 
+ 382              	 
+ 383 0000 80B5     	 push {r7,lr}
+ 384              	.LCFI29:
+ 385              	 .cfi_def_cfa_offset 8
+ 386              	 .cfi_offset 7,-8
+ 387              	 .cfi_offset 14,-4
+ 388 0002 88B0     	 sub sp,sp,#32
+ 389              	.LCFI30:
+ 390              	 .cfi_def_cfa_offset 40
+ 391 0004 00AF     	 add r7,sp,#0
+ 392              	.LCFI31:
+ 393              	 .cfi_def_cfa_register 7
+ 394              	.LBB4:
+ 154:../cleanflight/src/main/sensors/voltage.c ****     for (uint8_t i = 0; i < MAX_VOLTAGE_SENSOR_ADC && i < ARRAYLEN(voltageMeterAdcChannelMap); i++)
+ 395              	 .loc 2 154 0
+ 396 0006 0023     	 movs r3,#0
+ 397 0008 FB77     	 strb r3,[r7,#31]
+ 398 000a 3DE0     	 b .L20
+ 399              	.L22:
+ 400              	.LBB5:
+ 155:../cleanflight/src/main/sensors/voltage.c ****         voltageMeterADCState_t *state = &voltageMeterADCStates[i];
+ 401              	 .loc 2 155 0 discriminator 4
+ 402 000c FA7F     	 ldrb r2,[r7,#31]
+ 403 000e 1346     	 mov r3,r2
+ 404 0010 9B00     	 lsls r3,r3,#2
+ 405 0012 1344     	 add r3,r3,r2
+ 406 0014 DB00     	 lsls r3,r3,#3
+ 407 0016 214A     	 ldr r2,.L23
+ 408 0018 1344     	 add r3,r3,r2
+ 409 001a BB61     	 str r3,[r7,#24]
+ 156:../cleanflight/src/main/sensors/voltage.c **** #ifdef USE_ADC
+ 157:../cleanflight/src/main/sensors/voltage.c ****         // store the battery voltage with some other recent battery voltage readings
+ 158:../cleanflight/src/main/sensors/voltage.c **** 
+ 159:../cleanflight/src/main/sensors/voltage.c ****         const voltageSensorADCConfig_t *config = voltageSensorADCConfig(i);
+ 410              	 .loc 2 159 0 discriminator 4
+ 411 001c FB7F     	 ldrb r3,[r7,#31]
+ 412 001e 1846     	 mov r0,r3
+ 413 0020 FFF7FEFF 	 bl voltageSensorADCConfig
+ 414 0024 7861     	 str r0,[r7,#20]
+ 160:../cleanflight/src/main/sensors/voltage.c **** 
+ 161:../cleanflight/src/main/sensors/voltage.c ****         uint8_t channel = voltageMeterAdcChannelMap[i];
+ 415              	 .loc 2 161 0 discriminator 4
+ 416 0026 0023     	 movs r3,#0
+ 417 0028 FB74     	 strb r3,[r7,#19]
+ 162:../cleanflight/src/main/sensors/voltage.c ****         uint16_t rawSample = adcGetChannel(channel);
+ 418              	 .loc 2 162 0 discriminator 4
+ 419 002a FB7C     	 ldrb r3,[r7,#19]
+ 420 002c 1846     	 mov r0,r3
+ 421 002e FFF7FEFF 	 bl adcGetChannel
+ 422 0032 0346     	 mov r3,r0
+ 423 0034 3B82     	 strh r3,[r7,#16]
+ 163:../cleanflight/src/main/sensors/voltage.c **** 
+ 164:../cleanflight/src/main/sensors/voltage.c ****         uint16_t filteredSample = biquadFilterApply(&state->filter, rawSample);
+ 424              	 .loc 2 164 0 discriminator 4
+ 425 0036 BB69     	 ldr r3,[r7,#24]
+ 426 0038 0433     	 adds r3,r3,#4
+ 427 003a 3A8A     	 ldrh r2,[r7,#16]
+ 428 003c 07EE902A 	 fmsr s15,r2
+ 429 0040 F8EE677A 	 fuitos s15,s15
+ 430 0044 1846     	 mov r0,r3
+ 431 0046 17EE901A 	 fmrs r1,s15
+ 432 004a FFF7FEFF 	 bl biquadFilterApply
+ 433 004e 07EE900A 	 fmsr s15,r0
+ 434 0052 FCEEE77A 	 ftouizs s15,s15
+ 435 0056 C7ED017A 	 fsts s15,[r7,#4]
+ 436 005a BB88     	 ldrh r3,[r7,#4]
+ 437 005c FB81     	 strh r3,[r7,#14]
+ 165:../cleanflight/src/main/sensors/voltage.c **** 
+ 166:../cleanflight/src/main/sensors/voltage.c ****         // always calculate the latest voltage, see getLatestVoltage() which does the calculation o
+ 167:../cleanflight/src/main/sensors/voltage.c ****         state->voltageFiltered = voltageAdcToVoltage(filteredSample, config);
+ 438              	 .loc 2 167 0 discriminator 4
+ 439 005e FB89     	 ldrh r3,[r7,#14]
+ 440 0060 1846     	 mov r0,r3
+ 441 0062 7969     	 ldr r1,[r7,#20]
+ 442 0064 FFF7FEFF 	 bl voltageAdcToVoltage
+ 443 0068 0346     	 mov r3,r0
+ 444 006a 1A46     	 mov r2,r3
+ 445 006c BB69     	 ldr r3,[r7,#24]
+ 446 006e 1A80     	 strh r2,[r3]
+ 168:../cleanflight/src/main/sensors/voltage.c ****         state->voltageUnfiltered = voltageAdcToVoltage(rawSample, config);
+ 447              	 .loc 2 168 0 discriminator 4
+ 448 0070 3B8A     	 ldrh r3,[r7,#16]
+ 449 0072 1846     	 mov r0,r3
+ 450 0074 7969     	 ldr r1,[r7,#20]
+ 451 0076 FFF7FEFF 	 bl voltageAdcToVoltage
+ 452 007a 0346     	 mov r3,r0
+ 453 007c 1A46     	 mov r2,r3
+ 454 007e BB69     	 ldr r3,[r7,#24]
+ 455 0080 5A80     	 strh r2,[r3,#2]
+ 456              	.LBE5:
+ 154:../cleanflight/src/main/sensors/voltage.c ****         voltageMeterADCState_t *state = &voltageMeterADCStates[i];
+ 457              	 .loc 2 154 0 discriminator 4
+ 458 0082 FB7F     	 ldrb r3,[r7,#31]
+ 459 0084 0133     	 adds r3,r3,#1
+ 460 0086 FB77     	 strb r3,[r7,#31]
+ 461              	.L20:
+ 154:../cleanflight/src/main/sensors/voltage.c ****         voltageMeterADCState_t *state = &voltageMeterADCStates[i];
+ 462              	 .loc 2 154 0 is_stmt 0 discriminator 1
+ 463 0088 FB7F     	 ldrb r3,[r7,#31]
+ 464 008a 002B     	 cmp r3,#0
+ 465 008c 02D1     	 bne .L19
+ 154:../cleanflight/src/main/sensors/voltage.c ****         voltageMeterADCState_t *state = &voltageMeterADCStates[i];
+ 466              	 .loc 2 154 0 discriminator 3
+ 467 008e FB7F     	 ldrb r3,[r7,#31]
+ 468 0090 002B     	 cmp r3,#0
+ 469 0092 BBD0     	 beq .L22
+ 470              	.L19:
+ 471              	.LBE4:
+ 169:../cleanflight/src/main/sensors/voltage.c **** #else
+ 170:../cleanflight/src/main/sensors/voltage.c ****         UNUSED(voltageAdcToVoltage);
+ 171:../cleanflight/src/main/sensors/voltage.c **** 
+ 172:../cleanflight/src/main/sensors/voltage.c ****         state->voltageFiltered = 0;
+ 173:../cleanflight/src/main/sensors/voltage.c ****         state->voltageUnfiltered = 0;
+ 174:../cleanflight/src/main/sensors/voltage.c **** #endif
+ 175:../cleanflight/src/main/sensors/voltage.c ****     }
+ 176:../cleanflight/src/main/sensors/voltage.c **** }
+ 472              	 .loc 2 176 0 is_stmt 1
+ 473 0094 2037     	 adds r7,r7,#32
+ 474              	.LCFI32:
+ 475              	 .cfi_def_cfa_offset 8
+ 476 0096 BD46     	 mov sp,r7
+ 477              	.LCFI33:
+ 478              	 .cfi_def_cfa_register 13
+ 479              	 
+ 480 0098 80BD     	 pop {r7,pc}
+ 481              	.L24:
+ 482 009a 00BF     	 .align 2
+ 483              	.L23:
+ 484 009c 00000000 	 .word voltageMeterADCStates
+ 485              	 .cfi_endproc
+ 486              	.LFE538:
+ 488              	 .section .text.voltageMeterADCRead,"ax",%progbits
+ 489              	 .align 2
+ 490              	 .global voltageMeterADCRead
+ 491              	 .thumb
+ 492              	 .thumb_func
+ 494              	voltageMeterADCRead:
+ 495              	.LFB539:
+ 177:../cleanflight/src/main/sensors/voltage.c **** 
+ 178:../cleanflight/src/main/sensors/voltage.c **** void voltageMeterADCRead(voltageSensorADC_e adcChannel, voltageMeter_t *voltageMeter)
+ 179:../cleanflight/src/main/sensors/voltage.c **** {
+ 496              	 .loc 2 179 0
+ 497              	 .cfi_startproc
+ 498              	 
+ 499              	 
+ 500              	 
+ 501 0000 80B4     	 push {r7}
+ 502              	.LCFI34:
+ 503              	 .cfi_def_cfa_offset 4
+ 504              	 .cfi_offset 7,-4
+ 505 0002 85B0     	 sub sp,sp,#20
+ 506              	.LCFI35:
+ 507              	 .cfi_def_cfa_offset 24
+ 508 0004 00AF     	 add r7,sp,#0
+ 509              	.LCFI36:
+ 510              	 .cfi_def_cfa_register 7
+ 511 0006 0346     	 mov r3,r0
+ 512 0008 3960     	 str r1,[r7]
+ 513 000a FB71     	 strb r3,[r7,#7]
+ 180:../cleanflight/src/main/sensors/voltage.c ****     voltageMeterADCState_t *state = &voltageMeterADCStates[adcChannel];
+ 514              	 .loc 2 180 0
+ 515 000c FA79     	 ldrb r2,[r7,#7]
+ 516 000e 1346     	 mov r3,r2
+ 517 0010 9B00     	 lsls r3,r3,#2
+ 518 0012 1344     	 add r3,r3,r2
+ 519 0014 DB00     	 lsls r3,r3,#3
+ 520 0016 094A     	 ldr r2,.L26
+ 521 0018 1344     	 add r3,r3,r2
+ 522 001a FB60     	 str r3,[r7,#12]
+ 181:../cleanflight/src/main/sensors/voltage.c **** 
+ 182:../cleanflight/src/main/sensors/voltage.c ****     voltageMeter->filtered = state->voltageFiltered;
+ 523              	 .loc 2 182 0
+ 524 001c FB68     	 ldr r3,[r7,#12]
+ 525 001e 1B88     	 ldrh r3,[r3]
+ 526 0020 9AB2     	 uxth r2,r3
+ 527 0022 3B68     	 ldr r3,[r7]
+ 528 0024 1A80     	 strh r2,[r3]
+ 183:../cleanflight/src/main/sensors/voltage.c ****     voltageMeter->unfiltered = state->voltageUnfiltered;
+ 529              	 .loc 2 183 0
+ 530 0026 FB68     	 ldr r3,[r7,#12]
+ 531 0028 5B88     	 ldrh r3,[r3,#2]
+ 532 002a 9AB2     	 uxth r2,r3
+ 533 002c 3B68     	 ldr r3,[r7]
+ 534 002e 5A80     	 strh r2,[r3,#2]
+ 184:../cleanflight/src/main/sensors/voltage.c **** }
+ 535              	 .loc 2 184 0
+ 536 0030 1437     	 adds r7,r7,#20
+ 537              	.LCFI37:
+ 538              	 .cfi_def_cfa_offset 4
+ 539 0032 BD46     	 mov sp,r7
+ 540              	.LCFI38:
+ 541              	 .cfi_def_cfa_register 13
+ 542              	 
+ 543 0034 5DF8047B 	 ldr r7,[sp],#4
+ 544              	.LCFI39:
+ 545              	 .cfi_restore 7
+ 546              	 .cfi_def_cfa_offset 0
+ 547 0038 7047     	 bx lr
+ 548              	.L27:
+ 549 003a 00BF     	 .align 2
+ 550              	.L26:
+ 551 003c 00000000 	 .word voltageMeterADCStates
+ 552              	 .cfi_endproc
+ 553              	.LFE539:
+ 555              	 .section .text.voltageMeterADCInit,"ax",%progbits
+ 556              	 .align 2
+ 557              	 .global voltageMeterADCInit
+ 558              	 .thumb
+ 559              	 .thumb_func
+ 561              	voltageMeterADCInit:
+ 562              	.LFB540:
+ 185:../cleanflight/src/main/sensors/voltage.c **** 
+ 186:../cleanflight/src/main/sensors/voltage.c **** void voltageMeterADCInit(void)
+ 187:../cleanflight/src/main/sensors/voltage.c **** {
+ 563              	 .loc 2 187 0
+ 564              	 .cfi_startproc
+ 565              	 
+ 566              	 
+ 567 0000 80B5     	 push {r7,lr}
+ 568              	.LCFI40:
+ 569              	 .cfi_def_cfa_offset 8
+ 570              	 .cfi_offset 7,-8
+ 571              	 .cfi_offset 14,-4
+ 572 0002 82B0     	 sub sp,sp,#8
+ 573              	.LCFI41:
+ 574              	 .cfi_def_cfa_offset 16
+ 575 0004 00AF     	 add r7,sp,#0
+ 576              	.LCFI42:
+ 577              	 .cfi_def_cfa_register 7
+ 578              	.LBB6:
+ 188:../cleanflight/src/main/sensors/voltage.c ****     for (uint8_t i = 0; i < MAX_VOLTAGE_SENSOR_ADC && i < ARRAYLEN(voltageMeterAdcChannelMap); i++)
+ 579              	 .loc 2 188 0
+ 580 0006 0023     	 movs r3,#0
+ 581 0008 FB71     	 strb r3,[r7,#7]
+ 582 000a 17E0     	 b .L29
+ 583              	.L31:
+ 584              	.LBB7:
+ 189:../cleanflight/src/main/sensors/voltage.c ****         // store the battery voltage with some other recent battery voltage readings
+ 190:../cleanflight/src/main/sensors/voltage.c **** 
+ 191:../cleanflight/src/main/sensors/voltage.c ****         voltageMeterADCState_t *state = &voltageMeterADCStates[i];
+ 585              	 .loc 2 191 0 discriminator 4
+ 586 000c FA79     	 ldrb r2,[r7,#7]
+ 587 000e 1346     	 mov r3,r2
+ 588 0010 9B00     	 lsls r3,r3,#2
+ 589 0012 1344     	 add r3,r3,r2
+ 590 0014 DB00     	 lsls r3,r3,#3
+ 591 0016 0E4A     	 ldr r2,.L32
+ 592 0018 1344     	 add r3,r3,r2
+ 593 001a 3B60     	 str r3,[r7]
+ 192:../cleanflight/src/main/sensors/voltage.c ****         memset(state, 0, sizeof(voltageMeterADCState_t));
+ 594              	 .loc 2 192 0 discriminator 4
+ 595 001c 3868     	 ldr r0,[r7]
+ 596 001e 0021     	 movs r1,#0
+ 597 0020 2822     	 movs r2,#40
+ 598 0022 FFF7FEFF 	 bl memset
+ 193:../cleanflight/src/main/sensors/voltage.c **** 
+ 194:../cleanflight/src/main/sensors/voltage.c ****         biquadFilterInitLPF(&state->filter, VBAT_LPF_FREQ, HZ_TO_INTERVAL_US(50));
+ 599              	 .loc 2 194 0 discriminator 4
+ 600 0026 3B68     	 ldr r3,[r7]
+ 601 0028 0433     	 adds r3,r3,#4
+ 602 002a 1846     	 mov r0,r3
+ 603 002c 0949     	 ldr r1,.L32+4
+ 604 002e 44F62062 	 movw r2,#20000
+ 605 0032 FFF7FEFF 	 bl biquadFilterInitLPF
+ 606              	.LBE7:
+ 188:../cleanflight/src/main/sensors/voltage.c ****         // store the battery voltage with some other recent battery voltage readings
+ 607              	 .loc 2 188 0 discriminator 4
+ 608 0036 FB79     	 ldrb r3,[r7,#7]
+ 609 0038 0133     	 adds r3,r3,#1
+ 610 003a FB71     	 strb r3,[r7,#7]
+ 611              	.L29:
+ 188:../cleanflight/src/main/sensors/voltage.c ****         // store the battery voltage with some other recent battery voltage readings
+ 612              	 .loc 2 188 0 is_stmt 0 discriminator 1
+ 613 003c FB79     	 ldrb r3,[r7,#7]
+ 614 003e 002B     	 cmp r3,#0
+ 615 0040 02D1     	 bne .L28
+ 188:../cleanflight/src/main/sensors/voltage.c ****         // store the battery voltage with some other recent battery voltage readings
+ 616              	 .loc 2 188 0 discriminator 3
+ 617 0042 FB79     	 ldrb r3,[r7,#7]
+ 618 0044 002B     	 cmp r3,#0
+ 619 0046 E1D0     	 beq .L31
+ 620              	.L28:
+ 621              	.LBE6:
+ 195:../cleanflight/src/main/sensors/voltage.c ****     }
+ 196:../cleanflight/src/main/sensors/voltage.c **** }
+ 622              	 .loc 2 196 0 is_stmt 1
+ 623 0048 0837     	 adds r7,r7,#8
+ 624              	.LCFI43:
+ 625              	 .cfi_def_cfa_offset 8
+ 626 004a BD46     	 mov sp,r7
+ 627              	.LCFI44:
+ 628              	 .cfi_def_cfa_register 13
+ 629              	 
+ 630 004c 80BD     	 pop {r7,pc}
+ 631              	.L33:
+ 632 004e 00BF     	 .align 2
+ 633              	.L32:
+ 634 0050 00000000 	 .word voltageMeterADCStates
+ 635 0054 CDCCCC3D 	 .word 1036831949
+ 636              	 .cfi_endproc
+ 637              	.LFE540:
+ 639              	 .section .text.voltageMeterESCInit,"ax",%progbits
+ 640              	 .align 2
+ 641              	 .global voltageMeterESCInit
+ 642              	 .thumb
+ 643              	 .thumb_func
+ 645              	voltageMeterESCInit:
+ 646              	.LFB541:
+ 197:../cleanflight/src/main/sensors/voltage.c **** 
+ 198:../cleanflight/src/main/sensors/voltage.c **** //
+ 199:../cleanflight/src/main/sensors/voltage.c **** // ESC
+ 200:../cleanflight/src/main/sensors/voltage.c **** //
+ 201:../cleanflight/src/main/sensors/voltage.c **** 
+ 202:../cleanflight/src/main/sensors/voltage.c **** #ifdef USE_ESC_SENSOR
+ 203:../cleanflight/src/main/sensors/voltage.c **** typedef struct voltageMeterESCState_s {
+ 204:../cleanflight/src/main/sensors/voltage.c ****     uint16_t voltageFiltered;         // battery voltage in 0.1V steps (filtered)
+ 205:../cleanflight/src/main/sensors/voltage.c ****     uint16_t voltageUnfiltered;       // battery voltage in 0.1V steps (unfiltered)
+ 206:../cleanflight/src/main/sensors/voltage.c ****     biquadFilter_t filter;
+ 207:../cleanflight/src/main/sensors/voltage.c **** } voltageMeterESCState_t;
+ 208:../cleanflight/src/main/sensors/voltage.c **** 
+ 209:../cleanflight/src/main/sensors/voltage.c **** static voltageMeterESCState_t voltageMeterESCState;
+ 210:../cleanflight/src/main/sensors/voltage.c **** #endif
+ 211:../cleanflight/src/main/sensors/voltage.c **** 
+ 212:../cleanflight/src/main/sensors/voltage.c **** 
+ 213:../cleanflight/src/main/sensors/voltage.c **** 
+ 214:../cleanflight/src/main/sensors/voltage.c **** void voltageMeterESCInit(void)
+ 215:../cleanflight/src/main/sensors/voltage.c **** {
+ 647              	 .loc 2 215 0
+ 648              	 .cfi_startproc
+ 649              	 
+ 650              	 
+ 651              	 
+ 652 0000 80B4     	 push {r7}
+ 653              	.LCFI45:
+ 654              	 .cfi_def_cfa_offset 4
+ 655              	 .cfi_offset 7,-4
+ 656 0002 00AF     	 add r7,sp,#0
+ 657              	.LCFI46:
+ 658              	 .cfi_def_cfa_register 7
+ 216:../cleanflight/src/main/sensors/voltage.c **** #ifdef USE_ESC_SENSOR
+ 217:../cleanflight/src/main/sensors/voltage.c ****     memset(&voltageMeterESCState, 0, sizeof(voltageMeterESCState_t));
+ 218:../cleanflight/src/main/sensors/voltage.c ****     biquadFilterInitLPF(&voltageMeterESCState.filter, VBAT_LPF_FREQ, HZ_TO_INTERVAL_US(50));
+ 219:../cleanflight/src/main/sensors/voltage.c **** #endif
+ 220:../cleanflight/src/main/sensors/voltage.c **** }
+ 659              	 .loc 2 220 0
+ 660 0004 BD46     	 mov sp,r7
+ 661              	.LCFI47:
+ 662              	 .cfi_def_cfa_register 13
+ 663              	 
+ 664 0006 5DF8047B 	 ldr r7,[sp],#4
+ 665              	.LCFI48:
+ 666              	 .cfi_restore 7
+ 667              	 .cfi_def_cfa_offset 0
+ 668 000a 7047     	 bx lr
+ 669              	 .cfi_endproc
+ 670              	.LFE541:
+ 672              	 .section .text.voltageMeterESCRefresh,"ax",%progbits
+ 673              	 .align 2
+ 674              	 .global voltageMeterESCRefresh
+ 675              	 .thumb
+ 676              	 .thumb_func
+ 678              	voltageMeterESCRefresh:
+ 679              	.LFB542:
+ 221:../cleanflight/src/main/sensors/voltage.c **** 
+ 222:../cleanflight/src/main/sensors/voltage.c **** void voltageMeterESCRefresh(void)
+ 223:../cleanflight/src/main/sensors/voltage.c **** {
+ 680              	 .loc 2 223 0
+ 681              	 .cfi_startproc
+ 682              	 
+ 683              	 
+ 684              	 
+ 685 0000 80B4     	 push {r7}
+ 686              	.LCFI49:
+ 687              	 .cfi_def_cfa_offset 4
+ 688              	 .cfi_offset 7,-4
+ 689 0002 00AF     	 add r7,sp,#0
+ 690              	.LCFI50:
+ 691              	 .cfi_def_cfa_register 7
+ 224:../cleanflight/src/main/sensors/voltage.c **** #ifdef USE_ESC_SENSOR
+ 225:../cleanflight/src/main/sensors/voltage.c ****     escSensorData_t *escData = getEscSensorData(ESC_SENSOR_COMBINED);
+ 226:../cleanflight/src/main/sensors/voltage.c ****     if (escData) {
+ 227:../cleanflight/src/main/sensors/voltage.c ****         voltageMeterESCState.voltageUnfiltered = escData->dataAge <= ESC_BATTERY_AGE_MAX ? escData-
+ 228:../cleanflight/src/main/sensors/voltage.c ****         voltageMeterESCState.voltageFiltered = biquadFilterApply(&voltageMeterESCState.filter, volt
+ 229:../cleanflight/src/main/sensors/voltage.c ****     }
+ 230:../cleanflight/src/main/sensors/voltage.c **** #endif
+ 231:../cleanflight/src/main/sensors/voltage.c **** }
+ 692              	 .loc 2 231 0
+ 693 0004 BD46     	 mov sp,r7
+ 694              	.LCFI51:
+ 695              	 .cfi_def_cfa_register 13
+ 696              	 
+ 697 0006 5DF8047B 	 ldr r7,[sp],#4
+ 698              	.LCFI52:
+ 699              	 .cfi_restore 7
+ 700              	 .cfi_def_cfa_offset 0
+ 701 000a 7047     	 bx lr
+ 702              	 .cfi_endproc
+ 703              	.LFE542:
+ 705              	 .section .text.voltageMeterESCReadMotor,"ax",%progbits
+ 706              	 .align 2
+ 707              	 .global voltageMeterESCReadMotor
+ 708              	 .thumb
+ 709              	 .thumb_func
+ 711              	voltageMeterESCReadMotor:
+ 712              	.LFB543:
+ 232:../cleanflight/src/main/sensors/voltage.c **** 
+ 233:../cleanflight/src/main/sensors/voltage.c **** void voltageMeterESCReadMotor(uint8_t motorNumber, voltageMeter_t *voltageMeter)
+ 234:../cleanflight/src/main/sensors/voltage.c **** {
+ 713              	 .loc 2 234 0
+ 714              	 .cfi_startproc
+ 715              	 
+ 716              	 
+ 717 0000 80B5     	 push {r7,lr}
+ 718              	.LCFI53:
+ 719              	 .cfi_def_cfa_offset 8
+ 720              	 .cfi_offset 7,-8
+ 721              	 .cfi_offset 14,-4
+ 722 0002 82B0     	 sub sp,sp,#8
+ 723              	.LCFI54:
+ 724              	 .cfi_def_cfa_offset 16
+ 725 0004 00AF     	 add r7,sp,#0
+ 726              	.LCFI55:
+ 727              	 .cfi_def_cfa_register 7
+ 728 0006 0346     	 mov r3,r0
+ 729 0008 3960     	 str r1,[r7]
+ 730 000a FB71     	 strb r3,[r7,#7]
+ 235:../cleanflight/src/main/sensors/voltage.c **** #ifndef USE_ESC_SENSOR
+ 236:../cleanflight/src/main/sensors/voltage.c ****     UNUSED(motorNumber);
+ 237:../cleanflight/src/main/sensors/voltage.c ****     voltageMeterReset(voltageMeter);
+ 731              	 .loc 2 237 0
+ 732 000c 3868     	 ldr r0,[r7]
+ 733 000e FFF7FEFF 	 bl voltageMeterReset
+ 238:../cleanflight/src/main/sensors/voltage.c **** #else
+ 239:../cleanflight/src/main/sensors/voltage.c ****     escSensorData_t *escData = getEscSensorData(motorNumber);
+ 240:../cleanflight/src/main/sensors/voltage.c ****     if (escData) {
+ 241:../cleanflight/src/main/sensors/voltage.c ****         voltageMeter->unfiltered = escData->dataAge <= ESC_BATTERY_AGE_MAX ? escData->voltage / 10 
+ 242:../cleanflight/src/main/sensors/voltage.c ****         voltageMeter->filtered = voltageMeter->unfiltered; // no filtering for ESC motors currently
+ 243:../cleanflight/src/main/sensors/voltage.c ****     } else {
+ 244:../cleanflight/src/main/sensors/voltage.c ****         voltageMeterReset(voltageMeter);
+ 245:../cleanflight/src/main/sensors/voltage.c ****     }
+ 246:../cleanflight/src/main/sensors/voltage.c **** 
+ 247:../cleanflight/src/main/sensors/voltage.c **** #endif
+ 248:../cleanflight/src/main/sensors/voltage.c **** }
+ 734              	 .loc 2 248 0
+ 735 0012 0837     	 adds r7,r7,#8
+ 736              	.LCFI56:
+ 737              	 .cfi_def_cfa_offset 8
+ 738 0014 BD46     	 mov sp,r7
+ 739              	.LCFI57:
+ 740              	 .cfi_def_cfa_register 13
+ 741              	 
+ 742 0016 80BD     	 pop {r7,pc}
+ 743              	 .cfi_endproc
+ 744              	.LFE543:
+ 746              	 .section .text.voltageMeterESCReadCombined,"ax",%progbits
+ 747              	 .align 2
+ 748              	 .global voltageMeterESCReadCombined
+ 749              	 .thumb
+ 750              	 .thumb_func
+ 752              	voltageMeterESCReadCombined:
+ 753              	.LFB544:
+ 249:../cleanflight/src/main/sensors/voltage.c **** 
+ 250:../cleanflight/src/main/sensors/voltage.c **** void voltageMeterESCReadCombined(voltageMeter_t *voltageMeter)
+ 251:../cleanflight/src/main/sensors/voltage.c **** {
+ 754              	 .loc 2 251 0
+ 755              	 .cfi_startproc
+ 756              	 
+ 757              	 
+ 758 0000 80B5     	 push {r7,lr}
+ 759              	.LCFI58:
+ 760              	 .cfi_def_cfa_offset 8
+ 761              	 .cfi_offset 7,-8
+ 762              	 .cfi_offset 14,-4
+ 763 0002 82B0     	 sub sp,sp,#8
+ 764              	.LCFI59:
+ 765              	 .cfi_def_cfa_offset 16
+ 766 0004 00AF     	 add r7,sp,#0
+ 767              	.LCFI60:
+ 768              	 .cfi_def_cfa_register 7
+ 769 0006 7860     	 str r0,[r7,#4]
+ 252:../cleanflight/src/main/sensors/voltage.c **** #ifndef USE_ESC_SENSOR
+ 253:../cleanflight/src/main/sensors/voltage.c ****     voltageMeterReset(voltageMeter);
+ 770              	 .loc 2 253 0
+ 771 0008 7868     	 ldr r0,[r7,#4]
+ 772 000a FFF7FEFF 	 bl voltageMeterReset
+ 254:../cleanflight/src/main/sensors/voltage.c **** #else
+ 255:../cleanflight/src/main/sensors/voltage.c ****     voltageMeter->filtered = voltageMeterESCState.voltageFiltered;
+ 256:../cleanflight/src/main/sensors/voltage.c ****     voltageMeter->unfiltered = voltageMeterESCState.voltageUnfiltered;
+ 257:../cleanflight/src/main/sensors/voltage.c **** #endif
+ 258:../cleanflight/src/main/sensors/voltage.c **** }
+ 773              	 .loc 2 258 0
+ 774 000e 0837     	 adds r7,r7,#8
+ 775              	.LCFI61:
+ 776              	 .cfi_def_cfa_offset 8
+ 777 0010 BD46     	 mov sp,r7
+ 778              	.LCFI62:
+ 779              	 .cfi_def_cfa_register 13
+ 780              	 
+ 781 0012 80BD     	 pop {r7,pc}
+ 782              	 .cfi_endproc
+ 783              	.LFE544:
+ 785              	 .global voltageMeterADCtoIDMap
+ 786              	 .section .rodata.voltageMeterADCtoIDMap,"a",%progbits
+ 787              	 .align 2
+ 790              	voltageMeterADCtoIDMap:
+ 791 0000 0A       	 .byte 10
+ 792 0001 000000   	 .section .text.voltageMeterRead,"ax",%progbits
+ 793              	 .align 2
+ 794              	 .global voltageMeterRead
+ 795              	 .thumb
+ 796              	 .thumb_func
+ 798              	voltageMeterRead:
+ 799              	.LFB545:
+ 259:../cleanflight/src/main/sensors/voltage.c **** 
+ 260:../cleanflight/src/main/sensors/voltage.c **** //
+ 261:../cleanflight/src/main/sensors/voltage.c **** // API for using voltage meters using IDs
+ 262:../cleanflight/src/main/sensors/voltage.c **** //
+ 263:../cleanflight/src/main/sensors/voltage.c **** // This API is used by MSP, for configuration/status.
+ 264:../cleanflight/src/main/sensors/voltage.c **** //
+ 265:../cleanflight/src/main/sensors/voltage.c **** 
+ 266:../cleanflight/src/main/sensors/voltage.c **** 
+ 267:../cleanflight/src/main/sensors/voltage.c **** // the order of these much match the indexes in voltageSensorADC_e
+ 268:../cleanflight/src/main/sensors/voltage.c **** const uint8_t voltageMeterADCtoIDMap[MAX_VOLTAGE_SENSOR_ADC] = {
+ 269:../cleanflight/src/main/sensors/voltage.c ****     VOLTAGE_METER_ID_BATTERY_1,
+ 270:../cleanflight/src/main/sensors/voltage.c **** #ifdef ADC_POWER_12V
+ 271:../cleanflight/src/main/sensors/voltage.c ****     VOLTAGE_METER_ID_12V_1,
+ 272:../cleanflight/src/main/sensors/voltage.c **** #endif
+ 273:../cleanflight/src/main/sensors/voltage.c **** #ifdef ADC_POWER_9V
+ 274:../cleanflight/src/main/sensors/voltage.c ****     VOLTAGE_METER_ID_9V_1,
+ 275:../cleanflight/src/main/sensors/voltage.c **** #endif
+ 276:../cleanflight/src/main/sensors/voltage.c **** #ifdef ADC_POWER_5V
+ 277:../cleanflight/src/main/sensors/voltage.c ****     VOLTAGE_METER_ID_5V_1,
+ 278:../cleanflight/src/main/sensors/voltage.c **** #endif
+ 279:../cleanflight/src/main/sensors/voltage.c **** };
+ 280:../cleanflight/src/main/sensors/voltage.c **** 
+ 281:../cleanflight/src/main/sensors/voltage.c **** void voltageMeterRead(voltageMeterId_e id, voltageMeter_t *meter)
+ 282:../cleanflight/src/main/sensors/voltage.c **** {
+ 800              	 .loc 2 282 0
+ 801              	 .cfi_startproc
+ 802              	 
+ 803              	 
+ 804 0000 80B5     	 push {r7,lr}
+ 805              	.LCFI63:
+ 806              	 .cfi_def_cfa_offset 8
+ 807              	 .cfi_offset 7,-8
+ 808              	 .cfi_offset 14,-4
+ 809 0002 82B0     	 sub sp,sp,#8
+ 810              	.LCFI64:
+ 811              	 .cfi_def_cfa_offset 16
+ 812 0004 00AF     	 add r7,sp,#0
+ 813              	.LCFI65:
+ 814              	 .cfi_def_cfa_register 7
+ 815 0006 0346     	 mov r3,r0
+ 816 0008 3960     	 str r1,[r7]
+ 817 000a FB71     	 strb r3,[r7,#7]
+ 283:../cleanflight/src/main/sensors/voltage.c ****     if (id == VOLTAGE_METER_ID_BATTERY_1) {
+ 818              	 .loc 2 283 0
+ 819 000c FB79     	 ldrb r3,[r7,#7]
+ 820 000e 0A2B     	 cmp r3,#10
+ 821 0010 04D1     	 bne .L39
+ 284:../cleanflight/src/main/sensors/voltage.c ****         voltageMeterADCRead(VOLTAGE_SENSOR_ADC_VBAT, meter);
+ 822              	 .loc 2 284 0
+ 823 0012 0020     	 movs r0,#0
+ 824 0014 3968     	 ldr r1,[r7]
+ 825 0016 FFF7FEFF 	 bl voltageMeterADCRead
+ 826 001a 02E0     	 b .L38
+ 827              	.L39:
+ 285:../cleanflight/src/main/sensors/voltage.c ****     } else
+ 286:../cleanflight/src/main/sensors/voltage.c **** #ifdef ADC_POWER_12V
+ 287:../cleanflight/src/main/sensors/voltage.c ****     if (id == VOLTAGE_METER_ID_12V_1) {
+ 288:../cleanflight/src/main/sensors/voltage.c ****         voltageMeterADCRead(VOLTAGE_SENSOR_ADC_12V, meter);
+ 289:../cleanflight/src/main/sensors/voltage.c ****     } else
+ 290:../cleanflight/src/main/sensors/voltage.c **** #endif
+ 291:../cleanflight/src/main/sensors/voltage.c **** #ifdef ADC_POWER_9V
+ 292:../cleanflight/src/main/sensors/voltage.c ****     if (id == VOLTAGE_METER_ID_9V_1) {
+ 293:../cleanflight/src/main/sensors/voltage.c ****         voltageMeterADCRead(VOLTAGE_SENSOR_ADC_9V, meter);
+ 294:../cleanflight/src/main/sensors/voltage.c ****     } else
+ 295:../cleanflight/src/main/sensors/voltage.c **** #endif
+ 296:../cleanflight/src/main/sensors/voltage.c **** #ifdef ADC_POWER_5V
+ 297:../cleanflight/src/main/sensors/voltage.c ****     if (id == VOLTAGE_METER_ID_5V_1) {
+ 298:../cleanflight/src/main/sensors/voltage.c ****         voltageMeterADCRead(VOLTAGE_SENSOR_ADC_5V, meter);
+ 299:../cleanflight/src/main/sensors/voltage.c ****     } else
+ 300:../cleanflight/src/main/sensors/voltage.c **** #endif
+ 301:../cleanflight/src/main/sensors/voltage.c **** #ifdef USE_ESC_SENSOR
+ 302:../cleanflight/src/main/sensors/voltage.c ****     if (id == VOLTAGE_METER_ID_ESC_COMBINED_1) {
+ 303:../cleanflight/src/main/sensors/voltage.c ****         voltageMeterESCReadCombined(meter);
+ 304:../cleanflight/src/main/sensors/voltage.c ****     } else
+ 305:../cleanflight/src/main/sensors/voltage.c ****     if (id >= VOLTAGE_METER_ID_ESC_MOTOR_1 && id <= VOLTAGE_METER_ID_ESC_MOTOR_20 ) {
+ 306:../cleanflight/src/main/sensors/voltage.c ****         int motor = id - VOLTAGE_METER_ID_ESC_MOTOR_1;
+ 307:../cleanflight/src/main/sensors/voltage.c ****         voltageMeterESCReadMotor(motor, meter);
+ 308:../cleanflight/src/main/sensors/voltage.c ****     } else
+ 309:../cleanflight/src/main/sensors/voltage.c **** #endif
+ 310:../cleanflight/src/main/sensors/voltage.c ****     {
+ 311:../cleanflight/src/main/sensors/voltage.c ****         voltageMeterReset(meter);
+ 828              	 .loc 2 311 0
+ 829 001c 3868     	 ldr r0,[r7]
+ 830 001e FFF7FEFF 	 bl voltageMeterReset
+ 831              	.L38:
+ 312:../cleanflight/src/main/sensors/voltage.c ****     }
+ 313:../cleanflight/src/main/sensors/voltage.c **** }
+ 832              	 .loc 2 313 0
+ 833 0022 0837     	 adds r7,r7,#8
+ 834              	.LCFI66:
+ 835              	 .cfi_def_cfa_offset 8
+ 836 0024 BD46     	 mov sp,r7
+ 837              	.LCFI67:
+ 838              	 .cfi_def_cfa_register 13
+ 839              	 
+ 840 0026 80BD     	 pop {r7,pc}
+ 841              	 .cfi_endproc
+ 842              	.LFE545:
+ 844              	 .section .rodata._reset_template_127.11980,"a",%progbits
+ 845              	 .align 2
+ 848              	_reset_template_127.11980:
+ 849 0000 2E       	 .byte 46
+ 850 0001 0A       	 .byte 10
+ 851 0002 01       	 .byte 1
+ 852 0003 00       	 .text
+ 853              	.Letext0:
+ 854              	 .file 3 "d:\\xmc\\dave-ide-4.4.2-64bit\\eclipse\\arm-gcc-49\\arm-none-eabi\\include\\machine\\_default_types.h"
+ 855              	 .file 4 "d:\\xmc\\dave-ide-4.4.2-64bit\\eclipse\\arm-gcc-49\\arm-none-eabi\\include\\stdint.h"
+ 856              	 .file 5 "D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/lib/main/XMC4000/XMCLib/inc/xmc_usic.h"
+ 857              	 .file 6 "D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/common/filter.h"
+ 858              	 .file 7 "D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/pg/pg.h"
+ 859              	 .file 8 "D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/common/time.h"
+ 860              	 .file 9 "D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/drivers/adc.h"
+ 861              	 .file 10 "D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/sensors/voltage_ids.h"
+ 862              	 .file 11 "D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/sensors/esc_sensor.h"
+ 863              	 .file 12 "D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/lib/main/CMSIS/Core/Include/core_cm4.h"
+ 864              	 .file 13 "D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/lib/main/XMC4000/system_XMC4700.h"
+DEFINED SYMBOLS
+                            *ABS*:00000000 voltage.c
+    {standard input}:20     .text.voltageSensorADCConfig:00000000 $t
+    {standard input}:24     .text.voltageSensorADCConfig:00000000 voltageSensorADCConfig
+    {standard input}:66     .text.voltageSensorADCConfig:00000020 $d
+                            *COM*:00000003 voltageSensorADCConfig_SystemArray
+    {standard input}:85     .rodata.voltageMeterSourceNames:00000000 voltageMeterSourceNames
+    {standard input}:72     .rodata:00000000 $d
+    {standard input}:82     .rodata.voltageMeterSourceNames:00000000 $d
+    {standard input}:94     .rodata.voltageMeterIds:00000000 voltageMeterIds
+    {standard input}:91     .rodata.voltageMeterIds:00000000 $d
+    {standard input}:100    .rodata.supportedVoltageMeterCount:00000000 supportedVoltageMeterCount
+    {standard input}:103    .text.voltageMeterReset:00000000 $t
+    {standard input}:108    .text.voltageMeterReset:00000000 voltageMeterReset
+                            *COM*:00000028 voltageMeterADCStates
+    {standard input}:157    .text.getVoltageMeterADC:00000000 $t
+    {standard input}:162    .text.getVoltageMeterADC:00000000 getVoltageMeterADC
+    {standard input}:206    .text.getVoltageMeterADC:00000024 $d
+                            *COM*:00000003 voltageSensorADCConfig_CopyArray
+    {standard input}:217    .pg_registry:00000000 voltageSensorADCConfig_Registry
+    {standard input}:214    .pg_registry:00000000 $d
+    {standard input}:230    .text.pgResetFn_voltageSensorADCConfig:00000000 pgResetFn_voltageSensorADCConfig
+    {standard input}:225    .text.pgResetFn_voltageSensorADCConfig:00000000 $t
+    {standard input}:294    .text.pgResetFn_voltageSensorADCConfig:0000003c $d
+    {standard input}:848    .rodata._reset_template_127.11980:00000000 _reset_template_127.11980
+    {standard input}:299    .rodata.voltageMeterAdcChannelMap:00000000 $d
+    {standard input}:302    .rodata.voltageMeterAdcChannelMap:00000000 voltageMeterAdcChannelMap
+    {standard input}:305    .text.voltageAdcToVoltage:00000000 $t
+    {standard input}:309    .text.voltageAdcToVoltage:00000000 voltageAdcToVoltage
+    {standard input}:367    .text.voltageAdcToVoltage:00000050 $d
+    {standard input}:372    .text.voltageMeterADCRefresh:00000000 $t
+    {standard input}:377    .text.voltageMeterADCRefresh:00000000 voltageMeterADCRefresh
+    {standard input}:484    .text.voltageMeterADCRefresh:0000009c $d
+    {standard input}:489    .text.voltageMeterADCRead:00000000 $t
+    {standard input}:494    .text.voltageMeterADCRead:00000000 voltageMeterADCRead
+    {standard input}:551    .text.voltageMeterADCRead:0000003c $d
+    {standard input}:556    .text.voltageMeterADCInit:00000000 $t
+    {standard input}:561    .text.voltageMeterADCInit:00000000 voltageMeterADCInit
+    {standard input}:634    .text.voltageMeterADCInit:00000050 $d
+    {standard input}:640    .text.voltageMeterESCInit:00000000 $t
+    {standard input}:645    .text.voltageMeterESCInit:00000000 voltageMeterESCInit
+    {standard input}:673    .text.voltageMeterESCRefresh:00000000 $t
+    {standard input}:678    .text.voltageMeterESCRefresh:00000000 voltageMeterESCRefresh
+    {standard input}:706    .text.voltageMeterESCReadMotor:00000000 $t
+    {standard input}:711    .text.voltageMeterESCReadMotor:00000000 voltageMeterESCReadMotor
+    {standard input}:747    .text.voltageMeterESCReadCombined:00000000 $t
+    {standard input}:752    .text.voltageMeterESCReadCombined:00000000 voltageMeterESCReadCombined
+    {standard input}:790    .rodata.voltageMeterADCtoIDMap:00000000 voltageMeterADCtoIDMap
+    {standard input}:787    .rodata.voltageMeterADCtoIDMap:00000000 $d
+    {standard input}:793    .text.voltageMeterRead:00000000 $t
+    {standard input}:798    .text.voltageMeterRead:00000000 voltageMeterRead
+    {standard input}:845    .rodata._reset_template_127.11980:00000000 $d
+                     .debug_frame:00000010 $d
+
+UNDEFINED SYMBOLS
+getVrefMv
+adcGetChannel
+biquadFilterApply
+memset
+biquadFilterInitLPF

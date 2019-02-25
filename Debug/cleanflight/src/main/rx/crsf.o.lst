@@ -1,0 +1,1300 @@
+   1              	 .syntax unified
+   2              	 .cpu cortex-m4
+   3              	 .eabi_attribute 27,3
+   4              	 .fpu fpv4-sp-d16
+   5              	 .eabi_attribute 20,1
+   6              	 .eabi_attribute 21,1
+   7              	 .eabi_attribute 23,3
+   8              	 .eabi_attribute 24,1
+   9              	 .eabi_attribute 25,1
+  10              	 .eabi_attribute 26,1
+  11              	 .eabi_attribute 30,6
+  12              	 .eabi_attribute 34,1
+  13              	 .eabi_attribute 18,4
+  14              	 .thumb
+  15              	 .file "crsf.c"
+  16              	 .text
+  17              	.Ltext0:
+  18              	 .cfi_sections .debug_frame
+  19              	 .section .bss.crsfFrameDone,"aw",%nobits
+  22              	crsfFrameDone:
+  23 0000 00       	 .space 1
+  24              	 .section .bss.crsfFrame,"aw",%nobits
+  25              	 .align 2
+  28              	crsfFrame:
+  29 0000 00000000 	 .space 64
+  29      00000000 
+  29      00000000 
+  29      00000000 
+  29      00000000 
+  30              	 .section .bss.crsfChannelData,"aw",%nobits
+  31              	 .align 2
+  34              	crsfChannelData:
+  35 0000 00000000 	 .space 64
+  35      00000000 
+  35      00000000 
+  35      00000000 
+  35      00000000 
+  36              	 .section .bss.serialPort,"aw",%nobits
+  37              	 .align 2
+  40              	serialPort:
+  41 0000 00000000 	 .space 4
+  42              	 .section .bss.crsfFrameStartAtUs,"aw",%nobits
+  43              	 .align 2
+  46              	crsfFrameStartAtUs:
+  47 0000 00000000 	 .space 4
+  48              	 .section .bss.telemetryBuf,"aw",%nobits
+  49              	 .align 2
+  52              	telemetryBuf:
+  53 0000 00000000 	 .space 64
+  53      00000000 
+  53      00000000 
+  53      00000000 
+  53      00000000 
+  54              	 .section .bss.telemetryBufLen,"aw",%nobits
+  57              	telemetryBufLen:
+  58 0000 00       	 .space 1
+  59              	 .section .text.crsfFrameCRC,"ax",%progbits
+  60              	 .align 2
+  61              	 .thumb
+  62              	 .thumb_func
+  64              	crsfFrameCRC:
+  65              	.LFB541:
+  66              	 .file 1 "../cleanflight/src/main/rx/crsf.c"
+   1:../cleanflight/src/main/rx/crsf.c **** /*
+   2:../cleanflight/src/main/rx/crsf.c ****  * This file is part of Cleanflight and Betaflight.
+   3:../cleanflight/src/main/rx/crsf.c ****  *
+   4:../cleanflight/src/main/rx/crsf.c ****  * Cleanflight and Betaflight are free software. You can redistribute
+   5:../cleanflight/src/main/rx/crsf.c ****  * this software and/or modify this software under the terms of the
+   6:../cleanflight/src/main/rx/crsf.c ****  * GNU General Public License as published by the Free Software
+   7:../cleanflight/src/main/rx/crsf.c ****  * Foundation, either version 3 of the License, or (at your option)
+   8:../cleanflight/src/main/rx/crsf.c ****  * any later version.
+   9:../cleanflight/src/main/rx/crsf.c ****  *
+  10:../cleanflight/src/main/rx/crsf.c ****  * Cleanflight and Betaflight are distributed in the hope that they
+  11:../cleanflight/src/main/rx/crsf.c ****  * will be useful, but WITHOUT ANY WARRANTY; without even the implied
+  12:../cleanflight/src/main/rx/crsf.c ****  * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+  13:../cleanflight/src/main/rx/crsf.c ****  * See the GNU General Public License for more details.
+  14:../cleanflight/src/main/rx/crsf.c ****  *
+  15:../cleanflight/src/main/rx/crsf.c ****  * You should have received a copy of the GNU General Public License
+  16:../cleanflight/src/main/rx/crsf.c ****  * along with this software.
+  17:../cleanflight/src/main/rx/crsf.c ****  *
+  18:../cleanflight/src/main/rx/crsf.c ****  * If not, see <http://www.gnu.org/licenses/>.
+  19:../cleanflight/src/main/rx/crsf.c ****  */
+  20:../cleanflight/src/main/rx/crsf.c **** 
+  21:../cleanflight/src/main/rx/crsf.c **** #include <stdbool.h>
+  22:../cleanflight/src/main/rx/crsf.c **** #include <stdint.h>
+  23:../cleanflight/src/main/rx/crsf.c **** #include <stdlib.h>
+  24:../cleanflight/src/main/rx/crsf.c **** #include <string.h>
+  25:../cleanflight/src/main/rx/crsf.c **** 
+  26:../cleanflight/src/main/rx/crsf.c **** #include "platform.h"
+  27:../cleanflight/src/main/rx/crsf.c **** 
+  28:../cleanflight/src/main/rx/crsf.c **** #ifdef USE_SERIAL_RX
+  29:../cleanflight/src/main/rx/crsf.c **** 
+  30:../cleanflight/src/main/rx/crsf.c **** #include "build/build_config.h"
+  31:../cleanflight/src/main/rx/crsf.c **** #include "build/debug.h"
+  32:../cleanflight/src/main/rx/crsf.c **** 
+  33:../cleanflight/src/main/rx/crsf.c **** #include "common/crc.h"
+  34:../cleanflight/src/main/rx/crsf.c **** #include "common/maths.h"
+  35:../cleanflight/src/main/rx/crsf.c **** #include "common/utils.h"
+  36:../cleanflight/src/main/rx/crsf.c **** 
+  37:../cleanflight/src/main/rx/crsf.c **** #include "pg/rx.h"
+  38:../cleanflight/src/main/rx/crsf.c **** 
+  39:../cleanflight/src/main/rx/crsf.c **** #include "drivers/serial.h"
+  40:../cleanflight/src/main/rx/crsf.c **** #include "drivers/serial_uart.h"
+  41:../cleanflight/src/main/rx/crsf.c **** #include "drivers/system.h"
+  42:../cleanflight/src/main/rx/crsf.c **** #include "drivers/time.h"
+  43:../cleanflight/src/main/rx/crsf.c **** 
+  44:../cleanflight/src/main/rx/crsf.c **** #include "io/serial.h"
+  45:../cleanflight/src/main/rx/crsf.c **** 
+  46:../cleanflight/src/main/rx/crsf.c **** #include "rx/rx.h"
+  47:../cleanflight/src/main/rx/crsf.c **** #include "rx/crsf.h"
+  48:../cleanflight/src/main/rx/crsf.c **** 
+  49:../cleanflight/src/main/rx/crsf.c **** #include "telemetry/crsf.h"
+  50:../cleanflight/src/main/rx/crsf.c **** 
+  51:../cleanflight/src/main/rx/crsf.c **** #define CRSF_TIME_NEEDED_PER_FRAME_US   1100 // 700 ms + 400 ms for potential ad-hoc request
+  52:../cleanflight/src/main/rx/crsf.c **** #define CRSF_TIME_BETWEEN_FRAMES_US     6667 // At fastest, frames are sent by the transmitter ever
+  53:../cleanflight/src/main/rx/crsf.c **** 
+  54:../cleanflight/src/main/rx/crsf.c **** #define CRSF_DIGITAL_CHANNEL_MIN 172
+  55:../cleanflight/src/main/rx/crsf.c **** #define CRSF_DIGITAL_CHANNEL_MAX 1811
+  56:../cleanflight/src/main/rx/crsf.c **** 
+  57:../cleanflight/src/main/rx/crsf.c **** #define CRSF_PAYLOAD_OFFSET offsetof(crsfFrameDef_t, type)
+  58:../cleanflight/src/main/rx/crsf.c **** 
+  59:../cleanflight/src/main/rx/crsf.c **** STATIC_UNIT_TESTED bool crsfFrameDone = false;
+  60:../cleanflight/src/main/rx/crsf.c **** STATIC_UNIT_TESTED crsfFrame_t crsfFrame;
+  61:../cleanflight/src/main/rx/crsf.c **** STATIC_UNIT_TESTED uint32_t crsfChannelData[CRSF_MAX_CHANNEL];
+  62:../cleanflight/src/main/rx/crsf.c **** 
+  63:../cleanflight/src/main/rx/crsf.c **** static serialPort_t *serialPort;
+  64:../cleanflight/src/main/rx/crsf.c **** static uint32_t crsfFrameStartAtUs = 0;
+  65:../cleanflight/src/main/rx/crsf.c **** static uint8_t telemetryBuf[CRSF_FRAME_SIZE_MAX];
+  66:../cleanflight/src/main/rx/crsf.c **** static uint8_t telemetryBufLen = 0;
+  67:../cleanflight/src/main/rx/crsf.c **** 
+  68:../cleanflight/src/main/rx/crsf.c **** /*
+  69:../cleanflight/src/main/rx/crsf.c ****  * CRSF protocol
+  70:../cleanflight/src/main/rx/crsf.c ****  *
+  71:../cleanflight/src/main/rx/crsf.c ****  * CRSF protocol uses a single wire half duplex uart connection.
+  72:../cleanflight/src/main/rx/crsf.c ****  * The master sends one frame every 4ms and the slave replies between two frames from the master.
+  73:../cleanflight/src/main/rx/crsf.c ****  *
+  74:../cleanflight/src/main/rx/crsf.c ****  * 420000 baud
+  75:../cleanflight/src/main/rx/crsf.c ****  * not inverted
+  76:../cleanflight/src/main/rx/crsf.c ****  * 8 Bit
+  77:../cleanflight/src/main/rx/crsf.c ****  * 1 Stop bit
+  78:../cleanflight/src/main/rx/crsf.c ****  * Big endian
+  79:../cleanflight/src/main/rx/crsf.c ****  * 420000 bit/s = 46667 byte/s (including stop bit) = 21.43us per byte
+  80:../cleanflight/src/main/rx/crsf.c ****  * Max frame size is 64 bytes
+  81:../cleanflight/src/main/rx/crsf.c ****  * A 64 byte frame plus 1 sync byte can be transmitted in 1393 microseconds.
+  82:../cleanflight/src/main/rx/crsf.c ****  *
+  83:../cleanflight/src/main/rx/crsf.c ****  * CRSF_TIME_NEEDED_PER_FRAME_US is set conservatively at 1500 microseconds
+  84:../cleanflight/src/main/rx/crsf.c ****  *
+  85:../cleanflight/src/main/rx/crsf.c ****  * Every frame has the structure:
+  86:../cleanflight/src/main/rx/crsf.c ****  * <Device address><Frame length><Type><Payload><CRC>
+  87:../cleanflight/src/main/rx/crsf.c ****  *
+  88:../cleanflight/src/main/rx/crsf.c ****  * Device address: (uint8_t)
+  89:../cleanflight/src/main/rx/crsf.c ****  * Frame length:   length in  bytes including Type (uint8_t)
+  90:../cleanflight/src/main/rx/crsf.c ****  * Type:           (uint8_t)
+  91:../cleanflight/src/main/rx/crsf.c ****  * CRC:            (uint8_t)
+  92:../cleanflight/src/main/rx/crsf.c ****  *
+  93:../cleanflight/src/main/rx/crsf.c ****  */
+  94:../cleanflight/src/main/rx/crsf.c **** 
+  95:../cleanflight/src/main/rx/crsf.c **** struct crsfPayloadRcChannelsPacked_s {
+  96:../cleanflight/src/main/rx/crsf.c ****     // 176 bits of data (11 bits per channel * 16 channels) = 22 bytes.
+  97:../cleanflight/src/main/rx/crsf.c ****     unsigned int chan0 : 11;
+  98:../cleanflight/src/main/rx/crsf.c ****     unsigned int chan1 : 11;
+  99:../cleanflight/src/main/rx/crsf.c ****     unsigned int chan2 : 11;
+ 100:../cleanflight/src/main/rx/crsf.c ****     unsigned int chan3 : 11;
+ 101:../cleanflight/src/main/rx/crsf.c ****     unsigned int chan4 : 11;
+ 102:../cleanflight/src/main/rx/crsf.c ****     unsigned int chan5 : 11;
+ 103:../cleanflight/src/main/rx/crsf.c ****     unsigned int chan6 : 11;
+ 104:../cleanflight/src/main/rx/crsf.c ****     unsigned int chan7 : 11;
+ 105:../cleanflight/src/main/rx/crsf.c ****     unsigned int chan8 : 11;
+ 106:../cleanflight/src/main/rx/crsf.c ****     unsigned int chan9 : 11;
+ 107:../cleanflight/src/main/rx/crsf.c ****     unsigned int chan10 : 11;
+ 108:../cleanflight/src/main/rx/crsf.c ****     unsigned int chan11 : 11;
+ 109:../cleanflight/src/main/rx/crsf.c ****     unsigned int chan12 : 11;
+ 110:../cleanflight/src/main/rx/crsf.c ****     unsigned int chan13 : 11;
+ 111:../cleanflight/src/main/rx/crsf.c ****     unsigned int chan14 : 11;
+ 112:../cleanflight/src/main/rx/crsf.c ****     unsigned int chan15 : 11;
+ 113:../cleanflight/src/main/rx/crsf.c **** } __attribute__ ((__packed__));
+ 114:../cleanflight/src/main/rx/crsf.c **** 
+ 115:../cleanflight/src/main/rx/crsf.c **** typedef struct crsfPayloadRcChannelsPacked_s crsfPayloadRcChannelsPacked_t;
+ 116:../cleanflight/src/main/rx/crsf.c **** 
+ 117:../cleanflight/src/main/rx/crsf.c **** STATIC_UNIT_TESTED uint8_t crsfFrameCRC(void)
+ 118:../cleanflight/src/main/rx/crsf.c **** {
+  67              	 .loc 1 118 0
+  68              	 .cfi_startproc
+  69              	 
+  70              	 
+  71 0000 80B5     	 push {r7,lr}
+  72              	.LCFI0:
+  73              	 .cfi_def_cfa_offset 8
+  74              	 .cfi_offset 7,-8
+  75              	 .cfi_offset 14,-4
+  76 0002 82B0     	 sub sp,sp,#8
+  77              	.LCFI1:
+  78              	 .cfi_def_cfa_offset 16
+  79 0004 00AF     	 add r7,sp,#0
+  80              	.LCFI2:
+  81              	 .cfi_def_cfa_register 7
+ 119:../cleanflight/src/main/rx/crsf.c ****     // CRC includes type and payload
+ 120:../cleanflight/src/main/rx/crsf.c ****     uint8_t crc = crc8_dvb_s2(0, crsfFrame.frame.type);
+  82              	 .loc 1 120 0
+  83 0006 124B     	 ldr r3,.L5
+  84 0008 9B78     	 ldrb r3,[r3,#2]
+  85 000a 0020     	 movs r0,#0
+  86 000c 1946     	 mov r1,r3
+  87 000e FFF7FEFF 	 bl crc8_dvb_s2
+  88 0012 0346     	 mov r3,r0
+  89 0014 FB71     	 strb r3,[r7,#7]
+  90              	.LBB2:
+ 121:../cleanflight/src/main/rx/crsf.c ****     for (int ii = 0; ii < crsfFrame.frame.frameLength - CRSF_FRAME_LENGTH_TYPE_CRC; ++ii) {
+  91              	 .loc 1 121 0
+  92 0016 0023     	 movs r3,#0
+  93 0018 3B60     	 str r3,[r7]
+  94 001a 0DE0     	 b .L2
+  95              	.L3:
+ 122:../cleanflight/src/main/rx/crsf.c ****         crc = crc8_dvb_s2(crc, crsfFrame.frame.payload[ii]);
+  96              	 .loc 1 122 0 discriminator 3
+  97 001c 0C4A     	 ldr r2,.L5
+  98 001e 3B68     	 ldr r3,[r7]
+  99 0020 1344     	 add r3,r3,r2
+ 100 0022 DB78     	 ldrb r3,[r3,#3]
+ 101 0024 FA79     	 ldrb r2,[r7,#7]
+ 102 0026 1046     	 mov r0,r2
+ 103 0028 1946     	 mov r1,r3
+ 104 002a FFF7FEFF 	 bl crc8_dvb_s2
+ 105 002e 0346     	 mov r3,r0
+ 106 0030 FB71     	 strb r3,[r7,#7]
+ 121:../cleanflight/src/main/rx/crsf.c ****     for (int ii = 0; ii < crsfFrame.frame.frameLength - CRSF_FRAME_LENGTH_TYPE_CRC; ++ii) {
+ 107              	 .loc 1 121 0 discriminator 3
+ 108 0032 3B68     	 ldr r3,[r7]
+ 109 0034 0133     	 adds r3,r3,#1
+ 110 0036 3B60     	 str r3,[r7]
+ 111              	.L2:
+ 121:../cleanflight/src/main/rx/crsf.c ****     for (int ii = 0; ii < crsfFrame.frame.frameLength - CRSF_FRAME_LENGTH_TYPE_CRC; ++ii) {
+ 112              	 .loc 1 121 0 is_stmt 0 discriminator 1
+ 113 0038 054B     	 ldr r3,.L5
+ 114 003a 5B78     	 ldrb r3,[r3,#1]
+ 115 003c 9A1E     	 subs r2,r3,#2
+ 116 003e 3B68     	 ldr r3,[r7]
+ 117 0040 9A42     	 cmp r2,r3
+ 118 0042 EBDC     	 bgt .L3
+ 119              	.LBE2:
+ 123:../cleanflight/src/main/rx/crsf.c ****     }
+ 124:../cleanflight/src/main/rx/crsf.c ****     return crc;
+ 120              	 .loc 1 124 0 is_stmt 1
+ 121 0044 FB79     	 ldrb r3,[r7,#7]
+ 125:../cleanflight/src/main/rx/crsf.c **** }
+ 122              	 .loc 1 125 0
+ 123 0046 1846     	 mov r0,r3
+ 124 0048 0837     	 adds r7,r7,#8
+ 125              	.LCFI3:
+ 126              	 .cfi_def_cfa_offset 8
+ 127 004a BD46     	 mov sp,r7
+ 128              	.LCFI4:
+ 129              	 .cfi_def_cfa_register 13
+ 130              	 
+ 131 004c 80BD     	 pop {r7,pc}
+ 132              	.L6:
+ 133 004e 00BF     	 .align 2
+ 134              	.L5:
+ 135 0050 00000000 	 .word crsfFrame
+ 136              	 .cfi_endproc
+ 137              	.LFE541:
+ 139              	 .section .text.crsfDataReceive,"ax",%progbits
+ 140              	 .align 2
+ 141              	 .thumb
+ 142              	 .thumb_func
+ 144              	crsfDataReceive:
+ 145              	.LFB542:
+ 126:../cleanflight/src/main/rx/crsf.c **** 
+ 127:../cleanflight/src/main/rx/crsf.c **** // Receive ISR callback, called back from serial port
+ 128:../cleanflight/src/main/rx/crsf.c **** STATIC_UNIT_TESTED void crsfDataReceive(uint16_t c, void *data)
+ 129:../cleanflight/src/main/rx/crsf.c **** {
+ 146              	 .loc 1 129 0
+ 147              	 .cfi_startproc
+ 148              	 
+ 149              	 
+ 150 0000 80B5     	 push {r7,lr}
+ 151              	.LCFI5:
+ 152              	 .cfi_def_cfa_offset 8
+ 153              	 .cfi_offset 7,-8
+ 154              	 .cfi_offset 14,-4
+ 155 0002 86B0     	 sub sp,sp,#24
+ 156              	.LCFI6:
+ 157              	 .cfi_def_cfa_offset 32
+ 158 0004 00AF     	 add r7,sp,#0
+ 159              	.LCFI7:
+ 160              	 .cfi_def_cfa_register 7
+ 161 0006 0346     	 mov r3,r0
+ 162 0008 3960     	 str r1,[r7]
+ 163 000a FB80     	 strh r3,[r7,#6]
+ 130:../cleanflight/src/main/rx/crsf.c ****     UNUSED(data);
+ 131:../cleanflight/src/main/rx/crsf.c **** 
+ 132:../cleanflight/src/main/rx/crsf.c ****     static uint8_t crsfFramePosition = 0;
+ 133:../cleanflight/src/main/rx/crsf.c ****     const uint32_t currentTimeUs = micros();
+ 164              	 .loc 1 133 0
+ 165 000c FFF7FEFF 	 bl micros
+ 166 0010 7861     	 str r0,[r7,#20]
+ 134:../cleanflight/src/main/rx/crsf.c **** 
+ 135:../cleanflight/src/main/rx/crsf.c **** #ifdef DEBUG_CRSF_PACKETS
+ 136:../cleanflight/src/main/rx/crsf.c ****     debug[2] = currentTimeUs - crsfFrameStartAtUs;
+ 137:../cleanflight/src/main/rx/crsf.c **** #endif
+ 138:../cleanflight/src/main/rx/crsf.c **** 
+ 139:../cleanflight/src/main/rx/crsf.c ****     if (currentTimeUs > crsfFrameStartAtUs + CRSF_TIME_NEEDED_PER_FRAME_US) {
+ 167              	 .loc 1 139 0
+ 168 0012 284B     	 ldr r3,.L13
+ 169 0014 1B68     	 ldr r3,[r3]
+ 170 0016 03F24C42 	 addw r2,r3,#1100
+ 171 001a 7B69     	 ldr r3,[r7,#20]
+ 172 001c 9A42     	 cmp r2,r3
+ 173 001e 02D2     	 bcs .L8
+ 140:../cleanflight/src/main/rx/crsf.c ****         // We've received a character after max time needed to complete a frame,
+ 141:../cleanflight/src/main/rx/crsf.c ****         // so this must be the start of a new frame.
+ 142:../cleanflight/src/main/rx/crsf.c ****         crsfFramePosition = 0;
+ 174              	 .loc 1 142 0
+ 175 0020 254B     	 ldr r3,.L13+4
+ 176 0022 0022     	 movs r2,#0
+ 177 0024 1A70     	 strb r2,[r3]
+ 178              	.L8:
+ 143:../cleanflight/src/main/rx/crsf.c ****     }
+ 144:../cleanflight/src/main/rx/crsf.c **** 
+ 145:../cleanflight/src/main/rx/crsf.c ****     if (crsfFramePosition == 0) {
+ 179              	 .loc 1 145 0
+ 180 0026 244B     	 ldr r3,.L13+4
+ 181 0028 1B78     	 ldrb r3,[r3]
+ 182 002a 002B     	 cmp r3,#0
+ 183 002c 02D1     	 bne .L9
+ 146:../cleanflight/src/main/rx/crsf.c ****         crsfFrameStartAtUs = currentTimeUs;
+ 184              	 .loc 1 146 0
+ 185 002e 214A     	 ldr r2,.L13
+ 186 0030 7B69     	 ldr r3,[r7,#20]
+ 187 0032 1360     	 str r3,[r2]
+ 188              	.L9:
+ 147:../cleanflight/src/main/rx/crsf.c ****     }
+ 148:../cleanflight/src/main/rx/crsf.c ****     // assume frame is 5 bytes long until we have received the frame length
+ 149:../cleanflight/src/main/rx/crsf.c ****     // full frame length includes the length of the address and framelength fields
+ 150:../cleanflight/src/main/rx/crsf.c ****     const int fullFrameLength = crsfFramePosition < 3 ? 5 : crsfFrame.frame.frameLength + CRSF_FRAM
+ 189              	 .loc 1 150 0
+ 190 0034 204B     	 ldr r3,.L13+4
+ 191 0036 1B78     	 ldrb r3,[r3]
+ 192 0038 022B     	 cmp r3,#2
+ 193 003a 03D9     	 bls .L10
+ 194              	 .loc 1 150 0 is_stmt 0 discriminator 1
+ 195 003c 1F4B     	 ldr r3,.L13+8
+ 196 003e 5B78     	 ldrb r3,[r3,#1]
+ 197 0040 0233     	 adds r3,r3,#2
+ 198 0042 00E0     	 b .L11
+ 199              	.L10:
+ 200              	 .loc 1 150 0 discriminator 2
+ 201 0044 0523     	 movs r3,#5
+ 202              	.L11:
+ 203              	 .loc 1 150 0 discriminator 4
+ 204 0046 3B61     	 str r3,[r7,#16]
+ 151:../cleanflight/src/main/rx/crsf.c **** 
+ 152:../cleanflight/src/main/rx/crsf.c ****     if (crsfFramePosition < fullFrameLength) {
+ 205              	 .loc 1 152 0 is_stmt 1 discriminator 4
+ 206 0048 1B4B     	 ldr r3,.L13+4
+ 207 004a 1B78     	 ldrb r3,[r3]
+ 208 004c 1A46     	 mov r2,r3
+ 209 004e 3B69     	 ldr r3,[r7,#16]
+ 210 0050 9A42     	 cmp r2,r3
+ 211 0052 2CDA     	 bge .L7
+ 153:../cleanflight/src/main/rx/crsf.c ****         crsfFrame.bytes[crsfFramePosition++] = (uint8_t)c;
+ 212              	 .loc 1 153 0
+ 213 0054 184B     	 ldr r3,.L13+4
+ 214 0056 1B78     	 ldrb r3,[r3]
+ 215 0058 5A1C     	 adds r2,r3,#1
+ 216 005a D1B2     	 uxtb r1,r2
+ 217 005c 164A     	 ldr r2,.L13+4
+ 218 005e 1170     	 strb r1,[r2]
+ 219 0060 1A46     	 mov r2,r3
+ 220 0062 FB88     	 ldrh r3,[r7,#6]
+ 221 0064 D9B2     	 uxtb r1,r3
+ 222 0066 154B     	 ldr r3,.L13+8
+ 223 0068 9954     	 strb r1,[r3,r2]
+ 154:../cleanflight/src/main/rx/crsf.c ****         crsfFrameDone = crsfFramePosition < fullFrameLength ? false : true;
+ 224              	 .loc 1 154 0
+ 225 006a 134B     	 ldr r3,.L13+4
+ 226 006c 1B78     	 ldrb r3,[r3]
+ 227 006e 1A46     	 mov r2,r3
+ 228 0070 3B69     	 ldr r3,[r7,#16]
+ 229 0072 9A42     	 cmp r2,r3
+ 230 0074 ACBF     	 ite ge
+ 231 0076 0123     	 movge r3,#1
+ 232 0078 0023     	 movlt r3,#0
+ 233 007a DAB2     	 uxtb r2,r3
+ 234 007c 104B     	 ldr r3,.L13+12
+ 235 007e 1A70     	 strb r2,[r3]
+ 155:../cleanflight/src/main/rx/crsf.c ****         if (crsfFrameDone) {
+ 236              	 .loc 1 155 0
+ 237 0080 0F4B     	 ldr r3,.L13+12
+ 238 0082 1B78     	 ldrb r3,[r3]
+ 239 0084 002B     	 cmp r3,#0
+ 240 0086 12D0     	 beq .L7
+ 156:../cleanflight/src/main/rx/crsf.c ****             crsfFramePosition = 0;
+ 241              	 .loc 1 156 0
+ 242 0088 0B4B     	 ldr r3,.L13+4
+ 243 008a 0022     	 movs r2,#0
+ 244 008c 1A70     	 strb r2,[r3]
+ 157:../cleanflight/src/main/rx/crsf.c ****             if (crsfFrame.frame.type != CRSF_FRAMETYPE_RC_CHANNELS_PACKED) {
+ 245              	 .loc 1 157 0
+ 246 008e 0B4B     	 ldr r3,.L13+8
+ 247 0090 9B78     	 ldrb r3,[r3,#2]
+ 248 0092 162B     	 cmp r3,#22
+ 249 0094 0BD0     	 beq .L7
+ 250              	.LBB3:
+ 158:../cleanflight/src/main/rx/crsf.c ****                 const uint8_t crc = crsfFrameCRC();
+ 251              	 .loc 1 158 0
+ 252 0096 FFF7FEFF 	 bl crsfFrameCRC
+ 253 009a 0346     	 mov r3,r0
+ 254 009c FB73     	 strb r3,[r7,#15]
+ 159:../cleanflight/src/main/rx/crsf.c ****                 if (crc == crsfFrame.bytes[fullFrameLength - 1]) {
+ 255              	 .loc 1 159 0
+ 256 009e 3B69     	 ldr r3,[r7,#16]
+ 257 00a0 013B     	 subs r3,r3,#1
+ 258 00a2 064A     	 ldr r2,.L13+8
+ 259 00a4 D35C     	 ldrb r3,[r2,r3]
+ 260 00a6 FA7B     	 ldrb r2,[r7,#15]
+ 261 00a8 9A42     	 cmp r2,r3
+ 262 00aa 00D1     	 bne .L7
+ 160:../cleanflight/src/main/rx/crsf.c ****                     switch (crsfFrame.frame.type)
+ 161:../cleanflight/src/main/rx/crsf.c ****                     {
+ 162:../cleanflight/src/main/rx/crsf.c **** #if defined(USE_MSP_OVER_TELEMETRY)
+ 163:../cleanflight/src/main/rx/crsf.c ****                         case CRSF_FRAMETYPE_MSP_REQ:
+ 164:../cleanflight/src/main/rx/crsf.c ****                         case CRSF_FRAMETYPE_MSP_WRITE: {
+ 165:../cleanflight/src/main/rx/crsf.c ****                             uint8_t *frameStart = (uint8_t *)&crsfFrame.frame.payload + CRSF_FRAME_
+ 166:../cleanflight/src/main/rx/crsf.c ****                             if (bufferCrsfMspFrame(frameStart, CRSF_FRAME_RX_MSP_FRAME_SIZE)) {
+ 167:../cleanflight/src/main/rx/crsf.c ****                                 crsfScheduleMspResponse();
+ 168:../cleanflight/src/main/rx/crsf.c ****                             }
+ 169:../cleanflight/src/main/rx/crsf.c ****                             break;
+ 170:../cleanflight/src/main/rx/crsf.c ****                         }
+ 171:../cleanflight/src/main/rx/crsf.c **** #endif
+ 172:../cleanflight/src/main/rx/crsf.c **** #if defined(USE_CRSF_CMS_TELEMETRY)
+ 173:../cleanflight/src/main/rx/crsf.c ****                         case CRSF_FRAMETYPE_DEVICE_PING:
+ 174:../cleanflight/src/main/rx/crsf.c ****                             crsfScheduleDeviceInfoResponse();
+ 175:../cleanflight/src/main/rx/crsf.c ****                             break;
+ 176:../cleanflight/src/main/rx/crsf.c ****                         case CRSF_FRAMETYPE_DISPLAYPORT_CMD: {
+ 177:../cleanflight/src/main/rx/crsf.c ****                             uint8_t *frameStart = (uint8_t *)&crsfFrame.frame.payload + CRSF_FRAME_
+ 178:../cleanflight/src/main/rx/crsf.c ****                             crsfProcessDisplayPortCmd(frameStart);
+ 179:../cleanflight/src/main/rx/crsf.c ****                             break;
+ 180:../cleanflight/src/main/rx/crsf.c ****                         }
+ 181:../cleanflight/src/main/rx/crsf.c **** #endif
+ 182:../cleanflight/src/main/rx/crsf.c ****                         default:
+ 183:../cleanflight/src/main/rx/crsf.c ****                             break;
+ 263              	 .loc 1 183 0
+ 264 00ac 00BF     	 nop
+ 265              	.L7:
+ 266              	.LBE3:
+ 184:../cleanflight/src/main/rx/crsf.c ****                     }
+ 185:../cleanflight/src/main/rx/crsf.c ****                 }
+ 186:../cleanflight/src/main/rx/crsf.c ****             }
+ 187:../cleanflight/src/main/rx/crsf.c ****         }
+ 188:../cleanflight/src/main/rx/crsf.c ****     }
+ 189:../cleanflight/src/main/rx/crsf.c **** }
+ 267              	 .loc 1 189 0
+ 268 00ae 1837     	 adds r7,r7,#24
+ 269              	.LCFI8:
+ 270              	 .cfi_def_cfa_offset 8
+ 271 00b0 BD46     	 mov sp,r7
+ 272              	.LCFI9:
+ 273              	 .cfi_def_cfa_register 13
+ 274              	 
+ 275 00b2 80BD     	 pop {r7,pc}
+ 276              	.L14:
+ 277              	 .align 2
+ 278              	.L13:
+ 279 00b4 00000000 	 .word crsfFrameStartAtUs
+ 280 00b8 00000000 	 .word crsfFramePosition.12916
+ 281 00bc 00000000 	 .word crsfFrame
+ 282 00c0 00000000 	 .word crsfFrameDone
+ 283              	 .cfi_endproc
+ 284              	.LFE542:
+ 286              	 .section .text.crsfFrameStatus,"ax",%progbits
+ 287              	 .align 2
+ 288              	 .thumb
+ 289              	 .thumb_func
+ 291              	crsfFrameStatus:
+ 292              	.LFB543:
+ 190:../cleanflight/src/main/rx/crsf.c **** 
+ 191:../cleanflight/src/main/rx/crsf.c **** STATIC_UNIT_TESTED uint8_t crsfFrameStatus(rxRuntimeConfig_t *rxRuntimeConfig)
+ 192:../cleanflight/src/main/rx/crsf.c **** {
+ 293              	 .loc 1 192 0
+ 294              	 .cfi_startproc
+ 295              	 
+ 296              	 
+ 297 0000 80B5     	 push {r7,lr}
+ 298              	.LCFI10:
+ 299              	 .cfi_def_cfa_offset 8
+ 300              	 .cfi_offset 7,-8
+ 301              	 .cfi_offset 14,-4
+ 302 0002 84B0     	 sub sp,sp,#16
+ 303              	.LCFI11:
+ 304              	 .cfi_def_cfa_offset 24
+ 305 0004 00AF     	 add r7,sp,#0
+ 306              	.LCFI12:
+ 307              	 .cfi_def_cfa_register 7
+ 308 0006 7860     	 str r0,[r7,#4]
+ 193:../cleanflight/src/main/rx/crsf.c ****     UNUSED(rxRuntimeConfig);
+ 194:../cleanflight/src/main/rx/crsf.c **** 
+ 195:../cleanflight/src/main/rx/crsf.c ****     if (crsfFrameDone) {
+ 309              	 .loc 1 195 0
+ 310 0008 7A4B     	 ldr r3,.L19
+ 311 000a 1B78     	 ldrb r3,[r3]
+ 312 000c 002B     	 cmp r3,#0
+ 313 000e 00F0EB80 	 beq .L16
+ 196:../cleanflight/src/main/rx/crsf.c ****         crsfFrameDone = false;
+ 314              	 .loc 1 196 0
+ 315 0012 784B     	 ldr r3,.L19
+ 316 0014 0022     	 movs r2,#0
+ 317 0016 1A70     	 strb r2,[r3]
+ 197:../cleanflight/src/main/rx/crsf.c ****         if (crsfFrame.frame.type == CRSF_FRAMETYPE_RC_CHANNELS_PACKED) {
+ 318              	 .loc 1 197 0
+ 319 0018 774B     	 ldr r3,.L19+4
+ 320 001a 9B78     	 ldrb r3,[r3,#2]
+ 321 001c 162B     	 cmp r3,#22
+ 322 001e 40F0E380 	 bne .L16
+ 323              	.LBB4:
+ 198:../cleanflight/src/main/rx/crsf.c ****             // CRC includes type and payload of each frame
+ 199:../cleanflight/src/main/rx/crsf.c ****             const uint8_t crc = crsfFrameCRC();
+ 324              	 .loc 1 199 0
+ 325 0022 FFF7FEFF 	 bl crsfFrameCRC
+ 326 0026 0346     	 mov r3,r0
+ 327 0028 FB73     	 strb r3,[r7,#15]
+ 200:../cleanflight/src/main/rx/crsf.c ****             if (crc != crsfFrame.frame.payload[CRSF_FRAME_RC_CHANNELS_PAYLOAD_SIZE]) {
+ 328              	 .loc 1 200 0
+ 329 002a 734B     	 ldr r3,.L19+4
+ 330 002c 5B7E     	 ldrb r3,[r3,#25]
+ 331 002e FA7B     	 ldrb r2,[r7,#15]
+ 332 0030 9A42     	 cmp r2,r3
+ 333 0032 01D0     	 beq .L17
+ 201:../cleanflight/src/main/rx/crsf.c ****                 return RX_FRAME_PENDING;
+ 334              	 .loc 1 201 0
+ 335 0034 0023     	 movs r3,#0
+ 336 0036 D8E0     	 b .L18
+ 337              	.L17:
+ 202:../cleanflight/src/main/rx/crsf.c ****             }
+ 203:../cleanflight/src/main/rx/crsf.c ****             // unpack the RC channels
+ 204:../cleanflight/src/main/rx/crsf.c ****             const crsfPayloadRcChannelsPacked_t* const rcChannels = (crsfPayloadRcChannelsPacked_t*
+ 338              	 .loc 1 204 0
+ 339 0038 704B     	 ldr r3,.L19+8
+ 340 003a BB60     	 str r3,[r7,#8]
+ 205:../cleanflight/src/main/rx/crsf.c ****             crsfChannelData[0] = rcChannels->chan0;
+ 341              	 .loc 1 205 0
+ 342 003c BB68     	 ldr r3,[r7,#8]
+ 343 003e 1A78     	 ldrb r2,[r3]
+ 344 0040 5B78     	 ldrb r3,[r3,#1]
+ 345 0042 03F00703 	 and r3,r3,#7
+ 346 0046 1B02     	 lsls r3,r3,#8
+ 347 0048 1343     	 orrs r3,r3,r2
+ 348 004a 9BB2     	 uxth r3,r3
+ 349 004c 1A46     	 mov r2,r3
+ 350 004e 6C4B     	 ldr r3,.L19+12
+ 351 0050 1A60     	 str r2,[r3]
+ 206:../cleanflight/src/main/rx/crsf.c ****             crsfChannelData[1] = rcChannels->chan1;
+ 352              	 .loc 1 206 0
+ 353 0052 BB68     	 ldr r3,[r7,#8]
+ 354 0054 5A78     	 ldrb r2,[r3,#1]
+ 355 0056 D208     	 lsrs r2,r2,#3
+ 356 0058 D2B2     	 uxtb r2,r2
+ 357 005a 9B78     	 ldrb r3,[r3,#2]
+ 358 005c 03F03F03 	 and r3,r3,#63
+ 359 0060 5B01     	 lsls r3,r3,#5
+ 360 0062 1343     	 orrs r3,r3,r2
+ 361 0064 9BB2     	 uxth r3,r3
+ 362 0066 1A46     	 mov r2,r3
+ 363 0068 654B     	 ldr r3,.L19+12
+ 364 006a 5A60     	 str r2,[r3,#4]
+ 207:../cleanflight/src/main/rx/crsf.c ****             crsfChannelData[2] = rcChannels->chan2;
+ 365              	 .loc 1 207 0
+ 366 006c BB68     	 ldr r3,[r7,#8]
+ 367 006e 9A78     	 ldrb r2,[r3,#2]
+ 368 0070 9209     	 lsrs r2,r2,#6
+ 369 0072 D2B2     	 uxtb r2,r2
+ 370 0074 D978     	 ldrb r1,[r3,#3]
+ 371 0076 8900     	 lsls r1,r1,#2
+ 372 0078 0A43     	 orrs r2,r2,r1
+ 373 007a 1B79     	 ldrb r3,[r3,#4]
+ 374 007c 03F00103 	 and r3,r3,#1
+ 375 0080 9B02     	 lsls r3,r3,#10
+ 376 0082 1343     	 orrs r3,r3,r2
+ 377 0084 9BB2     	 uxth r3,r3
+ 378 0086 1A46     	 mov r2,r3
+ 379 0088 5D4B     	 ldr r3,.L19+12
+ 380 008a 9A60     	 str r2,[r3,#8]
+ 208:../cleanflight/src/main/rx/crsf.c ****             crsfChannelData[3] = rcChannels->chan3;
+ 381              	 .loc 1 208 0
+ 382 008c BB68     	 ldr r3,[r7,#8]
+ 383 008e 1A79     	 ldrb r2,[r3,#4]
+ 384 0090 5208     	 lsrs r2,r2,#1
+ 385 0092 D2B2     	 uxtb r2,r2
+ 386 0094 5B79     	 ldrb r3,[r3,#5]
+ 387 0096 03F00F03 	 and r3,r3,#15
+ 388 009a DB01     	 lsls r3,r3,#7
+ 389 009c 1343     	 orrs r3,r3,r2
+ 390 009e 9BB2     	 uxth r3,r3
+ 391 00a0 1A46     	 mov r2,r3
+ 392 00a2 574B     	 ldr r3,.L19+12
+ 393 00a4 DA60     	 str r2,[r3,#12]
+ 209:../cleanflight/src/main/rx/crsf.c ****             crsfChannelData[4] = rcChannels->chan4;
+ 394              	 .loc 1 209 0
+ 395 00a6 BB68     	 ldr r3,[r7,#8]
+ 396 00a8 5A79     	 ldrb r2,[r3,#5]
+ 397 00aa 1209     	 lsrs r2,r2,#4
+ 398 00ac D2B2     	 uxtb r2,r2
+ 399 00ae 9B79     	 ldrb r3,[r3,#6]
+ 400 00b0 03F07F03 	 and r3,r3,#127
+ 401 00b4 1B01     	 lsls r3,r3,#4
+ 402 00b6 1343     	 orrs r3,r3,r2
+ 403 00b8 9BB2     	 uxth r3,r3
+ 404 00ba 1A46     	 mov r2,r3
+ 405 00bc 504B     	 ldr r3,.L19+12
+ 406 00be 1A61     	 str r2,[r3,#16]
+ 210:../cleanflight/src/main/rx/crsf.c ****             crsfChannelData[5] = rcChannels->chan5;
+ 407              	 .loc 1 210 0
+ 408 00c0 BB68     	 ldr r3,[r7,#8]
+ 409 00c2 9A79     	 ldrb r2,[r3,#6]
+ 410 00c4 D209     	 lsrs r2,r2,#7
+ 411 00c6 D2B2     	 uxtb r2,r2
+ 412 00c8 D979     	 ldrb r1,[r3,#7]
+ 413 00ca 4900     	 lsls r1,r1,#1
+ 414 00cc 0A43     	 orrs r2,r2,r1
+ 415 00ce 1B7A     	 ldrb r3,[r3,#8]
+ 416 00d0 03F00303 	 and r3,r3,#3
+ 417 00d4 5B02     	 lsls r3,r3,#9
+ 418 00d6 1343     	 orrs r3,r3,r2
+ 419 00d8 9BB2     	 uxth r3,r3
+ 420 00da 1A46     	 mov r2,r3
+ 421 00dc 484B     	 ldr r3,.L19+12
+ 422 00de 5A61     	 str r2,[r3,#20]
+ 211:../cleanflight/src/main/rx/crsf.c ****             crsfChannelData[6] = rcChannels->chan6;
+ 423              	 .loc 1 211 0
+ 424 00e0 BB68     	 ldr r3,[r7,#8]
+ 425 00e2 1A7A     	 ldrb r2,[r3,#8]
+ 426 00e4 9208     	 lsrs r2,r2,#2
+ 427 00e6 D2B2     	 uxtb r2,r2
+ 428 00e8 5B7A     	 ldrb r3,[r3,#9]
+ 429 00ea 03F01F03 	 and r3,r3,#31
+ 430 00ee 9B01     	 lsls r3,r3,#6
+ 431 00f0 1343     	 orrs r3,r3,r2
+ 432 00f2 9BB2     	 uxth r3,r3
+ 433 00f4 1A46     	 mov r2,r3
+ 434 00f6 424B     	 ldr r3,.L19+12
+ 435 00f8 9A61     	 str r2,[r3,#24]
+ 212:../cleanflight/src/main/rx/crsf.c ****             crsfChannelData[7] = rcChannels->chan7;
+ 436              	 .loc 1 212 0
+ 437 00fa BB68     	 ldr r3,[r7,#8]
+ 438 00fc 5A7A     	 ldrb r2,[r3,#9]
+ 439 00fe 5209     	 lsrs r2,r2,#5
+ 440 0100 D2B2     	 uxtb r2,r2
+ 441 0102 9B7A     	 ldrb r3,[r3,#10]
+ 442 0104 DB00     	 lsls r3,r3,#3
+ 443 0106 1343     	 orrs r3,r3,r2
+ 444 0108 9BB2     	 uxth r3,r3
+ 445 010a 1A46     	 mov r2,r3
+ 446 010c 3C4B     	 ldr r3,.L19+12
+ 447 010e DA61     	 str r2,[r3,#28]
+ 213:../cleanflight/src/main/rx/crsf.c ****             crsfChannelData[8] = rcChannels->chan8;
+ 448              	 .loc 1 213 0
+ 449 0110 BB68     	 ldr r3,[r7,#8]
+ 450 0112 DA7A     	 ldrb r2,[r3,#11]
+ 451 0114 1B7B     	 ldrb r3,[r3,#12]
+ 452 0116 03F00703 	 and r3,r3,#7
+ 453 011a 1B02     	 lsls r3,r3,#8
+ 454 011c 1343     	 orrs r3,r3,r2
+ 455 011e 9BB2     	 uxth r3,r3
+ 456 0120 1A46     	 mov r2,r3
+ 457 0122 374B     	 ldr r3,.L19+12
+ 458 0124 1A62     	 str r2,[r3,#32]
+ 214:../cleanflight/src/main/rx/crsf.c ****             crsfChannelData[9] = rcChannels->chan9;
+ 459              	 .loc 1 214 0
+ 460 0126 BB68     	 ldr r3,[r7,#8]
+ 461 0128 1A7B     	 ldrb r2,[r3,#12]
+ 462 012a D208     	 lsrs r2,r2,#3
+ 463 012c D2B2     	 uxtb r2,r2
+ 464 012e 5B7B     	 ldrb r3,[r3,#13]
+ 465 0130 03F03F03 	 and r3,r3,#63
+ 466 0134 5B01     	 lsls r3,r3,#5
+ 467 0136 1343     	 orrs r3,r3,r2
+ 468 0138 9BB2     	 uxth r3,r3
+ 469 013a 1A46     	 mov r2,r3
+ 470 013c 304B     	 ldr r3,.L19+12
+ 471 013e 5A62     	 str r2,[r3,#36]
+ 215:../cleanflight/src/main/rx/crsf.c ****             crsfChannelData[10] = rcChannels->chan10;
+ 472              	 .loc 1 215 0
+ 473 0140 BB68     	 ldr r3,[r7,#8]
+ 474 0142 5A7B     	 ldrb r2,[r3,#13]
+ 475 0144 9209     	 lsrs r2,r2,#6
+ 476 0146 D2B2     	 uxtb r2,r2
+ 477 0148 997B     	 ldrb r1,[r3,#14]
+ 478 014a 8900     	 lsls r1,r1,#2
+ 479 014c 0A43     	 orrs r2,r2,r1
+ 480 014e DB7B     	 ldrb r3,[r3,#15]
+ 481 0150 03F00103 	 and r3,r3,#1
+ 482 0154 9B02     	 lsls r3,r3,#10
+ 483 0156 1343     	 orrs r3,r3,r2
+ 484 0158 9BB2     	 uxth r3,r3
+ 485 015a 1A46     	 mov r2,r3
+ 486 015c 284B     	 ldr r3,.L19+12
+ 487 015e 9A62     	 str r2,[r3,#40]
+ 216:../cleanflight/src/main/rx/crsf.c ****             crsfChannelData[11] = rcChannels->chan11;
+ 488              	 .loc 1 216 0
+ 489 0160 BB68     	 ldr r3,[r7,#8]
+ 490 0162 DA7B     	 ldrb r2,[r3,#15]
+ 491 0164 5208     	 lsrs r2,r2,#1
+ 492 0166 D2B2     	 uxtb r2,r2
+ 493 0168 1B7C     	 ldrb r3,[r3,#16]
+ 494 016a 03F00F03 	 and r3,r3,#15
+ 495 016e DB01     	 lsls r3,r3,#7
+ 496 0170 1343     	 orrs r3,r3,r2
+ 497 0172 9BB2     	 uxth r3,r3
+ 498 0174 1A46     	 mov r2,r3
+ 499 0176 224B     	 ldr r3,.L19+12
+ 500 0178 DA62     	 str r2,[r3,#44]
+ 217:../cleanflight/src/main/rx/crsf.c ****             crsfChannelData[12] = rcChannels->chan12;
+ 501              	 .loc 1 217 0
+ 502 017a BB68     	 ldr r3,[r7,#8]
+ 503 017c 1A7C     	 ldrb r2,[r3,#16]
+ 504 017e 1209     	 lsrs r2,r2,#4
+ 505 0180 D2B2     	 uxtb r2,r2
+ 506 0182 5B7C     	 ldrb r3,[r3,#17]
+ 507 0184 03F07F03 	 and r3,r3,#127
+ 508 0188 1B01     	 lsls r3,r3,#4
+ 509 018a 1343     	 orrs r3,r3,r2
+ 510 018c 9BB2     	 uxth r3,r3
+ 511 018e 1A46     	 mov r2,r3
+ 512 0190 1B4B     	 ldr r3,.L19+12
+ 513 0192 1A63     	 str r2,[r3,#48]
+ 218:../cleanflight/src/main/rx/crsf.c ****             crsfChannelData[13] = rcChannels->chan13;
+ 514              	 .loc 1 218 0
+ 515 0194 BB68     	 ldr r3,[r7,#8]
+ 516 0196 5A7C     	 ldrb r2,[r3,#17]
+ 517 0198 D209     	 lsrs r2,r2,#7
+ 518 019a D2B2     	 uxtb r2,r2
+ 519 019c 997C     	 ldrb r1,[r3,#18]
+ 520 019e 4900     	 lsls r1,r1,#1
+ 521 01a0 0A43     	 orrs r2,r2,r1
+ 522 01a2 DB7C     	 ldrb r3,[r3,#19]
+ 523 01a4 03F00303 	 and r3,r3,#3
+ 524 01a8 5B02     	 lsls r3,r3,#9
+ 525 01aa 1343     	 orrs r3,r3,r2
+ 526 01ac 9BB2     	 uxth r3,r3
+ 527 01ae 1A46     	 mov r2,r3
+ 528 01b0 134B     	 ldr r3,.L19+12
+ 529 01b2 5A63     	 str r2,[r3,#52]
+ 219:../cleanflight/src/main/rx/crsf.c ****             crsfChannelData[14] = rcChannels->chan14;
+ 530              	 .loc 1 219 0
+ 531 01b4 BB68     	 ldr r3,[r7,#8]
+ 532 01b6 DA7C     	 ldrb r2,[r3,#19]
+ 533 01b8 9208     	 lsrs r2,r2,#2
+ 534 01ba D2B2     	 uxtb r2,r2
+ 535 01bc 1B7D     	 ldrb r3,[r3,#20]
+ 536 01be 03F01F03 	 and r3,r3,#31
+ 537 01c2 9B01     	 lsls r3,r3,#6
+ 538 01c4 1343     	 orrs r3,r3,r2
+ 539 01c6 9BB2     	 uxth r3,r3
+ 540 01c8 1A46     	 mov r2,r3
+ 541 01ca 0D4B     	 ldr r3,.L19+12
+ 542 01cc 9A63     	 str r2,[r3,#56]
+ 220:../cleanflight/src/main/rx/crsf.c ****             crsfChannelData[15] = rcChannels->chan15;
+ 543              	 .loc 1 220 0
+ 544 01ce BB68     	 ldr r3,[r7,#8]
+ 545 01d0 1A7D     	 ldrb r2,[r3,#20]
+ 546 01d2 5209     	 lsrs r2,r2,#5
+ 547 01d4 D2B2     	 uxtb r2,r2
+ 548 01d6 5B7D     	 ldrb r3,[r3,#21]
+ 549 01d8 DB00     	 lsls r3,r3,#3
+ 550 01da 1343     	 orrs r3,r3,r2
+ 551 01dc 9BB2     	 uxth r3,r3
+ 552 01de 1A46     	 mov r2,r3
+ 553 01e0 074B     	 ldr r3,.L19+12
+ 554 01e2 DA63     	 str r2,[r3,#60]
+ 221:../cleanflight/src/main/rx/crsf.c ****             return RX_FRAME_COMPLETE;
+ 555              	 .loc 1 221 0
+ 556 01e4 0123     	 movs r3,#1
+ 557 01e6 00E0     	 b .L18
+ 558              	.L16:
+ 559              	.LBE4:
+ 222:../cleanflight/src/main/rx/crsf.c ****         }
+ 223:../cleanflight/src/main/rx/crsf.c ****     }
+ 224:../cleanflight/src/main/rx/crsf.c ****     return RX_FRAME_PENDING;
+ 560              	 .loc 1 224 0
+ 561 01e8 0023     	 movs r3,#0
+ 562              	.L18:
+ 225:../cleanflight/src/main/rx/crsf.c **** }
+ 563              	 .loc 1 225 0
+ 564 01ea 1846     	 mov r0,r3
+ 565 01ec 1037     	 adds r7,r7,#16
+ 566              	.LCFI13:
+ 567              	 .cfi_def_cfa_offset 8
+ 568 01ee BD46     	 mov sp,r7
+ 569              	.LCFI14:
+ 570              	 .cfi_def_cfa_register 13
+ 571              	 
+ 572 01f0 80BD     	 pop {r7,pc}
+ 573              	.L20:
+ 574 01f2 00BF     	 .align 2
+ 575              	.L19:
+ 576 01f4 00000000 	 .word crsfFrameDone
+ 577 01f8 00000000 	 .word crsfFrame
+ 578 01fc 03000000 	 .word crsfFrame+3
+ 579 0200 00000000 	 .word crsfChannelData
+ 580              	 .cfi_endproc
+ 581              	.LFE543:
+ 583              	 .section .text.crsfReadRawRC,"ax",%progbits
+ 584              	 .align 2
+ 585              	 .thumb
+ 586              	 .thumb_func
+ 588              	crsfReadRawRC:
+ 589              	.LFB544:
+ 226:../cleanflight/src/main/rx/crsf.c **** 
+ 227:../cleanflight/src/main/rx/crsf.c **** STATIC_UNIT_TESTED uint16_t crsfReadRawRC(const rxRuntimeConfig_t *rxRuntimeConfig, uint8_t chan)
+ 228:../cleanflight/src/main/rx/crsf.c **** {
+ 590              	 .loc 1 228 0
+ 591              	 .cfi_startproc
+ 592              	 
+ 593              	 
+ 594              	 
+ 595 0000 80B4     	 push {r7}
+ 596              	.LCFI15:
+ 597              	 .cfi_def_cfa_offset 4
+ 598              	 .cfi_offset 7,-4
+ 599 0002 85B0     	 sub sp,sp,#20
+ 600              	.LCFI16:
+ 601              	 .cfi_def_cfa_offset 24
+ 602 0004 00AF     	 add r7,sp,#0
+ 603              	.LCFI17:
+ 604              	 .cfi_def_cfa_register 7
+ 605 0006 F860     	 str r0,[r7,#12]
+ 606 0008 0B46     	 mov r3,r1
+ 607 000a FB72     	 strb r3,[r7,#11]
+ 229:../cleanflight/src/main/rx/crsf.c ****     UNUSED(rxRuntimeConfig);
+ 230:../cleanflight/src/main/rx/crsf.c ****     /* conversion from RC value to PWM
+ 231:../cleanflight/src/main/rx/crsf.c ****      *       RC     PWM
+ 232:../cleanflight/src/main/rx/crsf.c ****      * min  172 ->  988us
+ 233:../cleanflight/src/main/rx/crsf.c ****      * mid  992 -> 1500us
+ 234:../cleanflight/src/main/rx/crsf.c ****      * max 1811 -> 2012us
+ 235:../cleanflight/src/main/rx/crsf.c ****      * scale factor = (2012-988) / (1811-172) = 0.62477120195241
+ 236:../cleanflight/src/main/rx/crsf.c ****      * offset = 988 - 172 * 0.62477120195241 = 880.53935326418548
+ 237:../cleanflight/src/main/rx/crsf.c ****      */
+ 238:../cleanflight/src/main/rx/crsf.c ****     return (0.62477120195241f * crsfChannelData[chan]) + 881;
+ 608              	 .loc 1 238 0
+ 609 000c FB7A     	 ldrb r3,[r7,#11]
+ 610 000e 0D4A     	 ldr r2,.L23
+ 611 0010 52F82330 	 ldr r3,[r2,r3,lsl#2]
+ 612 0014 07EE903A 	 fmsr s15,r3
+ 613 0018 F8EE677A 	 fuitos s15,s15
+ 614 001c 9FED0A7A 	 flds s14,.L23+4
+ 615 0020 67EE877A 	 fmuls s15,s15,s14
+ 616 0024 9FED097A 	 flds s14,.L23+8
+ 617 0028 77EE877A 	 fadds s15,s15,s14
+ 618 002c FCEEE77A 	 ftouizs s15,s15
+ 619 0030 C7ED017A 	 fsts s15,[r7,#4]
+ 620 0034 BB88     	 ldrh r3,[r7,#4]
+ 621 0036 9BB2     	 uxth r3,r3
+ 239:../cleanflight/src/main/rx/crsf.c **** }
+ 622              	 .loc 1 239 0
+ 623 0038 1846     	 mov r0,r3
+ 624 003a 1437     	 adds r7,r7,#20
+ 625              	.LCFI18:
+ 626              	 .cfi_def_cfa_offset 4
+ 627 003c BD46     	 mov sp,r7
+ 628              	.LCFI19:
+ 629              	 .cfi_def_cfa_register 13
+ 630              	 
+ 631 003e 5DF8047B 	 ldr r7,[sp],#4
+ 632              	.LCFI20:
+ 633              	 .cfi_restore 7
+ 634              	 .cfi_def_cfa_offset 0
+ 635 0042 7047     	 bx lr
+ 636              	.L24:
+ 637              	 .align 2
+ 638              	.L23:
+ 639 0044 00000000 	 .word crsfChannelData
+ 640 0048 01F11F3F 	 .word 1059057921
+ 641 004c 00405C44 	 .word 1146896384
+ 642              	 .cfi_endproc
+ 643              	.LFE544:
+ 645              	 .section .text.crsfRxWriteTelemetryData,"ax",%progbits
+ 646              	 .align 2
+ 647              	 .global crsfRxWriteTelemetryData
+ 648              	 .thumb
+ 649              	 .thumb_func
+ 651              	crsfRxWriteTelemetryData:
+ 652              	.LFB545:
+ 240:../cleanflight/src/main/rx/crsf.c **** 
+ 241:../cleanflight/src/main/rx/crsf.c **** void crsfRxWriteTelemetryData(const void *data, int len)
+ 242:../cleanflight/src/main/rx/crsf.c **** {
+ 653              	 .loc 1 242 0
+ 654              	 .cfi_startproc
+ 655              	 
+ 656              	 
+ 657 0000 80B5     	 push {r7,lr}
+ 658              	.LCFI21:
+ 659              	 .cfi_def_cfa_offset 8
+ 660              	 .cfi_offset 7,-8
+ 661              	 .cfi_offset 14,-4
+ 662 0002 84B0     	 sub sp,sp,#16
+ 663              	.LCFI22:
+ 664              	 .cfi_def_cfa_offset 24
+ 665 0004 00AF     	 add r7,sp,#0
+ 666              	.LCFI23:
+ 667              	 .cfi_def_cfa_register 7
+ 668 0006 7860     	 str r0,[r7,#4]
+ 669 0008 3960     	 str r1,[r7]
+ 670              	.LBB5:
+ 243:../cleanflight/src/main/rx/crsf.c ****     len = MIN(len, (int)sizeof(telemetryBuf));
+ 671              	 .loc 1 243 0
+ 672 000a 3B68     	 ldr r3,[r7]
+ 673 000c FB60     	 str r3,[r7,#12]
+ 674 000e 4023     	 movs r3,#64
+ 675 0010 BB60     	 str r3,[r7,#8]
+ 676 0012 BA68     	 ldr r2,[r7,#8]
+ 677 0014 FB68     	 ldr r3,[r7,#12]
+ 678 0016 9342     	 cmp r3,r2
+ 679 0018 A8BF     	 it ge
+ 680 001a 1346     	 movge r3,r2
+ 681              	.LBE5:
+ 682 001c 3B60     	 str r3,[r7]
+ 244:../cleanflight/src/main/rx/crsf.c ****     memcpy(telemetryBuf, data, len);
+ 683              	 .loc 1 244 0
+ 684 001e 3B68     	 ldr r3,[r7]
+ 685 0020 0548     	 ldr r0,.L26
+ 686 0022 7968     	 ldr r1,[r7,#4]
+ 687 0024 1A46     	 mov r2,r3
+ 688 0026 FFF7FEFF 	 bl memcpy
+ 245:../cleanflight/src/main/rx/crsf.c ****     telemetryBufLen = len;
+ 689              	 .loc 1 245 0
+ 690 002a 3B68     	 ldr r3,[r7]
+ 691 002c DAB2     	 uxtb r2,r3
+ 692 002e 034B     	 ldr r3,.L26+4
+ 693 0030 1A70     	 strb r2,[r3]
+ 246:../cleanflight/src/main/rx/crsf.c **** }
+ 694              	 .loc 1 246 0
+ 695 0032 1037     	 adds r7,r7,#16
+ 696              	.LCFI24:
+ 697              	 .cfi_def_cfa_offset 8
+ 698 0034 BD46     	 mov sp,r7
+ 699              	.LCFI25:
+ 700              	 .cfi_def_cfa_register 13
+ 701              	 
+ 702 0036 80BD     	 pop {r7,pc}
+ 703              	.L27:
+ 704              	 .align 2
+ 705              	.L26:
+ 706 0038 00000000 	 .word telemetryBuf
+ 707 003c 00000000 	 .word telemetryBufLen
+ 708              	 .cfi_endproc
+ 709              	.LFE545:
+ 711              	 .section .text.crsfRxSendTelemetryData,"ax",%progbits
+ 712              	 .align 2
+ 713              	 .global crsfRxSendTelemetryData
+ 714              	 .thumb
+ 715              	 .thumb_func
+ 717              	crsfRxSendTelemetryData:
+ 718              	.LFB546:
+ 247:../cleanflight/src/main/rx/crsf.c **** 
+ 248:../cleanflight/src/main/rx/crsf.c **** void crsfRxSendTelemetryData(void)
+ 249:../cleanflight/src/main/rx/crsf.c **** {
+ 719              	 .loc 1 249 0
+ 720              	 .cfi_startproc
+ 721              	 
+ 722              	 
+ 723 0000 80B5     	 push {r7,lr}
+ 724              	.LCFI26:
+ 725              	 .cfi_def_cfa_offset 8
+ 726              	 .cfi_offset 7,-8
+ 727              	 .cfi_offset 14,-4
+ 728 0002 00AF     	 add r7,sp,#0
+ 729              	.LCFI27:
+ 730              	 .cfi_def_cfa_register 7
+ 250:../cleanflight/src/main/rx/crsf.c ****     // if there is telemetry data to write
+ 251:../cleanflight/src/main/rx/crsf.c ****     if (telemetryBufLen > 0) {
+ 731              	 .loc 1 251 0
+ 732 0004 084B     	 ldr r3,.L30
+ 733 0006 1B78     	 ldrb r3,[r3]
+ 734 0008 002B     	 cmp r3,#0
+ 735 000a 0BD0     	 beq .L28
+ 252:../cleanflight/src/main/rx/crsf.c ****         serialWriteBuf(serialPort, telemetryBuf, telemetryBufLen);
+ 736              	 .loc 1 252 0
+ 737 000c 074B     	 ldr r3,.L30+4
+ 738 000e 1A68     	 ldr r2,[r3]
+ 739 0010 054B     	 ldr r3,.L30
+ 740 0012 1B78     	 ldrb r3,[r3]
+ 741 0014 1046     	 mov r0,r2
+ 742 0016 0649     	 ldr r1,.L30+8
+ 743 0018 1A46     	 mov r2,r3
+ 744 001a FFF7FEFF 	 bl serialWriteBuf
+ 253:../cleanflight/src/main/rx/crsf.c ****         telemetryBufLen = 0; // reset telemetry buffer
+ 745              	 .loc 1 253 0
+ 746 001e 024B     	 ldr r3,.L30
+ 747 0020 0022     	 movs r2,#0
+ 748 0022 1A70     	 strb r2,[r3]
+ 749              	.L28:
+ 254:../cleanflight/src/main/rx/crsf.c ****     }
+ 255:../cleanflight/src/main/rx/crsf.c **** }
+ 750              	 .loc 1 255 0
+ 751 0024 80BD     	 pop {r7,pc}
+ 752              	.L31:
+ 753 0026 00BF     	 .align 2
+ 754              	.L30:
+ 755 0028 00000000 	 .word telemetryBufLen
+ 756 002c 00000000 	 .word serialPort
+ 757 0030 00000000 	 .word telemetryBuf
+ 758              	 .cfi_endproc
+ 759              	.LFE546:
+ 761              	 .section .text.crsfRxInit,"ax",%progbits
+ 762              	 .align 2
+ 763              	 .global crsfRxInit
+ 764              	 .thumb
+ 765              	 .thumb_func
+ 767              	crsfRxInit:
+ 768              	.LFB547:
+ 256:../cleanflight/src/main/rx/crsf.c **** 
+ 257:../cleanflight/src/main/rx/crsf.c **** bool crsfRxInit(const rxConfig_t *rxConfig, rxRuntimeConfig_t *rxRuntimeConfig)
+ 258:../cleanflight/src/main/rx/crsf.c **** {
+ 769              	 .loc 1 258 0
+ 770              	 .cfi_startproc
+ 771              	 
+ 772              	 
+ 773 0000 80B5     	 push {r7,lr}
+ 774              	.LCFI28:
+ 775              	 .cfi_def_cfa_offset 8
+ 776              	 .cfi_offset 7,-8
+ 777              	 .cfi_offset 14,-4
+ 778 0002 88B0     	 sub sp,sp,#32
+ 779              	.LCFI29:
+ 780              	 .cfi_def_cfa_offset 40
+ 781 0004 04AF     	 add r7,sp,#16
+ 782              	.LCFI30:
+ 783              	 .cfi_def_cfa 7,24
+ 784 0006 7860     	 str r0,[r7,#4]
+ 785 0008 3960     	 str r1,[r7]
+ 786              	.LBB6:
+ 259:../cleanflight/src/main/rx/crsf.c ****     for (int ii = 0; ii < CRSF_MAX_CHANNEL; ++ii) {
+ 787              	 .loc 1 259 0
+ 788 000a 0023     	 movs r3,#0
+ 789 000c FB60     	 str r3,[r7,#12]
+ 790 000e 13E0     	 b .L33
+ 791              	.L34:
+ 260:../cleanflight/src/main/rx/crsf.c ****         crsfChannelData[ii] = (16 * rxConfig->midrc) / 10 - 1408;
+ 792              	 .loc 1 260 0 discriminator 3
+ 793 0010 7B68     	 ldr r3,[r7,#4]
+ 794 0012 5B8A     	 ldrh r3,[r3,#18]
+ 795 0014 9BB2     	 uxth r3,r3
+ 796 0016 1B01     	 lsls r3,r3,#4
+ 797 0018 294A     	 ldr r2,.L37
+ 798 001a 82FB0312 	 smull r1,r2,r2,r3
+ 799 001e 9210     	 asrs r2,r2,#2
+ 800 0020 DB17     	 asrs r3,r3,#31
+ 801 0022 D31A     	 subs r3,r2,r3
+ 802 0024 A3F5B063 	 sub r3,r3,#1408
+ 803 0028 1946     	 mov r1,r3
+ 804 002a 264A     	 ldr r2,.L37+4
+ 805 002c FB68     	 ldr r3,[r7,#12]
+ 806 002e 42F82310 	 str r1,[r2,r3,lsl#2]
+ 259:../cleanflight/src/main/rx/crsf.c ****     for (int ii = 0; ii < CRSF_MAX_CHANNEL; ++ii) {
+ 807              	 .loc 1 259 0 discriminator 3
+ 808 0032 FB68     	 ldr r3,[r7,#12]
+ 809 0034 0133     	 adds r3,r3,#1
+ 810 0036 FB60     	 str r3,[r7,#12]
+ 811              	.L33:
+ 259:../cleanflight/src/main/rx/crsf.c ****     for (int ii = 0; ii < CRSF_MAX_CHANNEL; ++ii) {
+ 812              	 .loc 1 259 0 is_stmt 0 discriminator 1
+ 813 0038 FB68     	 ldr r3,[r7,#12]
+ 814 003a 0F2B     	 cmp r3,#15
+ 815 003c E8DD     	 ble .L34
+ 816              	.LBE6:
+ 261:../cleanflight/src/main/rx/crsf.c ****     }
+ 262:../cleanflight/src/main/rx/crsf.c **** 
+ 263:../cleanflight/src/main/rx/crsf.c ****     rxRuntimeConfig->channelCount = CRSF_MAX_CHANNEL;
+ 817              	 .loc 1 263 0 is_stmt 1
+ 818 003e 3B68     	 ldr r3,[r7]
+ 819 0040 1022     	 movs r2,#16
+ 820 0042 1A70     	 strb r2,[r3]
+ 264:../cleanflight/src/main/rx/crsf.c ****     rxRuntimeConfig->rxRefreshRate = CRSF_TIME_BETWEEN_FRAMES_US; //!!TODO this needs checking
+ 821              	 .loc 1 264 0
+ 822 0044 3B68     	 ldr r3,[r7]
+ 823 0046 0022     	 movs r2,#0
+ 824 0048 42F00B02 	 orr r2,r2,#11
+ 825 004c 5A70     	 strb r2,[r3,#1]
+ 826 004e 0022     	 movs r2,#0
+ 827 0050 42F01A02 	 orr r2,r2,#26
+ 828 0054 9A70     	 strb r2,[r3,#2]
+ 265:../cleanflight/src/main/rx/crsf.c **** 
+ 266:../cleanflight/src/main/rx/crsf.c ****     rxRuntimeConfig->rcReadRawFn = crsfReadRawRC;
+ 829              	 .loc 1 266 0
+ 830 0056 3B68     	 ldr r3,[r7]
+ 831 0058 1B4A     	 ldr r2,.L37+8
+ 832 005a C3F80320 	 str r2,[r3,#3]
+ 267:../cleanflight/src/main/rx/crsf.c ****     rxRuntimeConfig->rcFrameStatusFn = crsfFrameStatus;
+ 833              	 .loc 1 267 0
+ 834 005e 3B68     	 ldr r3,[r7]
+ 835 0060 1A4A     	 ldr r2,.L37+12
+ 836 0062 C3F80720 	 str r2,[r3,#7]
+ 268:../cleanflight/src/main/rx/crsf.c **** 
+ 269:../cleanflight/src/main/rx/crsf.c ****     const serialPortConfig_t *portConfig = findSerialPortConfig(FUNCTION_RX_SERIAL);
+ 837              	 .loc 1 269 0
+ 838 0066 4020     	 movs r0,#64
+ 839 0068 FFF7FEFF 	 bl findSerialPortConfig
+ 840 006c B860     	 str r0,[r7,#8]
+ 270:../cleanflight/src/main/rx/crsf.c ****     if (!portConfig) {
+ 841              	 .loc 1 270 0
+ 842 006e BB68     	 ldr r3,[r7,#8]
+ 843 0070 002B     	 cmp r3,#0
+ 844 0072 01D1     	 bne .L35
+ 271:../cleanflight/src/main/rx/crsf.c ****         return false;
+ 845              	 .loc 1 271 0
+ 846 0074 0023     	 movs r3,#0
+ 847 0076 1FE0     	 b .L36
+ 848              	.L35:
+ 272:../cleanflight/src/main/rx/crsf.c ****     }
+ 273:../cleanflight/src/main/rx/crsf.c **** 
+ 274:../cleanflight/src/main/rx/crsf.c ****     serialPort = openSerialPort(portConfig->identifier,
+ 849              	 .loc 1 274 0
+ 850 0078 BB68     	 ldr r3,[r7,#8]
+ 851 007a 9A78     	 ldrb r2,[r3,#2]
+ 275:../cleanflight/src/main/rx/crsf.c ****         FUNCTION_RX_SERIAL,
+ 276:../cleanflight/src/main/rx/crsf.c ****         crsfDataReceive,
+ 277:../cleanflight/src/main/rx/crsf.c ****         NULL,
+ 278:../cleanflight/src/main/rx/crsf.c ****         CRSF_BAUDRATE,
+ 279:../cleanflight/src/main/rx/crsf.c ****         CRSF_PORT_MODE,
+ 280:../cleanflight/src/main/rx/crsf.c ****         CRSF_PORT_OPTIONS | (rxConfig->serialrx_inverted ? SERIAL_INVERTED : 0)
+ 852              	 .loc 1 280 0
+ 853 007c 7B68     	 ldr r3,[r7,#4]
+ 854 007e 5B7A     	 ldrb r3,[r3,#9]
+ 274:../cleanflight/src/main/rx/crsf.c ****         FUNCTION_RX_SERIAL,
+ 855              	 .loc 1 274 0
+ 856 0080 002B     	 cmp r3,#0
+ 857 0082 14BF     	 ite ne
+ 858 0084 0123     	 movne r3,#1
+ 859 0086 0023     	 moveq r3,#0
+ 860 0088 DBB2     	 uxtb r3,r3
+ 861 008a 1946     	 mov r1,r3
+ 862 008c 52B2     	 sxtb r2,r2
+ 863 008e 104B     	 ldr r3,.L37+16
+ 864 0090 0093     	 str r3,[sp]
+ 865 0092 0323     	 movs r3,#3
+ 866 0094 0193     	 str r3,[sp,#4]
+ 867 0096 0291     	 str r1,[sp,#8]
+ 868 0098 1046     	 mov r0,r2
+ 869 009a 4021     	 movs r1,#64
+ 870 009c 0D4A     	 ldr r2,.L37+20
+ 871 009e 0023     	 movs r3,#0
+ 872 00a0 FFF7FEFF 	 bl openSerialPort
+ 873 00a4 0246     	 mov r2,r0
+ 874 00a6 0C4B     	 ldr r3,.L37+24
+ 875 00a8 1A60     	 str r2,[r3]
+ 281:../cleanflight/src/main/rx/crsf.c ****         );
+ 282:../cleanflight/src/main/rx/crsf.c **** 
+ 283:../cleanflight/src/main/rx/crsf.c ****     return serialPort != NULL;
+ 876              	 .loc 1 283 0
+ 877 00aa 0B4B     	 ldr r3,.L37+24
+ 878 00ac 1B68     	 ldr r3,[r3]
+ 879 00ae 002B     	 cmp r3,#0
+ 880 00b0 14BF     	 ite ne
+ 881 00b2 0123     	 movne r3,#1
+ 882 00b4 0023     	 moveq r3,#0
+ 883 00b6 DBB2     	 uxtb r3,r3
+ 884              	.L36:
+ 284:../cleanflight/src/main/rx/crsf.c **** }
+ 885              	 .loc 1 284 0
+ 886 00b8 1846     	 mov r0,r3
+ 887 00ba 1037     	 adds r7,r7,#16
+ 888              	.LCFI31:
+ 889              	 .cfi_def_cfa_offset 8
+ 890 00bc BD46     	 mov sp,r7
+ 891              	.LCFI32:
+ 892              	 .cfi_def_cfa_register 13
+ 893              	 
+ 894 00be 80BD     	 pop {r7,pc}
+ 895              	.L38:
+ 896              	 .align 2
+ 897              	.L37:
+ 898 00c0 67666666 	 .word 1717986919
+ 899 00c4 00000000 	 .word crsfChannelData
+ 900 00c8 00000000 	 .word crsfReadRawRC
+ 901 00cc 00000000 	 .word crsfFrameStatus
+ 902 00d0 A0680600 	 .word 420000
+ 903 00d4 00000000 	 .word crsfDataReceive
+ 904 00d8 00000000 	 .word serialPort
+ 905              	 .cfi_endproc
+ 906              	.LFE547:
+ 908              	 .section .text.crsfRxIsActive,"ax",%progbits
+ 909              	 .align 2
+ 910              	 .global crsfRxIsActive
+ 911              	 .thumb
+ 912              	 .thumb_func
+ 914              	crsfRxIsActive:
+ 915              	.LFB548:
+ 285:../cleanflight/src/main/rx/crsf.c **** 
+ 286:../cleanflight/src/main/rx/crsf.c **** bool crsfRxIsActive(void)
+ 287:../cleanflight/src/main/rx/crsf.c **** {
+ 916              	 .loc 1 287 0
+ 917              	 .cfi_startproc
+ 918              	 
+ 919              	 
+ 920              	 
+ 921 0000 80B4     	 push {r7}
+ 922              	.LCFI33:
+ 923              	 .cfi_def_cfa_offset 4
+ 924              	 .cfi_offset 7,-4
+ 925 0002 00AF     	 add r7,sp,#0
+ 926              	.LCFI34:
+ 927              	 .cfi_def_cfa_register 7
+ 288:../cleanflight/src/main/rx/crsf.c ****     return serialPort != NULL;
+ 928              	 .loc 1 288 0
+ 929 0004 054B     	 ldr r3,.L41
+ 930 0006 1B68     	 ldr r3,[r3]
+ 931 0008 002B     	 cmp r3,#0
+ 932 000a 14BF     	 ite ne
+ 933 000c 0123     	 movne r3,#1
+ 934 000e 0023     	 moveq r3,#0
+ 935 0010 DBB2     	 uxtb r3,r3
+ 289:../cleanflight/src/main/rx/crsf.c **** }
+ 936              	 .loc 1 289 0
+ 937 0012 1846     	 mov r0,r3
+ 938 0014 BD46     	 mov sp,r7
+ 939              	.LCFI35:
+ 940              	 .cfi_def_cfa_register 13
+ 941              	 
+ 942 0016 5DF8047B 	 ldr r7,[sp],#4
+ 943              	.LCFI36:
+ 944              	 .cfi_restore 7
+ 945              	 .cfi_def_cfa_offset 0
+ 946 001a 7047     	 bx lr
+ 947              	.L42:
+ 948              	 .align 2
+ 949              	.L41:
+ 950 001c 00000000 	 .word serialPort
+ 951              	 .cfi_endproc
+ 952              	.LFE548:
+ 954              	 .section .bss.crsfFramePosition.12916,"aw",%nobits
+ 957              	crsfFramePosition.12916:
+ 958 0000 00       	 .space 1
+ 959              	 .text
+ 960              	.Letext0:
+ 961              	 .file 2 "d:\\xmc\\dave-ide-4.4.2-64bit\\eclipse\\arm-gcc-49\\arm-none-eabi\\include\\machine\\_default_types.h"
+ 962              	 .file 3 "d:\\xmc\\dave-ide-4.4.2-64bit\\eclipse\\arm-gcc-49\\arm-none-eabi\\include\\stdint.h"
+ 963              	 .file 4 "D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/lib/main/XMC4000/XMCLib/inc/xmc_usic.h"
+ 964              	 .file 5 "D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/drivers/io_types.h"
+ 965              	 .file 6 "D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/pg/rx.h"
+ 966              	 .file 7 "D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/build/debug.h"
+ 967              	 .file 8 "D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/drivers/resource.h"
+ 968              	 .file 9 "D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/drivers/serial.h"
+ 969              	 .file 10 "D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/common/time.h"
+ 970              	 .file 11 "D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/io/serial.h"
+ 971              	 .file 12 "D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/rx/rx.h"
+ 972              	 .file 13 "D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/interface/crsf_protocol.h"
+ 973              	 .file 14 "D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/rx/crsf.h"
+ 974              	 .file 15 "D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/lib/main/CMSIS/Core/Include/core_cm4.h"
+ 975              	 .file 16 "D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/lib/main/XMC4000/system_XMC4700.h"
+DEFINED SYMBOLS
+                            *ABS*:00000000 crsf.c
+    {standard input}:22     .bss.crsfFrameDone:00000000 crsfFrameDone
+    {standard input}:23     .bss.crsfFrameDone:00000000 $d
+    {standard input}:25     .bss.crsfFrame:00000000 $d
+    {standard input}:28     .bss.crsfFrame:00000000 crsfFrame
+    {standard input}:31     .bss.crsfChannelData:00000000 $d
+    {standard input}:34     .bss.crsfChannelData:00000000 crsfChannelData
+    {standard input}:37     .bss.serialPort:00000000 $d
+    {standard input}:40     .bss.serialPort:00000000 serialPort
+    {standard input}:43     .bss.crsfFrameStartAtUs:00000000 $d
+    {standard input}:46     .bss.crsfFrameStartAtUs:00000000 crsfFrameStartAtUs
+    {standard input}:49     .bss.telemetryBuf:00000000 $d
+    {standard input}:52     .bss.telemetryBuf:00000000 telemetryBuf
+    {standard input}:57     .bss.telemetryBufLen:00000000 telemetryBufLen
+    {standard input}:58     .bss.telemetryBufLen:00000000 $d
+    {standard input}:60     .text.crsfFrameCRC:00000000 $t
+    {standard input}:64     .text.crsfFrameCRC:00000000 crsfFrameCRC
+    {standard input}:135    .text.crsfFrameCRC:00000050 $d
+    {standard input}:140    .text.crsfDataReceive:00000000 $t
+    {standard input}:144    .text.crsfDataReceive:00000000 crsfDataReceive
+    {standard input}:279    .text.crsfDataReceive:000000b4 $d
+    {standard input}:957    .bss.crsfFramePosition.12916:00000000 crsfFramePosition.12916
+    {standard input}:287    .text.crsfFrameStatus:00000000 $t
+    {standard input}:291    .text.crsfFrameStatus:00000000 crsfFrameStatus
+    {standard input}:576    .text.crsfFrameStatus:000001f4 $d
+    {standard input}:584    .text.crsfReadRawRC:00000000 $t
+    {standard input}:588    .text.crsfReadRawRC:00000000 crsfReadRawRC
+    {standard input}:639    .text.crsfReadRawRC:00000044 $d
+    {standard input}:646    .text.crsfRxWriteTelemetryData:00000000 $t
+    {standard input}:651    .text.crsfRxWriteTelemetryData:00000000 crsfRxWriteTelemetryData
+    {standard input}:706    .text.crsfRxWriteTelemetryData:00000038 $d
+    {standard input}:712    .text.crsfRxSendTelemetryData:00000000 $t
+    {standard input}:717    .text.crsfRxSendTelemetryData:00000000 crsfRxSendTelemetryData
+    {standard input}:755    .text.crsfRxSendTelemetryData:00000028 $d
+    {standard input}:762    .text.crsfRxInit:00000000 $t
+    {standard input}:767    .text.crsfRxInit:00000000 crsfRxInit
+    {standard input}:898    .text.crsfRxInit:000000c0 $d
+    {standard input}:909    .text.crsfRxIsActive:00000000 $t
+    {standard input}:914    .text.crsfRxIsActive:00000000 crsfRxIsActive
+    {standard input}:950    .text.crsfRxIsActive:0000001c $d
+    {standard input}:958    .bss.crsfFramePosition.12916:00000000 $d
+                     .debug_frame:00000010 $d
+
+UNDEFINED SYMBOLS
+crc8_dvb_s2
+micros
+memcpy
+serialWriteBuf
+findSerialPortConfig
+openSerialPort

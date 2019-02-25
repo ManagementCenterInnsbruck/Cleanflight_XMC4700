@@ -1,0 +1,650 @@
+   1              	 .syntax unified
+   2              	 .cpu cortex-m4
+   3              	 .eabi_attribute 27,3
+   4              	 .fpu fpv4-sp-d16
+   5              	 .eabi_attribute 20,1
+   6              	 .eabi_attribute 21,1
+   7              	 .eabi_attribute 23,3
+   8              	 .eabi_attribute 24,1
+   9              	 .eabi_attribute 25,1
+  10              	 .eabi_attribute 26,1
+  11              	 .eabi_attribute 30,6
+  12              	 .eabi_attribute 34,1
+  13              	 .eabi_attribute 18,4
+  14              	 .thumb
+  15              	 .file "position.c"
+  16              	 .text
+  17              	.Ltext0:
+  18              	 .cfi_sections .debug_frame
+  19              	 .section .bss.estimatedAltitude,"aw",%nobits
+  20              	 .align 2
+  23              	estimatedAltitude:
+  24 0000 00000000 	 .space 4
+  25              	 .section .bss.altitudeOffsetSet,"aw",%nobits
+  28              	altitudeOffsetSet:
+  29 0000 00       	 .space 1
+  30              	 .global __aeabi_i2d
+  31              	 .global __aeabi_ddiv
+  32              	 .global __aeabi_d2f
+  33              	 .section .text.calculateEstimatedAltitude,"ax",%progbits
+  34              	 .align 2
+  35              	 .global calculateEstimatedAltitude
+  36              	 .thumb
+  37              	 .thumb_func
+  39              	calculateEstimatedAltitude:
+  40              	.LFB540:
+  41              	 .file 1 "../cleanflight/src/main/flight/position.c"
+   1:../cleanflight/src/main/flight/position.c **** /*
+   2:../cleanflight/src/main/flight/position.c ****  * This file is part of Cleanflight and Betaflight.
+   3:../cleanflight/src/main/flight/position.c ****  *
+   4:../cleanflight/src/main/flight/position.c ****  * Cleanflight and Betaflight are free software. You can redistribute
+   5:../cleanflight/src/main/flight/position.c ****  * this software and/or modify this software under the terms of the
+   6:../cleanflight/src/main/flight/position.c ****  * GNU General Public License as published by the Free Software
+   7:../cleanflight/src/main/flight/position.c ****  * Foundation, either version 3 of the License, or (at your option)
+   8:../cleanflight/src/main/flight/position.c ****  * any later version.
+   9:../cleanflight/src/main/flight/position.c ****  *
+  10:../cleanflight/src/main/flight/position.c ****  * Cleanflight and Betaflight are distributed in the hope that they
+  11:../cleanflight/src/main/flight/position.c ****  * will be useful, but WITHOUT ANY WARRANTY; without even the implied
+  12:../cleanflight/src/main/flight/position.c ****  * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+  13:../cleanflight/src/main/flight/position.c ****  * See the GNU General Public License for more details.
+  14:../cleanflight/src/main/flight/position.c ****  *
+  15:../cleanflight/src/main/flight/position.c ****  * You should have received a copy of the GNU General Public License
+  16:../cleanflight/src/main/flight/position.c ****  * along with this software.
+  17:../cleanflight/src/main/flight/position.c ****  *
+  18:../cleanflight/src/main/flight/position.c ****  * If not, see <http://www.gnu.org/licenses/>.
+  19:../cleanflight/src/main/flight/position.c ****  */
+  20:../cleanflight/src/main/flight/position.c **** 
+  21:../cleanflight/src/main/flight/position.c **** #include <stdbool.h>
+  22:../cleanflight/src/main/flight/position.c **** #include <stdint.h>
+  23:../cleanflight/src/main/flight/position.c **** #include <stdlib.h>
+  24:../cleanflight/src/main/flight/position.c **** #include <math.h>
+  25:../cleanflight/src/main/flight/position.c **** 
+  26:../cleanflight/src/main/flight/position.c **** #include "build/debug.h"
+  27:../cleanflight/src/main/flight/position.c **** 
+  28:../cleanflight/src/main/flight/position.c **** #include "common/maths.h"
+  29:../cleanflight/src/main/flight/position.c **** 
+  30:../cleanflight/src/main/flight/position.c **** #include "fc/runtime_config.h"
+  31:../cleanflight/src/main/flight/position.c **** 
+  32:../cleanflight/src/main/flight/position.c **** #include "flight/position.h"
+  33:../cleanflight/src/main/flight/position.c **** #include "flight/imu.h"
+  34:../cleanflight/src/main/flight/position.c **** #include "flight/pid.h"
+  35:../cleanflight/src/main/flight/position.c **** 
+  36:../cleanflight/src/main/flight/position.c **** #include "io/gps.h"
+  37:../cleanflight/src/main/flight/position.c **** 
+  38:../cleanflight/src/main/flight/position.c **** #include "sensors/sensors.h"
+  39:../cleanflight/src/main/flight/position.c **** #include "sensors/barometer.h"
+  40:../cleanflight/src/main/flight/position.c **** 
+  41:../cleanflight/src/main/flight/position.c **** static int32_t estimatedAltitude = 0;                // in cm
+  42:../cleanflight/src/main/flight/position.c **** 
+  43:../cleanflight/src/main/flight/position.c **** #define BARO_UPDATE_FREQUENCY_40HZ (1000 * 25)
+  44:../cleanflight/src/main/flight/position.c **** 
+  45:../cleanflight/src/main/flight/position.c **** 
+  46:../cleanflight/src/main/flight/position.c **** #if defined(USE_BARO) || defined(USE_GPS)
+  47:../cleanflight/src/main/flight/position.c **** static bool altitudeOffsetSet = false;
+  48:../cleanflight/src/main/flight/position.c **** 
+  49:../cleanflight/src/main/flight/position.c **** void calculateEstimatedAltitude(timeUs_t currentTimeUs)
+  50:../cleanflight/src/main/flight/position.c **** {
+  42              	 .loc 1 50 0
+  43              	 .cfi_startproc
+  44              	 
+  45              	 
+  46 0000 80B5     	 push {r7,lr}
+  47              	.LCFI0:
+  48              	 .cfi_def_cfa_offset 8
+  49              	 .cfi_offset 7,-8
+  50              	 .cfi_offset 14,-4
+  51 0002 8AB0     	 sub sp,sp,#40
+  52              	.LCFI1:
+  53              	 .cfi_def_cfa_offset 48
+  54 0004 00AF     	 add r7,sp,#0
+  55              	.LCFI2:
+  56              	 .cfi_def_cfa_register 7
+  57 0006 7860     	 str r0,[r7,#4]
+  51:../cleanflight/src/main/flight/position.c ****     static timeUs_t previousTimeUs = 0;
+  52:../cleanflight/src/main/flight/position.c ****     static int32_t baroAltOffset = 0;
+  53:../cleanflight/src/main/flight/position.c ****     static int32_t gpsAltOffset = 0;
+  54:../cleanflight/src/main/flight/position.c **** 
+  55:../cleanflight/src/main/flight/position.c ****     const uint32_t dTime = currentTimeUs - previousTimeUs;
+  58              	 .loc 1 55 0
+  59 0008 764B     	 ldr r3,.L20
+  60 000a 1B68     	 ldr r3,[r3]
+  61 000c 7A68     	 ldr r2,[r7,#4]
+  62 000e D31A     	 subs r3,r2,r3
+  63 0010 7B61     	 str r3,[r7,#20]
+  56:../cleanflight/src/main/flight/position.c ****     if (dTime < BARO_UPDATE_FREQUENCY_40HZ) {
+  64              	 .loc 1 56 0
+  65 0012 7B69     	 ldr r3,[r7,#20]
+  66 0014 46F2A712 	 movw r2,#24999
+  67 0018 9342     	 cmp r3,r2
+  68 001a 00D8     	 bhi .L2
+  57:../cleanflight/src/main/flight/position.c ****         return;
+  69              	 .loc 1 57 0
+  70 001c DFE0     	 b .L1
+  71              	.L2:
+  58:../cleanflight/src/main/flight/position.c ****     }
+  59:../cleanflight/src/main/flight/position.c ****     previousTimeUs = currentTimeUs;
+  72              	 .loc 1 59 0
+  73 001e 714A     	 ldr r2,.L20
+  74 0020 7B68     	 ldr r3,[r7,#4]
+  75 0022 1360     	 str r3,[r2]
+  60:../cleanflight/src/main/flight/position.c **** 
+  61:../cleanflight/src/main/flight/position.c ****     int32_t baroAlt = 0;
+  76              	 .loc 1 61 0
+  77 0024 0023     	 movs r3,#0
+  78 0026 7B62     	 str r3,[r7,#36]
+  62:../cleanflight/src/main/flight/position.c **** 
+  63:../cleanflight/src/main/flight/position.c ****     int32_t gpsAlt = 0;
+  79              	 .loc 1 63 0
+  80 0028 0023     	 movs r3,#0
+  81 002a 3B62     	 str r3,[r7,#32]
+  64:../cleanflight/src/main/flight/position.c ****     float gpsTrust = 0.3; //conservative default
+  82              	 .loc 1 64 0
+  83 002c 6E4B     	 ldr r3,.L20+4
+  84 002e FB61     	 str r3,[r7,#28]
+  65:../cleanflight/src/main/flight/position.c ****     bool haveBaroAlt = false;
+  85              	 .loc 1 65 0
+  86 0030 0023     	 movs r3,#0
+  87 0032 FB76     	 strb r3,[r7,#27]
+  66:../cleanflight/src/main/flight/position.c ****     bool haveGpsAlt = false;
+  88              	 .loc 1 66 0
+  89 0034 0023     	 movs r3,#0
+  90 0036 BB76     	 strb r3,[r7,#26]
+  67:../cleanflight/src/main/flight/position.c **** #ifdef USE_BARO
+  68:../cleanflight/src/main/flight/position.c ****     if (sensors(SENSOR_BARO)) {
+  91              	 .loc 1 68 0
+  92 0038 0420     	 movs r0,#4
+  93 003a FFF7FEFF 	 bl sensors
+  94 003e 0346     	 mov r3,r0
+  95 0040 002B     	 cmp r3,#0
+  96 0042 0FD0     	 beq .L4
+  69:../cleanflight/src/main/flight/position.c ****         if (!isBaroCalibrationComplete()) {
+  97              	 .loc 1 69 0
+  98 0044 FFF7FEFF 	 bl isBaroCalibrationComplete
+  99 0048 0346     	 mov r3,r0
+ 100 004a 83F00103 	 eor r3,r3,#1
+ 101 004e DBB2     	 uxtb r3,r3
+ 102 0050 002B     	 cmp r3,#0
+ 103 0052 02D0     	 beq .L5
+  70:../cleanflight/src/main/flight/position.c ****             performBaroCalibrationCycle();
+ 104              	 .loc 1 70 0
+ 105 0054 FFF7FEFF 	 bl performBaroCalibrationCycle
+ 106 0058 04E0     	 b .L4
+ 107              	.L5:
+  71:../cleanflight/src/main/flight/position.c ****         } else {
+  72:../cleanflight/src/main/flight/position.c ****             baroAlt = baroCalculateAltitude();
+ 108              	 .loc 1 72 0
+ 109 005a FFF7FEFF 	 bl baroCalculateAltitude
+ 110 005e 7862     	 str r0,[r7,#36]
+  73:../cleanflight/src/main/flight/position.c ****             haveBaroAlt = true;
+ 111              	 .loc 1 73 0
+ 112 0060 0123     	 movs r3,#1
+ 113 0062 FB76     	 strb r3,[r7,#27]
+ 114              	.L4:
+  74:../cleanflight/src/main/flight/position.c ****         }
+  75:../cleanflight/src/main/flight/position.c ****     }
+  76:../cleanflight/src/main/flight/position.c **** #endif
+  77:../cleanflight/src/main/flight/position.c **** 
+  78:../cleanflight/src/main/flight/position.c **** #ifdef USE_GPS
+  79:../cleanflight/src/main/flight/position.c **** if (sensors(SENSOR_GPS) && STATE(GPS_FIX)) {
+ 115              	 .loc 1 79 0
+ 116 0064 2020     	 movs r0,#32
+ 117 0066 FFF7FEFF 	 bl sensors
+ 118 006a 0346     	 mov r3,r0
+ 119 006c 002B     	 cmp r3,#0
+ 120 006e 35D0     	 beq .L6
+ 121              	 .loc 1 79 0 is_stmt 0 discriminator 1
+ 122 0070 5E4B     	 ldr r3,.L20+8
+ 123 0072 1B78     	 ldrb r3,[r3]
+ 124 0074 03F00203 	 and r3,r3,#2
+ 125 0078 002B     	 cmp r3,#0
+ 126 007a 2FD0     	 beq .L6
+  80:../cleanflight/src/main/flight/position.c ****     gpsAlt = gpsSol.llh.alt;
+ 127              	 .loc 1 80 0 is_stmt 1
+ 128 007c 5C4B     	 ldr r3,.L20+12
+ 129 007e 9B68     	 ldr r3,[r3,#8]
+ 130 0080 3B62     	 str r3,[r7,#32]
+  81:../cleanflight/src/main/flight/position.c ****     haveGpsAlt = true;
+ 131              	 .loc 1 81 0
+ 132 0082 0123     	 movs r3,#1
+ 133 0084 BB76     	 strb r3,[r7,#26]
+  82:../cleanflight/src/main/flight/position.c **** 
+  83:../cleanflight/src/main/flight/position.c ****     if (gpsSol.hdop != 0) {
+ 134              	 .loc 1 83 0
+ 135 0086 5A4B     	 ldr r3,.L20+12
+ 136 0088 1B8A     	 ldrh r3,[r3,#16]
+ 137 008a 9BB2     	 uxth r3,r3
+ 138 008c 002B     	 cmp r3,#0
+ 139 008e 14D0     	 beq .L7
+  84:../cleanflight/src/main/flight/position.c ****         gpsTrust = 100.0 / gpsSol.hdop;
+ 140              	 .loc 1 84 0
+ 141 0090 574B     	 ldr r3,.L20+12
+ 142 0092 1B8A     	 ldrh r3,[r3,#16]
+ 143 0094 9BB2     	 uxth r3,r3
+ 144 0096 1846     	 mov r0,r3
+ 145 0098 FFF7FEFF 	 bl __aeabi_i2d
+ 146 009c 0246     	 mov r2,r0
+ 147 009e 0B46     	 mov r3,r1
+ 148 00a0 4FF00000 	 mov r0,#0
+ 149 00a4 5349     	 ldr r1,.L20+16
+ 150 00a6 FFF7FEFF 	 bl __aeabi_ddiv
+ 151 00aa 0246     	 mov r2,r0
+ 152 00ac 0B46     	 mov r3,r1
+ 153 00ae 1046     	 mov r0,r2
+ 154 00b0 1946     	 mov r1,r3
+ 155 00b2 FFF7FEFF 	 bl __aeabi_d2f
+ 156 00b6 0346     	 mov r3,r0
+ 157 00b8 FB61     	 str r3,[r7,#28]
+ 158              	.L7:
+ 159              	.LBB2:
+  85:../cleanflight/src/main/flight/position.c ****     }
+  86:../cleanflight/src/main/flight/position.c ****     // always use at least 10% of other sources besides gps if available
+  87:../cleanflight/src/main/flight/position.c ****     gpsTrust = MIN(gpsTrust, 0.9f);
+ 160              	 .loc 1 87 0
+ 161 00ba FB69     	 ldr r3,[r7,#28]
+ 162 00bc 3B61     	 str r3,[r7,#16]
+ 163 00be 4E4B     	 ldr r3,.L20+20
+ 164 00c0 FB60     	 str r3,[r7,#12]
+ 165 00c2 97ED047A 	 flds s14,[r7,#16]
+ 166 00c6 D7ED037A 	 flds s15,[r7,#12]
+ 167 00ca B4EEE77A 	 fcmpes s14,s15
+ 168 00ce F1EE10FA 	 fmstat
+ 169 00d2 01D5     	 bpl .L19
+ 170              	 .loc 1 87 0 is_stmt 0 discriminator 1
+ 171 00d4 3B69     	 ldr r3,[r7,#16]
+ 172 00d6 00E0     	 b .L10
+ 173              	.L19:
+ 174              	 .loc 1 87 0 discriminator 2
+ 175 00d8 FB68     	 ldr r3,[r7,#12]
+ 176              	.L10:
+ 177              	.LBE2:
+ 178              	 .loc 1 87 0 discriminator 4
+ 179 00da FB61     	 str r3,[r7,#28]
+ 180              	.L6:
+  88:../cleanflight/src/main/flight/position.c **** }
+  89:../cleanflight/src/main/flight/position.c **** #endif
+  90:../cleanflight/src/main/flight/position.c **** 
+  91:../cleanflight/src/main/flight/position.c ****     if (ARMING_FLAG(ARMED) && !altitudeOffsetSet) {
+ 181              	 .loc 1 91 0 is_stmt 1
+ 182 00dc 474B     	 ldr r3,.L20+24
+ 183 00de 1B78     	 ldrb r3,[r3]
+ 184 00e0 03F00103 	 and r3,r3,#1
+ 185 00e4 002B     	 cmp r3,#0
+ 186 00e6 10D0     	 beq .L11
+ 187              	 .loc 1 91 0 is_stmt 0 discriminator 1
+ 188 00e8 454B     	 ldr r3,.L20+28
+ 189 00ea 1B78     	 ldrb r3,[r3]
+ 190 00ec 83F00103 	 eor r3,r3,#1
+ 191 00f0 DBB2     	 uxtb r3,r3
+ 192 00f2 002B     	 cmp r3,#0
+ 193 00f4 09D0     	 beq .L11
+  92:../cleanflight/src/main/flight/position.c ****         baroAltOffset = baroAlt;
+ 194              	 .loc 1 92 0 is_stmt 1
+ 195 00f6 434A     	 ldr r2,.L20+32
+ 196 00f8 7B6A     	 ldr r3,[r7,#36]
+ 197 00fa 1360     	 str r3,[r2]
+  93:../cleanflight/src/main/flight/position.c ****         gpsAltOffset = gpsAlt;
+ 198              	 .loc 1 93 0
+ 199 00fc 424A     	 ldr r2,.L20+36
+ 200 00fe 3B6A     	 ldr r3,[r7,#32]
+ 201 0100 1360     	 str r3,[r2]
+  94:../cleanflight/src/main/flight/position.c ****         altitudeOffsetSet = true;
+ 202              	 .loc 1 94 0
+ 203 0102 3F4B     	 ldr r3,.L20+28
+ 204 0104 0122     	 movs r2,#1
+ 205 0106 1A70     	 strb r2,[r3]
+ 206 0108 0CE0     	 b .L12
+ 207              	.L11:
+  95:../cleanflight/src/main/flight/position.c ****     } else if (!ARMING_FLAG(ARMED) && altitudeOffsetSet) {
+ 208              	 .loc 1 95 0
+ 209 010a 3C4B     	 ldr r3,.L20+24
+ 210 010c 1B78     	 ldrb r3,[r3]
+ 211 010e 03F00103 	 and r3,r3,#1
+ 212 0112 002B     	 cmp r3,#0
+ 213 0114 06D1     	 bne .L12
+ 214              	 .loc 1 95 0 is_stmt 0 discriminator 1
+ 215 0116 3A4B     	 ldr r3,.L20+28
+ 216 0118 1B78     	 ldrb r3,[r3]
+ 217 011a 002B     	 cmp r3,#0
+ 218 011c 02D0     	 beq .L12
+  96:../cleanflight/src/main/flight/position.c ****         altitudeOffsetSet = false;
+ 219              	 .loc 1 96 0 is_stmt 1
+ 220 011e 384B     	 ldr r3,.L20+28
+ 221 0120 0022     	 movs r2,#0
+ 222 0122 1A70     	 strb r2,[r3]
+ 223              	.L12:
+  97:../cleanflight/src/main/flight/position.c ****     }
+  98:../cleanflight/src/main/flight/position.c ****     baroAlt -= baroAltOffset;
+ 224              	 .loc 1 98 0
+ 225 0124 374B     	 ldr r3,.L20+32
+ 226 0126 1B68     	 ldr r3,[r3]
+ 227 0128 7A6A     	 ldr r2,[r7,#36]
+ 228 012a D31A     	 subs r3,r2,r3
+ 229 012c 7B62     	 str r3,[r7,#36]
+  99:../cleanflight/src/main/flight/position.c ****     gpsAlt -= gpsAltOffset;
+ 230              	 .loc 1 99 0
+ 231 012e 364B     	 ldr r3,.L20+36
+ 232 0130 1B68     	 ldr r3,[r3]
+ 233 0132 3A6A     	 ldr r2,[r7,#32]
+ 234 0134 D31A     	 subs r3,r2,r3
+ 235 0136 3B62     	 str r3,[r7,#32]
+ 100:../cleanflight/src/main/flight/position.c ****     
+ 101:../cleanflight/src/main/flight/position.c ****     if (haveGpsAlt && haveBaroAlt) {
+ 236              	 .loc 1 101 0
+ 237 0138 BB7E     	 ldrb r3,[r7,#26]
+ 238 013a 002B     	 cmp r3,#0
+ 239 013c 21D0     	 beq .L13
+ 240              	 .loc 1 101 0 is_stmt 0 discriminator 1
+ 241 013e FB7E     	 ldrb r3,[r7,#27]
+ 242 0140 002B     	 cmp r3,#0
+ 243 0142 1ED0     	 beq .L13
+ 102:../cleanflight/src/main/flight/position.c ****         estimatedAltitude = gpsAlt * gpsTrust + baroAlt * (1 - gpsTrust);
+ 244              	 .loc 1 102 0 is_stmt 1
+ 245 0144 3B6A     	 ldr r3,[r7,#32]
+ 246 0146 07EE903A 	 fmsr s15,r3
+ 247 014a B8EEE77A 	 fsitos s14,s15
+ 248 014e D7ED077A 	 flds s15,[r7,#28]
+ 249 0152 27EE277A 	 fmuls s14,s14,s15
+ 250 0156 7B6A     	 ldr r3,[r7,#36]
+ 251 0158 07EE903A 	 fmsr s15,r3
+ 252 015c F8EEE76A 	 fsitos s13,s15
+ 253 0160 B7EE006A 	 fconsts s12,#112
+ 254 0164 D7ED077A 	 flds s15,[r7,#28]
+ 255 0168 76EE677A 	 fsubs s15,s12,s15
+ 256 016c 66EEA77A 	 fmuls s15,s13,s15
+ 257 0170 77EE277A 	 fadds s15,s14,s15
+ 258 0174 FDEEE77A 	 ftosizs s15,s15
+ 259 0178 17EE902A 	 fmrs r2,s15
+ 260 017c 234B     	 ldr r3,.L20+40
+ 261 017e 1A60     	 str r2,[r3]
+ 262 0180 0CE0     	 b .L14
+ 263              	.L13:
+ 103:../cleanflight/src/main/flight/position.c ****     } else if (haveGpsAlt) {
+ 264              	 .loc 1 103 0
+ 265 0182 BB7E     	 ldrb r3,[r7,#26]
+ 266 0184 002B     	 cmp r3,#0
+ 267 0186 03D0     	 beq .L15
+ 104:../cleanflight/src/main/flight/position.c ****         estimatedAltitude = gpsAlt;
+ 268              	 .loc 1 104 0
+ 269 0188 204A     	 ldr r2,.L20+40
+ 270 018a 3B6A     	 ldr r3,[r7,#32]
+ 271 018c 1360     	 str r3,[r2]
+ 272 018e 05E0     	 b .L14
+ 273              	.L15:
+ 105:../cleanflight/src/main/flight/position.c ****     } else if (haveBaroAlt) {
+ 274              	 .loc 1 105 0
+ 275 0190 FB7E     	 ldrb r3,[r7,#27]
+ 276 0192 002B     	 cmp r3,#0
+ 277 0194 02D0     	 beq .L14
+ 106:../cleanflight/src/main/flight/position.c ****         estimatedAltitude = baroAlt;
+ 278              	 .loc 1 106 0
+ 279 0196 1D4A     	 ldr r2,.L20+40
+ 280 0198 7B6A     	 ldr r3,[r7,#36]
+ 281 019a 1360     	 str r3,[r2]
+ 282              	.L14:
+ 107:../cleanflight/src/main/flight/position.c ****     }
+ 108:../cleanflight/src/main/flight/position.c ****     
+ 109:../cleanflight/src/main/flight/position.c ****     DEBUG_SET(DEBUG_ALTITUDE, 0, (int32_t)(100 * gpsTrust));
+ 283              	 .loc 1 109 0
+ 284 019c 1C4B     	 ldr r3,.L20+44
+ 285 019e 1B78     	 ldrb r3,[r3]
+ 286 01a0 0E2B     	 cmp r3,#14
+ 287 01a2 0CD1     	 bne .L16
+ 288              	 .loc 1 109 0 is_stmt 0 discriminator 1
+ 289 01a4 D7ED077A 	 flds s15,[r7,#28]
+ 290 01a8 9FED1A7A 	 flds s14,.L20+48
+ 291 01ac 67EE877A 	 fmuls s15,s15,s14
+ 292 01b0 FDEEE77A 	 ftosizs s15,s15
+ 293 01b4 C7ED007A 	 fsts s15,[r7]
+ 294 01b8 3A88     	 ldrh r2,[r7]
+ 295 01ba 174B     	 ldr r3,.L20+52
+ 296 01bc 1A80     	 strh r2,[r3]
+ 297              	.L16:
+ 110:../cleanflight/src/main/flight/position.c ****     DEBUG_SET(DEBUG_ALTITUDE, 1, baroAlt);
+ 298              	 .loc 1 110 0 is_stmt 1
+ 299 01be 144B     	 ldr r3,.L20+44
+ 300 01c0 1B78     	 ldrb r3,[r3]
+ 301 01c2 0E2B     	 cmp r3,#14
+ 302 01c4 03D1     	 bne .L17
+ 303              	 .loc 1 110 0 is_stmt 0 discriminator 1
+ 304 01c6 7B6A     	 ldr r3,[r7,#36]
+ 305 01c8 9AB2     	 uxth r2,r3
+ 306 01ca 134B     	 ldr r3,.L20+52
+ 307 01cc 5A80     	 strh r2,[r3,#2]
+ 308              	.L17:
+ 111:../cleanflight/src/main/flight/position.c ****     DEBUG_SET(DEBUG_ALTITUDE, 2, gpsAlt);
+ 309              	 .loc 1 111 0 is_stmt 1
+ 310 01ce 104B     	 ldr r3,.L20+44
+ 311 01d0 1B78     	 ldrb r3,[r3]
+ 312 01d2 0E2B     	 cmp r3,#14
+ 313 01d4 03D1     	 bne .L1
+ 314              	 .loc 1 111 0 is_stmt 0 discriminator 1
+ 315 01d6 3B6A     	 ldr r3,[r7,#32]
+ 316 01d8 9AB2     	 uxth r2,r3
+ 317 01da 0F4B     	 ldr r3,.L20+52
+ 318 01dc 9A80     	 strh r2,[r3,#4]
+ 319              	.L1:
+ 112:../cleanflight/src/main/flight/position.c **** }
+ 320              	 .loc 1 112 0 is_stmt 1
+ 321 01de 2837     	 adds r7,r7,#40
+ 322              	.LCFI3:
+ 323              	 .cfi_def_cfa_offset 8
+ 324 01e0 BD46     	 mov sp,r7
+ 325              	.LCFI4:
+ 326              	 .cfi_def_cfa_register 13
+ 327              	 
+ 328 01e2 80BD     	 pop {r7,pc}
+ 329              	.L21:
+ 330              	 .align 2
+ 331              	.L20:
+ 332 01e4 00000000 	 .word previousTimeUs.13376
+ 333 01e8 9A99993E 	 .word 1050253722
+ 334 01ec 00000000 	 .word stateFlags
+ 335 01f0 00000000 	 .word gpsSol
+ 336 01f4 00005940 	 .word 1079574528
+ 337 01f8 6666663F 	 .word 1063675494
+ 338 01fc 00000000 	 .word armingFlags
+ 339 0200 00000000 	 .word altitudeOffsetSet
+ 340 0204 00000000 	 .word baroAltOffset.13377
+ 341 0208 00000000 	 .word gpsAltOffset.13378
+ 342 020c 00000000 	 .word estimatedAltitude
+ 343 0210 00000000 	 .word debugMode
+ 344 0214 0000C842 	 .word 1120403456
+ 345 0218 00000000 	 .word debug
+ 346              	 .cfi_endproc
+ 347              	.LFE540:
+ 349              	 .section .text.isAltitudeOffset,"ax",%progbits
+ 350              	 .align 2
+ 351              	 .global isAltitudeOffset
+ 352              	 .thumb
+ 353              	 .thumb_func
+ 355              	isAltitudeOffset:
+ 356              	.LFB541:
+ 113:../cleanflight/src/main/flight/position.c **** 
+ 114:../cleanflight/src/main/flight/position.c **** bool isAltitudeOffset(void)
+ 115:../cleanflight/src/main/flight/position.c **** {
+ 357              	 .loc 1 115 0
+ 358              	 .cfi_startproc
+ 359              	 
+ 360              	 
+ 361              	 
+ 362 0000 80B4     	 push {r7}
+ 363              	.LCFI5:
+ 364              	 .cfi_def_cfa_offset 4
+ 365              	 .cfi_offset 7,-4
+ 366 0002 00AF     	 add r7,sp,#0
+ 367              	.LCFI6:
+ 368              	 .cfi_def_cfa_register 7
+ 116:../cleanflight/src/main/flight/position.c ****     return altitudeOffsetSet;
+ 369              	 .loc 1 116 0
+ 370 0004 034B     	 ldr r3,.L24
+ 371 0006 1B78     	 ldrb r3,[r3]
+ 117:../cleanflight/src/main/flight/position.c **** }
+ 372              	 .loc 1 117 0
+ 373 0008 1846     	 mov r0,r3
+ 374 000a BD46     	 mov sp,r7
+ 375              	.LCFI7:
+ 376              	 .cfi_def_cfa_register 13
+ 377              	 
+ 378 000c 5DF8047B 	 ldr r7,[sp],#4
+ 379              	.LCFI8:
+ 380              	 .cfi_restore 7
+ 381              	 .cfi_def_cfa_offset 0
+ 382 0010 7047     	 bx lr
+ 383              	.L25:
+ 384 0012 00BF     	 .align 2
+ 385              	.L24:
+ 386 0014 00000000 	 .word altitudeOffsetSet
+ 387              	 .cfi_endproc
+ 388              	.LFE541:
+ 390              	 .section .text.getEstimatedAltitude,"ax",%progbits
+ 391              	 .align 2
+ 392              	 .global getEstimatedAltitude
+ 393              	 .thumb
+ 394              	 .thumb_func
+ 396              	getEstimatedAltitude:
+ 397              	.LFB542:
+ 118:../cleanflight/src/main/flight/position.c **** #endif
+ 119:../cleanflight/src/main/flight/position.c **** 
+ 120:../cleanflight/src/main/flight/position.c **** int32_t getEstimatedAltitude(void)
+ 121:../cleanflight/src/main/flight/position.c **** {
+ 398              	 .loc 1 121 0
+ 399              	 .cfi_startproc
+ 400              	 
+ 401              	 
+ 402              	 
+ 403 0000 80B4     	 push {r7}
+ 404              	.LCFI9:
+ 405              	 .cfi_def_cfa_offset 4
+ 406              	 .cfi_offset 7,-4
+ 407 0002 00AF     	 add r7,sp,#0
+ 408              	.LCFI10:
+ 409              	 .cfi_def_cfa_register 7
+ 122:../cleanflight/src/main/flight/position.c ****     return estimatedAltitude;
+ 410              	 .loc 1 122 0
+ 411 0004 034B     	 ldr r3,.L28
+ 412 0006 1B68     	 ldr r3,[r3]
+ 123:../cleanflight/src/main/flight/position.c **** }
+ 413              	 .loc 1 123 0
+ 414 0008 1846     	 mov r0,r3
+ 415 000a BD46     	 mov sp,r7
+ 416              	.LCFI11:
+ 417              	 .cfi_def_cfa_register 13
+ 418              	 
+ 419 000c 5DF8047B 	 ldr r7,[sp],#4
+ 420              	.LCFI12:
+ 421              	 .cfi_restore 7
+ 422              	 .cfi_def_cfa_offset 0
+ 423 0010 7047     	 bx lr
+ 424              	.L29:
+ 425 0012 00BF     	 .align 2
+ 426              	.L28:
+ 427 0014 00000000 	 .word estimatedAltitude
+ 428              	 .cfi_endproc
+ 429              	.LFE542:
+ 431              	 .section .text.getEstimatedVario,"ax",%progbits
+ 432              	 .align 2
+ 433              	 .global getEstimatedVario
+ 434              	 .thumb
+ 435              	 .thumb_func
+ 437              	getEstimatedVario:
+ 438              	.LFB543:
+ 124:../cleanflight/src/main/flight/position.c **** 
+ 125:../cleanflight/src/main/flight/position.c **** // This should be removed or fixed, but it would require changing a lot of other things to get rid 
+ 126:../cleanflight/src/main/flight/position.c **** int16_t getEstimatedVario(void)
+ 127:../cleanflight/src/main/flight/position.c **** {
+ 439              	 .loc 1 127 0
+ 440              	 .cfi_startproc
+ 441              	 
+ 442              	 
+ 443              	 
+ 444 0000 80B4     	 push {r7}
+ 445              	.LCFI13:
+ 446              	 .cfi_def_cfa_offset 4
+ 447              	 .cfi_offset 7,-4
+ 448 0002 00AF     	 add r7,sp,#0
+ 449              	.LCFI14:
+ 450              	 .cfi_def_cfa_register 7
+ 128:../cleanflight/src/main/flight/position.c ****     return 0;
+ 451              	 .loc 1 128 0
+ 452 0004 0023     	 movs r3,#0
+ 453 0006 1BB2     	 sxth r3,r3
+ 129:../cleanflight/src/main/flight/position.c **** }
+ 454              	 .loc 1 129 0
+ 455 0008 1846     	 mov r0,r3
+ 456 000a BD46     	 mov sp,r7
+ 457              	.LCFI15:
+ 458              	 .cfi_def_cfa_register 13
+ 459              	 
+ 460 000c 5DF8047B 	 ldr r7,[sp],#4
+ 461              	.LCFI16:
+ 462              	 .cfi_restore 7
+ 463              	 .cfi_def_cfa_offset 0
+ 464 0010 7047     	 bx lr
+ 465              	 .cfi_endproc
+ 466              	.LFE543:
+ 468 0012 00BF     	 .section .bss.previousTimeUs.13376,"aw",%nobits
+ 469              	 .align 2
+ 472              	previousTimeUs.13376:
+ 473 0000 00000000 	 .space 4
+ 474              	 .section .bss.baroAltOffset.13377,"aw",%nobits
+ 475              	 .align 2
+ 478              	baroAltOffset.13377:
+ 479 0000 00000000 	 .space 4
+ 480              	 .section .bss.gpsAltOffset.13378,"aw",%nobits
+ 481              	 .align 2
+ 484              	gpsAltOffset.13378:
+ 485 0000 00000000 	 .space 4
+ 486              	 .text
+ 487              	.Letext0:
+ 488              	 .file 2 "d:\\xmc\\dave-ide-4.4.2-64bit\\eclipse\\arm-gcc-49\\arm-none-eabi\\include\\machine\\_default_types.h"
+ 489              	 .file 3 "d:\\xmc\\dave-ide-4.4.2-64bit\\eclipse\\arm-gcc-49\\arm-none-eabi\\include\\stdint.h"
+ 490              	 .file 4 "D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/build/debug.h"
+ 491              	 .file 5 "D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/fc/runtime_config.h"
+ 492              	 .file 6 "D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/lib/main/XMC4000/XMCLib/inc/xmc_usic.h"
+ 493              	 .file 7 "D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/common/time.h"
+ 494              	 .file 8 "D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/flight/imu.h"
+ 495              	 .file 9 "D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/flight/pid.h"
+ 496              	 .file 10 "D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/io/gps.h"
+ 497              	 .file 11 "D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/sensors/sensors.h"
+ 498              	 .file 12 "D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/drivers/io_types.h"
+ 499              	 .file 13 "D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/sensors/barometer.h"
+ 500              	 .file 14 "D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/lib/main/CMSIS/Core/Include/core_cm4.h"
+ 501              	 .file 15 "D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/lib/main/XMC4000/system_XMC4700.h"
+DEFINED SYMBOLS
+                            *ABS*:00000000 position.c
+    {standard input}:20     .bss.estimatedAltitude:00000000 $d
+    {standard input}:23     .bss.estimatedAltitude:00000000 estimatedAltitude
+    {standard input}:28     .bss.altitudeOffsetSet:00000000 altitudeOffsetSet
+    {standard input}:29     .bss.altitudeOffsetSet:00000000 $d
+    {standard input}:34     .text.calculateEstimatedAltitude:00000000 $t
+    {standard input}:39     .text.calculateEstimatedAltitude:00000000 calculateEstimatedAltitude
+    {standard input}:332    .text.calculateEstimatedAltitude:000001e4 $d
+    {standard input}:472    .bss.previousTimeUs.13376:00000000 previousTimeUs.13376
+    {standard input}:478    .bss.baroAltOffset.13377:00000000 baroAltOffset.13377
+    {standard input}:484    .bss.gpsAltOffset.13378:00000000 gpsAltOffset.13378
+    {standard input}:350    .text.isAltitudeOffset:00000000 $t
+    {standard input}:355    .text.isAltitudeOffset:00000000 isAltitudeOffset
+    {standard input}:386    .text.isAltitudeOffset:00000014 $d
+    {standard input}:391    .text.getEstimatedAltitude:00000000 $t
+    {standard input}:396    .text.getEstimatedAltitude:00000000 getEstimatedAltitude
+    {standard input}:427    .text.getEstimatedAltitude:00000014 $d
+    {standard input}:432    .text.getEstimatedVario:00000000 $t
+    {standard input}:437    .text.getEstimatedVario:00000000 getEstimatedVario
+    {standard input}:469    .bss.previousTimeUs.13376:00000000 $d
+    {standard input}:475    .bss.baroAltOffset.13377:00000000 $d
+    {standard input}:481    .bss.gpsAltOffset.13378:00000000 $d
+                     .debug_frame:00000010 $d
+
+UNDEFINED SYMBOLS
+__aeabi_i2d
+__aeabi_ddiv
+__aeabi_d2f
+sensors
+isBaroCalibrationComplete
+performBaroCalibrationCycle
+baroCalculateAltitude
+stateFlags
+gpsSol
+armingFlags
+debugMode
+debug

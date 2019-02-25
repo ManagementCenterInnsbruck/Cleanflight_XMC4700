@@ -1,0 +1,1275 @@
+   1              	 .syntax unified
+   2              	 .cpu cortex-m4
+   3              	 .eabi_attribute 27,3
+   4              	 .fpu fpv4-sp-d16
+   5              	 .eabi_attribute 20,1
+   6              	 .eabi_attribute 21,1
+   7              	 .eabi_attribute 23,3
+   8              	 .eabi_attribute 24,1
+   9              	 .eabi_attribute 25,1
+  10              	 .eabi_attribute 26,1
+  11              	 .eabi_attribute 30,6
+  12              	 .eabi_attribute 34,1
+  13              	 .eabi_attribute 18,4
+  14              	 .thumb
+  15              	 .file "cms_menu_vtx_tramp.c"
+  16              	 .text
+  17              	.Ltext0:
+  18              	 .cfi_sections .debug_frame
+  19              	 .comm pCurrentDisplay,4,4
+  20              	 .section .text.vtxSettingsConfigMutable,"ax",%progbits
+  21              	 .align 2
+  22              	 .thumb
+  23              	 .thumb_func
+  25              	vtxSettingsConfigMutable:
+  26              	.LFB532:
+  27              	 .file 1 "D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/io/vtx.h"
+   1:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/io\vtx.h **** /*
+   2:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/io\vtx.h ****  * This file is part of Cleanflight and Betaflight.
+   3:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/io\vtx.h ****  *
+   4:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/io\vtx.h ****  * Cleanflight and Betaflight are free software. You can redistribute
+   5:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/io\vtx.h ****  * this software and/or modify this software under the terms of the
+   6:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/io\vtx.h ****  * GNU General Public License as published by the Free Software
+   7:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/io\vtx.h ****  * Foundation, either version 3 of the License, or (at your option)
+   8:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/io\vtx.h ****  * any later version.
+   9:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/io\vtx.h ****  *
+  10:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/io\vtx.h ****  * Cleanflight and Betaflight are distributed in the hope that they
+  11:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/io\vtx.h ****  * will be useful, but WITHOUT ANY WARRANTY; without even the implied
+  12:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/io\vtx.h ****  * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+  13:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/io\vtx.h ****  * See the GNU General Public License for more details.
+  14:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/io\vtx.h ****  *
+  15:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/io\vtx.h ****  * You should have received a copy of the GNU General Public License
+  16:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/io\vtx.h ****  * along with this software.
+  17:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/io\vtx.h ****  *
+  18:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/io\vtx.h ****  * If not, see <http://www.gnu.org/licenses/>.
+  19:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/io\vtx.h ****  */
+  20:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/io\vtx.h **** 
+  21:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/io\vtx.h **** #pragma once
+  22:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/io\vtx.h **** 
+  23:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/io\vtx.h **** #include <stdint.h>
+  24:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/io\vtx.h **** 
+  25:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/io\vtx.h **** #include "platform.h"
+  26:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/io\vtx.h **** #include "common/time.h"
+  27:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/io\vtx.h **** #include "pg/pg.h"
+  28:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/io\vtx.h **** 
+  29:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/io\vtx.h **** typedef struct vtxSettingsConfig_s {
+  30:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/io\vtx.h ****     uint8_t band;           // 1=A, 2=B, 3=E, 4=F(Airwaves/Fatshark), 5=Raceband
+  31:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/io\vtx.h ****     uint8_t channel;        // 1-8
+  32:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/io\vtx.h ****     uint8_t power;          // 0 = lowest
+  33:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/io\vtx.h ****     uint16_t freq;          // sets freq in MHz if band=0
+  34:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/io\vtx.h ****     uint16_t pitModeFreq;   // sets out-of-range pitmode frequency
+  35:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/io\vtx.h ****     uint8_t lowPowerDisarm; // min power while disarmed
+  36:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/io\vtx.h **** } vtxSettingsConfig_t;
+  37:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/io\vtx.h **** 
+  38:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/io\vtx.h **** PG_DECLARE(vtxSettingsConfig_t, vtxSettingsConfig);
+  28              	 .loc 1 38 0
+  29              	 .cfi_startproc
+  30              	 
+  31              	 
+  32              	 
+  33 0000 80B4     	 push {r7}
+  34              	.LCFI0:
+  35              	 .cfi_def_cfa_offset 4
+  36              	 .cfi_offset 7,-4
+  37 0002 00AF     	 add r7,sp,#0
+  38              	.LCFI1:
+  39              	 .cfi_def_cfa_register 7
+  40              	 .loc 1 38 0
+  41 0004 024B     	 ldr r3,.L3
+  42 0006 1846     	 mov r0,r3
+  43 0008 BD46     	 mov sp,r7
+  44              	.LCFI2:
+  45              	 .cfi_def_cfa_register 13
+  46              	 
+  47 000a 5DF8047B 	 ldr r7,[sp],#4
+  48              	.LCFI3:
+  49              	 .cfi_restore 7
+  50              	 .cfi_def_cfa_offset 0
+  51 000e 7047     	 bx lr
+  52              	.L4:
+  53              	 .align 2
+  54              	.L3:
+  55 0010 00000000 	 .word vtxSettingsConfig_System
+  56              	 .cfi_endproc
+  57              	.LFE532:
+  59              	 .global trampCmsStatusString
+  60              	 .section .data.trampCmsStatusString,"aw",%progbits
+  61              	 .align 2
+  64              	trampCmsStatusString:
+  65 0000 2D202D2D 	 .ascii "- -- ---- ----\000"
+  65      202D2D2D 
+  65      2D202D2D 
+  65      2D2D00
+  66 000f 00000000 	 .space 16
+  66      00000000 
+  66      00000000 
+  66      00000000 
+  67 001f 00       	 .section .rodata
+  68              	 .align 2
+  69              	.LC0:
+  70 0000 25346400 	 .ascii "%4d\000"
+  71              	 .align 2
+  72              	.LC1:
+  73 0004 2D2D2D2D 	 .ascii "----\000"
+  73      00
+  74 0009 000000   	 .align 2
+  75              	.LC2:
+  76 000c 20256325 	 .ascii " %c%3d\000"
+  76      336400
+  77 0013 00       	 .align 2
+  78              	.LC3:
+  79 0014 202D2D2D 	 .ascii " ----\000"
+  79      2D00
+  80              	 .section .text.trampCmsUpdateStatusString,"ax",%progbits
+  81              	 .align 2
+  82              	 .global trampCmsUpdateStatusString
+  83              	 .thumb
+  84              	 .thumb_func
+  86              	trampCmsUpdateStatusString:
+  87              	.LFB533:
+  88              	 .file 2 "../cleanflight/src/main/cms/cms_menu_vtx_tramp.c"
+   1:../cleanflight/src/main/cms/cms_menu_vtx_tramp.c **** /*
+   2:../cleanflight/src/main/cms/cms_menu_vtx_tramp.c ****  * This file is part of Cleanflight and Betaflight.
+   3:../cleanflight/src/main/cms/cms_menu_vtx_tramp.c ****  *
+   4:../cleanflight/src/main/cms/cms_menu_vtx_tramp.c ****  * Cleanflight and Betaflight are free software. You can redistribute
+   5:../cleanflight/src/main/cms/cms_menu_vtx_tramp.c ****  * this software and/or modify this software under the terms of the
+   6:../cleanflight/src/main/cms/cms_menu_vtx_tramp.c ****  * GNU General Public License as published by the Free Software
+   7:../cleanflight/src/main/cms/cms_menu_vtx_tramp.c ****  * Foundation, either version 3 of the License, or (at your option)
+   8:../cleanflight/src/main/cms/cms_menu_vtx_tramp.c ****  * any later version.
+   9:../cleanflight/src/main/cms/cms_menu_vtx_tramp.c ****  *
+  10:../cleanflight/src/main/cms/cms_menu_vtx_tramp.c ****  * Cleanflight and Betaflight are distributed in the hope that they
+  11:../cleanflight/src/main/cms/cms_menu_vtx_tramp.c ****  * will be useful, but WITHOUT ANY WARRANTY; without even the implied
+  12:../cleanflight/src/main/cms/cms_menu_vtx_tramp.c ****  * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+  13:../cleanflight/src/main/cms/cms_menu_vtx_tramp.c ****  * See the GNU General Public License for more details.
+  14:../cleanflight/src/main/cms/cms_menu_vtx_tramp.c ****  *
+  15:../cleanflight/src/main/cms/cms_menu_vtx_tramp.c ****  * You should have received a copy of the GNU General Public License
+  16:../cleanflight/src/main/cms/cms_menu_vtx_tramp.c ****  * along with this software.
+  17:../cleanflight/src/main/cms/cms_menu_vtx_tramp.c ****  *
+  18:../cleanflight/src/main/cms/cms_menu_vtx_tramp.c ****  * If not, see <http://www.gnu.org/licenses/>.
+  19:../cleanflight/src/main/cms/cms_menu_vtx_tramp.c ****  */
+  20:../cleanflight/src/main/cms/cms_menu_vtx_tramp.c **** 
+  21:../cleanflight/src/main/cms/cms_menu_vtx_tramp.c **** #include <stdbool.h>
+  22:../cleanflight/src/main/cms/cms_menu_vtx_tramp.c **** #include <stdint.h>
+  23:../cleanflight/src/main/cms/cms_menu_vtx_tramp.c **** #include <ctype.h>
+  24:../cleanflight/src/main/cms/cms_menu_vtx_tramp.c **** 
+  25:../cleanflight/src/main/cms/cms_menu_vtx_tramp.c **** #include "platform.h"
+  26:../cleanflight/src/main/cms/cms_menu_vtx_tramp.c **** 
+  27:../cleanflight/src/main/cms/cms_menu_vtx_tramp.c **** #if defined(USE_CMS) && defined(USE_VTX_TRAMP)
+  28:../cleanflight/src/main/cms/cms_menu_vtx_tramp.c **** 
+  29:../cleanflight/src/main/cms/cms_menu_vtx_tramp.c **** #include "common/printf.h"
+  30:../cleanflight/src/main/cms/cms_menu_vtx_tramp.c **** #include "common/utils.h"
+  31:../cleanflight/src/main/cms/cms_menu_vtx_tramp.c **** 
+  32:../cleanflight/src/main/cms/cms_menu_vtx_tramp.c **** #include "cms/cms.h"
+  33:../cleanflight/src/main/cms/cms_menu_vtx_tramp.c **** #include "cms/cms_types.h"
+  34:../cleanflight/src/main/cms/cms_menu_vtx_tramp.c **** 
+  35:../cleanflight/src/main/cms/cms_menu_vtx_tramp.c **** #include "drivers/vtx_common.h"
+  36:../cleanflight/src/main/cms/cms_menu_vtx_tramp.c **** 
+  37:../cleanflight/src/main/cms/cms_menu_vtx_tramp.c **** #include "fc/config.h"
+  38:../cleanflight/src/main/cms/cms_menu_vtx_tramp.c **** 
+  39:../cleanflight/src/main/cms/cms_menu_vtx_tramp.c **** #include "io/vtx_string.h"
+  40:../cleanflight/src/main/cms/cms_menu_vtx_tramp.c **** #include "io/vtx_tramp.h"
+  41:../cleanflight/src/main/cms/cms_menu_vtx_tramp.c **** #include "io/vtx.h"
+  42:../cleanflight/src/main/cms/cms_menu_vtx_tramp.c **** 
+  43:../cleanflight/src/main/cms/cms_menu_vtx_tramp.c **** char trampCmsStatusString[31] = "- -- ---- ----";
+  44:../cleanflight/src/main/cms/cms_menu_vtx_tramp.c **** //                               m bc ffff tppp
+  45:../cleanflight/src/main/cms/cms_menu_vtx_tramp.c **** //                               01234567890123
+  46:../cleanflight/src/main/cms/cms_menu_vtx_tramp.c **** 
+  47:../cleanflight/src/main/cms/cms_menu_vtx_tramp.c **** void trampCmsUpdateStatusString(void)
+  48:../cleanflight/src/main/cms/cms_menu_vtx_tramp.c **** {
+  89              	 .loc 2 48 0
+  90              	 .cfi_startproc
+  91              	 
+  92              	 
+  93 0000 80B5     	 push {r7,lr}
+  94              	.LCFI4:
+  95              	 .cfi_def_cfa_offset 8
+  96              	 .cfi_offset 7,-8
+  97              	 .cfi_offset 14,-4
+  98 0002 00AF     	 add r7,sp,#0
+  99              	.LCFI5:
+ 100              	 .cfi_def_cfa_register 7
+  49:../cleanflight/src/main/cms/cms_menu_vtx_tramp.c ****     trampCmsStatusString[0] = '*';
+ 101              	 .loc 2 49 0
+ 102 0004 204B     	 ldr r3,.L12
+ 103 0006 2A22     	 movs r2,#42
+ 104 0008 1A70     	 strb r2,[r3]
+  50:../cleanflight/src/main/cms/cms_menu_vtx_tramp.c ****     trampCmsStatusString[1] = ' ';
+ 105              	 .loc 2 50 0
+ 106 000a 1F4B     	 ldr r3,.L12
+ 107 000c 2022     	 movs r2,#32
+ 108 000e 5A70     	 strb r2,[r3,#1]
+  51:../cleanflight/src/main/cms/cms_menu_vtx_tramp.c ****     trampCmsStatusString[2] = vtx58BandLetter[trampBand];
+ 109              	 .loc 2 51 0
+ 110 0010 1E4B     	 ldr r3,.L12+4
+ 111 0012 1B78     	 ldrb r3,[r3]
+ 112 0014 1A46     	 mov r2,r3
+ 113 0016 1E4B     	 ldr r3,.L12+8
+ 114 0018 9A5C     	 ldrb r2,[r3,r2]
+ 115 001a 1B4B     	 ldr r3,.L12
+ 116 001c 9A70     	 strb r2,[r3,#2]
+  52:../cleanflight/src/main/cms/cms_menu_vtx_tramp.c ****     trampCmsStatusString[3] = vtx58ChannelNames[trampChannel][0];
+ 117              	 .loc 2 52 0
+ 118 001e 1D4B     	 ldr r3,.L12+12
+ 119 0020 1B78     	 ldrb r3,[r3]
+ 120 0022 1A46     	 mov r2,r3
+ 121 0024 1C4B     	 ldr r3,.L12+16
+ 122 0026 53F82230 	 ldr r3,[r3,r2,lsl#2]
+ 123 002a 1A78     	 ldrb r2,[r3]
+ 124 002c 164B     	 ldr r3,.L12
+ 125 002e DA70     	 strb r2,[r3,#3]
+  53:../cleanflight/src/main/cms/cms_menu_vtx_tramp.c ****     trampCmsStatusString[4] = ' ';
+ 126              	 .loc 2 53 0
+ 127 0030 154B     	 ldr r3,.L12
+ 128 0032 2022     	 movs r2,#32
+ 129 0034 1A71     	 strb r2,[r3,#4]
+  54:../cleanflight/src/main/cms/cms_menu_vtx_tramp.c **** 
+  55:../cleanflight/src/main/cms/cms_menu_vtx_tramp.c ****     if (trampCurFreq)
+ 130              	 .loc 2 55 0
+ 131 0036 194B     	 ldr r3,.L12+20
+ 132 0038 1B68     	 ldr r3,[r3]
+ 133 003a 002B     	 cmp r3,#0
+ 134 003c 07D0     	 beq .L6
+  56:../cleanflight/src/main/cms/cms_menu_vtx_tramp.c ****         tfp_sprintf(&trampCmsStatusString[5], "%4d", trampCurFreq);
+ 135              	 .loc 2 56 0
+ 136 003e 174B     	 ldr r3,.L12+20
+ 137 0040 1B68     	 ldr r3,[r3]
+ 138 0042 1748     	 ldr r0,.L12+24
+ 139 0044 1749     	 ldr r1,.L12+28
+ 140 0046 1A46     	 mov r2,r3
+ 141 0048 FFF7FEFF 	 bl tfp_sprintf
+ 142 004c 03E0     	 b .L7
+ 143              	.L6:
+  57:../cleanflight/src/main/cms/cms_menu_vtx_tramp.c ****     else
+  58:../cleanflight/src/main/cms/cms_menu_vtx_tramp.c ****         tfp_sprintf(&trampCmsStatusString[5], "----");
+ 144              	 .loc 2 58 0
+ 145 004e 1448     	 ldr r0,.L12+24
+ 146 0050 1549     	 ldr r1,.L12+32
+ 147 0052 FFF7FEFF 	 bl tfp_sprintf
+ 148              	.L7:
+  59:../cleanflight/src/main/cms/cms_menu_vtx_tramp.c **** 
+  60:../cleanflight/src/main/cms/cms_menu_vtx_tramp.c ****     if (trampPower) {
+ 149              	 .loc 2 60 0
+ 150 0056 154B     	 ldr r3,.L12+36
+ 151 0058 1B88     	 ldrh r3,[r3]
+ 152 005a 002B     	 cmp r3,#0
+ 153 005c 0FD0     	 beq .L8
+  61:../cleanflight/src/main/cms/cms_menu_vtx_tramp.c ****         tfp_sprintf(&trampCmsStatusString[9], " %c%3d", (trampPower == trampConfiguredPower) ? ' ' 
+ 154              	 .loc 2 61 0
+ 155 005e 134B     	 ldr r3,.L12+36
+ 156 0060 1A88     	 ldrh r2,[r3]
+ 157 0062 134B     	 ldr r3,.L12+40
+ 158 0064 1B88     	 ldrh r3,[r3]
+ 159 0066 9A42     	 cmp r2,r3
+ 160 0068 01D1     	 bne .L9
+ 161              	 .loc 2 61 0 is_stmt 0 discriminator 1
+ 162 006a 2022     	 movs r2,#32
+ 163 006c 00E0     	 b .L10
+ 164              	.L9:
+ 165              	 .loc 2 61 0 discriminator 2
+ 166 006e 2A22     	 movs r2,#42
+ 167              	.L10:
+ 168              	 .loc 2 61 0 discriminator 4
+ 169 0070 0E4B     	 ldr r3,.L12+36
+ 170 0072 1B88     	 ldrh r3,[r3]
+ 171 0074 0F48     	 ldr r0,.L12+44
+ 172 0076 1049     	 ldr r1,.L12+48
+ 173 0078 FFF7FEFF 	 bl tfp_sprintf
+ 174 007c 03E0     	 b .L5
+ 175              	.L8:
+  62:../cleanflight/src/main/cms/cms_menu_vtx_tramp.c ****     }
+  63:../cleanflight/src/main/cms/cms_menu_vtx_tramp.c ****     else
+  64:../cleanflight/src/main/cms/cms_menu_vtx_tramp.c ****         tfp_sprintf(&trampCmsStatusString[9], " ----");
+ 176              	 .loc 2 64 0 is_stmt 1
+ 177 007e 0D48     	 ldr r0,.L12+44
+ 178 0080 0E49     	 ldr r1,.L12+52
+ 179 0082 FFF7FEFF 	 bl tfp_sprintf
+ 180              	.L5:
+  65:../cleanflight/src/main/cms/cms_menu_vtx_tramp.c **** }
+ 181              	 .loc 2 65 0
+ 182 0086 80BD     	 pop {r7,pc}
+ 183              	.L13:
+ 184              	 .align 2
+ 185              	.L12:
+ 186 0088 00000000 	 .word trampCmsStatusString
+ 187 008c 00000000 	 .word trampBand
+ 188 0090 00000000 	 .word vtx58BandLetter
+ 189 0094 00000000 	 .word trampChannel
+ 190 0098 00000000 	 .word vtx58ChannelNames
+ 191 009c 00000000 	 .word trampCurFreq
+ 192 00a0 05000000 	 .word trampCmsStatusString+5
+ 193 00a4 00000000 	 .word .LC0
+ 194 00a8 04000000 	 .word .LC1
+ 195 00ac 00000000 	 .word trampPower
+ 196 00b0 00000000 	 .word trampConfiguredPower
+ 197 00b4 09000000 	 .word trampCmsStatusString+9
+ 198 00b8 0C000000 	 .word .LC2
+ 199 00bc 14000000 	 .word .LC3
+ 200              	 .cfi_endproc
+ 201              	.LFE533:
+ 203              	 .global trampCmsPitMode
+ 204              	 .section .bss.trampCmsPitMode,"aw",%nobits
+ 207              	trampCmsPitMode:
+ 208 0000 00       	 .space 1
+ 209              	 .global trampCmsBand
+ 210              	 .section .data.trampCmsBand,"aw",%progbits
+ 213              	trampCmsBand:
+ 214 0000 01       	 .byte 1
+ 215              	 .global trampCmsChan
+ 216              	 .section .data.trampCmsChan,"aw",%progbits
+ 219              	trampCmsChan:
+ 220 0000 01       	 .byte 1
+ 221              	 .comm trampCmsFreqRef,2,2
+ 222              	 .section .data.trampCmsEntBand,"aw",%progbits
+ 223              	 .align 2
+ 226              	trampCmsEntBand:
+ 227 0000 00000000 	 .word trampCmsBand
+ 228 0004 05       	 .byte 5
+ 229 0005 00000000 	 .4byte vtx58BandNames
+ 230 0009 000000   	 .section .data.trampCmsEntChan,"aw",%progbits
+ 231              	 .align 2
+ 234              	trampCmsEntChan:
+ 235 0000 00000000 	 .word trampCmsChan
+ 236 0004 08       	 .byte 8
+ 237 0005 00000000 	 .4byte vtx58ChannelNames
+ 238 0009 000000   	 .section .data.trampCmsEntFreqRef,"aw",%progbits
+ 239              	 .align 2
+ 242              	trampCmsEntFreqRef:
+ 243 0000 00000000 	 .word trampCmsFreqRef
+ 244 0004 E015     	 .short 5600
+ 245 0006 0C17     	 .short 5900
+ 246 0008 0000     	 .short 0
+ 247 000a 0000     	 .section .data.trampCmsPower,"aw",%progbits
+ 250              	trampCmsPower:
+ 251 0000 01       	 .byte 1
+ 252              	 .section .data.trampCmsEntPower,"aw",%progbits
+ 253              	 .align 2
+ 256              	trampCmsEntPower:
+ 257 0000 00000000 	 .word trampCmsPower
+ 258 0004 0A       	 .byte 10
+ 259 0005 00000000 	 .4byte trampPowerNames
+ 260 0009 000000   	 .section .text.trampCmsUpdateFreqRef,"ax",%progbits
+ 261              	 .align 2
+ 262              	 .thumb
+ 263              	 .thumb_func
+ 265              	trampCmsUpdateFreqRef:
+ 266              	.LFB534:
+  66:../cleanflight/src/main/cms/cms_menu_vtx_tramp.c **** 
+  67:../cleanflight/src/main/cms/cms_menu_vtx_tramp.c **** uint8_t trampCmsPitMode = 0;
+  68:../cleanflight/src/main/cms/cms_menu_vtx_tramp.c **** uint8_t trampCmsBand = 1;
+  69:../cleanflight/src/main/cms/cms_menu_vtx_tramp.c **** uint8_t trampCmsChan = 1;
+  70:../cleanflight/src/main/cms/cms_menu_vtx_tramp.c **** uint16_t trampCmsFreqRef;
+  71:../cleanflight/src/main/cms/cms_menu_vtx_tramp.c **** 
+  72:../cleanflight/src/main/cms/cms_menu_vtx_tramp.c **** static OSD_TAB_t trampCmsEntBand = { &trampCmsBand, VTX_TRAMP_BAND_COUNT, vtx58BandNames };
+  73:../cleanflight/src/main/cms/cms_menu_vtx_tramp.c **** 
+  74:../cleanflight/src/main/cms/cms_menu_vtx_tramp.c **** static OSD_TAB_t trampCmsEntChan = { &trampCmsChan, VTX_TRAMP_CHANNEL_COUNT, vtx58ChannelNames };
+  75:../cleanflight/src/main/cms/cms_menu_vtx_tramp.c **** 
+  76:../cleanflight/src/main/cms/cms_menu_vtx_tramp.c **** static OSD_UINT16_t trampCmsEntFreqRef = { &trampCmsFreqRef, 5600, 5900, 0 };
+  77:../cleanflight/src/main/cms/cms_menu_vtx_tramp.c **** 
+  78:../cleanflight/src/main/cms/cms_menu_vtx_tramp.c **** static uint8_t trampCmsPower = 1;
+  79:../cleanflight/src/main/cms/cms_menu_vtx_tramp.c **** 
+  80:../cleanflight/src/main/cms/cms_menu_vtx_tramp.c **** static OSD_TAB_t trampCmsEntPower = { &trampCmsPower, sizeof(trampPowerTable), trampPowerNames };
+  81:../cleanflight/src/main/cms/cms_menu_vtx_tramp.c **** 
+  82:../cleanflight/src/main/cms/cms_menu_vtx_tramp.c **** static void trampCmsUpdateFreqRef(void)
+  83:../cleanflight/src/main/cms/cms_menu_vtx_tramp.c **** {
+ 267              	 .loc 2 83 0
+ 268              	 .cfi_startproc
+ 269              	 
+ 270              	 
+ 271              	 
+ 272 0000 80B4     	 push {r7}
+ 273              	.LCFI6:
+ 274              	 .cfi_def_cfa_offset 4
+ 275              	 .cfi_offset 7,-4
+ 276 0002 00AF     	 add r7,sp,#0
+ 277              	.LCFI7:
+ 278              	 .cfi_def_cfa_register 7
+  84:../cleanflight/src/main/cms/cms_menu_vtx_tramp.c ****     if (trampCmsBand > 0 && trampCmsChan > 0)
+ 279              	 .loc 2 84 0
+ 280 0004 0C4B     	 ldr r3,.L16
+ 281 0006 1B78     	 ldrb r3,[r3]
+ 282 0008 002B     	 cmp r3,#0
+ 283 000a 10D0     	 beq .L14
+ 284              	 .loc 2 84 0 is_stmt 0 discriminator 1
+ 285 000c 0B4B     	 ldr r3,.L16+4
+ 286 000e 1B78     	 ldrb r3,[r3]
+ 287 0010 002B     	 cmp r3,#0
+ 288 0012 0CD0     	 beq .L14
+  85:../cleanflight/src/main/cms/cms_menu_vtx_tramp.c ****         trampCmsFreqRef = vtx58frequencyTable[trampCmsBand - 1][trampCmsChan - 1];
+ 289              	 .loc 2 85 0 is_stmt 1
+ 290 0014 084B     	 ldr r3,.L16
+ 291 0016 1B78     	 ldrb r3,[r3]
+ 292 0018 5A1E     	 subs r2,r3,#1
+ 293 001a 084B     	 ldr r3,.L16+4
+ 294 001c 1B78     	 ldrb r3,[r3]
+ 295 001e 013B     	 subs r3,r3,#1
+ 296 0020 0749     	 ldr r1,.L16+8
+ 297 0022 D200     	 lsls r2,r2,#3
+ 298 0024 1344     	 add r3,r3,r2
+ 299 0026 31F81320 	 ldrh r2,[r1,r3,lsl#1]
+ 300 002a 064B     	 ldr r3,.L16+12
+ 301 002c 1A80     	 strh r2,[r3]
+ 302              	.L14:
+  86:../cleanflight/src/main/cms/cms_menu_vtx_tramp.c **** }
+ 303              	 .loc 2 86 0
+ 304 002e BD46     	 mov sp,r7
+ 305              	.LCFI8:
+ 306              	 .cfi_def_cfa_register 13
+ 307              	 
+ 308 0030 5DF8047B 	 ldr r7,[sp],#4
+ 309              	.LCFI9:
+ 310              	 .cfi_restore 7
+ 311              	 .cfi_def_cfa_offset 0
+ 312 0034 7047     	 bx lr
+ 313              	.L17:
+ 314 0036 00BF     	 .align 2
+ 315              	.L16:
+ 316 0038 00000000 	 .word trampCmsBand
+ 317 003c 00000000 	 .word trampCmsChan
+ 318 0040 00000000 	 .word vtx58frequencyTable
+ 319 0044 00000000 	 .word trampCmsFreqRef
+ 320              	 .cfi_endproc
+ 321              	.LFE534:
+ 323              	 .section .text.trampCmsConfigBand,"ax",%progbits
+ 324              	 .align 2
+ 325              	 .thumb
+ 326              	 .thumb_func
+ 328              	trampCmsConfigBand:
+ 329              	.LFB535:
+  87:../cleanflight/src/main/cms/cms_menu_vtx_tramp.c **** 
+  88:../cleanflight/src/main/cms/cms_menu_vtx_tramp.c **** static long trampCmsConfigBand(displayPort_t *pDisp, const void *self)
+  89:../cleanflight/src/main/cms/cms_menu_vtx_tramp.c **** {
+ 330              	 .loc 2 89 0
+ 331              	 .cfi_startproc
+ 332              	 
+ 333              	 
+ 334 0000 80B5     	 push {r7,lr}
+ 335              	.LCFI10:
+ 336              	 .cfi_def_cfa_offset 8
+ 337              	 .cfi_offset 7,-8
+ 338              	 .cfi_offset 14,-4
+ 339 0002 82B0     	 sub sp,sp,#8
+ 340              	.LCFI11:
+ 341              	 .cfi_def_cfa_offset 16
+ 342 0004 00AF     	 add r7,sp,#0
+ 343              	.LCFI12:
+ 344              	 .cfi_def_cfa_register 7
+ 345 0006 7860     	 str r0,[r7,#4]
+ 346 0008 3960     	 str r1,[r7]
+  90:../cleanflight/src/main/cms/cms_menu_vtx_tramp.c ****     UNUSED(pDisp);
+  91:../cleanflight/src/main/cms/cms_menu_vtx_tramp.c ****     UNUSED(self);
+  92:../cleanflight/src/main/cms/cms_menu_vtx_tramp.c **** 
+  93:../cleanflight/src/main/cms/cms_menu_vtx_tramp.c ****     if (trampCmsBand == 0)
+ 347              	 .loc 2 93 0
+ 348 000a 074B     	 ldr r3,.L22
+ 349 000c 1B78     	 ldrb r3,[r3]
+ 350 000e 002B     	 cmp r3,#0
+ 351 0010 03D1     	 bne .L19
+  94:../cleanflight/src/main/cms/cms_menu_vtx_tramp.c ****         // Bounce back
+  95:../cleanflight/src/main/cms/cms_menu_vtx_tramp.c ****         trampCmsBand = 1;
+ 352              	 .loc 2 95 0
+ 353 0012 054B     	 ldr r3,.L22
+ 354 0014 0122     	 movs r2,#1
+ 355 0016 1A70     	 strb r2,[r3]
+ 356 0018 01E0     	 b .L20
+ 357              	.L19:
+  96:../cleanflight/src/main/cms/cms_menu_vtx_tramp.c ****     else
+  97:../cleanflight/src/main/cms/cms_menu_vtx_tramp.c ****         trampCmsUpdateFreqRef();
+ 358              	 .loc 2 97 0
+ 359 001a FFF7FEFF 	 bl trampCmsUpdateFreqRef
+ 360              	.L20:
+  98:../cleanflight/src/main/cms/cms_menu_vtx_tramp.c **** 
+  99:../cleanflight/src/main/cms/cms_menu_vtx_tramp.c ****     return 0;
+ 361              	 .loc 2 99 0
+ 362 001e 0023     	 movs r3,#0
+ 100:../cleanflight/src/main/cms/cms_menu_vtx_tramp.c **** }
+ 363              	 .loc 2 100 0
+ 364 0020 1846     	 mov r0,r3
+ 365 0022 0837     	 adds r7,r7,#8
+ 366              	.LCFI13:
+ 367              	 .cfi_def_cfa_offset 8
+ 368 0024 BD46     	 mov sp,r7
+ 369              	.LCFI14:
+ 370              	 .cfi_def_cfa_register 13
+ 371              	 
+ 372 0026 80BD     	 pop {r7,pc}
+ 373              	.L23:
+ 374              	 .align 2
+ 375              	.L22:
+ 376 0028 00000000 	 .word trampCmsBand
+ 377              	 .cfi_endproc
+ 378              	.LFE535:
+ 380              	 .section .text.trampCmsConfigChan,"ax",%progbits
+ 381              	 .align 2
+ 382              	 .thumb
+ 383              	 .thumb_func
+ 385              	trampCmsConfigChan:
+ 386              	.LFB536:
+ 101:../cleanflight/src/main/cms/cms_menu_vtx_tramp.c **** 
+ 102:../cleanflight/src/main/cms/cms_menu_vtx_tramp.c **** static long trampCmsConfigChan(displayPort_t *pDisp, const void *self)
+ 103:../cleanflight/src/main/cms/cms_menu_vtx_tramp.c **** {
+ 387              	 .loc 2 103 0
+ 388              	 .cfi_startproc
+ 389              	 
+ 390              	 
+ 391 0000 80B5     	 push {r7,lr}
+ 392              	.LCFI15:
+ 393              	 .cfi_def_cfa_offset 8
+ 394              	 .cfi_offset 7,-8
+ 395              	 .cfi_offset 14,-4
+ 396 0002 82B0     	 sub sp,sp,#8
+ 397              	.LCFI16:
+ 398              	 .cfi_def_cfa_offset 16
+ 399 0004 00AF     	 add r7,sp,#0
+ 400              	.LCFI17:
+ 401              	 .cfi_def_cfa_register 7
+ 402 0006 7860     	 str r0,[r7,#4]
+ 403 0008 3960     	 str r1,[r7]
+ 104:../cleanflight/src/main/cms/cms_menu_vtx_tramp.c ****     UNUSED(pDisp);
+ 105:../cleanflight/src/main/cms/cms_menu_vtx_tramp.c ****     UNUSED(self);
+ 106:../cleanflight/src/main/cms/cms_menu_vtx_tramp.c **** 
+ 107:../cleanflight/src/main/cms/cms_menu_vtx_tramp.c ****     if (trampCmsChan == 0)
+ 404              	 .loc 2 107 0
+ 405 000a 074B     	 ldr r3,.L28
+ 406 000c 1B78     	 ldrb r3,[r3]
+ 407 000e 002B     	 cmp r3,#0
+ 408 0010 03D1     	 bne .L25
+ 108:../cleanflight/src/main/cms/cms_menu_vtx_tramp.c ****         // Bounce back
+ 109:../cleanflight/src/main/cms/cms_menu_vtx_tramp.c ****         trampCmsChan = 1;
+ 409              	 .loc 2 109 0
+ 410 0012 054B     	 ldr r3,.L28
+ 411 0014 0122     	 movs r2,#1
+ 412 0016 1A70     	 strb r2,[r3]
+ 413 0018 01E0     	 b .L26
+ 414              	.L25:
+ 110:../cleanflight/src/main/cms/cms_menu_vtx_tramp.c ****     else
+ 111:../cleanflight/src/main/cms/cms_menu_vtx_tramp.c ****         trampCmsUpdateFreqRef();
+ 415              	 .loc 2 111 0
+ 416 001a FFF7FEFF 	 bl trampCmsUpdateFreqRef
+ 417              	.L26:
+ 112:../cleanflight/src/main/cms/cms_menu_vtx_tramp.c **** 
+ 113:../cleanflight/src/main/cms/cms_menu_vtx_tramp.c ****     return 0;
+ 418              	 .loc 2 113 0
+ 419 001e 0023     	 movs r3,#0
+ 114:../cleanflight/src/main/cms/cms_menu_vtx_tramp.c **** }
+ 420              	 .loc 2 114 0
+ 421 0020 1846     	 mov r0,r3
+ 422 0022 0837     	 adds r7,r7,#8
+ 423              	.LCFI18:
+ 424              	 .cfi_def_cfa_offset 8
+ 425 0024 BD46     	 mov sp,r7
+ 426              	.LCFI19:
+ 427              	 .cfi_def_cfa_register 13
+ 428              	 
+ 429 0026 80BD     	 pop {r7,pc}
+ 430              	.L29:
+ 431              	 .align 2
+ 432              	.L28:
+ 433 0028 00000000 	 .word trampCmsChan
+ 434              	 .cfi_endproc
+ 435              	.LFE536:
+ 437              	 .section .text.trampCmsConfigPower,"ax",%progbits
+ 438              	 .align 2
+ 439              	 .thumb
+ 440              	 .thumb_func
+ 442              	trampCmsConfigPower:
+ 443              	.LFB537:
+ 115:../cleanflight/src/main/cms/cms_menu_vtx_tramp.c **** 
+ 116:../cleanflight/src/main/cms/cms_menu_vtx_tramp.c **** static long trampCmsConfigPower(displayPort_t *pDisp, const void *self)
+ 117:../cleanflight/src/main/cms/cms_menu_vtx_tramp.c **** {
+ 444              	 .loc 2 117 0
+ 445              	 .cfi_startproc
+ 446              	 
+ 447              	 
+ 448              	 
+ 449 0000 80B4     	 push {r7}
+ 450              	.LCFI20:
+ 451              	 .cfi_def_cfa_offset 4
+ 452              	 .cfi_offset 7,-4
+ 453 0002 83B0     	 sub sp,sp,#12
+ 454              	.LCFI21:
+ 455              	 .cfi_def_cfa_offset 16
+ 456 0004 00AF     	 add r7,sp,#0
+ 457              	.LCFI22:
+ 458              	 .cfi_def_cfa_register 7
+ 459 0006 7860     	 str r0,[r7,#4]
+ 460 0008 3960     	 str r1,[r7]
+ 118:../cleanflight/src/main/cms/cms_menu_vtx_tramp.c ****     UNUSED(pDisp);
+ 119:../cleanflight/src/main/cms/cms_menu_vtx_tramp.c ****     UNUSED(self);
+ 120:../cleanflight/src/main/cms/cms_menu_vtx_tramp.c **** 
+ 121:../cleanflight/src/main/cms/cms_menu_vtx_tramp.c ****     if (trampCmsPower == 0)
+ 461              	 .loc 2 121 0
+ 462 000a 074B     	 ldr r3,.L33
+ 463 000c 1B78     	 ldrb r3,[r3]
+ 464 000e 002B     	 cmp r3,#0
+ 465 0010 02D1     	 bne .L31
+ 122:../cleanflight/src/main/cms/cms_menu_vtx_tramp.c ****         // Bounce back
+ 123:../cleanflight/src/main/cms/cms_menu_vtx_tramp.c ****         trampCmsPower = 1;
+ 466              	 .loc 2 123 0
+ 467 0012 054B     	 ldr r3,.L33
+ 468 0014 0122     	 movs r2,#1
+ 469 0016 1A70     	 strb r2,[r3]
+ 470              	.L31:
+ 124:../cleanflight/src/main/cms/cms_menu_vtx_tramp.c **** 
+ 125:../cleanflight/src/main/cms/cms_menu_vtx_tramp.c ****     return 0;
+ 471              	 .loc 2 125 0
+ 472 0018 0023     	 movs r3,#0
+ 126:../cleanflight/src/main/cms/cms_menu_vtx_tramp.c **** }
+ 473              	 .loc 2 126 0
+ 474 001a 1846     	 mov r0,r3
+ 475 001c 0C37     	 adds r7,r7,#12
+ 476              	.LCFI23:
+ 477              	 .cfi_def_cfa_offset 4
+ 478 001e BD46     	 mov sp,r7
+ 479              	.LCFI24:
+ 480              	 .cfi_def_cfa_register 13
+ 481              	 
+ 482 0020 5DF8047B 	 ldr r7,[sp],#4
+ 483              	.LCFI25:
+ 484              	 .cfi_restore 7
+ 485              	 .cfi_def_cfa_offset 0
+ 486 0024 7047     	 bx lr
+ 487              	.L34:
+ 488 0026 00BF     	 .align 2
+ 489              	.L33:
+ 490 0028 00000000 	 .word trampCmsPower
+ 491              	 .cfi_endproc
+ 492              	.LFE537:
+ 494              	 .section .data.trampCmsEntTemp,"aw",%progbits
+ 495              	 .align 2
+ 498              	trampCmsEntTemp:
+ 499 0000 00000000 	 .word trampTemperature
+ 500 0004 9CFF     	 .short -100
+ 501 0006 2C01     	 .short 300
+ 502 0008 0000     	 .short 0
+ 503 000a 0000     	 .section .rodata
+ 504 001a 0000     	 .align 2
+ 505              	.LC4:
+ 506 001c 2D2D2D00 	 .ascii "---\000"
+ 507              	 .align 2
+ 508              	.LC5:
+ 509 0020 4F464600 	 .ascii "OFF\000"
+ 510              	 .align 2
+ 511              	.LC6:
+ 512 0024 4F4E2000 	 .ascii "ON \000"
+ 513              	 .section .rodata.trampCmsPitModeNames,"a",%progbits
+ 514              	 .align 2
+ 517              	trampCmsPitModeNames:
+ 518 0000 1C000000 	 .word .LC4
+ 519 0004 20000000 	 .word .LC5
+ 520 0008 24000000 	 .word .LC6
+ 521              	 .section .data.trampCmsEntPitMode,"aw",%progbits
+ 522              	 .align 2
+ 525              	trampCmsEntPitMode:
+ 526 0000 00000000 	 .word trampCmsPitMode
+ 527 0004 02       	 .byte 2
+ 528 0005 00000000 	 .4byte trampCmsPitModeNames
+ 529 0009 000000   	 .section .text.trampCmsSetPitMode,"ax",%progbits
+ 530              	 .align 2
+ 531              	 .thumb
+ 532              	 .thumb_func
+ 534              	trampCmsSetPitMode:
+ 535              	.LFB538:
+ 127:../cleanflight/src/main/cms/cms_menu_vtx_tramp.c **** 
+ 128:../cleanflight/src/main/cms/cms_menu_vtx_tramp.c **** static OSD_INT16_t trampCmsEntTemp = { &trampTemperature, -100, 300, 0 };
+ 129:../cleanflight/src/main/cms/cms_menu_vtx_tramp.c **** 
+ 130:../cleanflight/src/main/cms/cms_menu_vtx_tramp.c **** static const char * const trampCmsPitModeNames[] = {
+ 131:../cleanflight/src/main/cms/cms_menu_vtx_tramp.c ****     "---", "OFF", "ON "
+ 132:../cleanflight/src/main/cms/cms_menu_vtx_tramp.c **** };
+ 133:../cleanflight/src/main/cms/cms_menu_vtx_tramp.c **** 
+ 134:../cleanflight/src/main/cms/cms_menu_vtx_tramp.c **** static OSD_TAB_t trampCmsEntPitMode = { &trampCmsPitMode, 2, trampCmsPitModeNames };
+ 135:../cleanflight/src/main/cms/cms_menu_vtx_tramp.c **** 
+ 136:../cleanflight/src/main/cms/cms_menu_vtx_tramp.c **** static long trampCmsSetPitMode(displayPort_t *pDisp, const void *self)
+ 137:../cleanflight/src/main/cms/cms_menu_vtx_tramp.c **** {
+ 536              	 .loc 2 137 0
+ 537              	 .cfi_startproc
+ 538              	 
+ 539              	 
+ 540 0000 80B5     	 push {r7,lr}
+ 541              	.LCFI26:
+ 542              	 .cfi_def_cfa_offset 8
+ 543              	 .cfi_offset 7,-8
+ 544              	 .cfi_offset 14,-4
+ 545 0002 82B0     	 sub sp,sp,#8
+ 546              	.LCFI27:
+ 547              	 .cfi_def_cfa_offset 16
+ 548 0004 00AF     	 add r7,sp,#0
+ 549              	.LCFI28:
+ 550              	 .cfi_def_cfa_register 7
+ 551 0006 7860     	 str r0,[r7,#4]
+ 552 0008 3960     	 str r1,[r7]
+ 138:../cleanflight/src/main/cms/cms_menu_vtx_tramp.c ****     UNUSED(pDisp);
+ 139:../cleanflight/src/main/cms/cms_menu_vtx_tramp.c ****     UNUSED(self);
+ 140:../cleanflight/src/main/cms/cms_menu_vtx_tramp.c **** 
+ 141:../cleanflight/src/main/cms/cms_menu_vtx_tramp.c ****     if (trampCmsPitMode == 0) {
+ 553              	 .loc 2 141 0
+ 554 000a 0A4B     	 ldr r3,.L39
+ 555 000c 1B78     	 ldrb r3,[r3]
+ 556 000e 002B     	 cmp r3,#0
+ 557 0010 03D1     	 bne .L36
+ 142:../cleanflight/src/main/cms/cms_menu_vtx_tramp.c ****         // Bouce back
+ 143:../cleanflight/src/main/cms/cms_menu_vtx_tramp.c ****         trampCmsPitMode = 1;
+ 558              	 .loc 2 143 0
+ 559 0012 084B     	 ldr r3,.L39
+ 560 0014 0122     	 movs r2,#1
+ 561 0016 1A70     	 strb r2,[r3]
+ 562 0018 06E0     	 b .L37
+ 563              	.L36:
+ 144:../cleanflight/src/main/cms/cms_menu_vtx_tramp.c ****     } else {
+ 145:../cleanflight/src/main/cms/cms_menu_vtx_tramp.c ****         trampSetPitMode(trampCmsPitMode - 1);
+ 564              	 .loc 2 145 0
+ 565 001a 064B     	 ldr r3,.L39
+ 566 001c 1B78     	 ldrb r3,[r3]
+ 567 001e 013B     	 subs r3,r3,#1
+ 568 0020 DBB2     	 uxtb r3,r3
+ 569 0022 1846     	 mov r0,r3
+ 570 0024 FFF7FEFF 	 bl trampSetPitMode
+ 571              	.L37:
+ 146:../cleanflight/src/main/cms/cms_menu_vtx_tramp.c ****     }
+ 147:../cleanflight/src/main/cms/cms_menu_vtx_tramp.c **** 
+ 148:../cleanflight/src/main/cms/cms_menu_vtx_tramp.c ****     return 0;
+ 572              	 .loc 2 148 0
+ 573 0028 0023     	 movs r3,#0
+ 149:../cleanflight/src/main/cms/cms_menu_vtx_tramp.c **** }
+ 574              	 .loc 2 149 0
+ 575 002a 1846     	 mov r0,r3
+ 576 002c 0837     	 adds r7,r7,#8
+ 577              	.LCFI29:
+ 578              	 .cfi_def_cfa_offset 8
+ 579 002e BD46     	 mov sp,r7
+ 580              	.LCFI30:
+ 581              	 .cfi_def_cfa_register 13
+ 582              	 
+ 583 0030 80BD     	 pop {r7,pc}
+ 584              	.L40:
+ 585 0032 00BF     	 .align 2
+ 586              	.L39:
+ 587 0034 00000000 	 .word trampCmsPitMode
+ 588              	 .cfi_endproc
+ 589              	.LFE538:
+ 591              	 .section .text.trampCmsCommence,"ax",%progbits
+ 592              	 .align 2
+ 593              	 .thumb
+ 594              	 .thumb_func
+ 596              	trampCmsCommence:
+ 597              	.LFB539:
+ 150:../cleanflight/src/main/cms/cms_menu_vtx_tramp.c **** 
+ 151:../cleanflight/src/main/cms/cms_menu_vtx_tramp.c **** static long trampCmsCommence(displayPort_t *pDisp, const void *self)
+ 152:../cleanflight/src/main/cms/cms_menu_vtx_tramp.c **** {
+ 598              	 .loc 2 152 0
+ 599              	 .cfi_startproc
+ 600              	 
+ 601              	 
+ 602 0000 90B5     	 push {r4,r7,lr}
+ 603              	.LCFI31:
+ 604              	 .cfi_def_cfa_offset 12
+ 605              	 .cfi_offset 4,-12
+ 606              	 .cfi_offset 7,-8
+ 607              	 .cfi_offset 14,-4
+ 608 0002 83B0     	 sub sp,sp,#12
+ 609              	.LCFI32:
+ 610              	 .cfi_def_cfa_offset 24
+ 611 0004 00AF     	 add r7,sp,#0
+ 612              	.LCFI33:
+ 613              	 .cfi_def_cfa_register 7
+ 614 0006 7860     	 str r0,[r7,#4]
+ 615 0008 3960     	 str r1,[r7]
+ 153:../cleanflight/src/main/cms/cms_menu_vtx_tramp.c ****     UNUSED(pDisp);
+ 154:../cleanflight/src/main/cms/cms_menu_vtx_tramp.c ****     UNUSED(self);
+ 155:../cleanflight/src/main/cms/cms_menu_vtx_tramp.c **** 
+ 156:../cleanflight/src/main/cms/cms_menu_vtx_tramp.c ****     trampSetBandAndChannel(trampCmsBand, trampCmsChan);
+ 616              	 .loc 2 156 0
+ 617 000a 1D4B     	 ldr r3,.L43
+ 618 000c 1A78     	 ldrb r2,[r3]
+ 619 000e 1D4B     	 ldr r3,.L43+4
+ 620 0010 1B78     	 ldrb r3,[r3]
+ 621 0012 1046     	 mov r0,r2
+ 622 0014 1946     	 mov r1,r3
+ 623 0016 FFF7FEFF 	 bl trampSetBandAndChannel
+ 157:../cleanflight/src/main/cms/cms_menu_vtx_tramp.c ****     trampSetRFPower(trampPowerTable[trampCmsPower-1]);
+ 624              	 .loc 2 157 0
+ 625 001a 1B4B     	 ldr r3,.L43+8
+ 626 001c 1B78     	 ldrb r3,[r3]
+ 627 001e 013B     	 subs r3,r3,#1
+ 628 0020 1A4A     	 ldr r2,.L43+12
+ 629 0022 32F81330 	 ldrh r3,[r2,r3,lsl#1]
+ 630 0026 1846     	 mov r0,r3
+ 631 0028 FFF7FEFF 	 bl trampSetRFPower
+ 158:../cleanflight/src/main/cms/cms_menu_vtx_tramp.c **** 
+ 159:../cleanflight/src/main/cms/cms_menu_vtx_tramp.c ****     // If it fails, the user should retry later
+ 160:../cleanflight/src/main/cms/cms_menu_vtx_tramp.c ****     trampCommitChanges();
+ 632              	 .loc 2 160 0
+ 633 002c FFF7FEFF 	 bl trampCommitChanges
+ 161:../cleanflight/src/main/cms/cms_menu_vtx_tramp.c **** 
+ 162:../cleanflight/src/main/cms/cms_menu_vtx_tramp.c ****     // update'vtx_' settings
+ 163:../cleanflight/src/main/cms/cms_menu_vtx_tramp.c ****     vtxSettingsConfigMutable()->band = trampCmsBand;
+ 634              	 .loc 2 163 0
+ 635 0030 FFF7FEFF 	 bl vtxSettingsConfigMutable
+ 636 0034 0246     	 mov r2,r0
+ 637 0036 124B     	 ldr r3,.L43
+ 638 0038 1B78     	 ldrb r3,[r3]
+ 639 003a 1370     	 strb r3,[r2]
+ 164:../cleanflight/src/main/cms/cms_menu_vtx_tramp.c ****     vtxSettingsConfigMutable()->channel = trampCmsChan;
+ 640              	 .loc 2 164 0
+ 641 003c FFF7FEFF 	 bl vtxSettingsConfigMutable
+ 642 0040 0246     	 mov r2,r0
+ 643 0042 104B     	 ldr r3,.L43+4
+ 644 0044 1B78     	 ldrb r3,[r3]
+ 645 0046 5370     	 strb r3,[r2,#1]
+ 165:../cleanflight/src/main/cms/cms_menu_vtx_tramp.c ****     vtxSettingsConfigMutable()->power = trampCmsPower;
+ 646              	 .loc 2 165 0
+ 647 0048 FFF7FEFF 	 bl vtxSettingsConfigMutable
+ 648 004c 0246     	 mov r2,r0
+ 649 004e 0E4B     	 ldr r3,.L43+8
+ 650 0050 1B78     	 ldrb r3,[r3]
+ 651 0052 9370     	 strb r3,[r2,#2]
+ 166:../cleanflight/src/main/cms/cms_menu_vtx_tramp.c ****     vtxSettingsConfigMutable()->freq = vtx58_Bandchan2Freq(trampCmsBand, trampCmsChan);
+ 652              	 .loc 2 166 0
+ 653 0054 FFF7FEFF 	 bl vtxSettingsConfigMutable
+ 654 0058 0446     	 mov r4,r0
+ 655 005a 094B     	 ldr r3,.L43
+ 656 005c 1A78     	 ldrb r2,[r3]
+ 657 005e 094B     	 ldr r3,.L43+4
+ 658 0060 1B78     	 ldrb r3,[r3]
+ 659 0062 1046     	 mov r0,r2
+ 660 0064 1946     	 mov r1,r3
+ 661 0066 FFF7FEFF 	 bl vtx58_Bandchan2Freq
+ 662 006a 0346     	 mov r3,r0
+ 663 006c A4F80330 	 strh r3,[r4,#3]
+ 167:../cleanflight/src/main/cms/cms_menu_vtx_tramp.c **** 
+ 168:../cleanflight/src/main/cms/cms_menu_vtx_tramp.c ****     saveConfigAndNotify();
+ 664              	 .loc 2 168 0
+ 665 0070 FFF7FEFF 	 bl saveConfigAndNotify
+ 169:../cleanflight/src/main/cms/cms_menu_vtx_tramp.c **** 
+ 170:../cleanflight/src/main/cms/cms_menu_vtx_tramp.c ****     return MENU_CHAIN_BACK;
+ 666              	 .loc 2 170 0
+ 667 0074 4FF0FF33 	 mov r3,#-1
+ 171:../cleanflight/src/main/cms/cms_menu_vtx_tramp.c **** }
+ 668              	 .loc 2 171 0
+ 669 0078 1846     	 mov r0,r3
+ 670 007a 0C37     	 adds r7,r7,#12
+ 671              	.LCFI34:
+ 672              	 .cfi_def_cfa_offset 12
+ 673 007c BD46     	 mov sp,r7
+ 674              	.LCFI35:
+ 675              	 .cfi_def_cfa_register 13
+ 676              	 
+ 677 007e 90BD     	 pop {r4,r7,pc}
+ 678              	.L44:
+ 679              	 .align 2
+ 680              	.L43:
+ 681 0080 00000000 	 .word trampCmsBand
+ 682 0084 00000000 	 .word trampCmsChan
+ 683 0088 00000000 	 .word trampCmsPower
+ 684 008c 00000000 	 .word trampPowerTable
+ 685              	 .cfi_endproc
+ 686              	.LFE539:
+ 688              	 .section .text.trampCmsInitSettings,"ax",%progbits
+ 689              	 .align 2
+ 690              	 .thumb
+ 691              	 .thumb_func
+ 693              	trampCmsInitSettings:
+ 694              	.LFB540:
+ 172:../cleanflight/src/main/cms/cms_menu_vtx_tramp.c **** 
+ 173:../cleanflight/src/main/cms/cms_menu_vtx_tramp.c **** static void trampCmsInitSettings(void)
+ 174:../cleanflight/src/main/cms/cms_menu_vtx_tramp.c **** {
+ 695              	 .loc 2 174 0
+ 696              	 .cfi_startproc
+ 697              	 
+ 698              	 
+ 699 0000 80B5     	 push {r7,lr}
+ 700              	.LCFI36:
+ 701              	 .cfi_def_cfa_offset 8
+ 702              	 .cfi_offset 7,-8
+ 703              	 .cfi_offset 14,-4
+ 704 0002 82B0     	 sub sp,sp,#8
+ 705              	.LCFI37:
+ 706              	 .cfi_def_cfa_offset 16
+ 707 0004 00AF     	 add r7,sp,#0
+ 708              	.LCFI38:
+ 709              	 .cfi_def_cfa_register 7
+ 175:../cleanflight/src/main/cms/cms_menu_vtx_tramp.c ****     if (trampBand > 0) trampCmsBand = trampBand;
+ 710              	 .loc 2 175 0
+ 711 0006 1B4B     	 ldr r3,.L52
+ 712 0008 1B78     	 ldrb r3,[r3]
+ 713 000a 002B     	 cmp r3,#0
+ 714 000c 03D0     	 beq .L46
+ 715              	 .loc 2 175 0 is_stmt 0 discriminator 1
+ 716 000e 194B     	 ldr r3,.L52
+ 717 0010 1A78     	 ldrb r2,[r3]
+ 718 0012 194B     	 ldr r3,.L52+4
+ 719 0014 1A70     	 strb r2,[r3]
+ 720              	.L46:
+ 176:../cleanflight/src/main/cms/cms_menu_vtx_tramp.c ****     if (trampChannel > 0) trampCmsChan = trampChannel;
+ 721              	 .loc 2 176 0 is_stmt 1
+ 722 0016 194B     	 ldr r3,.L52+8
+ 723 0018 1B78     	 ldrb r3,[r3]
+ 724 001a 002B     	 cmp r3,#0
+ 725 001c 03D0     	 beq .L47
+ 726              	 .loc 2 176 0 is_stmt 0 discriminator 1
+ 727 001e 174B     	 ldr r3,.L52+8
+ 728 0020 1A78     	 ldrb r2,[r3]
+ 729 0022 174B     	 ldr r3,.L52+12
+ 730 0024 1A70     	 strb r2,[r3]
+ 731              	.L47:
+ 177:../cleanflight/src/main/cms/cms_menu_vtx_tramp.c **** 
+ 178:../cleanflight/src/main/cms/cms_menu_vtx_tramp.c ****     trampCmsUpdateFreqRef();
+ 732              	 .loc 2 178 0 is_stmt 1
+ 733 0026 FFF7FEFF 	 bl trampCmsUpdateFreqRef
+ 179:../cleanflight/src/main/cms/cms_menu_vtx_tramp.c ****     trampCmsPitMode = trampPitMode + 1;
+ 734              	 .loc 2 179 0
+ 735 002a 164B     	 ldr r3,.L52+16
+ 736 002c 1B78     	 ldrb r3,[r3]
+ 737 002e 0133     	 adds r3,r3,#1
+ 738 0030 DAB2     	 uxtb r2,r3
+ 739 0032 154B     	 ldr r3,.L52+20
+ 740 0034 1A70     	 strb r2,[r3]
+ 180:../cleanflight/src/main/cms/cms_menu_vtx_tramp.c **** 
+ 181:../cleanflight/src/main/cms/cms_menu_vtx_tramp.c ****     if (trampConfiguredPower > 0) {
+ 741              	 .loc 2 181 0
+ 742 0036 154B     	 ldr r3,.L52+24
+ 743 0038 1B88     	 ldrh r3,[r3]
+ 744 003a 002B     	 cmp r3,#0
+ 745 003c 16D0     	 beq .L45
+ 746              	.LBB2:
+ 182:../cleanflight/src/main/cms/cms_menu_vtx_tramp.c ****         for (uint8_t i = 0; i < VTX_TRAMP_POWER_COUNT; i++) {
+ 747              	 .loc 2 182 0
+ 748 003e 0023     	 movs r3,#0
+ 749 0040 FB71     	 strb r3,[r7,#7]
+ 750 0042 10E0     	 b .L49
+ 751              	.L51:
+ 183:../cleanflight/src/main/cms/cms_menu_vtx_tramp.c ****             if (trampConfiguredPower <= trampPowerTable[i]) {
+ 752              	 .loc 2 183 0
+ 753 0044 FB79     	 ldrb r3,[r7,#7]
+ 754 0046 124A     	 ldr r2,.L52+28
+ 755 0048 32F81320 	 ldrh r2,[r2,r3,lsl#1]
+ 756 004c 0F4B     	 ldr r3,.L52+24
+ 757 004e 1B88     	 ldrh r3,[r3]
+ 758 0050 9A42     	 cmp r2,r3
+ 759 0052 05D3     	 bcc .L50
+ 184:../cleanflight/src/main/cms/cms_menu_vtx_tramp.c ****                 trampCmsPower = i + 1;
+ 760              	 .loc 2 184 0
+ 761 0054 FB79     	 ldrb r3,[r7,#7]
+ 762 0056 0133     	 adds r3,r3,#1
+ 763 0058 DAB2     	 uxtb r2,r3
+ 764 005a 0E4B     	 ldr r3,.L52+32
+ 765 005c 1A70     	 strb r2,[r3]
+ 185:../cleanflight/src/main/cms/cms_menu_vtx_tramp.c ****                 break;
+ 766              	 .loc 2 185 0
+ 767 005e 05E0     	 b .L45
+ 768              	.L50:
+ 182:../cleanflight/src/main/cms/cms_menu_vtx_tramp.c ****             if (trampConfiguredPower <= trampPowerTable[i]) {
+ 769              	 .loc 2 182 0 discriminator 2
+ 770 0060 FB79     	 ldrb r3,[r7,#7]
+ 771 0062 0133     	 adds r3,r3,#1
+ 772 0064 FB71     	 strb r3,[r7,#7]
+ 773              	.L49:
+ 182:../cleanflight/src/main/cms/cms_menu_vtx_tramp.c ****             if (trampConfiguredPower <= trampPowerTable[i]) {
+ 774              	 .loc 2 182 0 is_stmt 0 discriminator 1
+ 775 0066 FB79     	 ldrb r3,[r7,#7]
+ 776 0068 042B     	 cmp r3,#4
+ 777 006a EBD9     	 bls .L51
+ 778              	.L45:
+ 779              	.LBE2:
+ 186:../cleanflight/src/main/cms/cms_menu_vtx_tramp.c ****             }
+ 187:../cleanflight/src/main/cms/cms_menu_vtx_tramp.c ****         }
+ 188:../cleanflight/src/main/cms/cms_menu_vtx_tramp.c ****     }
+ 189:../cleanflight/src/main/cms/cms_menu_vtx_tramp.c **** }
+ 780              	 .loc 2 189 0 is_stmt 1
+ 781 006c 0837     	 adds r7,r7,#8
+ 782              	.LCFI39:
+ 783              	 .cfi_def_cfa_offset 8
+ 784 006e BD46     	 mov sp,r7
+ 785              	.LCFI40:
+ 786              	 .cfi_def_cfa_register 13
+ 787              	 
+ 788 0070 80BD     	 pop {r7,pc}
+ 789              	.L53:
+ 790 0072 00BF     	 .align 2
+ 791              	.L52:
+ 792 0074 00000000 	 .word trampBand
+ 793 0078 00000000 	 .word trampCmsBand
+ 794 007c 00000000 	 .word trampChannel
+ 795 0080 00000000 	 .word trampCmsChan
+ 796 0084 00000000 	 .word trampPitMode
+ 797 0088 00000000 	 .word trampCmsPitMode
+ 798 008c 00000000 	 .word trampConfiguredPower
+ 799 0090 00000000 	 .word trampPowerTable
+ 800 0094 00000000 	 .word trampCmsPower
+ 801              	 .cfi_endproc
+ 802              	.LFE540:
+ 804              	 .section .text.trampCmsOnEnter,"ax",%progbits
+ 805              	 .align 2
+ 806              	 .thumb
+ 807              	 .thumb_func
+ 809              	trampCmsOnEnter:
+ 810              	.LFB541:
+ 190:../cleanflight/src/main/cms/cms_menu_vtx_tramp.c **** 
+ 191:../cleanflight/src/main/cms/cms_menu_vtx_tramp.c **** static long trampCmsOnEnter(void)
+ 192:../cleanflight/src/main/cms/cms_menu_vtx_tramp.c **** {
+ 811              	 .loc 2 192 0
+ 812              	 .cfi_startproc
+ 813              	 
+ 814              	 
+ 815 0000 80B5     	 push {r7,lr}
+ 816              	.LCFI41:
+ 817              	 .cfi_def_cfa_offset 8
+ 818              	 .cfi_offset 7,-8
+ 819              	 .cfi_offset 14,-4
+ 820 0002 00AF     	 add r7,sp,#0
+ 821              	.LCFI42:
+ 822              	 .cfi_def_cfa_register 7
+ 193:../cleanflight/src/main/cms/cms_menu_vtx_tramp.c ****     trampCmsInitSettings();
+ 823              	 .loc 2 193 0
+ 824 0004 FFF7FEFF 	 bl trampCmsInitSettings
+ 194:../cleanflight/src/main/cms/cms_menu_vtx_tramp.c ****     return 0;
+ 825              	 .loc 2 194 0
+ 826 0008 0023     	 movs r3,#0
+ 195:../cleanflight/src/main/cms/cms_menu_vtx_tramp.c **** }
+ 827              	 .loc 2 195 0
+ 828 000a 1846     	 mov r0,r3
+ 829 000c 80BD     	 pop {r7,pc}
+ 830              	 .cfi_endproc
+ 831              	.LFE541:
+ 833 000e 00BF     	 .section .rodata
+ 834              	 .align 2
+ 835              	.LC7:
+ 836 0028 434F4E46 	 .ascii "CONFIRM\000"
+ 836      49524D00 
+ 837              	 .align 2
+ 838              	.LC8:
+ 839 0030 59455300 	 .ascii "YES\000"
+ 840              	 .align 2
+ 841              	.LC9:
+ 842 0034 4241434B 	 .ascii "BACK\000"
+ 842      00
+ 843              	 .section .data.trampCmsMenuCommenceEntries,"aw",%progbits
+ 844              	 .align 2
+ 847              	trampCmsMenuCommenceEntries:
+ 848 0000 28000000 	 .word .LC7
+ 849 0004 00       	 .byte 0
+ 850 0005 00000000 	 .4byte 0
+ 851 0009 00000000 	 .4byte 0
+ 852 000d 00       	 .byte 0
+ 853 000e 30000000 	 .4byte .LC8
+ 854 0012 04       	 .byte 4
+ 855 0013 00000000 	 .4byte trampCmsCommence
+ 856 0017 00000000 	 .4byte 0
+ 857 001b 00       	 .byte 0
+ 858 001c 34000000 	 .word .LC9
+ 859 0020 01       	 .byte 1
+ 860 0021 00000000 	 .4byte 0
+ 861 0025 00000000 	 .4byte 0
+ 862 0029 00       	 .byte 0
+ 863 002a 00000000 	 .4byte 0
+ 864 002e 0E       	 .byte 14
+ 865 002f 00000000 	 .4byte 0
+ 866 0033 00000000 	 .4byte 0
+ 867 0037 00       	 .byte 0
+ 868              	 .section .data.trampCmsMenuCommence,"aw",%progbits
+ 869              	 .align 2
+ 872              	trampCmsMenuCommence:
+ 873 0000 00000000 	 .word 0
+ 874 0004 00000000 	 .word 0
+ 875 0008 00000000 	 .word trampCmsMenuCommenceEntries
+ 876              	 .section .rodata
+ 877 0039 000000   	 .align 2
+ 878              	.LC10:
+ 879 003c 2D205452 	 .ascii "- TRAMP -\000"
+ 879      414D5020 
+ 879      2D00
+ 880 0046 0000     	 .align 2
+ 881              	.LC11:
+ 882 0048 00       	 .ascii "\000"
+ 883 0049 000000   	 .align 2
+ 884              	.LC12:
+ 885 004c 50495400 	 .ascii "PIT\000"
+ 886              	 .align 2
+ 887              	.LC13:
+ 888 0050 42414E44 	 .ascii "BAND\000"
+ 888      00
+ 889 0055 000000   	 .align 2
+ 890              	.LC14:
+ 891 0058 4348414E 	 .ascii "CHAN\000"
+ 891      00
+ 892 005d 000000   	 .align 2
+ 893              	.LC15:
+ 894 0060 28465245 	 .ascii "(FREQ)\000"
+ 894      512900
+ 895 0067 00       	 .align 2
+ 896              	.LC16:
+ 897 0068 504F5745 	 .ascii "POWER\000"
+ 897      5200
+ 898 006e 0000     	 .align 2
+ 899              	.LC17:
+ 900 0070 54284329 	 .ascii "T(C)\000"
+ 900      00
+ 901 0075 000000   	 .align 2
+ 902              	.LC18:
+ 903 0078 53455400 	 .ascii "SET\000"
+ 904              	 .section .data.trampMenuEntries,"aw",%progbits
+ 905              	 .align 2
+ 908              	trampMenuEntries:
+ 909 0000 3C000000 	 .word .LC10
+ 910 0004 00       	 .byte 0
+ 911 0005 00000000 	 .4byte 0
+ 912 0009 00000000 	 .4byte 0
+ 913 000d 00       	 .byte 0
+ 914 000e 48000000 	 .4byte .LC11
+ 915 0012 00       	 .byte 0
+ 916 0013 00000000 	 .4byte 0
+ 917 0017 00000000 	 .4byte trampCmsStatusString
+ 918 001b 04       	 .byte 4
+ 919 001c 4C000000 	 .word .LC12
+ 920 0020 0D       	 .byte 13
+ 921 0021 00000000 	 .4byte trampCmsSetPitMode
+ 922 0025 00000000 	 .4byte trampCmsEntPitMode
+ 923 0029 00       	 .byte 0
+ 924 002a 50000000 	 .4byte .LC13
+ 925 002e 0D       	 .byte 13
+ 926 002f 00000000 	 .4byte trampCmsConfigBand
+ 927 0033 00000000 	 .4byte trampCmsEntBand
+ 928 0037 00       	 .byte 0
+ 929 0038 58000000 	 .word .LC14
+ 930 003c 0D       	 .byte 13
+ 931 003d 00000000 	 .4byte trampCmsConfigChan
+ 932 0041 00000000 	 .4byte trampCmsEntChan
+ 933 0045 00       	 .byte 0
+ 934 0046 60000000 	 .4byte .LC15
+ 935 004a 08       	 .byte 8
+ 936 004b 00000000 	 .4byte 0
+ 937 004f 00000000 	 .4byte trampCmsEntFreqRef
+ 938 0053 04       	 .byte 4
+ 939 0054 68000000 	 .word .LC16
+ 940 0058 0D       	 .byte 13
+ 941 0059 00000000 	 .4byte trampCmsConfigPower
+ 942 005d 00000000 	 .4byte trampCmsEntPower
+ 943 0061 00       	 .byte 0
+ 944 0062 70000000 	 .4byte .LC17
+ 945 0066 09       	 .byte 9
+ 946 0067 00000000 	 .4byte 0
+ 947 006b 00000000 	 .4byte trampCmsEntTemp
+ 948 006f 04       	 .byte 4
+ 949 0070 78000000 	 .word .LC18
+ 950 0074 03       	 .byte 3
+ 951 0075 00000000 	 .4byte cmsMenuChange
+ 952 0079 00000000 	 .4byte trampCmsMenuCommence
+ 953 007d 00       	 .byte 0
+ 954 007e 34000000 	 .4byte .LC9
+ 955 0082 01       	 .byte 1
+ 956 0083 00000000 	 .4byte 0
+ 957 0087 00000000 	 .4byte 0
+ 958 008b 00       	 .byte 0
+ 959 008c 00000000 	 .word 0
+ 960 0090 0E       	 .byte 14
+ 961 0091 00000000 	 .4byte 0
+ 962 0095 00000000 	 .4byte 0
+ 963 0099 00       	 .byte 0
+ 964              	 .global cmsx_menuVtxTramp
+ 965 009a 0000     	 .section .data.cmsx_menuVtxTramp,"aw",%progbits
+ 966              	 .align 2
+ 969              	cmsx_menuVtxTramp:
+ 970 0000 00000000 	 .word trampCmsOnEnter
+ 971 0004 00000000 	 .word 0
+ 972 0008 00000000 	 .word trampMenuEntries
+ 973              	 .text
+ 974              	.Letext0:
+ 975              	 .file 3 "d:\\xmc\\dave-ide-4.4.2-64bit\\eclipse\\arm-gcc-49\\arm-none-eabi\\include\\machine\\_default_types.h"
+ 976              	 .file 4 "d:\\xmc\\dave-ide-4.4.2-64bit\\eclipse\\arm-gcc-49\\arm-none-eabi\\include\\stdint.h"
+ 977              	 .file 5 "D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/lib/main/XMC4000/XMCLib/inc/xmc_usic.h"
+ 978              	 .file 6 "D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/drivers/display.h"
+ 979              	 .file 7 "D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/common/time.h"
+ 980              	 .file 8 "D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/cms/cms_types.h"
+ 981              	 .file 9 "D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/fc/config.h"
+ 982              	 .file 10 "D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/lib/main/CMSIS/Core/Include/core_cm4.h"
+ 983              	 .file 11 "D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/lib/main/XMC4000/system_XMC4700.h"
+ 984              	 .file 12 "D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/cms/cms.h"
+ 985              	 .file 13 "D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/io/vtx_string.h"
+ 986              	 .file 14 "D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/io/vtx_tramp.h"
+DEFINED SYMBOLS
+                            *ABS*:00000000 cms_menu_vtx_tramp.c
+                            *COM*:00000004 pCurrentDisplay
+    {standard input}:21     .text.vtxSettingsConfigMutable:00000000 $t
+    {standard input}:25     .text.vtxSettingsConfigMutable:00000000 vtxSettingsConfigMutable
+    {standard input}:55     .text.vtxSettingsConfigMutable:00000010 $d
+    {standard input}:64     .data.trampCmsStatusString:00000000 trampCmsStatusString
+    {standard input}:61     .data.trampCmsStatusString:00000000 $d
+    {standard input}:68     .rodata:00000000 $d
+    {standard input}:81     .text.trampCmsUpdateStatusString:00000000 $t
+    {standard input}:86     .text.trampCmsUpdateStatusString:00000000 trampCmsUpdateStatusString
+    {standard input}:186    .text.trampCmsUpdateStatusString:00000088 $d
+    {standard input}:207    .bss.trampCmsPitMode:00000000 trampCmsPitMode
+    {standard input}:208    .bss.trampCmsPitMode:00000000 $d
+    {standard input}:213    .data.trampCmsBand:00000000 trampCmsBand
+    {standard input}:219    .data.trampCmsChan:00000000 trampCmsChan
+                            *COM*:00000002 trampCmsFreqRef
+    {standard input}:223    .data.trampCmsEntBand:00000000 $d
+    {standard input}:226    .data.trampCmsEntBand:00000000 trampCmsEntBand
+    {standard input}:231    .data.trampCmsEntChan:00000000 $d
+    {standard input}:234    .data.trampCmsEntChan:00000000 trampCmsEntChan
+    {standard input}:239    .data.trampCmsEntFreqRef:00000000 $d
+    {standard input}:242    .data.trampCmsEntFreqRef:00000000 trampCmsEntFreqRef
+    {standard input}:250    .data.trampCmsPower:00000000 trampCmsPower
+    {standard input}:253    .data.trampCmsEntPower:00000000 $d
+    {standard input}:256    .data.trampCmsEntPower:00000000 trampCmsEntPower
+    {standard input}:261    .text.trampCmsUpdateFreqRef:00000000 $t
+    {standard input}:265    .text.trampCmsUpdateFreqRef:00000000 trampCmsUpdateFreqRef
+    {standard input}:316    .text.trampCmsUpdateFreqRef:00000038 $d
+    {standard input}:324    .text.trampCmsConfigBand:00000000 $t
+    {standard input}:328    .text.trampCmsConfigBand:00000000 trampCmsConfigBand
+    {standard input}:376    .text.trampCmsConfigBand:00000028 $d
+    {standard input}:381    .text.trampCmsConfigChan:00000000 $t
+    {standard input}:385    .text.trampCmsConfigChan:00000000 trampCmsConfigChan
+    {standard input}:433    .text.trampCmsConfigChan:00000028 $d
+    {standard input}:438    .text.trampCmsConfigPower:00000000 $t
+    {standard input}:442    .text.trampCmsConfigPower:00000000 trampCmsConfigPower
+    {standard input}:490    .text.trampCmsConfigPower:00000028 $d
+    {standard input}:495    .data.trampCmsEntTemp:00000000 $d
+    {standard input}:498    .data.trampCmsEntTemp:00000000 trampCmsEntTemp
+    {standard input}:514    .rodata.trampCmsPitModeNames:00000000 $d
+    {standard input}:517    .rodata.trampCmsPitModeNames:00000000 trampCmsPitModeNames
+    {standard input}:522    .data.trampCmsEntPitMode:00000000 $d
+    {standard input}:525    .data.trampCmsEntPitMode:00000000 trampCmsEntPitMode
+    {standard input}:530    .text.trampCmsSetPitMode:00000000 $t
+    {standard input}:534    .text.trampCmsSetPitMode:00000000 trampCmsSetPitMode
+    {standard input}:587    .text.trampCmsSetPitMode:00000034 $d
+    {standard input}:592    .text.trampCmsCommence:00000000 $t
+    {standard input}:596    .text.trampCmsCommence:00000000 trampCmsCommence
+    {standard input}:681    .text.trampCmsCommence:00000080 $d
+    {standard input}:689    .text.trampCmsInitSettings:00000000 $t
+    {standard input}:693    .text.trampCmsInitSettings:00000000 trampCmsInitSettings
+    {standard input}:792    .text.trampCmsInitSettings:00000074 $d
+    {standard input}:805    .text.trampCmsOnEnter:00000000 $t
+    {standard input}:809    .text.trampCmsOnEnter:00000000 trampCmsOnEnter
+    {standard input}:844    .data.trampCmsMenuCommenceEntries:00000000 $d
+    {standard input}:847    .data.trampCmsMenuCommenceEntries:00000000 trampCmsMenuCommenceEntries
+    {standard input}:869    .data.trampCmsMenuCommence:00000000 $d
+    {standard input}:872    .data.trampCmsMenuCommence:00000000 trampCmsMenuCommence
+    {standard input}:905    .data.trampMenuEntries:00000000 $d
+    {standard input}:908    .data.trampMenuEntries:00000000 trampMenuEntries
+    {standard input}:969    .data.cmsx_menuVtxTramp:00000000 cmsx_menuVtxTramp
+    {standard input}:966    .data.cmsx_menuVtxTramp:00000000 $d
+                     .debug_frame:00000010 $d
+
+UNDEFINED SYMBOLS
+vtxSettingsConfig_System
+tfp_sprintf
+trampBand
+vtx58BandLetter
+trampChannel
+vtx58ChannelNames
+trampCurFreq
+trampPower
+trampConfiguredPower
+vtx58BandNames
+trampPowerNames
+vtx58frequencyTable
+trampTemperature
+trampSetPitMode
+trampSetBandAndChannel
+trampSetRFPower
+trampCommitChanges
+vtx58_Bandchan2Freq
+saveConfigAndNotify
+trampPowerTable
+trampPitMode
+cmsMenuChange

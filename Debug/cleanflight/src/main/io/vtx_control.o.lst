@@ -1,0 +1,1210 @@
+   1              	 .syntax unified
+   2              	 .cpu cortex-m4
+   3              	 .eabi_attribute 27,3
+   4              	 .fpu fpv4-sp-d16
+   5              	 .eabi_attribute 20,1
+   6              	 .eabi_attribute 21,1
+   7              	 .eabi_attribute 23,3
+   8              	 .eabi_attribute 24,1
+   9              	 .eabi_attribute 25,1
+  10              	 .eabi_attribute 26,1
+  11              	 .eabi_attribute 30,6
+  12              	 .eabi_attribute 34,1
+  13              	 .eabi_attribute 18,4
+  14              	 .thumb
+  15              	 .file "vtx_control.c"
+  16              	 .text
+  17              	.Ltext0:
+  18              	 .cfi_sections .debug_frame
+  19              	 .section .text.vtxSettingsConfigMutable,"ax",%progbits
+  20              	 .align 2
+  21              	 .thumb
+  22              	 .thumb_func
+  24              	vtxSettingsConfigMutable:
+  25              	.LFB538:
+  26              	 .file 1 "D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/io/vtx.h"
+   1:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/io\vtx.h **** /*
+   2:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/io\vtx.h ****  * This file is part of Cleanflight and Betaflight.
+   3:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/io\vtx.h ****  *
+   4:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/io\vtx.h ****  * Cleanflight and Betaflight are free software. You can redistribute
+   5:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/io\vtx.h ****  * this software and/or modify this software under the terms of the
+   6:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/io\vtx.h ****  * GNU General Public License as published by the Free Software
+   7:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/io\vtx.h ****  * Foundation, either version 3 of the License, or (at your option)
+   8:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/io\vtx.h ****  * any later version.
+   9:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/io\vtx.h ****  *
+  10:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/io\vtx.h ****  * Cleanflight and Betaflight are distributed in the hope that they
+  11:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/io\vtx.h ****  * will be useful, but WITHOUT ANY WARRANTY; without even the implied
+  12:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/io\vtx.h ****  * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+  13:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/io\vtx.h ****  * See the GNU General Public License for more details.
+  14:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/io\vtx.h ****  *
+  15:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/io\vtx.h ****  * You should have received a copy of the GNU General Public License
+  16:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/io\vtx.h ****  * along with this software.
+  17:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/io\vtx.h ****  *
+  18:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/io\vtx.h ****  * If not, see <http://www.gnu.org/licenses/>.
+  19:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/io\vtx.h ****  */
+  20:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/io\vtx.h **** 
+  21:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/io\vtx.h **** #pragma once
+  22:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/io\vtx.h **** 
+  23:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/io\vtx.h **** #include <stdint.h>
+  24:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/io\vtx.h **** 
+  25:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/io\vtx.h **** #include "platform.h"
+  26:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/io\vtx.h **** #include "common/time.h"
+  27:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/io\vtx.h **** #include "pg/pg.h"
+  28:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/io\vtx.h **** 
+  29:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/io\vtx.h **** typedef struct vtxSettingsConfig_s {
+  30:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/io\vtx.h ****     uint8_t band;           // 1=A, 2=B, 3=E, 4=F(Airwaves/Fatshark), 5=Raceband
+  31:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/io\vtx.h ****     uint8_t channel;        // 1-8
+  32:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/io\vtx.h ****     uint8_t power;          // 0 = lowest
+  33:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/io\vtx.h ****     uint16_t freq;          // sets freq in MHz if band=0
+  34:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/io\vtx.h ****     uint16_t pitModeFreq;   // sets out-of-range pitmode frequency
+  35:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/io\vtx.h ****     uint8_t lowPowerDisarm; // min power while disarmed
+  36:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/io\vtx.h **** } vtxSettingsConfig_t;
+  37:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/io\vtx.h **** 
+  38:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/io\vtx.h **** PG_DECLARE(vtxSettingsConfig_t, vtxSettingsConfig);
+  27              	 .loc 1 38 0
+  28              	 .cfi_startproc
+  29              	 
+  30              	 
+  31              	 
+  32 0000 80B4     	 push {r7}
+  33              	.LCFI0:
+  34              	 .cfi_def_cfa_offset 4
+  35              	 .cfi_offset 7,-4
+  36 0002 00AF     	 add r7,sp,#0
+  37              	.LCFI1:
+  38              	 .cfi_def_cfa_register 7
+  39              	 .loc 1 38 0
+  40 0004 024B     	 ldr r3,.L3
+  41 0006 1846     	 mov r0,r3
+  42 0008 BD46     	 mov sp,r7
+  43              	.LCFI2:
+  44              	 .cfi_def_cfa_register 13
+  45              	 
+  46 000a 5DF8047B 	 ldr r7,[sp],#4
+  47              	.LCFI3:
+  48              	 .cfi_restore 7
+  49              	 .cfi_def_cfa_offset 0
+  50 000e 7047     	 bx lr
+  51              	.L4:
+  52              	 .align 2
+  53              	.L3:
+  54 0010 00000000 	 .word vtxSettingsConfig_System
+  55              	 .cfi_endproc
+  56              	.LFE538:
+  58              	 .section .text.vtxConfig,"ax",%progbits
+  59              	 .align 2
+  60              	 .thumb
+  61              	 .thumb_func
+  63              	vtxConfig:
+  64              	.LFB542:
+  65              	 .file 2 "D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/io/vtx_control.h"
+   1:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/io\vtx_control.h **** /*
+   2:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/io\vtx_control.h ****  * This file is part of Cleanflight and Betaflight.
+   3:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/io\vtx_control.h ****  *
+   4:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/io\vtx_control.h ****  * Cleanflight and Betaflight are free software. You can redistribute
+   5:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/io\vtx_control.h ****  * this software and/or modify this software under the terms of the
+   6:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/io\vtx_control.h ****  * GNU General Public License as published by the Free Software
+   7:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/io\vtx_control.h ****  * Foundation, either version 3 of the License, or (at your option)
+   8:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/io\vtx_control.h ****  * any later version.
+   9:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/io\vtx_control.h ****  *
+  10:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/io\vtx_control.h ****  * Cleanflight and Betaflight are distributed in the hope that they
+  11:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/io\vtx_control.h ****  * will be useful, but WITHOUT ANY WARRANTY; without even the implied
+  12:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/io\vtx_control.h ****  * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+  13:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/io\vtx_control.h ****  * See the GNU General Public License for more details.
+  14:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/io\vtx_control.h ****  *
+  15:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/io\vtx_control.h ****  * You should have received a copy of the GNU General Public License
+  16:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/io\vtx_control.h ****  * along with this software.
+  17:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/io\vtx_control.h ****  *
+  18:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/io\vtx_control.h ****  * If not, see <http://www.gnu.org/licenses/>.
+  19:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/io\vtx_control.h ****  */
+  20:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/io\vtx_control.h **** 
+  21:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/io\vtx_control.h **** #pragma once
+  22:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/io\vtx_control.h **** 
+  23:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/io\vtx_control.h **** #include <stdbool.h>
+  24:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/io\vtx_control.h **** #include <stdint.h>
+  25:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/io\vtx_control.h **** 
+  26:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/io\vtx_control.h **** #include "platform.h"
+  27:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/io\vtx_control.h **** 
+  28:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/io\vtx_control.h **** #include "pg/pg.h"
+  29:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/io\vtx_control.h **** #include "fc/rc_modes.h"
+  30:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/io\vtx_control.h **** 
+  31:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/io\vtx_control.h **** #define MAX_CHANNEL_ACTIVATION_CONDITION_COUNT  10
+  32:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/io\vtx_control.h **** 
+  33:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/io\vtx_control.h **** typedef struct vtxChannelActivationCondition_s {
+  34:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/io\vtx_control.h ****     uint8_t auxChannelIndex;
+  35:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/io\vtx_control.h ****     uint8_t band;
+  36:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/io\vtx_control.h ****     uint8_t channel;
+  37:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/io\vtx_control.h ****     channelRange_t range;
+  38:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/io\vtx_control.h **** } vtxChannelActivationCondition_t;
+  39:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/io\vtx_control.h **** 
+  40:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/io\vtx_control.h **** typedef struct vtxConfig_s {
+  41:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/io\vtx_control.h ****     vtxChannelActivationCondition_t vtxChannelActivationConditions[MAX_CHANNEL_ACTIVATION_CONDITION
+  42:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/io\vtx_control.h ****     uint8_t halfDuplex;
+  43:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/io\vtx_control.h **** } vtxConfig_t;
+  44:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/io\vtx_control.h **** 
+  45:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/io\vtx_control.h **** PG_DECLARE(vtxConfig_t, vtxConfig);
+  66              	 .loc 2 45 0
+  67              	 .cfi_startproc
+  68              	 
+  69              	 
+  70              	 
+  71 0000 80B4     	 push {r7}
+  72              	.LCFI4:
+  73              	 .cfi_def_cfa_offset 4
+  74              	 .cfi_offset 7,-4
+  75 0002 00AF     	 add r7,sp,#0
+  76              	.LCFI5:
+  77              	 .cfi_def_cfa_register 7
+  78              	 .loc 2 45 0
+  79 0004 024B     	 ldr r3,.L7
+  80 0006 1846     	 mov r0,r3
+  81 0008 BD46     	 mov sp,r7
+  82              	.LCFI6:
+  83              	 .cfi_def_cfa_register 13
+  84              	 
+  85 000a 5DF8047B 	 ldr r7,[sp],#4
+  86              	.LCFI7:
+  87              	 .cfi_restore 7
+  88              	 .cfi_def_cfa_offset 0
+  89 000e 7047     	 bx lr
+  90              	.L8:
+  91              	 .align 2
+  92              	.L7:
+  93 0010 00000000 	 .word vtxConfig_System
+  94              	 .cfi_endproc
+  95              	.LFE542:
+  97              	 .comm vtxConfig_System,51,4
+  98              	 .comm vtxConfig_Copy,51,4
+  99              	 .global vtxConfig_Registry
+ 100              	 .section .pg_registry,"a",%progbits
+ 101              	 .align 2
+ 104              	vtxConfig_Registry:
+ 105 0000 0312     	 .short 4611
+ 106 0002 3300     	 .short 51
+ 107 0004 00000000 	 .word vtxConfig_System
+ 108 0008 00000000 	 .word vtxConfig_Copy
+ 109 000c 00000000 	 .word 0
+ 110 0010 00000000 	 .word pgResetTemplate_vtxConfig
+ 111              	 .global pgResetTemplate_vtxConfig
+ 112              	 .section .pg_resetdata,"a",%progbits
+ 113              	 .align 1
+ 116              	pgResetTemplate_vtxConfig:
+ 117 0000 00000000 	 .space 50
+ 117      00000000 
+ 117      00000000 
+ 117      00000000 
+ 117      00000000 
+ 118 0032 01       	 .byte 1
+ 119 0033 00       	 .section .bss.locked,"aw",%nobits
+ 122              	locked:
+ 123 0000 00       	 .space 1
+ 124              	 .section .text.vtxControlInit,"ax",%progbits
+ 125              	 .align 2
+ 126              	 .global vtxControlInit
+ 127              	 .thumb
+ 128              	 .thumb_func
+ 130              	vtxControlInit:
+ 131              	.LFB544:
+ 132              	 .file 3 "../cleanflight/src/main/io/vtx_control.c"
+   1:../cleanflight/src/main/io/vtx_control.c **** /*
+   2:../cleanflight/src/main/io/vtx_control.c ****  * This file is part of Cleanflight and Betaflight.
+   3:../cleanflight/src/main/io/vtx_control.c ****  *
+   4:../cleanflight/src/main/io/vtx_control.c ****  * Cleanflight and Betaflight are free software. You can redistribute
+   5:../cleanflight/src/main/io/vtx_control.c ****  * this software and/or modify this software under the terms of the
+   6:../cleanflight/src/main/io/vtx_control.c ****  * GNU General Public License as published by the Free Software
+   7:../cleanflight/src/main/io/vtx_control.c ****  * Foundation, either version 3 of the License, or (at your option)
+   8:../cleanflight/src/main/io/vtx_control.c ****  * any later version.
+   9:../cleanflight/src/main/io/vtx_control.c ****  *
+  10:../cleanflight/src/main/io/vtx_control.c ****  * Cleanflight and Betaflight are distributed in the hope that they
+  11:../cleanflight/src/main/io/vtx_control.c ****  * will be useful, but WITHOUT ANY WARRANTY; without even the implied
+  12:../cleanflight/src/main/io/vtx_control.c ****  * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+  13:../cleanflight/src/main/io/vtx_control.c ****  * See the GNU General Public License for more details.
+  14:../cleanflight/src/main/io/vtx_control.c ****  *
+  15:../cleanflight/src/main/io/vtx_control.c ****  * You should have received a copy of the GNU General Public License
+  16:../cleanflight/src/main/io/vtx_control.c ****  * along with this software.
+  17:../cleanflight/src/main/io/vtx_control.c ****  *
+  18:../cleanflight/src/main/io/vtx_control.c ****  * If not, see <http://www.gnu.org/licenses/>.
+  19:../cleanflight/src/main/io/vtx_control.c ****  */
+  20:../cleanflight/src/main/io/vtx_control.c **** 
+  21:../cleanflight/src/main/io/vtx_control.c **** #include <stdbool.h>
+  22:../cleanflight/src/main/io/vtx_control.c **** #include <stdint.h>
+  23:../cleanflight/src/main/io/vtx_control.c **** 
+  24:../cleanflight/src/main/io/vtx_control.c **** #include "platform.h"
+  25:../cleanflight/src/main/io/vtx_control.c **** 
+  26:../cleanflight/src/main/io/vtx_control.c **** #if defined(USE_VTX_CONTROL) && defined(USE_VTX_COMMON)
+  27:../cleanflight/src/main/io/vtx_control.c **** 
+  28:../cleanflight/src/main/io/vtx_control.c **** #include "common/maths.h"
+  29:../cleanflight/src/main/io/vtx_control.c **** 
+  30:../cleanflight/src/main/io/vtx_control.c **** #include "config/config_eeprom.h"
+  31:../cleanflight/src/main/io/vtx_control.c **** 
+  32:../cleanflight/src/main/io/vtx_control.c **** #include "drivers/buttons.h"
+  33:../cleanflight/src/main/io/vtx_control.c **** #include "drivers/light_led.h"
+  34:../cleanflight/src/main/io/vtx_control.c **** #include "drivers/time.h"
+  35:../cleanflight/src/main/io/vtx_control.c **** #include "drivers/vtx_common.h"
+  36:../cleanflight/src/main/io/vtx_control.c **** 
+  37:../cleanflight/src/main/io/vtx_control.c **** #include "fc/config.h"
+  38:../cleanflight/src/main/io/vtx_control.c **** #include "fc/runtime_config.h"
+  39:../cleanflight/src/main/io/vtx_control.c **** 
+  40:../cleanflight/src/main/io/vtx_control.c **** #include "io/osd.h"
+  41:../cleanflight/src/main/io/vtx_control.c **** #include "io/spektrum_vtx_control.h"
+  42:../cleanflight/src/main/io/vtx_control.c **** #include "io/vtx.h"
+  43:../cleanflight/src/main/io/vtx_control.c **** #include "io/vtx_control.h"
+  44:../cleanflight/src/main/io/vtx_control.c **** 
+  45:../cleanflight/src/main/io/vtx_control.c **** #include "pg/pg.h"
+  46:../cleanflight/src/main/io/vtx_control.c **** #include "pg/pg_ids.h"
+  47:../cleanflight/src/main/io/vtx_control.c **** 
+  48:../cleanflight/src/main/io/vtx_control.c **** 
+  49:../cleanflight/src/main/io/vtx_control.c **** PG_REGISTER_WITH_RESET_TEMPLATE(vtxConfig_t, vtxConfig, PG_VTX_CONFIG, 1);
+  50:../cleanflight/src/main/io/vtx_control.c **** 
+  51:../cleanflight/src/main/io/vtx_control.c **** PG_RESET_TEMPLATE(vtxConfig_t, vtxConfig,
+  52:../cleanflight/src/main/io/vtx_control.c **** //    .vtxChannelActivationConditions = { 0 },
+  53:../cleanflight/src/main/io/vtx_control.c ****     .halfDuplex = true
+  54:../cleanflight/src/main/io/vtx_control.c **** );
+  55:../cleanflight/src/main/io/vtx_control.c **** 
+  56:../cleanflight/src/main/io/vtx_control.c **** static uint8_t locked = 0;
+  57:../cleanflight/src/main/io/vtx_control.c **** 
+  58:../cleanflight/src/main/io/vtx_control.c **** 
+  59:../cleanflight/src/main/io/vtx_control.c **** void vtxControlInit(void)
+  60:../cleanflight/src/main/io/vtx_control.c **** {
+ 133              	 .loc 3 60 0
+ 134              	 .cfi_startproc
+ 135              	 
+ 136              	 
+ 137              	 
+ 138 0000 80B4     	 push {r7}
+ 139              	.LCFI8:
+ 140              	 .cfi_def_cfa_offset 4
+ 141              	 .cfi_offset 7,-4
+ 142 0002 00AF     	 add r7,sp,#0
+ 143              	.LCFI9:
+ 144              	 .cfi_def_cfa_register 7
+  61:../cleanflight/src/main/io/vtx_control.c ****     // NOTHING TO DO
+  62:../cleanflight/src/main/io/vtx_control.c **** }
+ 145              	 .loc 3 62 0
+ 146 0004 BD46     	 mov sp,r7
+ 147              	.LCFI10:
+ 148              	 .cfi_def_cfa_register 13
+ 149              	 
+ 150 0006 5DF8047B 	 ldr r7,[sp],#4
+ 151              	.LCFI11:
+ 152              	 .cfi_restore 7
+ 153              	 .cfi_def_cfa_offset 0
+ 154 000a 7047     	 bx lr
+ 155              	 .cfi_endproc
+ 156              	.LFE544:
+ 158              	 .section .text.vtxControlInputPoll,"ax",%progbits
+ 159              	 .align 2
+ 160              	 .global vtxControlInputPoll
+ 161              	 .thumb
+ 162              	 .thumb_func
+ 164              	vtxControlInputPoll:
+ 165              	.LFB545:
+  63:../cleanflight/src/main/io/vtx_control.c **** 
+  64:../cleanflight/src/main/io/vtx_control.c **** void vtxControlInputPoll(void)
+  65:../cleanflight/src/main/io/vtx_control.c **** {
+ 166              	 .loc 3 65 0
+ 167              	 .cfi_startproc
+ 168              	 
+ 169              	 
+ 170 0000 80B5     	 push {r7,lr}
+ 171              	.LCFI12:
+ 172              	 .cfi_def_cfa_offset 8
+ 173              	 .cfi_offset 7,-8
+ 174              	 .cfi_offset 14,-4
+ 175 0002 00AF     	 add r7,sp,#0
+ 176              	.LCFI13:
+ 177              	 .cfi_def_cfa_register 7
+  66:../cleanflight/src/main/io/vtx_control.c ****   // Check variuos input sources for VTX config updates
+  67:../cleanflight/src/main/io/vtx_control.c **** #if defined(USE_SPEKTRUM_VTX_CONTROL)
+  68:../cleanflight/src/main/io/vtx_control.c ****     // Get VTX updates
+  69:../cleanflight/src/main/io/vtx_control.c ****     spektrumVtxControl();
+ 178              	 .loc 3 69 0
+ 179 0004 FFF7FEFF 	 bl spektrumVtxControl
+  70:../cleanflight/src/main/io/vtx_control.c **** #endif
+  71:../cleanflight/src/main/io/vtx_control.c **** }
+ 180              	 .loc 3 71 0
+ 181 0008 80BD     	 pop {r7,pc}
+ 182              	 .cfi_endproc
+ 183              	.LFE545:
+ 185 000a 00BF     	 .section .text.vtxUpdateBandAndChannel,"ax",%progbits
+ 186              	 .align 2
+ 187              	 .thumb
+ 188              	 .thumb_func
+ 190              	vtxUpdateBandAndChannel:
+ 191              	.LFB546:
+  72:../cleanflight/src/main/io/vtx_control.c **** 
+  73:../cleanflight/src/main/io/vtx_control.c **** static void vtxUpdateBandAndChannel(uint8_t bandStep, uint8_t channelStep)
+  74:../cleanflight/src/main/io/vtx_control.c **** {
+ 192              	 .loc 3 74 0
+ 193              	 .cfi_startproc
+ 194              	 
+ 195              	 
+ 196 0000 80B5     	 push {r7,lr}
+ 197              	.LCFI14:
+ 198              	 .cfi_def_cfa_offset 8
+ 199              	 .cfi_offset 7,-8
+ 200              	 .cfi_offset 14,-4
+ 201 0002 82B0     	 sub sp,sp,#8
+ 202              	.LCFI15:
+ 203              	 .cfi_def_cfa_offset 16
+ 204 0004 00AF     	 add r7,sp,#0
+ 205              	.LCFI16:
+ 206              	 .cfi_def_cfa_register 7
+ 207 0006 0346     	 mov r3,r0
+ 208 0008 0A46     	 mov r2,r1
+ 209 000a FB71     	 strb r3,[r7,#7]
+ 210 000c 1346     	 mov r3,r2
+ 211 000e BB71     	 strb r3,[r7,#6]
+  75:../cleanflight/src/main/io/vtx_control.c ****     if (ARMING_FLAG(ARMED)) {
+ 212              	 .loc 3 75 0
+ 213 0010 124B     	 ldr r3,.L14
+ 214 0012 1B78     	 ldrb r3,[r3]
+ 215 0014 03F00103 	 and r3,r3,#1
+ 216 0018 002B     	 cmp r3,#0
+ 217 001a 02D0     	 beq .L12
+  76:../cleanflight/src/main/io/vtx_control.c ****         locked = 1;
+ 218              	 .loc 3 76 0
+ 219 001c 104B     	 ldr r3,.L14+4
+ 220 001e 0122     	 movs r2,#1
+ 221 0020 1A70     	 strb r2,[r3]
+ 222              	.L12:
+  77:../cleanflight/src/main/io/vtx_control.c ****     }
+  78:../cleanflight/src/main/io/vtx_control.c **** 
+  79:../cleanflight/src/main/io/vtx_control.c ****     if (!locked && vtxCommonDevice()) {
+ 223              	 .loc 3 79 0
+ 224 0022 0F4B     	 ldr r3,.L14+4
+ 225 0024 1B78     	 ldrb r3,[r3]
+ 226 0026 002B     	 cmp r3,#0
+ 227 0028 14D1     	 bne .L11
+ 228              	 .loc 3 79 0 is_stmt 0 discriminator 1
+ 229 002a FFF7FEFF 	 bl vtxCommonDevice
+ 230 002e 0346     	 mov r3,r0
+ 231 0030 002B     	 cmp r3,#0
+ 232 0032 0FD0     	 beq .L11
+  80:../cleanflight/src/main/io/vtx_control.c ****         vtxSettingsConfigMutable()->band += bandStep;
+ 233              	 .loc 3 80 0 is_stmt 1
+ 234 0034 FFF7FEFF 	 bl vtxSettingsConfigMutable
+ 235 0038 0346     	 mov r3,r0
+ 236 003a 1978     	 ldrb r1,[r3]
+ 237 003c FA79     	 ldrb r2,[r7,#7]
+ 238 003e 0A44     	 add r2,r2,r1
+ 239 0040 D2B2     	 uxtb r2,r2
+ 240 0042 1A70     	 strb r2,[r3]
+  81:../cleanflight/src/main/io/vtx_control.c ****         vtxSettingsConfigMutable()->channel += channelStep;
+ 241              	 .loc 3 81 0
+ 242 0044 FFF7FEFF 	 bl vtxSettingsConfigMutable
+ 243 0048 0346     	 mov r3,r0
+ 244 004a 5978     	 ldrb r1,[r3,#1]
+ 245 004c BA79     	 ldrb r2,[r7,#6]
+ 246 004e 0A44     	 add r2,r2,r1
+ 247 0050 D2B2     	 uxtb r2,r2
+ 248 0052 5A70     	 strb r2,[r3,#1]
+ 249              	.L11:
+  82:../cleanflight/src/main/io/vtx_control.c ****     }
+  83:../cleanflight/src/main/io/vtx_control.c **** }
+ 250              	 .loc 3 83 0
+ 251 0054 0837     	 adds r7,r7,#8
+ 252              	.LCFI17:
+ 253              	 .cfi_def_cfa_offset 8
+ 254 0056 BD46     	 mov sp,r7
+ 255              	.LCFI18:
+ 256              	 .cfi_def_cfa_register 13
+ 257              	 
+ 258 0058 80BD     	 pop {r7,pc}
+ 259              	.L15:
+ 260 005a 00BF     	 .align 2
+ 261              	.L14:
+ 262 005c 00000000 	 .word armingFlags
+ 263 0060 00000000 	 .word locked
+ 264              	 .cfi_endproc
+ 265              	.LFE546:
+ 267              	 .section .text.vtxIncrementBand,"ax",%progbits
+ 268              	 .align 2
+ 269              	 .global vtxIncrementBand
+ 270              	 .thumb
+ 271              	 .thumb_func
+ 273              	vtxIncrementBand:
+ 274              	.LFB547:
+  84:../cleanflight/src/main/io/vtx_control.c **** 
+  85:../cleanflight/src/main/io/vtx_control.c **** void vtxIncrementBand(void)
+  86:../cleanflight/src/main/io/vtx_control.c **** {
+ 275              	 .loc 3 86 0
+ 276              	 .cfi_startproc
+ 277              	 
+ 278              	 
+ 279 0000 80B5     	 push {r7,lr}
+ 280              	.LCFI19:
+ 281              	 .cfi_def_cfa_offset 8
+ 282              	 .cfi_offset 7,-8
+ 283              	 .cfi_offset 14,-4
+ 284 0002 00AF     	 add r7,sp,#0
+ 285              	.LCFI20:
+ 286              	 .cfi_def_cfa_register 7
+  87:../cleanflight/src/main/io/vtx_control.c ****     vtxUpdateBandAndChannel(+1, 0);
+ 287              	 .loc 3 87 0
+ 288 0004 0120     	 movs r0,#1
+ 289 0006 0021     	 movs r1,#0
+ 290 0008 FFF7FEFF 	 bl vtxUpdateBandAndChannel
+  88:../cleanflight/src/main/io/vtx_control.c **** }
+ 291              	 .loc 3 88 0
+ 292 000c 80BD     	 pop {r7,pc}
+ 293              	 .cfi_endproc
+ 294              	.LFE547:
+ 296 000e 00BF     	 .section .text.vtxDecrementBand,"ax",%progbits
+ 297              	 .align 2
+ 298              	 .global vtxDecrementBand
+ 299              	 .thumb
+ 300              	 .thumb_func
+ 302              	vtxDecrementBand:
+ 303              	.LFB548:
+  89:../cleanflight/src/main/io/vtx_control.c **** 
+  90:../cleanflight/src/main/io/vtx_control.c **** void vtxDecrementBand(void)
+  91:../cleanflight/src/main/io/vtx_control.c **** {
+ 304              	 .loc 3 91 0
+ 305              	 .cfi_startproc
+ 306              	 
+ 307              	 
+ 308 0000 80B5     	 push {r7,lr}
+ 309              	.LCFI21:
+ 310              	 .cfi_def_cfa_offset 8
+ 311              	 .cfi_offset 7,-8
+ 312              	 .cfi_offset 14,-4
+ 313 0002 00AF     	 add r7,sp,#0
+ 314              	.LCFI22:
+ 315              	 .cfi_def_cfa_register 7
+  92:../cleanflight/src/main/io/vtx_control.c ****     vtxUpdateBandAndChannel(-1, 0);
+ 316              	 .loc 3 92 0
+ 317 0004 FF20     	 movs r0,#255
+ 318 0006 0021     	 movs r1,#0
+ 319 0008 FFF7FEFF 	 bl vtxUpdateBandAndChannel
+  93:../cleanflight/src/main/io/vtx_control.c **** }
+ 320              	 .loc 3 93 0
+ 321 000c 80BD     	 pop {r7,pc}
+ 322              	 .cfi_endproc
+ 323              	.LFE548:
+ 325 000e 00BF     	 .section .text.vtxIncrementChannel,"ax",%progbits
+ 326              	 .align 2
+ 327              	 .global vtxIncrementChannel
+ 328              	 .thumb
+ 329              	 .thumb_func
+ 331              	vtxIncrementChannel:
+ 332              	.LFB549:
+  94:../cleanflight/src/main/io/vtx_control.c **** 
+  95:../cleanflight/src/main/io/vtx_control.c **** void vtxIncrementChannel(void)
+  96:../cleanflight/src/main/io/vtx_control.c **** {
+ 333              	 .loc 3 96 0
+ 334              	 .cfi_startproc
+ 335              	 
+ 336              	 
+ 337 0000 80B5     	 push {r7,lr}
+ 338              	.LCFI23:
+ 339              	 .cfi_def_cfa_offset 8
+ 340              	 .cfi_offset 7,-8
+ 341              	 .cfi_offset 14,-4
+ 342 0002 00AF     	 add r7,sp,#0
+ 343              	.LCFI24:
+ 344              	 .cfi_def_cfa_register 7
+  97:../cleanflight/src/main/io/vtx_control.c ****     vtxUpdateBandAndChannel(0, +1);
+ 345              	 .loc 3 97 0
+ 346 0004 0020     	 movs r0,#0
+ 347 0006 0121     	 movs r1,#1
+ 348 0008 FFF7FEFF 	 bl vtxUpdateBandAndChannel
+  98:../cleanflight/src/main/io/vtx_control.c **** }
+ 349              	 .loc 3 98 0
+ 350 000c 80BD     	 pop {r7,pc}
+ 351              	 .cfi_endproc
+ 352              	.LFE549:
+ 354 000e 00BF     	 .section .text.vtxDecrementChannel,"ax",%progbits
+ 355              	 .align 2
+ 356              	 .global vtxDecrementChannel
+ 357              	 .thumb
+ 358              	 .thumb_func
+ 360              	vtxDecrementChannel:
+ 361              	.LFB550:
+  99:../cleanflight/src/main/io/vtx_control.c **** 
+ 100:../cleanflight/src/main/io/vtx_control.c **** void vtxDecrementChannel(void)
+ 101:../cleanflight/src/main/io/vtx_control.c **** {
+ 362              	 .loc 3 101 0
+ 363              	 .cfi_startproc
+ 364              	 
+ 365              	 
+ 366 0000 80B5     	 push {r7,lr}
+ 367              	.LCFI25:
+ 368              	 .cfi_def_cfa_offset 8
+ 369              	 .cfi_offset 7,-8
+ 370              	 .cfi_offset 14,-4
+ 371 0002 00AF     	 add r7,sp,#0
+ 372              	.LCFI26:
+ 373              	 .cfi_def_cfa_register 7
+ 102:../cleanflight/src/main/io/vtx_control.c ****     vtxUpdateBandAndChannel(0, -1);
+ 374              	 .loc 3 102 0
+ 375 0004 0020     	 movs r0,#0
+ 376 0006 FF21     	 movs r1,#255
+ 377 0008 FFF7FEFF 	 bl vtxUpdateBandAndChannel
+ 103:../cleanflight/src/main/io/vtx_control.c **** }
+ 378              	 .loc 3 103 0
+ 379 000c 80BD     	 pop {r7,pc}
+ 380              	 .cfi_endproc
+ 381              	.LFE550:
+ 383 000e 00BF     	 .section .text.vtxUpdateActivatedChannel,"ax",%progbits
+ 384              	 .align 2
+ 385              	 .global vtxUpdateActivatedChannel
+ 386              	 .thumb
+ 387              	 .thumb_func
+ 389              	vtxUpdateActivatedChannel:
+ 390              	.LFB551:
+ 104:../cleanflight/src/main/io/vtx_control.c **** 
+ 105:../cleanflight/src/main/io/vtx_control.c **** void vtxUpdateActivatedChannel(void)
+ 106:../cleanflight/src/main/io/vtx_control.c **** {
+ 391              	 .loc 3 106 0
+ 392              	 .cfi_startproc
+ 393              	 
+ 394              	 
+ 395 0000 80B5     	 push {r7,lr}
+ 396              	.LCFI27:
+ 397              	 .cfi_def_cfa_offset 8
+ 398              	 .cfi_offset 7,-8
+ 399              	 .cfi_offset 14,-4
+ 400 0002 82B0     	 sub sp,sp,#8
+ 401              	.LCFI28:
+ 402              	 .cfi_def_cfa_offset 16
+ 403 0004 00AF     	 add r7,sp,#0
+ 404              	.LCFI29:
+ 405              	 .cfi_def_cfa_register 7
+ 107:../cleanflight/src/main/io/vtx_control.c ****     if (ARMING_FLAG(ARMED)) {
+ 406              	 .loc 3 107 0
+ 407 0006 234B     	 ldr r3,.L26
+ 408 0008 1B78     	 ldrb r3,[r3]
+ 409 000a 03F00103 	 and r3,r3,#1
+ 410 000e 002B     	 cmp r3,#0
+ 411 0010 02D0     	 beq .L21
+ 108:../cleanflight/src/main/io/vtx_control.c ****         locked = 1;
+ 412              	 .loc 3 108 0
+ 413 0012 214B     	 ldr r3,.L26+4
+ 414 0014 0122     	 movs r2,#1
+ 415 0016 1A70     	 strb r2,[r3]
+ 416              	.L21:
+ 109:../cleanflight/src/main/io/vtx_control.c ****     }
+ 110:../cleanflight/src/main/io/vtx_control.c **** 
+ 111:../cleanflight/src/main/io/vtx_control.c ****     if (!locked && vtxCommonDevice()) {
+ 417              	 .loc 3 111 0
+ 418 0018 1F4B     	 ldr r3,.L26+4
+ 419 001a 1B78     	 ldrb r3,[r3]
+ 420 001c 002B     	 cmp r3,#0
+ 421 001e 36D1     	 bne .L20
+ 422              	 .loc 3 111 0 is_stmt 0 discriminator 1
+ 423 0020 FFF7FEFF 	 bl vtxCommonDevice
+ 424 0024 0346     	 mov r3,r0
+ 425 0026 002B     	 cmp r3,#0
+ 426 0028 31D0     	 beq .L20
+ 427              	.LBB2:
+ 428              	.LBB3:
+ 112:../cleanflight/src/main/io/vtx_control.c ****         static uint8_t lastIndex = -1;
+ 113:../cleanflight/src/main/io/vtx_control.c **** 
+ 114:../cleanflight/src/main/io/vtx_control.c ****         for (uint8_t index = 0; index < MAX_CHANNEL_ACTIVATION_CONDITION_COUNT; index++) {
+ 429              	 .loc 3 114 0 is_stmt 1
+ 430 002a 0023     	 movs r3,#0
+ 431 002c FB71     	 strb r3,[r7,#7]
+ 432 002e 2BE0     	 b .L23
+ 433              	.L25:
+ 434              	.LBB4:
+ 115:../cleanflight/src/main/io/vtx_control.c ****             const vtxChannelActivationCondition_t *vtxChannelActivationCondition = &vtxConfig()->vt
+ 435              	 .loc 3 115 0
+ 436 0030 FFF7FEFF 	 bl vtxConfig
+ 437 0034 0146     	 mov r1,r0
+ 438 0036 FA79     	 ldrb r2,[r7,#7]
+ 439 0038 1346     	 mov r3,r2
+ 440 003a 9B00     	 lsls r3,r3,#2
+ 441 003c 1344     	 add r3,r3,r2
+ 442 003e 0B44     	 add r3,r3,r1
+ 443 0040 3B60     	 str r3,[r7]
+ 116:../cleanflight/src/main/io/vtx_control.c **** 
+ 117:../cleanflight/src/main/io/vtx_control.c ****             if (isRangeActive(vtxChannelActivationCondition->auxChannelIndex, &vtxChannelActivation
+ 444              	 .loc 3 117 0
+ 445 0042 3B68     	 ldr r3,[r7]
+ 446 0044 1A78     	 ldrb r2,[r3]
+ 447 0046 3B68     	 ldr r3,[r7]
+ 448 0048 0333     	 adds r3,r3,#3
+ 449 004a 1046     	 mov r0,r2
+ 450 004c 1946     	 mov r1,r3
+ 451 004e FFF7FEFF 	 bl isRangeActive
+ 452 0052 0346     	 mov r3,r0
+ 453 0054 002B     	 cmp r3,#0
+ 454 0056 14D0     	 beq .L24
+ 118:../cleanflight/src/main/io/vtx_control.c ****                 && index != lastIndex) {
+ 455              	 .loc 3 118 0
+ 456 0058 104B     	 ldr r3,.L26+8
+ 457 005a 1B78     	 ldrb r3,[r3]
+ 458 005c FA79     	 ldrb r2,[r7,#7]
+ 459 005e 9A42     	 cmp r2,r3
+ 460 0060 0FD0     	 beq .L24
+ 119:../cleanflight/src/main/io/vtx_control.c ****                 lastIndex = index;
+ 461              	 .loc 3 119 0
+ 462 0062 0E4A     	 ldr r2,.L26+8
+ 463 0064 FB79     	 ldrb r3,[r7,#7]
+ 464 0066 1370     	 strb r3,[r2]
+ 120:../cleanflight/src/main/io/vtx_control.c **** 
+ 121:../cleanflight/src/main/io/vtx_control.c ****                 vtxSettingsConfigMutable()->band = vtxChannelActivationCondition->band;
+ 465              	 .loc 3 121 0
+ 466 0068 FFF7FEFF 	 bl vtxSettingsConfigMutable
+ 467 006c 0246     	 mov r2,r0
+ 468 006e 3B68     	 ldr r3,[r7]
+ 469 0070 5B78     	 ldrb r3,[r3,#1]
+ 470 0072 1370     	 strb r3,[r2]
+ 122:../cleanflight/src/main/io/vtx_control.c ****                 vtxSettingsConfigMutable()->channel = vtxChannelActivationCondition->channel;
+ 471              	 .loc 3 122 0
+ 472 0074 FFF7FEFF 	 bl vtxSettingsConfigMutable
+ 473 0078 0246     	 mov r2,r0
+ 474 007a 3B68     	 ldr r3,[r7]
+ 475 007c 9B78     	 ldrb r3,[r3,#2]
+ 476 007e 5370     	 strb r3,[r2,#1]
+ 123:../cleanflight/src/main/io/vtx_control.c ****                 break;
+ 477              	 .loc 3 123 0
+ 478 0080 05E0     	 b .L20
+ 479              	.L24:
+ 480              	.LBE4:
+ 114:../cleanflight/src/main/io/vtx_control.c ****             const vtxChannelActivationCondition_t *vtxChannelActivationCondition = &vtxConfig()->vt
+ 481              	 .loc 3 114 0 discriminator 2
+ 482 0082 FB79     	 ldrb r3,[r7,#7]
+ 483 0084 0133     	 adds r3,r3,#1
+ 484 0086 FB71     	 strb r3,[r7,#7]
+ 485              	.L23:
+ 114:../cleanflight/src/main/io/vtx_control.c ****             const vtxChannelActivationCondition_t *vtxChannelActivationCondition = &vtxConfig()->vt
+ 486              	 .loc 3 114 0 is_stmt 0 discriminator 1
+ 487 0088 FB79     	 ldrb r3,[r7,#7]
+ 488 008a 092B     	 cmp r3,#9
+ 489 008c D0D9     	 bls .L25
+ 490              	.L20:
+ 491              	.LBE3:
+ 492              	.LBE2:
+ 124:../cleanflight/src/main/io/vtx_control.c ****             }
+ 125:../cleanflight/src/main/io/vtx_control.c ****         }
+ 126:../cleanflight/src/main/io/vtx_control.c ****     }
+ 127:../cleanflight/src/main/io/vtx_control.c **** }
+ 493              	 .loc 3 127 0 is_stmt 1
+ 494 008e 0837     	 adds r7,r7,#8
+ 495              	.LCFI30:
+ 496              	 .cfi_def_cfa_offset 8
+ 497 0090 BD46     	 mov sp,r7
+ 498              	.LCFI31:
+ 499              	 .cfi_def_cfa_register 13
+ 500              	 
+ 501 0092 80BD     	 pop {r7,pc}
+ 502              	.L27:
+ 503              	 .align 2
+ 504              	.L26:
+ 505 0094 00000000 	 .word armingFlags
+ 506 0098 00000000 	 .word locked
+ 507 009c 00000000 	 .word lastIndex.12305
+ 508              	 .cfi_endproc
+ 509              	.LFE551:
+ 511              	 .section .text.vtxCycleBandOrChannel,"ax",%progbits
+ 512              	 .align 2
+ 513              	 .global vtxCycleBandOrChannel
+ 514              	 .thumb
+ 515              	 .thumb_func
+ 517              	vtxCycleBandOrChannel:
+ 518              	.LFB552:
+ 128:../cleanflight/src/main/io/vtx_control.c **** 
+ 129:../cleanflight/src/main/io/vtx_control.c **** void vtxCycleBandOrChannel(const uint8_t bandStep, const uint8_t channelStep)
+ 130:../cleanflight/src/main/io/vtx_control.c **** {
+ 519              	 .loc 3 130 0
+ 520              	 .cfi_startproc
+ 521              	 
+ 522              	 
+ 523 0000 80B5     	 push {r7,lr}
+ 524              	.LCFI32:
+ 525              	 .cfi_def_cfa_offset 8
+ 526              	 .cfi_offset 7,-8
+ 527              	 .cfi_offset 14,-4
+ 528 0002 88B0     	 sub sp,sp,#32
+ 529              	.LCFI33:
+ 530              	 .cfi_def_cfa_offset 40
+ 531 0004 00AF     	 add r7,sp,#0
+ 532              	.LCFI34:
+ 533              	 .cfi_def_cfa_register 7
+ 534 0006 0346     	 mov r3,r0
+ 535 0008 0A46     	 mov r2,r1
+ 536 000a FB71     	 strb r3,[r7,#7]
+ 537 000c 1346     	 mov r3,r2
+ 538 000e BB71     	 strb r3,[r7,#6]
+ 131:../cleanflight/src/main/io/vtx_control.c ****     const vtxDevice_t *vtxDevice = vtxCommonDevice();
+ 539              	 .loc 3 131 0
+ 540 0010 FFF7FEFF 	 bl vtxCommonDevice
+ 541 0014 7861     	 str r0,[r7,#20]
+ 132:../cleanflight/src/main/io/vtx_control.c ****     if (vtxDevice) {
+ 542              	 .loc 3 132 0
+ 543 0016 7B69     	 ldr r3,[r7,#20]
+ 544 0018 002B     	 cmp r3,#0
+ 545 001a 56D0     	 beq .L28
+ 546              	.LBB5:
+ 133:../cleanflight/src/main/io/vtx_control.c ****         uint8_t band = 0, channel = 0;
+ 547              	 .loc 3 133 0
+ 548 001c 0023     	 movs r3,#0
+ 549 001e BB74     	 strb r3,[r7,#18]
+ 550 0020 0023     	 movs r3,#0
+ 551 0022 7B74     	 strb r3,[r7,#17]
+ 134:../cleanflight/src/main/io/vtx_control.c ****         vtxDeviceCapability_t capability;
+ 135:../cleanflight/src/main/io/vtx_control.c **** 
+ 136:../cleanflight/src/main/io/vtx_control.c ****         const bool haveAllNeededInfo = vtxCommonGetBandAndChannel(vtxDevice, &band, &channel) && vt
+ 552              	 .loc 3 136 0
+ 553 0024 07F11202 	 add r2,r7,#18
+ 554 0028 07F11103 	 add r3,r7,#17
+ 555 002c 7869     	 ldr r0,[r7,#20]
+ 556 002e 1146     	 mov r1,r2
+ 557 0030 1A46     	 mov r2,r3
+ 558 0032 FFF7FEFF 	 bl vtxCommonGetBandAndChannel
+ 559 0036 0346     	 mov r3,r0
+ 560 0038 002B     	 cmp r3,#0
+ 561 003a 0AD0     	 beq .L30
+ 562              	 .loc 3 136 0 is_stmt 0 discriminator 1
+ 563 003c 07F10C03 	 add r3,r7,#12
+ 564 0040 7869     	 ldr r0,[r7,#20]
+ 565 0042 1946     	 mov r1,r3
+ 566 0044 FFF7FEFF 	 bl vtxCommonGetDeviceCapability
+ 567 0048 0346     	 mov r3,r0
+ 568 004a 002B     	 cmp r3,#0
+ 569 004c 01D0     	 beq .L30
+ 570              	 .loc 3 136 0 discriminator 3
+ 571 004e 0123     	 movs r3,#1
+ 572 0050 00E0     	 b .L31
+ 573              	.L30:
+ 574              	 .loc 3 136 0 discriminator 4
+ 575 0052 0023     	 movs r3,#0
+ 576              	.L31:
+ 577              	 .loc 3 136 0 discriminator 6
+ 578 0054 FB74     	 strb r3,[r7,#19]
+ 579 0056 FB7C     	 ldrb r3,[r7,#19]
+ 580 0058 03F00103 	 and r3,r3,#1
+ 581 005c FB74     	 strb r3,[r7,#19]
+ 137:../cleanflight/src/main/io/vtx_control.c ****         if (!haveAllNeededInfo) {
+ 582              	 .loc 3 137 0 is_stmt 1 discriminator 6
+ 583 005e FB7C     	 ldrb r3,[r7,#19]
+ 584 0060 83F00103 	 eor r3,r3,#1
+ 585 0064 DBB2     	 uxtb r3,r3
+ 586 0066 002B     	 cmp r3,#0
+ 587 0068 2FD1     	 bne .L28
+ 138:../cleanflight/src/main/io/vtx_control.c ****             return;
+ 139:../cleanflight/src/main/io/vtx_control.c ****         }
+ 140:../cleanflight/src/main/io/vtx_control.c **** 
+ 141:../cleanflight/src/main/io/vtx_control.c ****         int newChannel = channel + channelStep;
+ 588              	 .loc 3 141 0
+ 589 006a 7B7C     	 ldrb r3,[r7,#17]
+ 590 006c 1A46     	 mov r2,r3
+ 591 006e BB79     	 ldrb r3,[r7,#6]
+ 592 0070 1344     	 add r3,r3,r2
+ 593 0072 FB61     	 str r3,[r7,#28]
+ 142:../cleanflight/src/main/io/vtx_control.c ****         if (newChannel > capability.channelCount) {
+ 594              	 .loc 3 142 0
+ 595 0074 7B7B     	 ldrb r3,[r7,#13]
+ 596 0076 1A46     	 mov r2,r3
+ 597 0078 FB69     	 ldr r3,[r7,#28]
+ 598 007a 9A42     	 cmp r2,r3
+ 599 007c 02DA     	 bge .L33
+ 143:../cleanflight/src/main/io/vtx_control.c ****             newChannel = 1;
+ 600              	 .loc 3 143 0
+ 601 007e 0123     	 movs r3,#1
+ 602 0080 FB61     	 str r3,[r7,#28]
+ 603 0082 04E0     	 b .L34
+ 604              	.L33:
+ 144:../cleanflight/src/main/io/vtx_control.c ****         } else if (newChannel < 1) {
+ 605              	 .loc 3 144 0
+ 606 0084 FB69     	 ldr r3,[r7,#28]
+ 607 0086 002B     	 cmp r3,#0
+ 608 0088 01DC     	 bgt .L34
+ 145:../cleanflight/src/main/io/vtx_control.c ****             newChannel = capability.channelCount;
+ 609              	 .loc 3 145 0
+ 610 008a 7B7B     	 ldrb r3,[r7,#13]
+ 611 008c FB61     	 str r3,[r7,#28]
+ 612              	.L34:
+ 146:../cleanflight/src/main/io/vtx_control.c ****         }
+ 147:../cleanflight/src/main/io/vtx_control.c **** 
+ 148:../cleanflight/src/main/io/vtx_control.c ****         int newBand = band + bandStep;
+ 613              	 .loc 3 148 0
+ 614 008e BB7C     	 ldrb r3,[r7,#18]
+ 615 0090 1A46     	 mov r2,r3
+ 616 0092 FB79     	 ldrb r3,[r7,#7]
+ 617 0094 1344     	 add r3,r3,r2
+ 618 0096 BB61     	 str r3,[r7,#24]
+ 149:../cleanflight/src/main/io/vtx_control.c ****         if (newBand > capability.bandCount) {
+ 619              	 .loc 3 149 0
+ 620 0098 3B7B     	 ldrb r3,[r7,#12]
+ 621 009a 1A46     	 mov r2,r3
+ 622 009c BB69     	 ldr r3,[r7,#24]
+ 623 009e 9A42     	 cmp r2,r3
+ 624 00a0 02DA     	 bge .L35
+ 150:../cleanflight/src/main/io/vtx_control.c ****             newBand = 1;
+ 625              	 .loc 3 150 0
+ 626 00a2 0123     	 movs r3,#1
+ 627 00a4 BB61     	 str r3,[r7,#24]
+ 628 00a6 04E0     	 b .L36
+ 629              	.L35:
+ 151:../cleanflight/src/main/io/vtx_control.c ****         } else if (newBand < 1) {
+ 630              	 .loc 3 151 0
+ 631 00a8 BB69     	 ldr r3,[r7,#24]
+ 632 00aa 002B     	 cmp r3,#0
+ 633 00ac 01DC     	 bgt .L36
+ 152:../cleanflight/src/main/io/vtx_control.c ****             newBand = capability.bandCount;
+ 634              	 .loc 3 152 0
+ 635 00ae 3B7B     	 ldrb r3,[r7,#12]
+ 636 00b0 BB61     	 str r3,[r7,#24]
+ 637              	.L36:
+ 153:../cleanflight/src/main/io/vtx_control.c ****         }
+ 154:../cleanflight/src/main/io/vtx_control.c **** 
+ 155:../cleanflight/src/main/io/vtx_control.c ****         vtxSettingsConfigMutable()->band = newBand;
+ 638              	 .loc 3 155 0
+ 639 00b2 FFF7FEFF 	 bl vtxSettingsConfigMutable
+ 640 00b6 0346     	 mov r3,r0
+ 641 00b8 BA69     	 ldr r2,[r7,#24]
+ 642 00ba D2B2     	 uxtb r2,r2
+ 643 00bc 1A70     	 strb r2,[r3]
+ 156:../cleanflight/src/main/io/vtx_control.c ****         vtxSettingsConfigMutable()->channel = newChannel;
+ 644              	 .loc 3 156 0
+ 645 00be FFF7FEFF 	 bl vtxSettingsConfigMutable
+ 646 00c2 0346     	 mov r3,r0
+ 647 00c4 FA69     	 ldr r2,[r7,#28]
+ 648 00c6 D2B2     	 uxtb r2,r2
+ 649 00c8 5A70     	 strb r2,[r3,#1]
+ 650              	.L28:
+ 651              	.LBE5:
+ 157:../cleanflight/src/main/io/vtx_control.c ****     }
+ 158:../cleanflight/src/main/io/vtx_control.c **** }
+ 652              	 .loc 3 158 0
+ 653 00ca 2037     	 adds r7,r7,#32
+ 654              	.LCFI35:
+ 655              	 .cfi_def_cfa_offset 8
+ 656 00cc BD46     	 mov sp,r7
+ 657              	.LCFI36:
+ 658              	 .cfi_def_cfa_register 13
+ 659              	 
+ 660 00ce 80BD     	 pop {r7,pc}
+ 661              	 .cfi_endproc
+ 662              	.LFE552:
+ 664              	 .section .text.vtxCyclePower,"ax",%progbits
+ 665              	 .align 2
+ 666              	 .global vtxCyclePower
+ 667              	 .thumb
+ 668              	 .thumb_func
+ 670              	vtxCyclePower:
+ 671              	.LFB553:
+ 159:../cleanflight/src/main/io/vtx_control.c **** 
+ 160:../cleanflight/src/main/io/vtx_control.c **** void vtxCyclePower(const uint8_t powerStep)
+ 161:../cleanflight/src/main/io/vtx_control.c **** {
+ 672              	 .loc 3 161 0
+ 673              	 .cfi_startproc
+ 674              	 
+ 675              	 
+ 676 0000 80B5     	 push {r7,lr}
+ 677              	.LCFI37:
+ 678              	 .cfi_def_cfa_offset 8
+ 679              	 .cfi_offset 7,-8
+ 680              	 .cfi_offset 14,-4
+ 681 0002 86B0     	 sub sp,sp,#24
+ 682              	.LCFI38:
+ 683              	 .cfi_def_cfa_offset 32
+ 684 0004 00AF     	 add r7,sp,#0
+ 685              	.LCFI39:
+ 686              	 .cfi_def_cfa_register 7
+ 687 0006 0346     	 mov r3,r0
+ 688 0008 FB71     	 strb r3,[r7,#7]
+ 162:../cleanflight/src/main/io/vtx_control.c ****     const vtxDevice_t *vtxDevice = vtxCommonDevice();
+ 689              	 .loc 3 162 0
+ 690 000a FFF7FEFF 	 bl vtxCommonDevice
+ 691 000e 3861     	 str r0,[r7,#16]
+ 163:../cleanflight/src/main/io/vtx_control.c ****     if (vtxDevice) {
+ 692              	 .loc 3 163 0
+ 693 0010 3B69     	 ldr r3,[r7,#16]
+ 694 0012 002B     	 cmp r3,#0
+ 695 0014 39D0     	 beq .L37
+ 696              	.LBB6:
+ 164:../cleanflight/src/main/io/vtx_control.c ****         uint8_t power = 0;
+ 697              	 .loc 3 164 0
+ 698 0016 0023     	 movs r3,#0
+ 699 0018 BB73     	 strb r3,[r7,#14]
+ 165:../cleanflight/src/main/io/vtx_control.c ****         vtxDeviceCapability_t capability;
+ 166:../cleanflight/src/main/io/vtx_control.c ****         const bool haveAllNeededInfo = vtxCommonGetPowerIndex(vtxDevice, &power) && vtxCommonGetDev
+ 700              	 .loc 3 166 0
+ 701 001a 07F10E03 	 add r3,r7,#14
+ 702 001e 3869     	 ldr r0,[r7,#16]
+ 703 0020 1946     	 mov r1,r3
+ 704 0022 FFF7FEFF 	 bl vtxCommonGetPowerIndex
+ 705 0026 0346     	 mov r3,r0
+ 706 0028 002B     	 cmp r3,#0
+ 707 002a 0AD0     	 beq .L39
+ 708              	 .loc 3 166 0 is_stmt 0 discriminator 1
+ 709 002c 07F10803 	 add r3,r7,#8
+ 710 0030 3869     	 ldr r0,[r7,#16]
+ 711 0032 1946     	 mov r1,r3
+ 712 0034 FFF7FEFF 	 bl vtxCommonGetDeviceCapability
+ 713 0038 0346     	 mov r3,r0
+ 714 003a 002B     	 cmp r3,#0
+ 715 003c 01D0     	 beq .L39
+ 716              	 .loc 3 166 0 discriminator 3
+ 717 003e 0123     	 movs r3,#1
+ 718 0040 00E0     	 b .L40
+ 719              	.L39:
+ 720              	 .loc 3 166 0 discriminator 4
+ 721 0042 0023     	 movs r3,#0
+ 722              	.L40:
+ 723              	 .loc 3 166 0 discriminator 6
+ 724 0044 FB73     	 strb r3,[r7,#15]
+ 725 0046 FB7B     	 ldrb r3,[r7,#15]
+ 726 0048 03F00103 	 and r3,r3,#1
+ 727 004c FB73     	 strb r3,[r7,#15]
+ 167:../cleanflight/src/main/io/vtx_control.c ****         if (!haveAllNeededInfo) {
+ 728              	 .loc 3 167 0 is_stmt 1 discriminator 6
+ 729 004e FB7B     	 ldrb r3,[r7,#15]
+ 730 0050 83F00103 	 eor r3,r3,#1
+ 731 0054 DBB2     	 uxtb r3,r3
+ 732 0056 002B     	 cmp r3,#0
+ 733 0058 17D1     	 bne .L37
+ 168:../cleanflight/src/main/io/vtx_control.c ****             return;
+ 169:../cleanflight/src/main/io/vtx_control.c ****         }
+ 170:../cleanflight/src/main/io/vtx_control.c **** 
+ 171:../cleanflight/src/main/io/vtx_control.c ****         int newPower = power + powerStep;
+ 734              	 .loc 3 171 0
+ 735 005a BB7B     	 ldrb r3,[r7,#14]
+ 736 005c 1A46     	 mov r2,r3
+ 737 005e FB79     	 ldrb r3,[r7,#7]
+ 738 0060 1344     	 add r3,r3,r2
+ 739 0062 7B61     	 str r3,[r7,#20]
+ 172:../cleanflight/src/main/io/vtx_control.c ****         if (newPower >= capability.powerCount) {
+ 740              	 .loc 3 172 0
+ 741 0064 BB7A     	 ldrb r3,[r7,#10]
+ 742 0066 1A46     	 mov r2,r3
+ 743 0068 7B69     	 ldr r3,[r7,#20]
+ 744 006a 9A42     	 cmp r2,r3
+ 745 006c 02DC     	 bgt .L42
+ 173:../cleanflight/src/main/io/vtx_control.c ****             newPower = 0;
+ 746              	 .loc 3 173 0
+ 747 006e 0023     	 movs r3,#0
+ 748 0070 7B61     	 str r3,[r7,#20]
+ 749 0072 04E0     	 b .L43
+ 750              	.L42:
+ 174:../cleanflight/src/main/io/vtx_control.c ****         } else if (newPower < 0) {
+ 751              	 .loc 3 174 0
+ 752 0074 7B69     	 ldr r3,[r7,#20]
+ 753 0076 002B     	 cmp r3,#0
+ 754 0078 01DA     	 bge .L43
+ 175:../cleanflight/src/main/io/vtx_control.c ****             newPower = capability.powerCount;
+ 755              	 .loc 3 175 0
+ 756 007a BB7A     	 ldrb r3,[r7,#10]
+ 757 007c 7B61     	 str r3,[r7,#20]
+ 758              	.L43:
+ 176:../cleanflight/src/main/io/vtx_control.c ****         }
+ 177:../cleanflight/src/main/io/vtx_control.c **** 
+ 178:../cleanflight/src/main/io/vtx_control.c ****         vtxSettingsConfigMutable()->power = newPower;
+ 759              	 .loc 3 178 0
+ 760 007e FFF7FEFF 	 bl vtxSettingsConfigMutable
+ 761 0082 0346     	 mov r3,r0
+ 762 0084 7A69     	 ldr r2,[r7,#20]
+ 763 0086 D2B2     	 uxtb r2,r2
+ 764 0088 9A70     	 strb r2,[r3,#2]
+ 765              	.L37:
+ 766              	.LBE6:
+ 179:../cleanflight/src/main/io/vtx_control.c ****     }
+ 180:../cleanflight/src/main/io/vtx_control.c **** }
+ 767              	 .loc 3 180 0
+ 768 008a 1837     	 adds r7,r7,#24
+ 769              	.LCFI40:
+ 770              	 .cfi_def_cfa_offset 8
+ 771 008c BD46     	 mov sp,r7
+ 772              	.LCFI41:
+ 773              	 .cfi_def_cfa_register 13
+ 774              	 
+ 775 008e 80BD     	 pop {r7,pc}
+ 776              	 .cfi_endproc
+ 777              	.LFE553:
+ 779              	 .section .text.handleVTXControlButton,"ax",%progbits
+ 780              	 .align 2
+ 781              	 .global handleVTXControlButton
+ 782              	 .thumb
+ 783              	 .thumb_func
+ 785              	handleVTXControlButton:
+ 786              	.LFB554:
+ 181:../cleanflight/src/main/io/vtx_control.c **** 
+ 182:../cleanflight/src/main/io/vtx_control.c **** /**
+ 183:../cleanflight/src/main/io/vtx_control.c ****  * Allow VTX channel/band/rf power/on-off and save via a single button.
+ 184:../cleanflight/src/main/io/vtx_control.c ****  *
+ 185:../cleanflight/src/main/io/vtx_control.c ****  * The LED1 flashes a set number of times, followed by a short pause, one per second.  The amount o
+ 186:../cleanflight/src/main/io/vtx_control.c ****  * the button is held to indicate the action that will be performed upon release.
+ 187:../cleanflight/src/main/io/vtx_control.c ****  * The actions are ordered by most-frequently used action.  i.e. you change channel more frequently
+ 188:../cleanflight/src/main/io/vtx_control.c ****  *
+ 189:../cleanflight/src/main/io/vtx_control.c ****  * The vtx settings can be changed while the VTX is OFF.
+ 190:../cleanflight/src/main/io/vtx_control.c ****  * If the VTX is OFF when the settings are saved the VTX will be OFF on the next boot, likewise
+ 191:../cleanflight/src/main/io/vtx_control.c ****  * If the VTX is ON when the settings are saved the VTX will be ON on the next boot.
+ 192:../cleanflight/src/main/io/vtx_control.c ****  *
+ 193:../cleanflight/src/main/io/vtx_control.c ****  * Future: It would be nice to re-use the code in statusindicator.c and blink-codes but target a di
+ 194:../cleanflight/src/main/io/vtx_control.c ****  * behaviour of the LED1 here.
+ 195:../cleanflight/src/main/io/vtx_control.c ****  *
+ 196:../cleanflight/src/main/io/vtx_control.c ****  * Future: Blink out the state after changing it.
+ 197:../cleanflight/src/main/io/vtx_control.c ****  */
+ 198:../cleanflight/src/main/io/vtx_control.c **** void handleVTXControlButton(void)
+ 199:../cleanflight/src/main/io/vtx_control.c **** {
+ 787              	 .loc 3 199 0
+ 788              	 .cfi_startproc
+ 789              	 
+ 790              	 
+ 791              	 
+ 792 0000 80B4     	 push {r7}
+ 793              	.LCFI42:
+ 794              	 .cfi_def_cfa_offset 4
+ 795              	 .cfi_offset 7,-4
+ 796 0002 00AF     	 add r7,sp,#0
+ 797              	.LCFI43:
+ 798              	 .cfi_def_cfa_register 7
+ 200:../cleanflight/src/main/io/vtx_control.c **** #if defined(USE_VTX_RTC6705) && defined(BUTTON_A_PIN)
+ 201:../cleanflight/src/main/io/vtx_control.c ****     bool buttonWasPressed = false;
+ 202:../cleanflight/src/main/io/vtx_control.c ****     const timeMs_t start = millis();
+ 203:../cleanflight/src/main/io/vtx_control.c ****     timeMs_t ledToggleAt = start;
+ 204:../cleanflight/src/main/io/vtx_control.c ****     bool ledEnabled = false;
+ 205:../cleanflight/src/main/io/vtx_control.c ****     uint8_t flashesDone = 0;
+ 206:../cleanflight/src/main/io/vtx_control.c **** 
+ 207:../cleanflight/src/main/io/vtx_control.c ****     uint8_t actionCounter = 0;
+ 208:../cleanflight/src/main/io/vtx_control.c ****     bool buttonHeld;
+ 209:../cleanflight/src/main/io/vtx_control.c ****     while ((buttonHeld = buttonAPressed())) {
+ 210:../cleanflight/src/main/io/vtx_control.c ****         const timeMs_t end = millis();
+ 211:../cleanflight/src/main/io/vtx_control.c **** 
+ 212:../cleanflight/src/main/io/vtx_control.c ****         int32_t diff = cmp32(end, start);
+ 213:../cleanflight/src/main/io/vtx_control.c ****         if (diff > 25 && diff <= 1000) {
+ 214:../cleanflight/src/main/io/vtx_control.c ****             actionCounter = 4;
+ 215:../cleanflight/src/main/io/vtx_control.c ****         } else if (diff > 1000 && diff <= 3000) {
+ 216:../cleanflight/src/main/io/vtx_control.c ****             actionCounter = 3;
+ 217:../cleanflight/src/main/io/vtx_control.c ****         } else if (diff > 3000 && diff <= 5000) {
+ 218:../cleanflight/src/main/io/vtx_control.c ****             actionCounter = 2;
+ 219:../cleanflight/src/main/io/vtx_control.c ****         } else if (diff > 5000) {
+ 220:../cleanflight/src/main/io/vtx_control.c ****             actionCounter = 1;
+ 221:../cleanflight/src/main/io/vtx_control.c ****         }
+ 222:../cleanflight/src/main/io/vtx_control.c **** 
+ 223:../cleanflight/src/main/io/vtx_control.c ****         if (actionCounter) {
+ 224:../cleanflight/src/main/io/vtx_control.c **** 
+ 225:../cleanflight/src/main/io/vtx_control.c ****             diff = cmp32(ledToggleAt, end);
+ 226:../cleanflight/src/main/io/vtx_control.c **** 
+ 227:../cleanflight/src/main/io/vtx_control.c ****             if (diff < 0) {
+ 228:../cleanflight/src/main/io/vtx_control.c ****                 ledEnabled = !ledEnabled;
+ 229:../cleanflight/src/main/io/vtx_control.c **** 
+ 230:../cleanflight/src/main/io/vtx_control.c ****                 const uint8_t updateDuration = 60;
+ 231:../cleanflight/src/main/io/vtx_control.c **** 
+ 232:../cleanflight/src/main/io/vtx_control.c ****                 ledToggleAt = end + updateDuration;
+ 233:../cleanflight/src/main/io/vtx_control.c **** 
+ 234:../cleanflight/src/main/io/vtx_control.c ****                 if (ledEnabled) {
+ 235:../cleanflight/src/main/io/vtx_control.c ****                     LED1_ON;
+ 236:../cleanflight/src/main/io/vtx_control.c ****                 } else {
+ 237:../cleanflight/src/main/io/vtx_control.c ****                     LED1_OFF;
+ 238:../cleanflight/src/main/io/vtx_control.c ****                     flashesDone++;
+ 239:../cleanflight/src/main/io/vtx_control.c ****                 }
+ 240:../cleanflight/src/main/io/vtx_control.c **** 
+ 241:../cleanflight/src/main/io/vtx_control.c ****                 if (flashesDone == actionCounter) {
+ 242:../cleanflight/src/main/io/vtx_control.c ****                     ledToggleAt += (1000 - ((flashesDone * updateDuration) * 2));
+ 243:../cleanflight/src/main/io/vtx_control.c ****                     flashesDone = 0;
+ 244:../cleanflight/src/main/io/vtx_control.c ****                 }
+ 245:../cleanflight/src/main/io/vtx_control.c ****             }
+ 246:../cleanflight/src/main/io/vtx_control.c ****             buttonWasPressed = true;
+ 247:../cleanflight/src/main/io/vtx_control.c ****         }
+ 248:../cleanflight/src/main/io/vtx_control.c ****     }
+ 249:../cleanflight/src/main/io/vtx_control.c **** 
+ 250:../cleanflight/src/main/io/vtx_control.c ****     if (!buttonWasPressed) {
+ 251:../cleanflight/src/main/io/vtx_control.c ****         return;
+ 252:../cleanflight/src/main/io/vtx_control.c ****     }
+ 253:../cleanflight/src/main/io/vtx_control.c **** 
+ 254:../cleanflight/src/main/io/vtx_control.c ****     LED1_OFF;
+ 255:../cleanflight/src/main/io/vtx_control.c **** 
+ 256:../cleanflight/src/main/io/vtx_control.c ****     switch (actionCounter) {
+ 257:../cleanflight/src/main/io/vtx_control.c ****     case 4:
+ 258:../cleanflight/src/main/io/vtx_control.c ****         vtxCycleBandOrChannel(0, +1);
+ 259:../cleanflight/src/main/io/vtx_control.c ****         break;
+ 260:../cleanflight/src/main/io/vtx_control.c ****     case 3:
+ 261:../cleanflight/src/main/io/vtx_control.c ****         vtxCycleBandOrChannel(+1, 0);
+ 262:../cleanflight/src/main/io/vtx_control.c ****         break;
+ 263:../cleanflight/src/main/io/vtx_control.c ****     case 2:
+ 264:../cleanflight/src/main/io/vtx_control.c ****         vtxCyclePower(+1);
+ 265:../cleanflight/src/main/io/vtx_control.c ****         break;
+ 266:../cleanflight/src/main/io/vtx_control.c ****     case 1:
+ 267:../cleanflight/src/main/io/vtx_control.c ****         saveConfigAndNotify();
+ 268:../cleanflight/src/main/io/vtx_control.c ****         break;
+ 269:../cleanflight/src/main/io/vtx_control.c ****     }
+ 270:../cleanflight/src/main/io/vtx_control.c **** #endif
+ 271:../cleanflight/src/main/io/vtx_control.c **** }
+ 799              	 .loc 3 271 0
+ 800 0004 BD46     	 mov sp,r7
+ 801              	.LCFI44:
+ 802              	 .cfi_def_cfa_register 13
+ 803              	 
+ 804 0006 5DF8047B 	 ldr r7,[sp],#4
+ 805              	.LCFI45:
+ 806              	 .cfi_restore 7
+ 807              	 .cfi_def_cfa_offset 0
+ 808 000a 7047     	 bx lr
+ 809              	 .cfi_endproc
+ 810              	.LFE554:
+ 812              	 .section .data.lastIndex.12305,"aw",%progbits
+ 815              	lastIndex.12305:
+ 816 0000 FF       	 .byte -1
+ 817              	 .text
+ 818              	.Letext0:
+ 819              	 .file 4 "d:\\xmc\\dave-ide-4.4.2-64bit\\eclipse\\arm-gcc-49\\arm-none-eabi\\include\\machine\\_default_types.h"
+ 820              	 .file 5 "d:\\xmc\\dave-ide-4.4.2-64bit\\eclipse\\arm-gcc-49\\arm-none-eabi\\include\\stdint.h"
+ 821              	 .file 6 "D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/lib/main/XMC4000/XMCLib/inc/xmc_usic.h"
+ 822              	 .file 7 "D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/pg/pg.h"
+ 823              	 .file 8 "D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/drivers/io_types.h"
+ 824              	 .file 9 "D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/drivers/light_led.h"
+ 825              	 .file 10 "D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/common/time.h"
+ 826              	 .file 11 "D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/drivers/vtx_common.h"
+ 827              	 .file 12 "D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/fc/config.h"
+ 828              	 .file 13 "D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/fc/runtime_config.h"
+ 829              	 .file 14 "D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/io/osd.h"
+ 830              	 .file 15 "D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/fc/rc_modes.h"
+ 831              	 .file 16 "D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/lib/main/CMSIS/Core/Include/core_cm4.h"
+ 832              	 .file 17 "D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/lib/main/XMC4000/system_XMC4700.h"
+DEFINED SYMBOLS
+                            *ABS*:00000000 vtx_control.c
+    {standard input}:20     .text.vtxSettingsConfigMutable:00000000 $t
+    {standard input}:24     .text.vtxSettingsConfigMutable:00000000 vtxSettingsConfigMutable
+    {standard input}:54     .text.vtxSettingsConfigMutable:00000010 $d
+    {standard input}:59     .text.vtxConfig:00000000 $t
+    {standard input}:63     .text.vtxConfig:00000000 vtxConfig
+    {standard input}:93     .text.vtxConfig:00000010 $d
+                            *COM*:00000033 vtxConfig_System
+                            *COM*:00000033 vtxConfig_Copy
+    {standard input}:104    .pg_registry:00000000 vtxConfig_Registry
+    {standard input}:101    .pg_registry:00000000 $d
+    {standard input}:116    .pg_resetdata:00000000 pgResetTemplate_vtxConfig
+    {standard input}:113    .pg_resetdata:00000000 $d
+    {standard input}:122    .bss.locked:00000000 locked
+    {standard input}:123    .bss.locked:00000000 $d
+    {standard input}:125    .text.vtxControlInit:00000000 $t
+    {standard input}:130    .text.vtxControlInit:00000000 vtxControlInit
+    {standard input}:159    .text.vtxControlInputPoll:00000000 $t
+    {standard input}:164    .text.vtxControlInputPoll:00000000 vtxControlInputPoll
+    {standard input}:186    .text.vtxUpdateBandAndChannel:00000000 $t
+    {standard input}:190    .text.vtxUpdateBandAndChannel:00000000 vtxUpdateBandAndChannel
+    {standard input}:262    .text.vtxUpdateBandAndChannel:0000005c $d
+    {standard input}:268    .text.vtxIncrementBand:00000000 $t
+    {standard input}:273    .text.vtxIncrementBand:00000000 vtxIncrementBand
+    {standard input}:297    .text.vtxDecrementBand:00000000 $t
+    {standard input}:302    .text.vtxDecrementBand:00000000 vtxDecrementBand
+    {standard input}:326    .text.vtxIncrementChannel:00000000 $t
+    {standard input}:331    .text.vtxIncrementChannel:00000000 vtxIncrementChannel
+    {standard input}:355    .text.vtxDecrementChannel:00000000 $t
+    {standard input}:360    .text.vtxDecrementChannel:00000000 vtxDecrementChannel
+    {standard input}:384    .text.vtxUpdateActivatedChannel:00000000 $t
+    {standard input}:389    .text.vtxUpdateActivatedChannel:00000000 vtxUpdateActivatedChannel
+    {standard input}:505    .text.vtxUpdateActivatedChannel:00000094 $d
+    {standard input}:815    .data.lastIndex.12305:00000000 lastIndex.12305
+    {standard input}:512    .text.vtxCycleBandOrChannel:00000000 $t
+    {standard input}:517    .text.vtxCycleBandOrChannel:00000000 vtxCycleBandOrChannel
+    {standard input}:665    .text.vtxCyclePower:00000000 $t
+    {standard input}:670    .text.vtxCyclePower:00000000 vtxCyclePower
+    {standard input}:780    .text.handleVTXControlButton:00000000 $t
+    {standard input}:785    .text.handleVTXControlButton:00000000 handleVTXControlButton
+                     .debug_frame:00000010 $d
+
+UNDEFINED SYMBOLS
+vtxSettingsConfig_System
+spektrumVtxControl
+vtxCommonDevice
+armingFlags
+isRangeActive
+vtxCommonGetBandAndChannel
+vtxCommonGetDeviceCapability
+vtxCommonGetPowerIndex

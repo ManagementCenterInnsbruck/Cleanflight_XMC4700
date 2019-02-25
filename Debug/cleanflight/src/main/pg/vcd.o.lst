@@ -1,0 +1,48 @@
+   1              	 .syntax unified
+   2              	 .cpu cortex-m4
+   3              	 .eabi_attribute 27,3
+   4              	 .fpu fpv4-sp-d16
+   5              	 .eabi_attribute 20,1
+   6              	 .eabi_attribute 21,1
+   7              	 .eabi_attribute 23,3
+   8              	 .eabi_attribute 24,1
+   9              	 .eabi_attribute 25,1
+  10              	 .eabi_attribute 26,1
+  11              	 .eabi_attribute 30,6
+  12              	 .eabi_attribute 34,1
+  13              	 .eabi_attribute 18,4
+  14              	 .thumb
+  15              	 .file "vcd.c"
+  16              	 .text
+  17              	.Ltext0:
+  18              	 .cfi_sections .debug_frame
+  19              	 .comm vcdProfile_System,3,4
+  20              	 .comm vcdProfile_Copy,3,4
+  21              	 .global vcdProfile_Registry
+  22              	 .section .pg_registry,"a",%progbits
+  23              	 .align 2
+  26              	vcdProfile_Registry:
+  27 0000 0202     	 .short 514
+  28 0002 0300     	 .short 3
+  29 0004 00000000 	 .word vcdProfile_System
+  30 0008 00000000 	 .word vcdProfile_Copy
+  31 000c 00000000 	 .word 0
+  32 0010 00000000 	 .word 0
+  33              	 .text
+  34              	.Letext0:
+  35              	 .file 1 "d:\\xmc\\dave-ide-4.4.2-64bit\\eclipse\\arm-gcc-49\\arm-none-eabi\\include\\machine\\_default_types.h"
+  36              	 .file 2 "d:\\xmc\\dave-ide-4.4.2-64bit\\eclipse\\arm-gcc-49\\arm-none-eabi\\include\\stdint.h"
+  37              	 .file 3 "D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/lib/main/XMC4000/XMCLib/inc/xmc_usic.h"
+  38              	 .file 4 "D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/pg/pg.h"
+  39              	 .file 5 "../cleanflight/src/main/pg/vcd.h"
+  40              	 .file 6 "D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/lib/main/CMSIS/Core/Include/core_cm4.h"
+  41              	 .file 7 "D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/lib/main/XMC4000/system_XMC4700.h"
+  42              	 .file 8 "../cleanflight/src/main/pg/vcd.c"
+DEFINED SYMBOLS
+                            *ABS*:00000000 vcd.c
+                            *COM*:00000003 vcdProfile_System
+                            *COM*:00000003 vcdProfile_Copy
+    {standard input}:26     .pg_registry:00000000 vcdProfile_Registry
+    {standard input}:23     .pg_registry:00000000 $d
+
+NO UNDEFINED SYMBOLS

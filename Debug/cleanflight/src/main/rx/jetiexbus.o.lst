@@ -1,0 +1,1190 @@
+   1              	 .syntax unified
+   2              	 .cpu cortex-m4
+   3              	 .eabi_attribute 27,3
+   4              	 .fpu fpv4-sp-d16
+   5              	 .eabi_attribute 20,1
+   6              	 .eabi_attribute 21,1
+   7              	 .eabi_attribute 23,3
+   8              	 .eabi_attribute 24,1
+   9              	 .eabi_attribute 25,1
+  10              	 .eabi_attribute 26,1
+  11              	 .eabi_attribute 30,6
+  12              	 .eabi_attribute 34,1
+  13              	 .eabi_attribute 18,4
+  14              	 .thumb
+  15              	 .file "jetiexbus.c"
+  16              	 .text
+  17              	.Ltext0:
+  18              	 .cfi_sections .debug_frame
+  19              	 .comm jetiExBusPort,4,4
+  20              	 .global jetiTimeStampRequest
+  21              	 .section .bss.jetiTimeStampRequest,"aw",%nobits
+  22              	 .align 2
+  25              	jetiTimeStampRequest:
+  26 0000 00000000 	 .space 4
+  27              	 .section .bss.jetiExBusFramePosition,"aw",%nobits
+  30              	jetiExBusFramePosition:
+  31 0000 00       	 .space 1
+  32              	 .section .bss.jetiExBusFrameLength,"aw",%nobits
+  35              	jetiExBusFrameLength:
+  36 0000 00       	 .space 1
+  37              	 .section .bss.jetiExBusFrameState,"aw",%nobits
+  40              	jetiExBusFrameState:
+  41 0000 00       	 .space 1
+  42              	 .global jetiExBusRequestState
+  43              	 .section .bss.jetiExBusRequestState,"aw",%nobits
+  46              	jetiExBusRequestState:
+  47 0000 00       	 .space 1
+  48              	 .section .bss.jetiExBusChannelFrame,"aw",%nobits
+  49              	 .align 2
+  52              	jetiExBusChannelFrame:
+  53 0000 00000000 	 .space 40
+  53      00000000 
+  53      00000000 
+  53      00000000 
+  53      00000000 
+  54              	 .comm jetiExBusRequestFrame,9,4
+  55              	 .section .bss.jetiExBusChannelData,"aw",%nobits
+  56              	 .align 2
+  59              	jetiExBusChannelData:
+  60 0000 00000000 	 .space 32
+  60      00000000 
+  60      00000000 
+  60      00000000 
+  60      00000000 
+  61              	 .section .text.jetiExBusCalcCRC16,"ax",%progbits
+  62              	 .align 2
+  63              	 .global jetiExBusCalcCRC16
+  64              	 .thumb
+  65              	 .thumb_func
+  67              	jetiExBusCalcCRC16:
+  68              	.LFB539:
+  69              	 .file 1 "../cleanflight/src/main/rx/jetiexbus.c"
+   1:../cleanflight/src/main/rx/jetiexbus.c **** /*
+   2:../cleanflight/src/main/rx/jetiexbus.c ****  * This file is part of Cleanflight and Betaflight.
+   3:../cleanflight/src/main/rx/jetiexbus.c ****  *
+   4:../cleanflight/src/main/rx/jetiexbus.c ****  * Cleanflight and Betaflight are free software. You can redistribute
+   5:../cleanflight/src/main/rx/jetiexbus.c ****  * this software and/or modify this software under the terms of the
+   6:../cleanflight/src/main/rx/jetiexbus.c ****  * GNU General Public License as published by the Free Software
+   7:../cleanflight/src/main/rx/jetiexbus.c ****  * Foundation, either version 3 of the License, or (at your option)
+   8:../cleanflight/src/main/rx/jetiexbus.c ****  * any later version.
+   9:../cleanflight/src/main/rx/jetiexbus.c ****  *
+  10:../cleanflight/src/main/rx/jetiexbus.c ****  * Cleanflight and Betaflight are distributed in the hope that they
+  11:../cleanflight/src/main/rx/jetiexbus.c ****  * will be useful, but WITHOUT ANY WARRANTY; without even the implied
+  12:../cleanflight/src/main/rx/jetiexbus.c ****  * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+  13:../cleanflight/src/main/rx/jetiexbus.c ****  * See the GNU General Public License for more details.
+  14:../cleanflight/src/main/rx/jetiexbus.c ****  *
+  15:../cleanflight/src/main/rx/jetiexbus.c ****  * You should have received a copy of the GNU General Public License
+  16:../cleanflight/src/main/rx/jetiexbus.c ****  * along with this software.
+  17:../cleanflight/src/main/rx/jetiexbus.c ****  *
+  18:../cleanflight/src/main/rx/jetiexbus.c ****  * If not, see <http://www.gnu.org/licenses/>.
+  19:../cleanflight/src/main/rx/jetiexbus.c ****  */
+  20:../cleanflight/src/main/rx/jetiexbus.c **** 
+  21:../cleanflight/src/main/rx/jetiexbus.c **** /*
+  22:../cleanflight/src/main/rx/jetiexbus.c ****  * Authors:
+  23:../cleanflight/src/main/rx/jetiexbus.c ****  * Thomas Miric - marv-t
+  24:../cleanflight/src/main/rx/jetiexbus.c ****  *
+  25:../cleanflight/src/main/rx/jetiexbus.c ****  * Jeti EX Bus Communication Protocol:
+  26:../cleanflight/src/main/rx/jetiexbus.c ****  * http://www.jetimodel.com/en/show-file/642/
+  27:../cleanflight/src/main/rx/jetiexbus.c ****  *
+  28:../cleanflight/src/main/rx/jetiexbus.c ****  * JETI Telemetry Communication Protocol:
+  29:../cleanflight/src/main/rx/jetiexbus.c ****  * http://www.jetimodel.com/en/show-file/26/
+  30:../cleanflight/src/main/rx/jetiexbus.c ****  *
+  31:../cleanflight/src/main/rx/jetiexbus.c ****  * Following restrictions:
+  32:../cleanflight/src/main/rx/jetiexbus.c ****  * Communication speed: 125000 bps
+  33:../cleanflight/src/main/rx/jetiexbus.c ****  * Number of channels: 16
+  34:../cleanflight/src/main/rx/jetiexbus.c ****  *
+  35:../cleanflight/src/main/rx/jetiexbus.c ****  * Connect as follows:
+  36:../cleanflight/src/main/rx/jetiexbus.c ****  * Jeti EX Bus -> Serial RX (connect directly)
+  37:../cleanflight/src/main/rx/jetiexbus.c ****  * Serial TX -> Resistor(2k4) ->Serial RX
+  38:../cleanflight/src/main/rx/jetiexbus.c ****  * In jeti pdf it is different, but if the resistor breaks, the receiver continues to operate.
+  39:../cleanflight/src/main/rx/jetiexbus.c ****  *
+  40:../cleanflight/src/main/rx/jetiexbus.c ****  */
+  41:../cleanflight/src/main/rx/jetiexbus.c **** 
+  42:../cleanflight/src/main/rx/jetiexbus.c **** #include <stdbool.h>
+  43:../cleanflight/src/main/rx/jetiexbus.c **** #include <stdint.h>
+  44:../cleanflight/src/main/rx/jetiexbus.c **** 
+  45:../cleanflight/src/main/rx/jetiexbus.c **** #include "platform.h"
+  46:../cleanflight/src/main/rx/jetiexbus.c **** 
+  47:../cleanflight/src/main/rx/jetiexbus.c **** #ifdef USE_SERIAL_RX
+  48:../cleanflight/src/main/rx/jetiexbus.c **** 
+  49:../cleanflight/src/main/rx/jetiexbus.c **** #include "build/build_config.h"
+  50:../cleanflight/src/main/rx/jetiexbus.c **** #include "build/debug.h"
+  51:../cleanflight/src/main/rx/jetiexbus.c **** 
+  52:../cleanflight/src/main/rx/jetiexbus.c **** #include "pg/rx.h"
+  53:../cleanflight/src/main/rx/jetiexbus.c **** 
+  54:../cleanflight/src/main/rx/jetiexbus.c **** #include "common/utils.h"
+  55:../cleanflight/src/main/rx/jetiexbus.c **** 
+  56:../cleanflight/src/main/rx/jetiexbus.c **** #include "drivers/time.h"
+  57:../cleanflight/src/main/rx/jetiexbus.c **** 
+  58:../cleanflight/src/main/rx/jetiexbus.c **** #include "io/serial.h"
+  59:../cleanflight/src/main/rx/jetiexbus.c **** 
+  60:../cleanflight/src/main/rx/jetiexbus.c **** #include "rx/rx.h"
+  61:../cleanflight/src/main/rx/jetiexbus.c **** #include "rx/jetiexbus.h"
+  62:../cleanflight/src/main/rx/jetiexbus.c **** 
+  63:../cleanflight/src/main/rx/jetiexbus.c **** 
+  64:../cleanflight/src/main/rx/jetiexbus.c **** //
+  65:../cleanflight/src/main/rx/jetiexbus.c **** // Serial driver for Jeti EX Bus receiver
+  66:../cleanflight/src/main/rx/jetiexbus.c **** //
+  67:../cleanflight/src/main/rx/jetiexbus.c **** #define JETIEXBUS_BAUDRATE 125000                       // EX Bus 125000; EX Bus HS 250000 not supp
+  68:../cleanflight/src/main/rx/jetiexbus.c **** #define JETIEXBUS_OPTIONS (SERIAL_STOPBITS_1 | SERIAL_PARITY_NO)
+  69:../cleanflight/src/main/rx/jetiexbus.c **** #define JETIEXBUS_MIN_FRAME_GAP     1000
+  70:../cleanflight/src/main/rx/jetiexbus.c **** #define JETIEXBUS_CHANNEL_COUNT     16                  // most Jeti TX transmit 16 channels
+  71:../cleanflight/src/main/rx/jetiexbus.c **** 
+  72:../cleanflight/src/main/rx/jetiexbus.c **** 
+  73:../cleanflight/src/main/rx/jetiexbus.c **** #define EXBUS_START_CHANNEL_FRAME       (0x3E)
+  74:../cleanflight/src/main/rx/jetiexbus.c **** #define EXBUS_START_REQUEST_FRAME       (0x3D)
+  75:../cleanflight/src/main/rx/jetiexbus.c **** #define EXBUS_JETIBOX_REQUEST           (0x3B)
+  76:../cleanflight/src/main/rx/jetiexbus.c **** 
+  77:../cleanflight/src/main/rx/jetiexbus.c **** #define EXBUS_CHANNELDATA               (0x3E03)        // Frame contains Channel Data
+  78:../cleanflight/src/main/rx/jetiexbus.c **** #define EXBUS_CHANNELDATA_DATA_REQUEST  (0x3E01)        // Frame contains Channel Data, but with a 
+  79:../cleanflight/src/main/rx/jetiexbus.c **** #define EXBUS_TELEMETRY_REQUEST         (0x3D01)        // Frame is a request Frame
+  80:../cleanflight/src/main/rx/jetiexbus.c **** 
+  81:../cleanflight/src/main/rx/jetiexbus.c **** 
+  82:../cleanflight/src/main/rx/jetiexbus.c **** 
+  83:../cleanflight/src/main/rx/jetiexbus.c **** serialPort_t *jetiExBusPort;
+  84:../cleanflight/src/main/rx/jetiexbus.c **** 
+  85:../cleanflight/src/main/rx/jetiexbus.c **** uint32_t jetiTimeStampRequest = 0;
+  86:../cleanflight/src/main/rx/jetiexbus.c **** 
+  87:../cleanflight/src/main/rx/jetiexbus.c **** static uint8_t jetiExBusFramePosition;
+  88:../cleanflight/src/main/rx/jetiexbus.c **** static uint8_t jetiExBusFrameLength;
+  89:../cleanflight/src/main/rx/jetiexbus.c **** 
+  90:../cleanflight/src/main/rx/jetiexbus.c **** static uint8_t jetiExBusFrameState = EXBUS_STATE_ZERO;
+  91:../cleanflight/src/main/rx/jetiexbus.c **** uint8_t jetiExBusRequestState = EXBUS_STATE_ZERO;
+  92:../cleanflight/src/main/rx/jetiexbus.c **** 
+  93:../cleanflight/src/main/rx/jetiexbus.c **** // Use max values for ram areas
+  94:../cleanflight/src/main/rx/jetiexbus.c **** static uint8_t jetiExBusChannelFrame[EXBUS_MAX_CHANNEL_FRAME_SIZE];
+  95:../cleanflight/src/main/rx/jetiexbus.c **** uint8_t jetiExBusRequestFrame[EXBUS_MAX_REQUEST_FRAME_SIZE];
+  96:../cleanflight/src/main/rx/jetiexbus.c **** 
+  97:../cleanflight/src/main/rx/jetiexbus.c **** static uint16_t jetiExBusChannelData[JETIEXBUS_CHANNEL_COUNT];
+  98:../cleanflight/src/main/rx/jetiexbus.c **** 
+  99:../cleanflight/src/main/rx/jetiexbus.c **** 
+ 100:../cleanflight/src/main/rx/jetiexbus.c **** // Jeti Ex Bus CRC calculations for a frame
+ 101:../cleanflight/src/main/rx/jetiexbus.c **** uint16_t jetiExBusCalcCRC16(uint8_t *pt, uint8_t msgLen)
+ 102:../cleanflight/src/main/rx/jetiexbus.c **** {
+  70              	 .loc 1 102 0
+  71              	 .cfi_startproc
+  72              	 
+  73              	 
+  74              	 
+  75 0000 80B4     	 push {r7}
+  76              	.LCFI0:
+  77              	 .cfi_def_cfa_offset 4
+  78              	 .cfi_offset 7,-4
+  79 0002 85B0     	 sub sp,sp,#20
+  80              	.LCFI1:
+  81              	 .cfi_def_cfa_offset 24
+  82 0004 00AF     	 add r7,sp,#0
+  83              	.LCFI2:
+  84              	 .cfi_def_cfa_register 7
+  85 0006 7860     	 str r0,[r7,#4]
+  86 0008 0B46     	 mov r3,r1
+  87 000a FB70     	 strb r3,[r7,#3]
+ 103:../cleanflight/src/main/rx/jetiexbus.c ****     uint16_t crc16_data = 0;
+  88              	 .loc 1 103 0
+  89 000c 0023     	 movs r3,#0
+  90 000e FB81     	 strh r3,[r7,#14]
+ 104:../cleanflight/src/main/rx/jetiexbus.c ****     uint8_t data=0;
+  91              	 .loc 1 104 0
+  92 0010 0023     	 movs r3,#0
+  93 0012 3B73     	 strb r3,[r7,#12]
+  94              	.LBB2:
+ 105:../cleanflight/src/main/rx/jetiexbus.c **** 
+ 106:../cleanflight/src/main/rx/jetiexbus.c ****     for (uint8_t mlen = 0; mlen < msgLen; mlen++) {
+  95              	 .loc 1 106 0
+  96 0014 0023     	 movs r3,#0
+  97 0016 7B73     	 strb r3,[r7,#13]
+  98 0018 26E0     	 b .L2
+  99              	.L3:
+ 107:../cleanflight/src/main/rx/jetiexbus.c ****         data = pt[mlen] ^ ((uint8_t)(crc16_data) & (uint8_t)(0xFF));
+ 100              	 .loc 1 107 0 discriminator 3
+ 101 001a 7B7B     	 ldrb r3,[r7,#13]
+ 102 001c 7A68     	 ldr r2,[r7,#4]
+ 103 001e 1344     	 add r3,r3,r2
+ 104 0020 1A78     	 ldrb r2,[r3]
+ 105 0022 FB89     	 ldrh r3,[r7,#14]
+ 106 0024 DBB2     	 uxtb r3,r3
+ 107 0026 5340     	 eors r3,r3,r2
+ 108 0028 3B73     	 strb r3,[r7,#12]
+ 108:../cleanflight/src/main/rx/jetiexbus.c ****         data ^= data << 4;
+ 109              	 .loc 1 108 0 discriminator 3
+ 110 002a 3B7B     	 ldrb r3,[r7,#12]
+ 111 002c 1B01     	 lsls r3,r3,#4
+ 112 002e DAB2     	 uxtb r2,r3
+ 113 0030 3B7B     	 ldrb r3,[r7,#12]
+ 114 0032 5340     	 eors r3,r3,r2
+ 115 0034 DBB2     	 uxtb r3,r3
+ 116 0036 3B73     	 strb r3,[r7,#12]
+ 109:../cleanflight/src/main/rx/jetiexbus.c ****         crc16_data = ((((uint16_t)data << 8) | ((crc16_data & 0xFF00) >> 8))
+ 117              	 .loc 1 109 0 discriminator 3
+ 118 0038 3B7B     	 ldrb r3,[r7,#12]
+ 119 003a 1B02     	 lsls r3,r3,#8
+ 120 003c 9AB2     	 uxth r2,r3
+ 121 003e FB89     	 ldrh r3,[r7,#14]
+ 122 0040 1B0A     	 lsrs r3,r3,#8
+ 123 0042 9BB2     	 uxth r3,r3
+ 124 0044 9BB2     	 uxth r3,r3
+ 125 0046 1343     	 orrs r3,r3,r2
+ 126 0048 9AB2     	 uxth r2,r3
+ 110:../cleanflight/src/main/rx/jetiexbus.c ****                       ^ (uint8_t)(data >> 4)
+ 127              	 .loc 1 110 0 discriminator 3
+ 128 004a 3B7B     	 ldrb r3,[r7,#12]
+ 129 004c 1B09     	 lsrs r3,r3,#4
+ 130 004e DBB2     	 uxtb r3,r3
+ 109:../cleanflight/src/main/rx/jetiexbus.c ****         crc16_data = ((((uint16_t)data << 8) | ((crc16_data & 0xFF00) >> 8))
+ 131              	 .loc 1 109 0 discriminator 3
+ 132 0050 9BB2     	 uxth r3,r3
+ 133 0052 5340     	 eors r3,r3,r2
+ 134 0054 9AB2     	 uxth r2,r3
+ 111:../cleanflight/src/main/rx/jetiexbus.c ****                       ^ ((uint16_t)data << 3));
+ 135              	 .loc 1 111 0 discriminator 3
+ 136 0056 3B7B     	 ldrb r3,[r7,#12]
+ 137 0058 DB00     	 lsls r3,r3,#3
+ 109:../cleanflight/src/main/rx/jetiexbus.c ****         crc16_data = ((((uint16_t)data << 8) | ((crc16_data & 0xFF00) >> 8))
+ 138              	 .loc 1 109 0 discriminator 3
+ 139 005a 9BB2     	 uxth r3,r3
+ 140 005c 5340     	 eors r3,r3,r2
+ 141 005e 9BB2     	 uxth r3,r3
+ 142 0060 FB81     	 strh r3,[r7,#14]
+ 106:../cleanflight/src/main/rx/jetiexbus.c ****         data = pt[mlen] ^ ((uint8_t)(crc16_data) & (uint8_t)(0xFF));
+ 143              	 .loc 1 106 0 discriminator 3
+ 144 0062 7B7B     	 ldrb r3,[r7,#13]
+ 145 0064 0133     	 adds r3,r3,#1
+ 146 0066 7B73     	 strb r3,[r7,#13]
+ 147              	.L2:
+ 106:../cleanflight/src/main/rx/jetiexbus.c ****         data = pt[mlen] ^ ((uint8_t)(crc16_data) & (uint8_t)(0xFF));
+ 148              	 .loc 1 106 0 is_stmt 0 discriminator 1
+ 149 0068 7A7B     	 ldrb r2,[r7,#13]
+ 150 006a FB78     	 ldrb r3,[r7,#3]
+ 151 006c 9A42     	 cmp r2,r3
+ 152 006e D4D3     	 bcc .L3
+ 153              	.LBE2:
+ 112:../cleanflight/src/main/rx/jetiexbus.c ****     }
+ 113:../cleanflight/src/main/rx/jetiexbus.c ****     return(crc16_data);
+ 154              	 .loc 1 113 0 is_stmt 1
+ 155 0070 FB89     	 ldrh r3,[r7,#14]
+ 114:../cleanflight/src/main/rx/jetiexbus.c **** }
+ 156              	 .loc 1 114 0
+ 157 0072 1846     	 mov r0,r3
+ 158 0074 1437     	 adds r7,r7,#20
+ 159              	.LCFI3:
+ 160              	 .cfi_def_cfa_offset 4
+ 161 0076 BD46     	 mov sp,r7
+ 162              	.LCFI4:
+ 163              	 .cfi_def_cfa_register 13
+ 164              	 
+ 165 0078 5DF8047B 	 ldr r7,[sp],#4
+ 166              	.LCFI5:
+ 167              	 .cfi_restore 7
+ 168              	 .cfi_def_cfa_offset 0
+ 169 007c 7047     	 bx lr
+ 170              	 .cfi_endproc
+ 171              	.LFE539:
+ 173 007e 00BF     	 .section .text.jetiExBusDecodeChannelFrame,"ax",%progbits
+ 174              	 .align 2
+ 175              	 .global jetiExBusDecodeChannelFrame
+ 176              	 .thumb
+ 177              	 .thumb_func
+ 179              	jetiExBusDecodeChannelFrame:
+ 180              	.LFB540:
+ 115:../cleanflight/src/main/rx/jetiexbus.c **** 
+ 116:../cleanflight/src/main/rx/jetiexbus.c **** void jetiExBusDecodeChannelFrame(uint8_t *exBusFrame)
+ 117:../cleanflight/src/main/rx/jetiexbus.c **** {
+ 181              	 .loc 1 117 0
+ 182              	 .cfi_startproc
+ 183              	 
+ 184              	 
+ 185              	 
+ 186 0000 80B4     	 push {r7}
+ 187              	.LCFI6:
+ 188              	 .cfi_def_cfa_offset 4
+ 189              	 .cfi_offset 7,-4
+ 190 0002 85B0     	 sub sp,sp,#20
+ 191              	.LCFI7:
+ 192              	 .cfi_def_cfa_offset 24
+ 193 0004 00AF     	 add r7,sp,#0
+ 194              	.LCFI8:
+ 195              	 .cfi_def_cfa_register 7
+ 196 0006 7860     	 str r0,[r7,#4]
+ 118:../cleanflight/src/main/rx/jetiexbus.c ****     uint16_t value;
+ 119:../cleanflight/src/main/rx/jetiexbus.c ****     uint8_t frameAddr;
+ 120:../cleanflight/src/main/rx/jetiexbus.c **** 
+ 121:../cleanflight/src/main/rx/jetiexbus.c ****     // Decode header
+ 122:../cleanflight/src/main/rx/jetiexbus.c ****     switch (((uint16_t)exBusFrame[EXBUS_HEADER_SYNC] << 8) | ((uint16_t)exBusFrame[EXBUS_HEADER_REQ
+ 197              	 .loc 1 122 0
+ 198 0008 7B68     	 ldr r3,[r7,#4]
+ 199 000a 1B78     	 ldrb r3,[r3]
+ 200 000c 1B02     	 lsls r3,r3,#8
+ 201 000e 7A68     	 ldr r2,[r7,#4]
+ 202 0010 0132     	 adds r2,r2,#1
+ 203 0012 1278     	 ldrb r2,[r2]
+ 204 0014 1343     	 orrs r3,r3,r2
+ 205 0016 43F60162 	 movw r2,#15873
+ 206 001a 9342     	 cmp r3,r2
+ 207 001c 03D0     	 beq .L7
+ 208 001e 43F60362 	 movw r2,#15875
+ 209 0022 9342     	 cmp r3,r2
+ 210 0024 25D1     	 bne .L5
+ 211              	.L7:
+ 212              	.LBB3:
+ 123:../cleanflight/src/main/rx/jetiexbus.c **** 
+ 124:../cleanflight/src/main/rx/jetiexbus.c ****     case EXBUS_CHANNELDATA_DATA_REQUEST:                   // not yet specified
+ 125:../cleanflight/src/main/rx/jetiexbus.c ****     case EXBUS_CHANNELDATA:
+ 126:../cleanflight/src/main/rx/jetiexbus.c ****         for (uint8_t i = 0; i < JETIEXBUS_CHANNEL_COUNT; i++) {
+ 213              	 .loc 1 126 0
+ 214 0026 0023     	 movs r3,#0
+ 215 0028 FB73     	 strb r3,[r7,#15]
+ 216 002a 1EE0     	 b .L8
+ 217              	.L9:
+ 127:../cleanflight/src/main/rx/jetiexbus.c ****             frameAddr = EXBUS_HEADER_LEN + i * 2;
+ 218              	 .loc 1 127 0 discriminator 3
+ 219 002c FB7B     	 ldrb r3,[r7,#15]
+ 220 002e 0333     	 adds r3,r3,#3
+ 221 0030 DBB2     	 uxtb r3,r3
+ 222 0032 5B00     	 lsls r3,r3,#1
+ 223 0034 BB73     	 strb r3,[r7,#14]
+ 128:../cleanflight/src/main/rx/jetiexbus.c ****             value = ((uint16_t)exBusFrame[frameAddr + 1]) << 8;
+ 224              	 .loc 1 128 0 discriminator 3
+ 225 0036 BB7B     	 ldrb r3,[r7,#14]
+ 226 0038 0133     	 adds r3,r3,#1
+ 227 003a 7A68     	 ldr r2,[r7,#4]
+ 228 003c 1344     	 add r3,r3,r2
+ 229 003e 1B78     	 ldrb r3,[r3]
+ 230 0040 9BB2     	 uxth r3,r3
+ 231 0042 1B02     	 lsls r3,r3,#8
+ 232 0044 BB81     	 strh r3,[r7,#12]
+ 129:../cleanflight/src/main/rx/jetiexbus.c ****             value += (uint16_t)exBusFrame[frameAddr];
+ 233              	 .loc 1 129 0 discriminator 3
+ 234 0046 BB7B     	 ldrb r3,[r7,#14]
+ 235 0048 7A68     	 ldr r2,[r7,#4]
+ 236 004a 1344     	 add r3,r3,r2
+ 237 004c 1B78     	 ldrb r3,[r3]
+ 238 004e 9AB2     	 uxth r2,r3
+ 239 0050 BB89     	 ldrh r3,[r7,#12]
+ 240 0052 1344     	 add r3,r3,r2
+ 241 0054 BB81     	 strh r3,[r7,#12]
+ 130:../cleanflight/src/main/rx/jetiexbus.c ****             // Convert to internal format
+ 131:../cleanflight/src/main/rx/jetiexbus.c ****             jetiExBusChannelData[i] = value >> 3;
+ 242              	 .loc 1 131 0 discriminator 3
+ 243 0056 FB7B     	 ldrb r3,[r7,#15]
+ 244 0058 BA89     	 ldrh r2,[r7,#12]
+ 245 005a D208     	 lsrs r2,r2,#3
+ 246 005c 91B2     	 uxth r1,r2
+ 247 005e 074A     	 ldr r2,.L10
+ 248 0060 22F81310 	 strh r1,[r2,r3,lsl#1]
+ 126:../cleanflight/src/main/rx/jetiexbus.c ****             frameAddr = EXBUS_HEADER_LEN + i * 2;
+ 249              	 .loc 1 126 0 discriminator 3
+ 250 0064 FB7B     	 ldrb r3,[r7,#15]
+ 251 0066 0133     	 adds r3,r3,#1
+ 252 0068 FB73     	 strb r3,[r7,#15]
+ 253              	.L8:
+ 126:../cleanflight/src/main/rx/jetiexbus.c ****             frameAddr = EXBUS_HEADER_LEN + i * 2;
+ 254              	 .loc 1 126 0 is_stmt 0 discriminator 1
+ 255 006a FB7B     	 ldrb r3,[r7,#15]
+ 256 006c 0F2B     	 cmp r3,#15
+ 257 006e DDD9     	 bls .L9
+ 258              	.LBE3:
+ 132:../cleanflight/src/main/rx/jetiexbus.c ****         }
+ 133:../cleanflight/src/main/rx/jetiexbus.c ****         break;
+ 259              	 .loc 1 133 0 is_stmt 1
+ 260 0070 00BF     	 nop
+ 261              	.L5:
+ 134:../cleanflight/src/main/rx/jetiexbus.c ****     }
+ 135:../cleanflight/src/main/rx/jetiexbus.c **** }
+ 262              	 .loc 1 135 0
+ 263 0072 1437     	 adds r7,r7,#20
+ 264              	.LCFI9:
+ 265              	 .cfi_def_cfa_offset 4
+ 266 0074 BD46     	 mov sp,r7
+ 267              	.LCFI10:
+ 268              	 .cfi_def_cfa_register 13
+ 269              	 
+ 270 0076 5DF8047B 	 ldr r7,[sp],#4
+ 271              	.LCFI11:
+ 272              	 .cfi_restore 7
+ 273              	 .cfi_def_cfa_offset 0
+ 274 007a 7047     	 bx lr
+ 275              	.L11:
+ 276              	 .align 2
+ 277              	.L10:
+ 278 007c 00000000 	 .word jetiExBusChannelData
+ 279              	 .cfi_endproc
+ 280              	.LFE540:
+ 282              	 .section .text.jetiExBusFrameReset,"ax",%progbits
+ 283              	 .align 2
+ 284              	 .global jetiExBusFrameReset
+ 285              	 .thumb
+ 286              	 .thumb_func
+ 288              	jetiExBusFrameReset:
+ 289              	.LFB541:
+ 136:../cleanflight/src/main/rx/jetiexbus.c **** 
+ 137:../cleanflight/src/main/rx/jetiexbus.c **** void jetiExBusFrameReset(void)
+ 138:../cleanflight/src/main/rx/jetiexbus.c **** {
+ 290              	 .loc 1 138 0
+ 291              	 .cfi_startproc
+ 292              	 
+ 293              	 
+ 294              	 
+ 295 0000 80B4     	 push {r7}
+ 296              	.LCFI12:
+ 297              	 .cfi_def_cfa_offset 4
+ 298              	 .cfi_offset 7,-4
+ 299 0002 00AF     	 add r7,sp,#0
+ 300              	.LCFI13:
+ 301              	 .cfi_def_cfa_register 7
+ 139:../cleanflight/src/main/rx/jetiexbus.c ****     jetiExBusFramePosition = 0;
+ 302              	 .loc 1 139 0
+ 303 0004 044B     	 ldr r3,.L13
+ 304 0006 0022     	 movs r2,#0
+ 305 0008 1A70     	 strb r2,[r3]
+ 140:../cleanflight/src/main/rx/jetiexbus.c ****     jetiExBusFrameLength = EXBUS_MAX_CHANNEL_FRAME_SIZE;
+ 306              	 .loc 1 140 0
+ 307 000a 044B     	 ldr r3,.L13+4
+ 308 000c 2822     	 movs r2,#40
+ 309 000e 1A70     	 strb r2,[r3]
+ 141:../cleanflight/src/main/rx/jetiexbus.c **** }
+ 310              	 .loc 1 141 0
+ 311 0010 BD46     	 mov sp,r7
+ 312              	.LCFI14:
+ 313              	 .cfi_def_cfa_register 13
+ 314              	 
+ 315 0012 5DF8047B 	 ldr r7,[sp],#4
+ 316              	.LCFI15:
+ 317              	 .cfi_restore 7
+ 318              	 .cfi_def_cfa_offset 0
+ 319 0016 7047     	 bx lr
+ 320              	.L14:
+ 321              	 .align 2
+ 322              	.L13:
+ 323 0018 00000000 	 .word jetiExBusFramePosition
+ 324 001c 00000000 	 .word jetiExBusFrameLength
+ 325              	 .cfi_endproc
+ 326              	.LFE541:
+ 328              	 .section .text.jetiExBusDataReceive,"ax",%progbits
+ 329              	 .align 2
+ 330              	 .thumb
+ 331              	 .thumb_func
+ 333              	jetiExBusDataReceive:
+ 334              	.LFB542:
+ 142:../cleanflight/src/main/rx/jetiexbus.c **** 
+ 143:../cleanflight/src/main/rx/jetiexbus.c **** /*
+ 144:../cleanflight/src/main/rx/jetiexbus.c ****   supported:
+ 145:../cleanflight/src/main/rx/jetiexbus.c ****   0x3E 0x01 LEN Packet_ID 0x31 SUB_LEN Data_array CRC16      // Channel Data with telemetry request
+ 146:../cleanflight/src/main/rx/jetiexbus.c ****   0x3E 0x03 LEN Packet_ID 0x31 SUB_LEN Data_array CRC16      // Channel Data forbids answering (2nd
+ 147:../cleanflight/src/main/rx/jetiexbus.c ****   0x3D 0x01 0x08 Packet_ID 0x3A 0x00 CRC16                   // Telemetry Request EX telemetry (5th
+ 148:../cleanflight/src/main/rx/jetiexbus.c **** 
+ 149:../cleanflight/src/main/rx/jetiexbus.c ****   other messages - not supported:
+ 150:../cleanflight/src/main/rx/jetiexbus.c ****   0x3D 0x01 0x09 Packet_ID 0x3B 0x01 0xF0 CRC16              // Jetibox request (5th byte 0x3B)
+ 151:../cleanflight/src/main/rx/jetiexbus.c ****   ...
+ 152:../cleanflight/src/main/rx/jetiexbus.c **** */
+ 153:../cleanflight/src/main/rx/jetiexbus.c **** 
+ 154:../cleanflight/src/main/rx/jetiexbus.c **** // Receive ISR callback
+ 155:../cleanflight/src/main/rx/jetiexbus.c **** static void jetiExBusDataReceive(uint16_t c, void *data)
+ 156:../cleanflight/src/main/rx/jetiexbus.c **** {
+ 335              	 .loc 1 156 0
+ 336              	 .cfi_startproc
+ 337              	 
+ 338              	 
+ 339 0000 80B5     	 push {r7,lr}
+ 340              	.LCFI16:
+ 341              	 .cfi_def_cfa_offset 8
+ 342              	 .cfi_offset 7,-8
+ 343              	 .cfi_offset 14,-4
+ 344 0002 84B0     	 sub sp,sp,#16
+ 345              	.LCFI17:
+ 346              	 .cfi_def_cfa_offset 24
+ 347 0004 00AF     	 add r7,sp,#0
+ 348              	.LCFI18:
+ 349              	 .cfi_def_cfa_register 7
+ 350 0006 0346     	 mov r3,r0
+ 351 0008 3960     	 str r1,[r7]
+ 352 000a FB80     	 strh r3,[r7,#6]
+ 157:../cleanflight/src/main/rx/jetiexbus.c ****     UNUSED(data);
+ 158:../cleanflight/src/main/rx/jetiexbus.c **** 
+ 159:../cleanflight/src/main/rx/jetiexbus.c ****     uint32_t now;
+ 160:../cleanflight/src/main/rx/jetiexbus.c ****     static uint32_t jetiExBusTimeLast = 0;
+ 161:../cleanflight/src/main/rx/jetiexbus.c ****     static int32_t jetiExBusTimeInterval;
+ 162:../cleanflight/src/main/rx/jetiexbus.c **** 
+ 163:../cleanflight/src/main/rx/jetiexbus.c ****     static uint8_t *jetiExBusFrame;
+ 164:../cleanflight/src/main/rx/jetiexbus.c **** 
+ 165:../cleanflight/src/main/rx/jetiexbus.c ****     // Check if we shall reset frame position due to time
+ 166:../cleanflight/src/main/rx/jetiexbus.c ****     now = micros();
+ 353              	 .loc 1 166 0
+ 354 000c FFF7FEFF 	 bl micros
+ 355 0010 F860     	 str r0,[r7,#12]
+ 167:../cleanflight/src/main/rx/jetiexbus.c **** 
+ 168:../cleanflight/src/main/rx/jetiexbus.c ****     jetiExBusTimeInterval = now - jetiExBusTimeLast;
+ 356              	 .loc 1 168 0
+ 357 0012 444B     	 ldr r3,.L27
+ 358 0014 1B68     	 ldr r3,[r3]
+ 359 0016 FA68     	 ldr r2,[r7,#12]
+ 360 0018 D31A     	 subs r3,r2,r3
+ 361 001a 1A46     	 mov r2,r3
+ 362 001c 424B     	 ldr r3,.L27+4
+ 363 001e 1A60     	 str r2,[r3]
+ 169:../cleanflight/src/main/rx/jetiexbus.c ****     jetiExBusTimeLast = now;
+ 364              	 .loc 1 169 0
+ 365 0020 404A     	 ldr r2,.L27
+ 366 0022 FB68     	 ldr r3,[r7,#12]
+ 367 0024 1360     	 str r3,[r2]
+ 170:../cleanflight/src/main/rx/jetiexbus.c **** 
+ 171:../cleanflight/src/main/rx/jetiexbus.c ****     if (jetiExBusTimeInterval > JETIEXBUS_MIN_FRAME_GAP) {
+ 368              	 .loc 1 171 0
+ 369 0026 404B     	 ldr r3,.L27+4
+ 370 0028 1B68     	 ldr r3,[r3]
+ 371 002a B3F57A7F 	 cmp r3,#1000
+ 372 002e 07DD     	 ble .L16
+ 172:../cleanflight/src/main/rx/jetiexbus.c ****         jetiExBusFrameReset();
+ 373              	 .loc 1 172 0
+ 374 0030 FFF7FEFF 	 bl jetiExBusFrameReset
+ 173:../cleanflight/src/main/rx/jetiexbus.c ****         jetiExBusFrameState = EXBUS_STATE_ZERO;
+ 375              	 .loc 1 173 0
+ 376 0034 3D4B     	 ldr r3,.L27+8
+ 377 0036 0022     	 movs r2,#0
+ 378 0038 1A70     	 strb r2,[r3]
+ 174:../cleanflight/src/main/rx/jetiexbus.c ****         jetiExBusRequestState = EXBUS_STATE_ZERO;
+ 379              	 .loc 1 174 0
+ 380 003a 3D4B     	 ldr r3,.L27+12
+ 381 003c 0022     	 movs r2,#0
+ 382 003e 1A70     	 strb r2,[r3]
+ 383              	.L16:
+ 175:../cleanflight/src/main/rx/jetiexbus.c ****     }
+ 176:../cleanflight/src/main/rx/jetiexbus.c **** 
+ 177:../cleanflight/src/main/rx/jetiexbus.c ****     // Check if we shall start a frame?
+ 178:../cleanflight/src/main/rx/jetiexbus.c ****     if (jetiExBusFramePosition == 0) {
+ 384              	 .loc 1 178 0
+ 385 0040 3C4B     	 ldr r3,.L27+16
+ 386 0042 1B78     	 ldrb r3,[r3]
+ 387 0044 002B     	 cmp r3,#0
+ 388 0046 13D1     	 bne .L17
+ 179:../cleanflight/src/main/rx/jetiexbus.c ****         switch (c) {
+ 389              	 .loc 1 179 0
+ 390 0048 FB88     	 ldrh r3,[r7,#6]
+ 391 004a 3D2B     	 cmp r3,#61
+ 392 004c 09D0     	 beq .L19
+ 393 004e 3E2B     	 cmp r3,#62
+ 394 0050 00D0     	 beq .L20
+ 180:../cleanflight/src/main/rx/jetiexbus.c ****         case EXBUS_START_CHANNEL_FRAME:
+ 181:../cleanflight/src/main/rx/jetiexbus.c ****             jetiExBusFrameState = EXBUS_STATE_IN_PROGRESS;
+ 182:../cleanflight/src/main/rx/jetiexbus.c ****             jetiExBusFrame = jetiExBusChannelFrame;
+ 183:../cleanflight/src/main/rx/jetiexbus.c ****             break;
+ 184:../cleanflight/src/main/rx/jetiexbus.c **** 
+ 185:../cleanflight/src/main/rx/jetiexbus.c ****         case EXBUS_START_REQUEST_FRAME:
+ 186:../cleanflight/src/main/rx/jetiexbus.c ****             jetiExBusRequestState = EXBUS_STATE_IN_PROGRESS;
+ 187:../cleanflight/src/main/rx/jetiexbus.c ****             jetiExBusFrame = jetiExBusRequestFrame;
+ 188:../cleanflight/src/main/rx/jetiexbus.c ****             break;
+ 189:../cleanflight/src/main/rx/jetiexbus.c **** 
+ 190:../cleanflight/src/main/rx/jetiexbus.c ****         default:
+ 191:../cleanflight/src/main/rx/jetiexbus.c ****             return;
+ 395              	 .loc 1 191 0
+ 396 0052 63E0     	 b .L15
+ 397              	.L20:
+ 181:../cleanflight/src/main/rx/jetiexbus.c ****             jetiExBusFrame = jetiExBusChannelFrame;
+ 398              	 .loc 1 181 0
+ 399 0054 354B     	 ldr r3,.L27+8
+ 400 0056 0122     	 movs r2,#1
+ 401 0058 1A70     	 strb r2,[r3]
+ 182:../cleanflight/src/main/rx/jetiexbus.c ****             break;
+ 402              	 .loc 1 182 0
+ 403 005a 374B     	 ldr r3,.L27+20
+ 404 005c 374A     	 ldr r2,.L27+24
+ 405 005e 1A60     	 str r2,[r3]
+ 183:../cleanflight/src/main/rx/jetiexbus.c **** 
+ 406              	 .loc 1 183 0
+ 407 0060 06E0     	 b .L17
+ 408              	.L19:
+ 186:../cleanflight/src/main/rx/jetiexbus.c ****             jetiExBusFrame = jetiExBusRequestFrame;
+ 409              	 .loc 1 186 0
+ 410 0062 334B     	 ldr r3,.L27+12
+ 411 0064 0122     	 movs r2,#1
+ 412 0066 1A70     	 strb r2,[r3]
+ 187:../cleanflight/src/main/rx/jetiexbus.c ****             break;
+ 413              	 .loc 1 187 0
+ 414 0068 334B     	 ldr r3,.L27+20
+ 415 006a 354A     	 ldr r2,.L27+28
+ 416 006c 1A60     	 str r2,[r3]
+ 188:../cleanflight/src/main/rx/jetiexbus.c **** 
+ 417              	 .loc 1 188 0
+ 418 006e 00BF     	 nop
+ 419              	.L17:
+ 192:../cleanflight/src/main/rx/jetiexbus.c ****         }
+ 193:../cleanflight/src/main/rx/jetiexbus.c ****     }
+ 194:../cleanflight/src/main/rx/jetiexbus.c **** 
+ 195:../cleanflight/src/main/rx/jetiexbus.c ****     // Store in frame copy
+ 196:../cleanflight/src/main/rx/jetiexbus.c ****     jetiExBusFrame[jetiExBusFramePosition] = (uint8_t)c;
+ 420              	 .loc 1 196 0
+ 421 0070 314B     	 ldr r3,.L27+20
+ 422 0072 1B68     	 ldr r3,[r3]
+ 423 0074 2F4A     	 ldr r2,.L27+16
+ 424 0076 1278     	 ldrb r2,[r2]
+ 425 0078 1344     	 add r3,r3,r2
+ 426 007a FA88     	 ldrh r2,[r7,#6]
+ 427 007c D2B2     	 uxtb r2,r2
+ 428 007e 1A70     	 strb r2,[r3]
+ 197:../cleanflight/src/main/rx/jetiexbus.c ****     jetiExBusFramePosition++;
+ 429              	 .loc 1 197 0
+ 430 0080 2C4B     	 ldr r3,.L27+16
+ 431 0082 1B78     	 ldrb r3,[r3]
+ 432 0084 0133     	 adds r3,r3,#1
+ 433 0086 DAB2     	 uxtb r2,r3
+ 434 0088 2A4B     	 ldr r3,.L27+16
+ 435 008a 1A70     	 strb r2,[r3]
+ 198:../cleanflight/src/main/rx/jetiexbus.c **** 
+ 199:../cleanflight/src/main/rx/jetiexbus.c ****     // Check the header for the message length
+ 200:../cleanflight/src/main/rx/jetiexbus.c ****     if (jetiExBusFramePosition == EXBUS_HEADER_LEN) {
+ 436              	 .loc 1 200 0
+ 437 008c 294B     	 ldr r3,.L27+16
+ 438 008e 1B78     	 ldrb r3,[r3]
+ 439 0090 062B     	 cmp r3,#6
+ 440 0092 28D1     	 bne .L22
+ 201:../cleanflight/src/main/rx/jetiexbus.c **** 
+ 202:../cleanflight/src/main/rx/jetiexbus.c ****         if ((jetiExBusFrameState == EXBUS_STATE_IN_PROGRESS) && (jetiExBusFrame[EXBUS_HEADER_MSG_LE
+ 441              	 .loc 1 202 0
+ 442 0094 254B     	 ldr r3,.L27+8
+ 443 0096 1B78     	 ldrb r3,[r3]
+ 444 0098 012B     	 cmp r3,#1
+ 445 009a 0BD1     	 bne .L23
+ 446              	 .loc 1 202 0 is_stmt 0 discriminator 1
+ 447 009c 264B     	 ldr r3,.L27+20
+ 448 009e 1B68     	 ldr r3,[r3]
+ 449 00a0 0233     	 adds r3,r3,#2
+ 450 00a2 1B78     	 ldrb r3,[r3]
+ 451 00a4 282B     	 cmp r3,#40
+ 452 00a6 05D8     	 bhi .L23
+ 203:../cleanflight/src/main/rx/jetiexbus.c ****             jetiExBusFrameLength = jetiExBusFrame[EXBUS_HEADER_MSG_LEN];
+ 453              	 .loc 1 203 0 is_stmt 1
+ 454 00a8 234B     	 ldr r3,.L27+20
+ 455 00aa 1B68     	 ldr r3,[r3]
+ 456 00ac 9A78     	 ldrb r2,[r3,#2]
+ 457 00ae 254B     	 ldr r3,.L27+32
+ 458 00b0 1A70     	 strb r2,[r3]
+ 204:../cleanflight/src/main/rx/jetiexbus.c ****             return;
+ 459              	 .loc 1 204 0
+ 460 00b2 33E0     	 b .L15
+ 461              	.L23:
+ 205:../cleanflight/src/main/rx/jetiexbus.c ****         }
+ 206:../cleanflight/src/main/rx/jetiexbus.c **** 
+ 207:../cleanflight/src/main/rx/jetiexbus.c ****         if ((jetiExBusRequestState == EXBUS_STATE_IN_PROGRESS) && (jetiExBusFrame[EXBUS_HEADER_MSG_
+ 462              	 .loc 1 207 0
+ 463 00b4 1E4B     	 ldr r3,.L27+12
+ 464 00b6 1B78     	 ldrb r3,[r3]
+ 465 00b8 012B     	 cmp r3,#1
+ 466 00ba 0BD1     	 bne .L24
+ 467              	 .loc 1 207 0 is_stmt 0 discriminator 1
+ 468 00bc 1E4B     	 ldr r3,.L27+20
+ 469 00be 1B68     	 ldr r3,[r3]
+ 470 00c0 0233     	 adds r3,r3,#2
+ 471 00c2 1B78     	 ldrb r3,[r3]
+ 472 00c4 092B     	 cmp r3,#9
+ 473 00c6 05D8     	 bhi .L24
+ 208:../cleanflight/src/main/rx/jetiexbus.c ****             jetiExBusFrameLength = jetiExBusFrame[EXBUS_HEADER_MSG_LEN];
+ 474              	 .loc 1 208 0 is_stmt 1
+ 475 00c8 1B4B     	 ldr r3,.L27+20
+ 476 00ca 1B68     	 ldr r3,[r3]
+ 477 00cc 9A78     	 ldrb r2,[r3,#2]
+ 478 00ce 1D4B     	 ldr r3,.L27+32
+ 479 00d0 1A70     	 strb r2,[r3]
+ 209:../cleanflight/src/main/rx/jetiexbus.c ****             return;
+ 480              	 .loc 1 209 0
+ 481 00d2 23E0     	 b .L15
+ 482              	.L24:
+ 210:../cleanflight/src/main/rx/jetiexbus.c ****         }
+ 211:../cleanflight/src/main/rx/jetiexbus.c **** 
+ 212:../cleanflight/src/main/rx/jetiexbus.c ****         jetiExBusFrameReset();                  // not a valid frame
+ 483              	 .loc 1 212 0
+ 484 00d4 FFF7FEFF 	 bl jetiExBusFrameReset
+ 213:../cleanflight/src/main/rx/jetiexbus.c ****         jetiExBusFrameState = EXBUS_STATE_ZERO;
+ 485              	 .loc 1 213 0
+ 486 00d8 144B     	 ldr r3,.L27+8
+ 487 00da 0022     	 movs r2,#0
+ 488 00dc 1A70     	 strb r2,[r3]
+ 214:../cleanflight/src/main/rx/jetiexbus.c ****         jetiExBusRequestState = EXBUS_STATE_ZERO;
+ 489              	 .loc 1 214 0
+ 490 00de 144B     	 ldr r3,.L27+12
+ 491 00e0 0022     	 movs r2,#0
+ 492 00e2 1A70     	 strb r2,[r3]
+ 215:../cleanflight/src/main/rx/jetiexbus.c ****         return;
+ 493              	 .loc 1 215 0
+ 494 00e4 1AE0     	 b .L15
+ 495              	.L22:
+ 216:../cleanflight/src/main/rx/jetiexbus.c ****     }
+ 217:../cleanflight/src/main/rx/jetiexbus.c **** 
+ 218:../cleanflight/src/main/rx/jetiexbus.c ****     // Done?
+ 219:../cleanflight/src/main/rx/jetiexbus.c ****     if (jetiExBusFrameLength == jetiExBusFramePosition) {
+ 496              	 .loc 1 219 0
+ 497 00e6 174B     	 ldr r3,.L27+32
+ 498 00e8 1A78     	 ldrb r2,[r3]
+ 499 00ea 124B     	 ldr r3,.L27+16
+ 500 00ec 1B78     	 ldrb r3,[r3]
+ 501 00ee 9A42     	 cmp r2,r3
+ 502 00f0 14D1     	 bne .L15
+ 220:../cleanflight/src/main/rx/jetiexbus.c ****         if (jetiExBusFrameState == EXBUS_STATE_IN_PROGRESS)
+ 503              	 .loc 1 220 0
+ 504 00f2 0E4B     	 ldr r3,.L27+8
+ 505 00f4 1B78     	 ldrb r3,[r3]
+ 506 00f6 012B     	 cmp r3,#1
+ 507 00f8 02D1     	 bne .L25
+ 221:../cleanflight/src/main/rx/jetiexbus.c ****             jetiExBusFrameState = EXBUS_STATE_RECEIVED;
+ 508              	 .loc 1 221 0
+ 509 00fa 0C4B     	 ldr r3,.L27+8
+ 510 00fc 0222     	 movs r2,#2
+ 511 00fe 1A70     	 strb r2,[r3]
+ 512              	.L25:
+ 222:../cleanflight/src/main/rx/jetiexbus.c ****         if (jetiExBusRequestState == EXBUS_STATE_IN_PROGRESS) {
+ 513              	 .loc 1 222 0
+ 514 0100 0B4B     	 ldr r3,.L27+12
+ 515 0102 1B78     	 ldrb r3,[r3]
+ 516 0104 012B     	 cmp r3,#1
+ 517 0106 07D1     	 bne .L26
+ 223:../cleanflight/src/main/rx/jetiexbus.c ****             jetiExBusRequestState = EXBUS_STATE_RECEIVED;
+ 518              	 .loc 1 223 0
+ 519 0108 094B     	 ldr r3,.L27+12
+ 520 010a 0222     	 movs r2,#2
+ 521 010c 1A70     	 strb r2,[r3]
+ 224:../cleanflight/src/main/rx/jetiexbus.c ****             jetiTimeStampRequest = micros();
+ 522              	 .loc 1 224 0
+ 523 010e FFF7FEFF 	 bl micros
+ 524 0112 0246     	 mov r2,r0
+ 525 0114 0C4B     	 ldr r3,.L27+36
+ 526 0116 1A60     	 str r2,[r3]
+ 527              	.L26:
+ 225:../cleanflight/src/main/rx/jetiexbus.c ****         }
+ 226:../cleanflight/src/main/rx/jetiexbus.c **** 
+ 227:../cleanflight/src/main/rx/jetiexbus.c ****         jetiExBusFrameReset();
+ 528              	 .loc 1 227 0
+ 529 0118 FFF7FEFF 	 bl jetiExBusFrameReset
+ 530              	.L15:
+ 228:../cleanflight/src/main/rx/jetiexbus.c ****     }
+ 229:../cleanflight/src/main/rx/jetiexbus.c **** }
+ 531              	 .loc 1 229 0
+ 532 011c 1037     	 adds r7,r7,#16
+ 533              	.LCFI19:
+ 534              	 .cfi_def_cfa_offset 8
+ 535 011e BD46     	 mov sp,r7
+ 536              	.LCFI20:
+ 537              	 .cfi_def_cfa_register 13
+ 538              	 
+ 539 0120 80BD     	 pop {r7,pc}
+ 540              	.L28:
+ 541 0122 00BF     	 .align 2
+ 542              	.L27:
+ 543 0124 00000000 	 .word jetiExBusTimeLast.12214
+ 544 0128 00000000 	 .word jetiExBusTimeInterval.12215
+ 545 012c 00000000 	 .word jetiExBusFrameState
+ 546 0130 00000000 	 .word jetiExBusRequestState
+ 547 0134 00000000 	 .word jetiExBusFramePosition
+ 548 0138 00000000 	 .word jetiExBusFrame.12216
+ 549 013c 00000000 	 .word jetiExBusChannelFrame
+ 550 0140 00000000 	 .word jetiExBusRequestFrame
+ 551 0144 00000000 	 .word jetiExBusFrameLength
+ 552 0148 00000000 	 .word jetiTimeStampRequest
+ 553              	 .cfi_endproc
+ 554              	.LFE542:
+ 556              	 .section .text.jetiExBusFrameStatus,"ax",%progbits
+ 557              	 .align 2
+ 558              	 .thumb
+ 559              	 .thumb_func
+ 561              	jetiExBusFrameStatus:
+ 562              	.LFB543:
+ 230:../cleanflight/src/main/rx/jetiexbus.c **** 
+ 231:../cleanflight/src/main/rx/jetiexbus.c **** // Check if it is time to read a frame from the data...
+ 232:../cleanflight/src/main/rx/jetiexbus.c **** static uint8_t jetiExBusFrameStatus(rxRuntimeConfig_t *rxRuntimeConfig)
+ 233:../cleanflight/src/main/rx/jetiexbus.c **** {
+ 563              	 .loc 1 233 0
+ 564              	 .cfi_startproc
+ 565              	 
+ 566              	 
+ 567 0000 80B5     	 push {r7,lr}
+ 568              	.LCFI21:
+ 569              	 .cfi_def_cfa_offset 8
+ 570              	 .cfi_offset 7,-8
+ 571              	 .cfi_offset 14,-4
+ 572 0002 82B0     	 sub sp,sp,#8
+ 573              	.LCFI22:
+ 574              	 .cfi_def_cfa_offset 16
+ 575 0004 00AF     	 add r7,sp,#0
+ 576              	.LCFI23:
+ 577              	 .cfi_def_cfa_register 7
+ 578 0006 7860     	 str r0,[r7,#4]
+ 234:../cleanflight/src/main/rx/jetiexbus.c ****     UNUSED(rxRuntimeConfig);
+ 235:../cleanflight/src/main/rx/jetiexbus.c **** 
+ 236:../cleanflight/src/main/rx/jetiexbus.c ****     if (jetiExBusFrameState != EXBUS_STATE_RECEIVED)
+ 579              	 .loc 1 236 0
+ 580 0008 0F4B     	 ldr r3,.L33
+ 581 000a 1B78     	 ldrb r3,[r3]
+ 582 000c 022B     	 cmp r3,#2
+ 583 000e 01D0     	 beq .L30
+ 237:../cleanflight/src/main/rx/jetiexbus.c ****         return RX_FRAME_PENDING;
+ 584              	 .loc 1 237 0
+ 585 0010 0023     	 movs r3,#0
+ 586 0012 14E0     	 b .L31
+ 587              	.L30:
+ 238:../cleanflight/src/main/rx/jetiexbus.c **** 
+ 239:../cleanflight/src/main/rx/jetiexbus.c ****     if (jetiExBusCalcCRC16(jetiExBusChannelFrame, jetiExBusChannelFrame[EXBUS_HEADER_MSG_LEN]) == 0
+ 588              	 .loc 1 239 0
+ 589 0014 0D4B     	 ldr r3,.L33+4
+ 590 0016 9B78     	 ldrb r3,[r3,#2]
+ 591 0018 0C48     	 ldr r0,.L33+4
+ 592 001a 1946     	 mov r1,r3
+ 593 001c FFF7FEFF 	 bl jetiExBusCalcCRC16
+ 594 0020 0346     	 mov r3,r0
+ 595 0022 002B     	 cmp r3,#0
+ 596 0024 07D1     	 bne .L32
+ 240:../cleanflight/src/main/rx/jetiexbus.c ****         jetiExBusDecodeChannelFrame(jetiExBusChannelFrame);
+ 597              	 .loc 1 240 0
+ 598 0026 0948     	 ldr r0,.L33+4
+ 599 0028 FFF7FEFF 	 bl jetiExBusDecodeChannelFrame
+ 241:../cleanflight/src/main/rx/jetiexbus.c ****         jetiExBusFrameState = EXBUS_STATE_ZERO;
+ 600              	 .loc 1 241 0
+ 601 002c 064B     	 ldr r3,.L33
+ 602 002e 0022     	 movs r2,#0
+ 603 0030 1A70     	 strb r2,[r3]
+ 242:../cleanflight/src/main/rx/jetiexbus.c ****         return RX_FRAME_COMPLETE;
+ 604              	 .loc 1 242 0
+ 605 0032 0123     	 movs r3,#1
+ 606 0034 03E0     	 b .L31
+ 607              	.L32:
+ 243:../cleanflight/src/main/rx/jetiexbus.c ****     } else {
+ 244:../cleanflight/src/main/rx/jetiexbus.c ****         jetiExBusFrameState = EXBUS_STATE_ZERO;
+ 608              	 .loc 1 244 0
+ 609 0036 044B     	 ldr r3,.L33
+ 610 0038 0022     	 movs r2,#0
+ 611 003a 1A70     	 strb r2,[r3]
+ 245:../cleanflight/src/main/rx/jetiexbus.c ****         return RX_FRAME_PENDING;
+ 612              	 .loc 1 245 0
+ 613 003c 0023     	 movs r3,#0
+ 614              	.L31:
+ 246:../cleanflight/src/main/rx/jetiexbus.c ****     }
+ 247:../cleanflight/src/main/rx/jetiexbus.c **** }
+ 615              	 .loc 1 247 0
+ 616 003e 1846     	 mov r0,r3
+ 617 0040 0837     	 adds r7,r7,#8
+ 618              	.LCFI24:
+ 619              	 .cfi_def_cfa_offset 8
+ 620 0042 BD46     	 mov sp,r7
+ 621              	.LCFI25:
+ 622              	 .cfi_def_cfa_register 13
+ 623              	 
+ 624 0044 80BD     	 pop {r7,pc}
+ 625              	.L34:
+ 626 0046 00BF     	 .align 2
+ 627              	.L33:
+ 628 0048 00000000 	 .word jetiExBusFrameState
+ 629 004c 00000000 	 .word jetiExBusChannelFrame
+ 630              	 .cfi_endproc
+ 631              	.LFE543:
+ 633              	 .section .text.jetiExBusReadRawRC,"ax",%progbits
+ 634              	 .align 2
+ 635              	 .thumb
+ 636              	 .thumb_func
+ 638              	jetiExBusReadRawRC:
+ 639              	.LFB544:
+ 248:../cleanflight/src/main/rx/jetiexbus.c **** 
+ 249:../cleanflight/src/main/rx/jetiexbus.c **** static uint16_t jetiExBusReadRawRC(const rxRuntimeConfig_t *rxRuntimeConfig, uint8_t chan)
+ 250:../cleanflight/src/main/rx/jetiexbus.c **** {
+ 640              	 .loc 1 250 0
+ 641              	 .cfi_startproc
+ 642              	 
+ 643              	 
+ 644              	 
+ 645 0000 80B4     	 push {r7}
+ 646              	.LCFI26:
+ 647              	 .cfi_def_cfa_offset 4
+ 648              	 .cfi_offset 7,-4
+ 649 0002 83B0     	 sub sp,sp,#12
+ 650              	.LCFI27:
+ 651              	 .cfi_def_cfa_offset 16
+ 652 0004 00AF     	 add r7,sp,#0
+ 653              	.LCFI28:
+ 654              	 .cfi_def_cfa_register 7
+ 655 0006 7860     	 str r0,[r7,#4]
+ 656 0008 0B46     	 mov r3,r1
+ 657 000a FB70     	 strb r3,[r7,#3]
+ 251:../cleanflight/src/main/rx/jetiexbus.c ****     if (chan >= rxRuntimeConfig->channelCount)
+ 658              	 .loc 1 251 0
+ 659 000c 7B68     	 ldr r3,[r7,#4]
+ 660 000e 1B78     	 ldrb r3,[r3]
+ 661 0010 FA78     	 ldrb r2,[r7,#3]
+ 662 0012 9A42     	 cmp r2,r3
+ 663 0014 01D3     	 bcc .L36
+ 252:../cleanflight/src/main/rx/jetiexbus.c ****         return 0;
+ 664              	 .loc 1 252 0
+ 665 0016 0023     	 movs r3,#0
+ 666 0018 03E0     	 b .L37
+ 667              	.L36:
+ 253:../cleanflight/src/main/rx/jetiexbus.c **** 
+ 254:../cleanflight/src/main/rx/jetiexbus.c ****     return (jetiExBusChannelData[chan]);
+ 668              	 .loc 1 254 0
+ 669 001a FB78     	 ldrb r3,[r7,#3]
+ 670 001c 044A     	 ldr r2,.L38
+ 671 001e 32F81330 	 ldrh r3,[r2,r3,lsl#1]
+ 672              	.L37:
+ 255:../cleanflight/src/main/rx/jetiexbus.c **** }
+ 673              	 .loc 1 255 0
+ 674 0022 1846     	 mov r0,r3
+ 675 0024 0C37     	 adds r7,r7,#12
+ 676              	.LCFI29:
+ 677              	 .cfi_def_cfa_offset 4
+ 678 0026 BD46     	 mov sp,r7
+ 679              	.LCFI30:
+ 680              	 .cfi_def_cfa_register 13
+ 681              	 
+ 682 0028 5DF8047B 	 ldr r7,[sp],#4
+ 683              	.LCFI31:
+ 684              	 .cfi_restore 7
+ 685              	 .cfi_def_cfa_offset 0
+ 686 002c 7047     	 bx lr
+ 687              	.L39:
+ 688 002e 00BF     	 .align 2
+ 689              	.L38:
+ 690 0030 00000000 	 .word jetiExBusChannelData
+ 691              	 .cfi_endproc
+ 692              	.LFE544:
+ 694              	 .section .text.jetiExBusInit,"ax",%progbits
+ 695              	 .align 2
+ 696              	 .global jetiExBusInit
+ 697              	 .thumb
+ 698              	 .thumb_func
+ 700              	jetiExBusInit:
+ 701              	.LFB545:
+ 256:../cleanflight/src/main/rx/jetiexbus.c **** 
+ 257:../cleanflight/src/main/rx/jetiexbus.c **** bool jetiExBusInit(const rxConfig_t *rxConfig, rxRuntimeConfig_t *rxRuntimeConfig)
+ 258:../cleanflight/src/main/rx/jetiexbus.c **** {
+ 702              	 .loc 1 258 0
+ 703              	 .cfi_startproc
+ 704              	 
+ 705              	 
+ 706 0000 80B5     	 push {r7,lr}
+ 707              	.LCFI32:
+ 708              	 .cfi_def_cfa_offset 8
+ 709              	 .cfi_offset 7,-8
+ 710              	 .cfi_offset 14,-4
+ 711 0002 88B0     	 sub sp,sp,#32
+ 712              	.LCFI33:
+ 713              	 .cfi_def_cfa_offset 40
+ 714 0004 04AF     	 add r7,sp,#16
+ 715              	.LCFI34:
+ 716              	 .cfi_def_cfa 7,24
+ 717 0006 7860     	 str r0,[r7,#4]
+ 718 0008 3960     	 str r1,[r7]
+ 259:../cleanflight/src/main/rx/jetiexbus.c ****     UNUSED(rxConfig);
+ 260:../cleanflight/src/main/rx/jetiexbus.c **** 
+ 261:../cleanflight/src/main/rx/jetiexbus.c ****     rxRuntimeConfig->channelCount = JETIEXBUS_CHANNEL_COUNT;
+ 719              	 .loc 1 261 0
+ 720 000a 3B68     	 ldr r3,[r7]
+ 721 000c 1022     	 movs r2,#16
+ 722 000e 1A70     	 strb r2,[r3]
+ 262:../cleanflight/src/main/rx/jetiexbus.c ****     rxRuntimeConfig->rxRefreshRate = 5500;
+ 723              	 .loc 1 262 0
+ 724 0010 3B68     	 ldr r3,[r7]
+ 725 0012 0022     	 movs r2,#0
+ 726 0014 42F07C02 	 orr r2,r2,#124
+ 727 0018 5A70     	 strb r2,[r3,#1]
+ 728 001a 0022     	 movs r2,#0
+ 729 001c 42F01502 	 orr r2,r2,#21
+ 730 0020 9A70     	 strb r2,[r3,#2]
+ 263:../cleanflight/src/main/rx/jetiexbus.c **** 
+ 264:../cleanflight/src/main/rx/jetiexbus.c ****     rxRuntimeConfig->rcReadRawFn = jetiExBusReadRawRC;
+ 731              	 .loc 1 264 0
+ 732 0022 3B68     	 ldr r3,[r7]
+ 733 0024 224A     	 ldr r2,.L45
+ 734 0026 C3F80320 	 str r2,[r3,#3]
+ 265:../cleanflight/src/main/rx/jetiexbus.c ****     rxRuntimeConfig->rcFrameStatusFn = jetiExBusFrameStatus;
+ 735              	 .loc 1 265 0
+ 736 002a 3B68     	 ldr r3,[r7]
+ 737 002c 214A     	 ldr r2,.L45+4
+ 738 002e C3F80720 	 str r2,[r3,#7]
+ 266:../cleanflight/src/main/rx/jetiexbus.c **** 
+ 267:../cleanflight/src/main/rx/jetiexbus.c ****     jetiExBusFrameReset();
+ 739              	 .loc 1 267 0
+ 740 0032 FFF7FEFF 	 bl jetiExBusFrameReset
+ 268:../cleanflight/src/main/rx/jetiexbus.c **** 
+ 269:../cleanflight/src/main/rx/jetiexbus.c ****     const serialPortConfig_t *portConfig = findSerialPortConfig(FUNCTION_RX_SERIAL);
+ 741              	 .loc 1 269 0
+ 742 0036 4020     	 movs r0,#64
+ 743 0038 FFF7FEFF 	 bl findSerialPortConfig
+ 744 003c F860     	 str r0,[r7,#12]
+ 270:../cleanflight/src/main/rx/jetiexbus.c **** 
+ 271:../cleanflight/src/main/rx/jetiexbus.c ****     if (!portConfig) {
+ 745              	 .loc 1 271 0
+ 746 003e FB68     	 ldr r3,[r7,#12]
+ 747 0040 002B     	 cmp r3,#0
+ 748 0042 01D1     	 bne .L41
+ 272:../cleanflight/src/main/rx/jetiexbus.c ****         return false;
+ 749              	 .loc 1 272 0
+ 750 0044 0023     	 movs r3,#0
+ 751 0046 2FE0     	 b .L42
+ 752              	.L41:
+ 273:../cleanflight/src/main/rx/jetiexbus.c ****     }
+ 274:../cleanflight/src/main/rx/jetiexbus.c **** 
+ 275:../cleanflight/src/main/rx/jetiexbus.c ****     jetiExBusPort = openSerialPort(portConfig->identifier,
+ 753              	 .loc 1 275 0
+ 754 0048 FB68     	 ldr r3,[r7,#12]
+ 755 004a 9A78     	 ldrb r2,[r3,#2]
+ 276:../cleanflight/src/main/rx/jetiexbus.c ****         FUNCTION_RX_SERIAL,
+ 277:../cleanflight/src/main/rx/jetiexbus.c ****         jetiExBusDataReceive,
+ 278:../cleanflight/src/main/rx/jetiexbus.c ****         NULL,
+ 279:../cleanflight/src/main/rx/jetiexbus.c ****         JETIEXBUS_BAUDRATE,
+ 280:../cleanflight/src/main/rx/jetiexbus.c ****         MODE_RXTX,
+ 281:../cleanflight/src/main/rx/jetiexbus.c ****         JETIEXBUS_OPTIONS | (rxConfig->serialrx_inverted ? SERIAL_INVERTED : 0) | (rxConfig->halfDu
+ 756              	 .loc 1 281 0
+ 757 004c 7B68     	 ldr r3,[r7,#4]
+ 758 004e 5B7A     	 ldrb r3,[r3,#9]
+ 759 0050 002B     	 cmp r3,#0
+ 760 0052 14BF     	 ite ne
+ 761 0054 0123     	 movne r3,#1
+ 762 0056 0023     	 moveq r3,#0
+ 763 0058 DBB2     	 uxtb r3,r3
+ 764 005a D9B2     	 uxtb r1,r3
+ 765 005c 7B68     	 ldr r3,[r7,#4]
+ 766 005e 9B7A     	 ldrb r3,[r3,#10]
+ 275:../cleanflight/src/main/rx/jetiexbus.c ****         FUNCTION_RX_SERIAL,
+ 767              	 .loc 1 275 0
+ 768 0060 002B     	 cmp r3,#0
+ 769 0062 01D0     	 beq .L43
+ 275:../cleanflight/src/main/rx/jetiexbus.c ****         FUNCTION_RX_SERIAL,
+ 770              	 .loc 1 275 0 is_stmt 0 discriminator 1
+ 771 0064 0823     	 movs r3,#8
+ 772 0066 00E0     	 b .L44
+ 773              	.L43:
+ 275:../cleanflight/src/main/rx/jetiexbus.c ****         FUNCTION_RX_SERIAL,
+ 774              	 .loc 1 275 0 discriminator 2
+ 775 0068 0023     	 movs r3,#0
+ 776              	.L44:
+ 275:../cleanflight/src/main/rx/jetiexbus.c ****         FUNCTION_RX_SERIAL,
+ 777              	 .loc 1 275 0 discriminator 4
+ 778 006a 0B43     	 orrs r3,r3,r1
+ 779 006c DBB2     	 uxtb r3,r3
+ 780 006e DBB2     	 uxtb r3,r3
+ 781 0070 51B2     	 sxtb r1,r2
+ 782 0072 114A     	 ldr r2,.L45+8
+ 783 0074 0092     	 str r2,[sp]
+ 784 0076 0322     	 movs r2,#3
+ 785 0078 0192     	 str r2,[sp,#4]
+ 786 007a 0293     	 str r3,[sp,#8]
+ 787 007c 0846     	 mov r0,r1
+ 788 007e 4021     	 movs r1,#64
+ 789 0080 0E4A     	 ldr r2,.L45+12
+ 790 0082 0023     	 movs r3,#0
+ 791 0084 FFF7FEFF 	 bl openSerialPort
+ 792 0088 0246     	 mov r2,r0
+ 793 008a 0D4B     	 ldr r3,.L45+16
+ 794 008c 1A60     	 str r2,[r3]
+ 282:../cleanflight/src/main/rx/jetiexbus.c ****         );
+ 283:../cleanflight/src/main/rx/jetiexbus.c ****     serialSetMode(jetiExBusPort, MODE_RX);
+ 795              	 .loc 1 283 0 is_stmt 1 discriminator 4
+ 796 008e 0C4B     	 ldr r3,.L45+16
+ 797 0090 1B68     	 ldr r3,[r3]
+ 798 0092 1846     	 mov r0,r3
+ 799 0094 0121     	 movs r1,#1
+ 800 0096 FFF7FEFF 	 bl serialSetMode
+ 284:../cleanflight/src/main/rx/jetiexbus.c ****     return jetiExBusPort != NULL;
+ 801              	 .loc 1 284 0 discriminator 4
+ 802 009a 094B     	 ldr r3,.L45+16
+ 803 009c 1B68     	 ldr r3,[r3]
+ 804 009e 002B     	 cmp r3,#0
+ 805 00a0 14BF     	 ite ne
+ 806 00a2 0123     	 movne r3,#1
+ 807 00a4 0023     	 moveq r3,#0
+ 808 00a6 DBB2     	 uxtb r3,r3
+ 809              	.L42:
+ 285:../cleanflight/src/main/rx/jetiexbus.c **** }
+ 810              	 .loc 1 285 0
+ 811 00a8 1846     	 mov r0,r3
+ 812 00aa 1037     	 adds r7,r7,#16
+ 813              	.LCFI35:
+ 814              	 .cfi_def_cfa_offset 8
+ 815 00ac BD46     	 mov sp,r7
+ 816              	.LCFI36:
+ 817              	 .cfi_def_cfa_register 13
+ 818              	 
+ 819 00ae 80BD     	 pop {r7,pc}
+ 820              	.L46:
+ 821              	 .align 2
+ 822              	.L45:
+ 823 00b0 00000000 	 .word jetiExBusReadRawRC
+ 824 00b4 00000000 	 .word jetiExBusFrameStatus
+ 825 00b8 48E80100 	 .word 125000
+ 826 00bc 00000000 	 .word jetiExBusDataReceive
+ 827 00c0 00000000 	 .word jetiExBusPort
+ 828              	 .cfi_endproc
+ 829              	.LFE545:
+ 831              	 .section .bss.jetiExBusTimeLast.12214,"aw",%nobits
+ 832              	 .align 2
+ 835              	jetiExBusTimeLast.12214:
+ 836 0000 00000000 	 .space 4
+ 837              	 .section .bss.jetiExBusTimeInterval.12215,"aw",%nobits
+ 838              	 .align 2
+ 841              	jetiExBusTimeInterval.12215:
+ 842 0000 00000000 	 .space 4
+ 843              	 .section .bss.jetiExBusFrame.12216,"aw",%nobits
+ 844              	 .align 2
+ 847              	jetiExBusFrame.12216:
+ 848 0000 00000000 	 .space 4
+ 849              	 .text
+ 850              	.Letext0:
+ 851              	 .file 2 "d:\\xmc\\dave-ide-4.4.2-64bit\\eclipse\\arm-gcc-49\\arm-none-eabi\\include\\machine\\_default_types.h"
+ 852              	 .file 3 "d:\\xmc\\dave-ide-4.4.2-64bit\\eclipse\\arm-gcc-49\\arm-none-eabi\\include\\stdint.h"
+ 853              	 .file 4 "D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/lib/main/XMC4000/XMCLib/inc/xmc_usic.h"
+ 854              	 .file 5 "D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/drivers/io_types.h"
+ 855              	 .file 6 "D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/pg/rx.h"
+ 856              	 .file 7 "D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/common/time.h"
+ 857              	 .file 8 "D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/build/debug.h"
+ 858              	 .file 9 "D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/drivers/resource.h"
+ 859              	 .file 10 "D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/drivers/serial.h"
+ 860              	 .file 11 "D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/io/serial.h"
+ 861              	 .file 12 "D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/rx/rx.h"
+ 862              	 .file 13 "D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/rx/jetiexbus.h"
+ 863              	 .file 14 "D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/lib/main/CMSIS/Core/Include/core_cm4.h"
+ 864              	 .file 15 "D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/lib/main/XMC4000/system_XMC4700.h"
+DEFINED SYMBOLS
+                            *ABS*:00000000 jetiexbus.c
+                            *COM*:00000004 jetiExBusPort
+    {standard input}:25     .bss.jetiTimeStampRequest:00000000 jetiTimeStampRequest
+    {standard input}:22     .bss.jetiTimeStampRequest:00000000 $d
+    {standard input}:30     .bss.jetiExBusFramePosition:00000000 jetiExBusFramePosition
+    {standard input}:31     .bss.jetiExBusFramePosition:00000000 $d
+    {standard input}:35     .bss.jetiExBusFrameLength:00000000 jetiExBusFrameLength
+    {standard input}:36     .bss.jetiExBusFrameLength:00000000 $d
+    {standard input}:40     .bss.jetiExBusFrameState:00000000 jetiExBusFrameState
+    {standard input}:41     .bss.jetiExBusFrameState:00000000 $d
+    {standard input}:46     .bss.jetiExBusRequestState:00000000 jetiExBusRequestState
+    {standard input}:47     .bss.jetiExBusRequestState:00000000 $d
+    {standard input}:49     .bss.jetiExBusChannelFrame:00000000 $d
+    {standard input}:52     .bss.jetiExBusChannelFrame:00000000 jetiExBusChannelFrame
+                            *COM*:00000009 jetiExBusRequestFrame
+    {standard input}:56     .bss.jetiExBusChannelData:00000000 $d
+    {standard input}:59     .bss.jetiExBusChannelData:00000000 jetiExBusChannelData
+    {standard input}:62     .text.jetiExBusCalcCRC16:00000000 $t
+    {standard input}:67     .text.jetiExBusCalcCRC16:00000000 jetiExBusCalcCRC16
+    {standard input}:174    .text.jetiExBusDecodeChannelFrame:00000000 $t
+    {standard input}:179    .text.jetiExBusDecodeChannelFrame:00000000 jetiExBusDecodeChannelFrame
+    {standard input}:278    .text.jetiExBusDecodeChannelFrame:0000007c $d
+    {standard input}:283    .text.jetiExBusFrameReset:00000000 $t
+    {standard input}:288    .text.jetiExBusFrameReset:00000000 jetiExBusFrameReset
+    {standard input}:323    .text.jetiExBusFrameReset:00000018 $d
+    {standard input}:329    .text.jetiExBusDataReceive:00000000 $t
+    {standard input}:333    .text.jetiExBusDataReceive:00000000 jetiExBusDataReceive
+    {standard input}:543    .text.jetiExBusDataReceive:00000124 $d
+    {standard input}:835    .bss.jetiExBusTimeLast.12214:00000000 jetiExBusTimeLast.12214
+    {standard input}:841    .bss.jetiExBusTimeInterval.12215:00000000 jetiExBusTimeInterval.12215
+    {standard input}:847    .bss.jetiExBusFrame.12216:00000000 jetiExBusFrame.12216
+    {standard input}:557    .text.jetiExBusFrameStatus:00000000 $t
+    {standard input}:561    .text.jetiExBusFrameStatus:00000000 jetiExBusFrameStatus
+    {standard input}:628    .text.jetiExBusFrameStatus:00000048 $d
+    {standard input}:634    .text.jetiExBusReadRawRC:00000000 $t
+    {standard input}:638    .text.jetiExBusReadRawRC:00000000 jetiExBusReadRawRC
+    {standard input}:690    .text.jetiExBusReadRawRC:00000030 $d
+    {standard input}:695    .text.jetiExBusInit:00000000 $t
+    {standard input}:700    .text.jetiExBusInit:00000000 jetiExBusInit
+    {standard input}:823    .text.jetiExBusInit:000000b0 $d
+    {standard input}:832    .bss.jetiExBusTimeLast.12214:00000000 $d
+    {standard input}:838    .bss.jetiExBusTimeInterval.12215:00000000 $d
+    {standard input}:844    .bss.jetiExBusFrame.12216:00000000 $d
+                     .debug_frame:00000010 $d
+
+UNDEFINED SYMBOLS
+micros
+findSerialPortConfig
+openSerialPort
+serialSetMode

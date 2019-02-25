@@ -1,0 +1,1445 @@
+   1              	 .syntax unified
+   2              	 .cpu cortex-m4
+   3              	 .eabi_attribute 27,3
+   4              	 .fpu fpv4-sp-d16
+   5              	 .eabi_attribute 20,1
+   6              	 .eabi_attribute 21,1
+   7              	 .eabi_attribute 23,3
+   8              	 .eabi_attribute 24,1
+   9              	 .eabi_attribute 25,1
+  10              	 .eabi_attribute 26,1
+  11              	 .eabi_attribute 30,6
+  12              	 .eabi_attribute 34,1
+  13              	 .eabi_attribute 18,4
+  14              	 .thumb
+  15              	 .file "xmc_common.c"
+  16              	 .text
+  17              	.Ltext0:
+  18              	 .cfi_sections .debug_frame
+  19              	 .section .text.XMC_PRIOARRAY_GetHead,"ax",%progbits
+  20              	 .align 2
+  21              	 .thumb
+  22              	 .thumb_func
+  24              	XMC_PRIOARRAY_GetHead:
+  25              	.LFB130:
+  26              	 .file 1 "D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/lib/main/XMC4000/XMCLib/inc/xmc_common.h"
+   1:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/lib/main/XMC4000/XMCLib/inc\xmc_common.h **** /**
+   2:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/lib/main/XMC4000/XMCLib/inc\xmc_common.h ****  * @file xmc_common.h
+   3:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/lib/main/XMC4000/XMCLib/inc\xmc_common.h ****  * @date 2017-08-03
+   4:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/lib/main/XMC4000/XMCLib/inc\xmc_common.h ****  *
+   5:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/lib/main/XMC4000/XMCLib/inc\xmc_common.h ****  * @cond
+   6:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/lib/main/XMC4000/XMCLib/inc\xmc_common.h ****   *************************************************************************************************
+   7:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/lib/main/XMC4000/XMCLib/inc\xmc_common.h ****  * XMClib v2.1.20 - XMC Peripheral Driver Library 
+   8:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/lib/main/XMC4000/XMCLib/inc\xmc_common.h ****  *
+   9:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/lib/main/XMC4000/XMCLib/inc\xmc_common.h ****  * Copyright (c) 2015-2018, Infineon Technologies AG
+  10:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/lib/main/XMC4000/XMCLib/inc\xmc_common.h ****  * All rights reserved.                        
+  11:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/lib/main/XMC4000/XMCLib/inc\xmc_common.h ****  *                                             
+  12:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/lib/main/XMC4000/XMCLib/inc\xmc_common.h ****  * Redistribution and use in source and binary forms, with or without modification,are permitted pr
+  13:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/lib/main/XMC4000/XMCLib/inc\xmc_common.h ****  * following conditions are met:   
+  14:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/lib/main/XMC4000/XMCLib/inc\xmc_common.h ****  *                                                                              
+  15:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/lib/main/XMC4000/XMCLib/inc\xmc_common.h ****  * Redistributions of source code must retain the above copyright notice, this list of conditions a
+  16:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/lib/main/XMC4000/XMCLib/inc\xmc_common.h ****  * disclaimer.                        
+  17:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/lib/main/XMC4000/XMCLib/inc\xmc_common.h ****  * 
+  18:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/lib/main/XMC4000/XMCLib/inc\xmc_common.h ****  * Redistributions in binary form must reproduce the above copyright notice, this list of condition
+  19:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/lib/main/XMC4000/XMCLib/inc\xmc_common.h ****  * disclaimer in the documentation and/or other materials provided with the distribution.          
+  20:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/lib/main/XMC4000/XMCLib/inc\xmc_common.h ****  * 
+  21:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/lib/main/XMC4000/XMCLib/inc\xmc_common.h ****  * Neither the name of the copyright holders nor the names of its contributors may be used to endor
+  22:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/lib/main/XMC4000/XMCLib/inc\xmc_common.h ****  * products derived from this software without specific prior written permission.                  
+  23:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/lib/main/XMC4000/XMCLib/inc\xmc_common.h ****  *                                                                              
+  24:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/lib/main/XMC4000/XMCLib/inc\xmc_common.h ****  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND ANY EXPRESS OR I
+  25:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/lib/main/XMC4000/XMCLib/inc\xmc_common.h ****  * INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTI
+  26:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/lib/main/XMC4000/XMCLib/inc\xmc_common.h ****  * DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE  FOR ANY DIRECT, IN
+  27:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/lib/main/XMC4000/XMCLib/inc\xmc_common.h ****  * SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBS
+  28:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/lib/main/XMC4000/XMCLib/inc\xmc_common.h ****  * SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THE
+  29:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/lib/main/XMC4000/XMCLib/inc\xmc_common.h ****  * WHETHER IN CONTRACT, STRICT LIABILITY,OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY
+  30:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/lib/main/XMC4000/XMCLib/inc\xmc_common.h ****  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.                            
+  31:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/lib/main/XMC4000/XMCLib/inc\xmc_common.h ****  *                                                                              
+  32:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/lib/main/XMC4000/XMCLib/inc\xmc_common.h ****  * To improve the quality of the software, users are encouraged to share modifications, enhancement
+  33:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/lib/main/XMC4000/XMCLib/inc\xmc_common.h ****  * Infineon Technologies AG dave@infineon.com).                                                    
+  34:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/lib/main/XMC4000/XMCLib/inc\xmc_common.h ****  **************************************************************************************************
+  35:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/lib/main/XMC4000/XMCLib/inc\xmc_common.h ****  *
+  36:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/lib/main/XMC4000/XMCLib/inc\xmc_common.h ****  * Change History
+  37:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/lib/main/XMC4000/XMCLib/inc\xmc_common.h ****  * --------------
+  38:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/lib/main/XMC4000/XMCLib/inc\xmc_common.h ****  *
+  39:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/lib/main/XMC4000/XMCLib/inc\xmc_common.h ****  * 2015-06-20:
+  40:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/lib/main/XMC4000/XMCLib/inc\xmc_common.h ****  *     - Initial
+  41:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/lib/main/XMC4000/XMCLib/inc\xmc_common.h ****  *     - Brief section updated
+  42:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/lib/main/XMC4000/XMCLib/inc\xmc_common.h ****  *     - Added XMC_LIB_VERSION macro
+  43:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/lib/main/XMC4000/XMCLib/inc\xmc_common.h ****  *
+  44:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/lib/main/XMC4000/XMCLib/inc\xmc_common.h ****  * 2016-02-26:
+  45:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/lib/main/XMC4000/XMCLib/inc\xmc_common.h ****  *     - Updated XMC_LIB_VERSION macro to v2.1.6
+  46:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/lib/main/XMC4000/XMCLib/inc\xmc_common.h ****  *      
+  47:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/lib/main/XMC4000/XMCLib/inc\xmc_common.h ****  * 2016-05-30:
+  48:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/lib/main/XMC4000/XMCLib/inc\xmc_common.h ****  *     - Updated XMC_LIB_VERSION macro to v2.1.8
+  49:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/lib/main/XMC4000/XMCLib/inc\xmc_common.h ****  *
+  50:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/lib/main/XMC4000/XMCLib/inc\xmc_common.h ****  * 2016-11-18:
+  51:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/lib/main/XMC4000/XMCLib/inc\xmc_common.h ****  *     - Updated XMC_LIB_VERSION macro to v2.1.10
+  52:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/lib/main/XMC4000/XMCLib/inc\xmc_common.h ****  *     - Changed type of size in XMC_PRIOARRAY_t to fix compilation warnings
+  53:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/lib/main/XMC4000/XMCLib/inc\xmc_common.h ****  *
+  54:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/lib/main/XMC4000/XMCLib/inc\xmc_common.h ****  * 2017-04-04:
+  55:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/lib/main/XMC4000/XMCLib/inc\xmc_common.h ****  *     - Updated XMC_LIB_VERSION macro to v2.1.12
+  56:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/lib/main/XMC4000/XMCLib/inc\xmc_common.h ****  *
+  57:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/lib/main/XMC4000/XMCLib/inc\xmc_common.h ****  * 2017-06-24:
+  58:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/lib/main/XMC4000/XMCLib/inc\xmc_common.h ****  *     - Updated XMC_LIB_VERSION macro to v2.1.14
+  59:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/lib/main/XMC4000/XMCLib/inc\xmc_common.h ****  *
+  60:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/lib/main/XMC4000/XMCLib/inc\xmc_common.h ****  * 2017-08-03:
+  61:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/lib/main/XMC4000/XMCLib/inc\xmc_common.h ****  *     - Updated XMC_LIB_VERSION macro to v2.1.16
+  62:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/lib/main/XMC4000/XMCLib/inc\xmc_common.h ****  *     - Added __RAM_FUNC macro
+  63:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/lib/main/XMC4000/XMCLib/inc\xmc_common.h ****  *
+  64:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/lib/main/XMC4000/XMCLib/inc\xmc_common.h ****  * 2018-06-29:
+  65:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/lib/main/XMC4000/XMCLib/inc\xmc_common.h ****  *     - Updated XMC_LIB_VERSION macro to v2.1.20
+  66:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/lib/main/XMC4000/XMCLib/inc\xmc_common.h ****  *
+  67:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/lib/main/XMC4000/XMCLib/inc\xmc_common.h ****  * @endcond 
+  68:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/lib/main/XMC4000/XMCLib/inc\xmc_common.h ****  *
+  69:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/lib/main/XMC4000/XMCLib/inc\xmc_common.h ****  */
+  70:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/lib/main/XMC4000/XMCLib/inc\xmc_common.h **** 
+  71:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/lib/main/XMC4000/XMCLib/inc\xmc_common.h **** #ifndef XMC_COMMON_H
+  72:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/lib/main/XMC4000/XMCLib/inc\xmc_common.h **** #define XMC_COMMON_H
+  73:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/lib/main/XMC4000/XMCLib/inc\xmc_common.h **** 
+  74:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/lib/main/XMC4000/XMCLib/inc\xmc_common.h **** #include <stddef.h>
+  75:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/lib/main/XMC4000/XMCLib/inc\xmc_common.h **** #include <stdint.h>
+  76:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/lib/main/XMC4000/XMCLib/inc\xmc_common.h **** #include <stdbool.h>
+  77:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/lib/main/XMC4000/XMCLib/inc\xmc_common.h **** #include <string.h>
+  78:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/lib/main/XMC4000/XMCLib/inc\xmc_common.h **** 
+  79:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/lib/main/XMC4000/XMCLib/inc\xmc_common.h **** #include "xmc_device.h"
+  80:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/lib/main/XMC4000/XMCLib/inc\xmc_common.h **** 
+  81:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/lib/main/XMC4000/XMCLib/inc\xmc_common.h **** /**
+  82:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/lib/main/XMC4000/XMCLib/inc\xmc_common.h ****  * @addtogroup XMClib XMC Peripheral Library
+  83:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/lib/main/XMC4000/XMCLib/inc\xmc_common.h ****  * @{
+  84:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/lib/main/XMC4000/XMCLib/inc\xmc_common.h ****  */
+  85:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/lib/main/XMC4000/XMCLib/inc\xmc_common.h **** 
+  86:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/lib/main/XMC4000/XMCLib/inc\xmc_common.h **** /**
+  87:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/lib/main/XMC4000/XMCLib/inc\xmc_common.h ****  * @addtogroup COMMON
+  88:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/lib/main/XMC4000/XMCLib/inc\xmc_common.h ****  * @brief Common APIs to all peripherals for XMC microcontroller family 
+  89:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/lib/main/XMC4000/XMCLib/inc\xmc_common.h ****  * @{
+  90:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/lib/main/XMC4000/XMCLib/inc\xmc_common.h ****  */
+  91:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/lib/main/XMC4000/XMCLib/inc\xmc_common.h **** 
+  92:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/lib/main/XMC4000/XMCLib/inc\xmc_common.h **** /**************************************************************************************************
+  93:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/lib/main/XMC4000/XMCLib/inc\xmc_common.h ****  * MACROS
+  94:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/lib/main/XMC4000/XMCLib/inc\xmc_common.h ****  **************************************************************************************************
+  95:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/lib/main/XMC4000/XMCLib/inc\xmc_common.h **** #define XMC_LIB_MAJOR_VERSION	(2U)
+  96:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/lib/main/XMC4000/XMCLib/inc\xmc_common.h **** #define XMC_LIB_MINOR_VERSION	(1U)
+  97:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/lib/main/XMC4000/XMCLib/inc\xmc_common.h **** #define XMC_LIB_PATCH_VERSION	(20U)
+  98:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/lib/main/XMC4000/XMCLib/inc\xmc_common.h ****  
+  99:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/lib/main/XMC4000/XMCLib/inc\xmc_common.h **** #define XMC_LIB_VERSION         ((XMC_LIB_MAJOR_VERSION << 16U) + (XMC_LIB_MINOR_VERSION << 8U) + X
+ 100:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/lib/main/XMC4000/XMCLib/inc\xmc_common.h **** 
+ 101:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/lib/main/XMC4000/XMCLib/inc\xmc_common.h **** /* Define WEAK attribute */
+ 102:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/lib/main/XMC4000/XMCLib/inc\xmc_common.h **** #if !defined(__WEAK)
+ 103:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/lib/main/XMC4000/XMCLib/inc\xmc_common.h **** #if defined ( __CC_ARM )
+ 104:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/lib/main/XMC4000/XMCLib/inc\xmc_common.h **** #define __WEAK __attribute__ ((weak))
+ 105:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/lib/main/XMC4000/XMCLib/inc\xmc_common.h **** #elif defined (__ARMCC_VERSION) && (__ARMCC_VERSION >= 6010050)
+ 106:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/lib/main/XMC4000/XMCLib/inc\xmc_common.h **** #define __WEAK __attribute__ ((weak))
+ 107:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/lib/main/XMC4000/XMCLib/inc\xmc_common.h **** #elif defined ( __ICCARM__ )
+ 108:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/lib/main/XMC4000/XMCLib/inc\xmc_common.h **** #define __WEAK __weak
+ 109:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/lib/main/XMC4000/XMCLib/inc\xmc_common.h **** #elif defined ( __GNUC__ )
+ 110:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/lib/main/XMC4000/XMCLib/inc\xmc_common.h **** #define __WEAK __attribute__ ((weak))
+ 111:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/lib/main/XMC4000/XMCLib/inc\xmc_common.h **** #elif defined ( __TASKING__ )
+ 112:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/lib/main/XMC4000/XMCLib/inc\xmc_common.h **** #define __WEAK __attribute__ ((weak))
+ 113:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/lib/main/XMC4000/XMCLib/inc\xmc_common.h **** #endif
+ 114:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/lib/main/XMC4000/XMCLib/inc\xmc_common.h **** #endif
+ 115:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/lib/main/XMC4000/XMCLib/inc\xmc_common.h **** 
+ 116:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/lib/main/XMC4000/XMCLib/inc\xmc_common.h **** #if !defined(__RAM_FUNC)
+ 117:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/lib/main/XMC4000/XMCLib/inc\xmc_common.h **** #if defined ( __CC_ARM )
+ 118:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/lib/main/XMC4000/XMCLib/inc\xmc_common.h **** // http://www.keil.com/support/docs/3723.htm
+ 119:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/lib/main/XMC4000/XMCLib/inc\xmc_common.h **** #define __RAM_FUNC __attribute__((section("RAMCODESECTION")))
+ 120:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/lib/main/XMC4000/XMCLib/inc\xmc_common.h **** #elif defined (__ARMCC_VERSION) && (__ARMCC_VERSION >= 6010050)
+ 121:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/lib/main/XMC4000/XMCLib/inc\xmc_common.h **** #define __RAM_FUNC __attribute__((section("RAMCODESECTION")))
+ 122:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/lib/main/XMC4000/XMCLib/inc\xmc_common.h **** #elif defined ( __ICCARM__ )
+ 123:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/lib/main/XMC4000/XMCLib/inc\xmc_common.h **** // https://www.iar.com/support/tech-notes/linker/controlling-placement-of-the-section-where-__ramfu
+ 124:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/lib/main/XMC4000/XMCLib/inc\xmc_common.h **** #define __RAM_FUNC __ramfunc
+ 125:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/lib/main/XMC4000/XMCLib/inc\xmc_common.h **** #elif defined ( __GNUC__ )
+ 126:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/lib/main/XMC4000/XMCLib/inc\xmc_common.h **** #define __RAM_FUNC __attribute__((section(".ram_code"), long_call))
+ 127:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/lib/main/XMC4000/XMCLib/inc\xmc_common.h **** #elif defined ( __TASKING__ )
+ 128:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/lib/main/XMC4000/XMCLib/inc\xmc_common.h **** #define __RAM_FUNC __attribute__((section(".ram_code")))
+ 129:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/lib/main/XMC4000/XMCLib/inc\xmc_common.h **** #endif
+ 130:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/lib/main/XMC4000/XMCLib/inc\xmc_common.h **** #endif
+ 131:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/lib/main/XMC4000/XMCLib/inc\xmc_common.h **** 
+ 132:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/lib/main/XMC4000/XMCLib/inc\xmc_common.h **** #ifdef XMC_ASSERT_ENABLE
+ 133:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/lib/main/XMC4000/XMCLib/inc\xmc_common.h ****  #define XMC_ASSERT(msg, exp) { if(!(exp)) {XMC_AssertHandler(msg, __FILE__, __LINE__);} }
+ 134:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/lib/main/XMC4000/XMCLib/inc\xmc_common.h **** #else
+ 135:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/lib/main/XMC4000/XMCLib/inc\xmc_common.h ****  #define XMC_ASSERT(msg, exp) { ; }
+ 136:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/lib/main/XMC4000/XMCLib/inc\xmc_common.h **** #endif
+ 137:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/lib/main/XMC4000/XMCLib/inc\xmc_common.h **** 
+ 138:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/lib/main/XMC4000/XMCLib/inc\xmc_common.h **** #ifdef XMC_DEBUG_ENABLE
+ 139:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/lib/main/XMC4000/XMCLib/inc\xmc_common.h ****  #include <stdio.h>
+ 140:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/lib/main/XMC4000/XMCLib/inc\xmc_common.h ****  #define XMC_DEBUG(...) { printf(__VA_ARGS__); }
+ 141:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/lib/main/XMC4000/XMCLib/inc\xmc_common.h **** #else
+ 142:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/lib/main/XMC4000/XMCLib/inc\xmc_common.h ****  #define XMC_DEBUG(...) { ; }
+ 143:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/lib/main/XMC4000/XMCLib/inc\xmc_common.h **** #endif
+ 144:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/lib/main/XMC4000/XMCLib/inc\xmc_common.h **** 
+ 145:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/lib/main/XMC4000/XMCLib/inc\xmc_common.h **** #define XMC_UNUSED_ARG(x) (void)x
+ 146:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/lib/main/XMC4000/XMCLib/inc\xmc_common.h **** 
+ 147:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/lib/main/XMC4000/XMCLib/inc\xmc_common.h **** #define XMC_STRUCT_INIT(m) memset(&m, 0, sizeof(m))
+ 148:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/lib/main/XMC4000/XMCLib/inc\xmc_common.h **** 
+ 149:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/lib/main/XMC4000/XMCLib/inc\xmc_common.h **** #define XMC_PRIOARRAY_DEF(name, size) \
+ 150:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/lib/main/XMC4000/XMCLib/inc\xmc_common.h **** XMC_PRIOARRAY_ITEM_t prioarray_m_##name[size + 2]; \
+ 151:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/lib/main/XMC4000/XMCLib/inc\xmc_common.h **** XMC_PRIOARRAY_t prioarray_def_##name = {(size), (prioarray_m_##name)};
+ 152:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/lib/main/XMC4000/XMCLib/inc\xmc_common.h **** 
+ 153:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/lib/main/XMC4000/XMCLib/inc\xmc_common.h **** #define XMC_PRIOARRAY(name) \
+ 154:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/lib/main/XMC4000/XMCLib/inc\xmc_common.h **** &prioarray_def_##name
+ 155:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/lib/main/XMC4000/XMCLib/inc\xmc_common.h **** 
+ 156:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/lib/main/XMC4000/XMCLib/inc\xmc_common.h **** /**************************************************************************************************
+ 157:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/lib/main/XMC4000/XMCLib/inc\xmc_common.h ****  * DATA STRUCTURES
+ 158:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/lib/main/XMC4000/XMCLib/inc\xmc_common.h ****  **************************************************************************************************
+ 159:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/lib/main/XMC4000/XMCLib/inc\xmc_common.h **** /*
+ 160:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/lib/main/XMC4000/XMCLib/inc\xmc_common.h ****  *
+ 161:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/lib/main/XMC4000/XMCLib/inc\xmc_common.h ****  */
+ 162:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/lib/main/XMC4000/XMCLib/inc\xmc_common.h **** typedef struct XMC_DRIVER_VERSION 
+ 163:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/lib/main/XMC4000/XMCLib/inc\xmc_common.h **** {
+ 164:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/lib/main/XMC4000/XMCLib/inc\xmc_common.h ****   uint8_t major;
+ 165:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/lib/main/XMC4000/XMCLib/inc\xmc_common.h ****   uint8_t minor;
+ 166:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/lib/main/XMC4000/XMCLib/inc\xmc_common.h ****   uint8_t patch;
+ 167:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/lib/main/XMC4000/XMCLib/inc\xmc_common.h **** } XMC_DRIVER_VERSION_t;
+ 168:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/lib/main/XMC4000/XMCLib/inc\xmc_common.h **** 
+ 169:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/lib/main/XMC4000/XMCLib/inc\xmc_common.h **** /*
+ 170:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/lib/main/XMC4000/XMCLib/inc\xmc_common.h ****  *
+ 171:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/lib/main/XMC4000/XMCLib/inc\xmc_common.h ****  */
+ 172:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/lib/main/XMC4000/XMCLib/inc\xmc_common.h **** typedef void *XMC_LIST_t;
+ 173:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/lib/main/XMC4000/XMCLib/inc\xmc_common.h **** 
+ 174:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/lib/main/XMC4000/XMCLib/inc\xmc_common.h **** /*
+ 175:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/lib/main/XMC4000/XMCLib/inc\xmc_common.h ****  *
+ 176:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/lib/main/XMC4000/XMCLib/inc\xmc_common.h ****  */
+ 177:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/lib/main/XMC4000/XMCLib/inc\xmc_common.h **** typedef struct XMC_PRIOARRAY_ITEM
+ 178:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/lib/main/XMC4000/XMCLib/inc\xmc_common.h **** {
+ 179:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/lib/main/XMC4000/XMCLib/inc\xmc_common.h ****   int32_t priority;
+ 180:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/lib/main/XMC4000/XMCLib/inc\xmc_common.h ****   int32_t previous;
+ 181:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/lib/main/XMC4000/XMCLib/inc\xmc_common.h ****   int32_t next;
+ 182:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/lib/main/XMC4000/XMCLib/inc\xmc_common.h **** } XMC_PRIOARRAY_ITEM_t;
+ 183:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/lib/main/XMC4000/XMCLib/inc\xmc_common.h **** 
+ 184:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/lib/main/XMC4000/XMCLib/inc\xmc_common.h **** /*
+ 185:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/lib/main/XMC4000/XMCLib/inc\xmc_common.h ****  *
+ 186:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/lib/main/XMC4000/XMCLib/inc\xmc_common.h ****  */
+ 187:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/lib/main/XMC4000/XMCLib/inc\xmc_common.h **** typedef struct XMC_PRIOARRAY
+ 188:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/lib/main/XMC4000/XMCLib/inc\xmc_common.h **** {
+ 189:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/lib/main/XMC4000/XMCLib/inc\xmc_common.h ****   int32_t size;
+ 190:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/lib/main/XMC4000/XMCLib/inc\xmc_common.h ****   XMC_PRIOARRAY_ITEM_t *items;
+ 191:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/lib/main/XMC4000/XMCLib/inc\xmc_common.h **** } XMC_PRIOARRAY_t;
+ 192:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/lib/main/XMC4000/XMCLib/inc\xmc_common.h **** 
+ 193:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/lib/main/XMC4000/XMCLib/inc\xmc_common.h **** /**************************************************************************************************
+ 194:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/lib/main/XMC4000/XMCLib/inc\xmc_common.h ****  * API PROTOTYPES
+ 195:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/lib/main/XMC4000/XMCLib/inc\xmc_common.h ****  **************************************************************************************************
+ 196:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/lib/main/XMC4000/XMCLib/inc\xmc_common.h **** 
+ 197:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/lib/main/XMC4000/XMCLib/inc\xmc_common.h **** #ifdef __cplusplus
+ 198:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/lib/main/XMC4000/XMCLib/inc\xmc_common.h **** extern "C" {
+ 199:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/lib/main/XMC4000/XMCLib/inc\xmc_common.h **** #endif
+ 200:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/lib/main/XMC4000/XMCLib/inc\xmc_common.h **** 
+ 201:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/lib/main/XMC4000/XMCLib/inc\xmc_common.h **** /*
+ 202:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/lib/main/XMC4000/XMCLib/inc\xmc_common.h ****  *
+ 203:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/lib/main/XMC4000/XMCLib/inc\xmc_common.h ****  */
+ 204:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/lib/main/XMC4000/XMCLib/inc\xmc_common.h **** void XMC_AssertHandler(const char *const msg, const char *const file, uint32_t line);
+ 205:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/lib/main/XMC4000/XMCLib/inc\xmc_common.h **** 
+ 206:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/lib/main/XMC4000/XMCLib/inc\xmc_common.h **** /*
+ 207:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/lib/main/XMC4000/XMCLib/inc\xmc_common.h ****  *
+ 208:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/lib/main/XMC4000/XMCLib/inc\xmc_common.h ****  */
+ 209:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/lib/main/XMC4000/XMCLib/inc\xmc_common.h **** void XMC_LIST_Init(XMC_LIST_t *list);
+ 210:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/lib/main/XMC4000/XMCLib/inc\xmc_common.h **** 
+ 211:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/lib/main/XMC4000/XMCLib/inc\xmc_common.h **** /*
+ 212:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/lib/main/XMC4000/XMCLib/inc\xmc_common.h ****  *
+ 213:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/lib/main/XMC4000/XMCLib/inc\xmc_common.h ****  */
+ 214:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/lib/main/XMC4000/XMCLib/inc\xmc_common.h **** void XMC_LIST_Add(XMC_LIST_t *list, void *const item);
+ 215:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/lib/main/XMC4000/XMCLib/inc\xmc_common.h **** 
+ 216:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/lib/main/XMC4000/XMCLib/inc\xmc_common.h **** /*
+ 217:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/lib/main/XMC4000/XMCLib/inc\xmc_common.h ****  *
+ 218:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/lib/main/XMC4000/XMCLib/inc\xmc_common.h ****  */
+ 219:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/lib/main/XMC4000/XMCLib/inc\xmc_common.h **** void XMC_LIST_Remove(XMC_LIST_t *list, void *const item);
+ 220:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/lib/main/XMC4000/XMCLib/inc\xmc_common.h **** 
+ 221:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/lib/main/XMC4000/XMCLib/inc\xmc_common.h **** /*
+ 222:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/lib/main/XMC4000/XMCLib/inc\xmc_common.h ****  *
+ 223:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/lib/main/XMC4000/XMCLib/inc\xmc_common.h ****  */
+ 224:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/lib/main/XMC4000/XMCLib/inc\xmc_common.h **** uint32_t XMC_LIST_GetLength(XMC_LIST_t *list);
+ 225:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/lib/main/XMC4000/XMCLib/inc\xmc_common.h **** 
+ 226:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/lib/main/XMC4000/XMCLib/inc\xmc_common.h **** /*
+ 227:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/lib/main/XMC4000/XMCLib/inc\xmc_common.h ****  *
+ 228:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/lib/main/XMC4000/XMCLib/inc\xmc_common.h ****  */
+ 229:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/lib/main/XMC4000/XMCLib/inc\xmc_common.h **** void *XMC_LIST_GetHead(XMC_LIST_t *list);
+ 230:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/lib/main/XMC4000/XMCLib/inc\xmc_common.h **** 
+ 231:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/lib/main/XMC4000/XMCLib/inc\xmc_common.h **** /*
+ 232:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/lib/main/XMC4000/XMCLib/inc\xmc_common.h ****  *
+ 233:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/lib/main/XMC4000/XMCLib/inc\xmc_common.h ****  */
+ 234:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/lib/main/XMC4000/XMCLib/inc\xmc_common.h **** void *XMC_LIST_GetTail(XMC_LIST_t *list);
+ 235:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/lib/main/XMC4000/XMCLib/inc\xmc_common.h **** 
+ 236:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/lib/main/XMC4000/XMCLib/inc\xmc_common.h **** /*
+ 237:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/lib/main/XMC4000/XMCLib/inc\xmc_common.h ****  *
+ 238:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/lib/main/XMC4000/XMCLib/inc\xmc_common.h ****  */
+ 239:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/lib/main/XMC4000/XMCLib/inc\xmc_common.h **** void XMC_LIST_Insert(XMC_LIST_t *list, void *prev_item, void *new_item);
+ 240:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/lib/main/XMC4000/XMCLib/inc\xmc_common.h **** 
+ 241:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/lib/main/XMC4000/XMCLib/inc\xmc_common.h **** /*
+ 242:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/lib/main/XMC4000/XMCLib/inc\xmc_common.h ****  *
+ 243:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/lib/main/XMC4000/XMCLib/inc\xmc_common.h ****  */
+ 244:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/lib/main/XMC4000/XMCLib/inc\xmc_common.h **** void XMC_PRIOARRAY_Init(XMC_PRIOARRAY_t *prioarray);
+ 245:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/lib/main/XMC4000/XMCLib/inc\xmc_common.h **** 
+ 246:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/lib/main/XMC4000/XMCLib/inc\xmc_common.h **** /*
+ 247:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/lib/main/XMC4000/XMCLib/inc\xmc_common.h ****  *
+ 248:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/lib/main/XMC4000/XMCLib/inc\xmc_common.h ****  */
+ 249:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/lib/main/XMC4000/XMCLib/inc\xmc_common.h **** void XMC_PRIOARRAY_Add(XMC_PRIOARRAY_t *prioarray, int32_t item, int32_t priority);
+ 250:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/lib/main/XMC4000/XMCLib/inc\xmc_common.h **** 
+ 251:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/lib/main/XMC4000/XMCLib/inc\xmc_common.h **** /*
+ 252:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/lib/main/XMC4000/XMCLib/inc\xmc_common.h ****  *
+ 253:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/lib/main/XMC4000/XMCLib/inc\xmc_common.h ****  */
+ 254:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/lib/main/XMC4000/XMCLib/inc\xmc_common.h **** void XMC_PRIOARRAY_Remove(XMC_PRIOARRAY_t *prioarray, int32_t item);
+ 255:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/lib/main/XMC4000/XMCLib/inc\xmc_common.h **** 
+ 256:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/lib/main/XMC4000/XMCLib/inc\xmc_common.h **** /*
+ 257:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/lib/main/XMC4000/XMCLib/inc\xmc_common.h ****  *
+ 258:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/lib/main/XMC4000/XMCLib/inc\xmc_common.h ****  */
+ 259:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/lib/main/XMC4000/XMCLib/inc\xmc_common.h **** __STATIC_INLINE int32_t XMC_PRIOARRAY_GetHead(XMC_PRIOARRAY_t *prioarray)
+ 260:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/lib/main/XMC4000/XMCLib/inc\xmc_common.h **** {
+  27              	 .loc 1 260 0
+  28              	 .cfi_startproc
+  29              	 
+  30              	 
+  31              	 
+  32 0000 80B4     	 push {r7}
+  33              	.LCFI0:
+  34              	 .cfi_def_cfa_offset 4
+  35              	 .cfi_offset 7,-4
+  36 0002 83B0     	 sub sp,sp,#12
+  37              	.LCFI1:
+  38              	 .cfi_def_cfa_offset 16
+  39 0004 00AF     	 add r7,sp,#0
+  40              	.LCFI2:
+  41              	 .cfi_def_cfa_register 7
+  42 0006 7860     	 str r0,[r7,#4]
+ 261:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/lib/main/XMC4000/XMCLib/inc\xmc_common.h ****   XMC_ASSERT("XMC_PRIOARRAY_Init: NULL pointer", prioarray != NULL);
+ 262:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/lib/main/XMC4000/XMCLib/inc\xmc_common.h ****   return prioarray->items[prioarray->size].next;
+  43              	 .loc 1 262 0
+  44 0008 7B68     	 ldr r3,[r7,#4]
+  45 000a 5A68     	 ldr r2,[r3,#4]
+  46 000c 7B68     	 ldr r3,[r7,#4]
+  47 000e 1B68     	 ldr r3,[r3]
+  48 0010 1946     	 mov r1,r3
+  49 0012 0B46     	 mov r3,r1
+  50 0014 5B00     	 lsls r3,r3,#1
+  51 0016 0B44     	 add r3,r3,r1
+  52 0018 9B00     	 lsls r3,r3,#2
+  53 001a 1344     	 add r3,r3,r2
+  54 001c 9B68     	 ldr r3,[r3,#8]
+ 263:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/lib/main/XMC4000/XMCLib/inc\xmc_common.h **** }
+  55              	 .loc 1 263 0
+  56 001e 1846     	 mov r0,r3
+  57 0020 0C37     	 adds r7,r7,#12
+  58              	.LCFI3:
+  59              	 .cfi_def_cfa_offset 4
+  60 0022 BD46     	 mov sp,r7
+  61              	.LCFI4:
+  62              	 .cfi_def_cfa_register 13
+  63              	 
+  64 0024 5DF8047B 	 ldr r7,[sp],#4
+  65              	.LCFI5:
+  66              	 .cfi_restore 7
+  67              	 .cfi_def_cfa_offset 0
+  68 0028 7047     	 bx lr
+  69              	 .cfi_endproc
+  70              	.LFE130:
+  72 002a 00BF     	 .section .text.XMC_PRIOARRAY_GetItemPriority,"ax",%progbits
+  73              	 .align 2
+  74              	 .thumb
+  75              	 .thumb_func
+  77              	XMC_PRIOARRAY_GetItemPriority:
+  78              	.LFB132:
+ 264:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/lib/main/XMC4000/XMCLib/inc\xmc_common.h **** 
+ 265:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/lib/main/XMC4000/XMCLib/inc\xmc_common.h **** /*
+ 266:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/lib/main/XMC4000/XMCLib/inc\xmc_common.h ****  *
+ 267:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/lib/main/XMC4000/XMCLib/inc\xmc_common.h ****  */
+ 268:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/lib/main/XMC4000/XMCLib/inc\xmc_common.h **** __STATIC_INLINE int32_t XMC_PRIOARRAY_GetTail(XMC_PRIOARRAY_t *prioarray)
+ 269:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/lib/main/XMC4000/XMCLib/inc\xmc_common.h **** {
+ 270:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/lib/main/XMC4000/XMCLib/inc\xmc_common.h ****   XMC_ASSERT("XMC_PRIOARRAY_Init: NULL pointer", prioarray != NULL);
+ 271:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/lib/main/XMC4000/XMCLib/inc\xmc_common.h ****   return prioarray->items[prioarray->size + 1].previous;
+ 272:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/lib/main/XMC4000/XMCLib/inc\xmc_common.h **** }
+ 273:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/lib/main/XMC4000/XMCLib/inc\xmc_common.h **** 
+ 274:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/lib/main/XMC4000/XMCLib/inc\xmc_common.h **** /*
+ 275:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/lib/main/XMC4000/XMCLib/inc\xmc_common.h ****  *
+ 276:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/lib/main/XMC4000/XMCLib/inc\xmc_common.h ****  */
+ 277:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/lib/main/XMC4000/XMCLib/inc\xmc_common.h **** __STATIC_INLINE int32_t XMC_PRIOARRAY_GetItemPriority(XMC_PRIOARRAY_t *prioarray, int32_t item)
+ 278:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/lib/main/XMC4000/XMCLib/inc\xmc_common.h **** {
+  79              	 .loc 1 278 0
+  80              	 .cfi_startproc
+  81              	 
+  82              	 
+  83              	 
+  84 0000 80B4     	 push {r7}
+  85              	.LCFI6:
+  86              	 .cfi_def_cfa_offset 4
+  87              	 .cfi_offset 7,-4
+  88 0002 83B0     	 sub sp,sp,#12
+  89              	.LCFI7:
+  90              	 .cfi_def_cfa_offset 16
+  91 0004 00AF     	 add r7,sp,#0
+  92              	.LCFI8:
+  93              	 .cfi_def_cfa_register 7
+  94 0006 7860     	 str r0,[r7,#4]
+  95 0008 3960     	 str r1,[r7]
+ 279:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/lib/main/XMC4000/XMCLib/inc\xmc_common.h ****   XMC_ASSERT("XMC_PRIOARRAY_GetItemPriority: item out of range", (item >= 0) && (item < prioarray->
+ 280:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/lib/main/XMC4000/XMCLib/inc\xmc_common.h ****   return prioarray->items[item].priority;
+  96              	 .loc 1 280 0
+  97 000a 7B68     	 ldr r3,[r7,#4]
+  98 000c 5968     	 ldr r1,[r3,#4]
+  99 000e 3A68     	 ldr r2,[r7]
+ 100 0010 1346     	 mov r3,r2
+ 101 0012 5B00     	 lsls r3,r3,#1
+ 102 0014 1344     	 add r3,r3,r2
+ 103 0016 9B00     	 lsls r3,r3,#2
+ 104 0018 0B44     	 add r3,r3,r1
+ 105 001a 1B68     	 ldr r3,[r3]
+ 281:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/lib/main/XMC4000/XMCLib/inc\xmc_common.h **** }
+ 106              	 .loc 1 281 0
+ 107 001c 1846     	 mov r0,r3
+ 108 001e 0C37     	 adds r7,r7,#12
+ 109              	.LCFI9:
+ 110              	 .cfi_def_cfa_offset 4
+ 111 0020 BD46     	 mov sp,r7
+ 112              	.LCFI10:
+ 113              	 .cfi_def_cfa_register 13
+ 114              	 
+ 115 0022 5DF8047B 	 ldr r7,[sp],#4
+ 116              	.LCFI11:
+ 117              	 .cfi_restore 7
+ 118              	 .cfi_def_cfa_offset 0
+ 119 0026 7047     	 bx lr
+ 120              	 .cfi_endproc
+ 121              	.LFE132:
+ 123              	 .section .text.XMC_PRIOARRAY_GetItemNext,"ax",%progbits
+ 124              	 .align 2
+ 125              	 .thumb
+ 126              	 .thumb_func
+ 128              	XMC_PRIOARRAY_GetItemNext:
+ 129              	.LFB133:
+ 282:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/lib/main/XMC4000/XMCLib/inc\xmc_common.h **** 
+ 283:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/lib/main/XMC4000/XMCLib/inc\xmc_common.h **** /*
+ 284:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/lib/main/XMC4000/XMCLib/inc\xmc_common.h ****  *
+ 285:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/lib/main/XMC4000/XMCLib/inc\xmc_common.h ****  */
+ 286:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/lib/main/XMC4000/XMCLib/inc\xmc_common.h **** __STATIC_INLINE int32_t XMC_PRIOARRAY_GetItemNext(XMC_PRIOARRAY_t *prioarray, int32_t item)
+ 287:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/lib/main/XMC4000/XMCLib/inc\xmc_common.h **** {
+ 130              	 .loc 1 287 0
+ 131              	 .cfi_startproc
+ 132              	 
+ 133              	 
+ 134              	 
+ 135 0000 80B4     	 push {r7}
+ 136              	.LCFI12:
+ 137              	 .cfi_def_cfa_offset 4
+ 138              	 .cfi_offset 7,-4
+ 139 0002 83B0     	 sub sp,sp,#12
+ 140              	.LCFI13:
+ 141              	 .cfi_def_cfa_offset 16
+ 142 0004 00AF     	 add r7,sp,#0
+ 143              	.LCFI14:
+ 144              	 .cfi_def_cfa_register 7
+ 145 0006 7860     	 str r0,[r7,#4]
+ 146 0008 3960     	 str r1,[r7]
+ 288:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/lib/main/XMC4000/XMCLib/inc\xmc_common.h ****   XMC_ASSERT("XMC_PRIOARRAY_GetItemNext: item out of range", (item >= 0) && (item < prioarray->size
+ 289:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/lib/main/XMC4000/XMCLib/inc\xmc_common.h ****   return prioarray->items[item].next;
+ 147              	 .loc 1 289 0
+ 148 000a 7B68     	 ldr r3,[r7,#4]
+ 149 000c 5968     	 ldr r1,[r3,#4]
+ 150 000e 3A68     	 ldr r2,[r7]
+ 151 0010 1346     	 mov r3,r2
+ 152 0012 5B00     	 lsls r3,r3,#1
+ 153 0014 1344     	 add r3,r3,r2
+ 154 0016 9B00     	 lsls r3,r3,#2
+ 155 0018 0B44     	 add r3,r3,r1
+ 156 001a 9B68     	 ldr r3,[r3,#8]
+ 290:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/lib/main/XMC4000/XMCLib/inc\xmc_common.h **** }
+ 157              	 .loc 1 290 0
+ 158 001c 1846     	 mov r0,r3
+ 159 001e 0C37     	 adds r7,r7,#12
+ 160              	.LCFI15:
+ 161              	 .cfi_def_cfa_offset 4
+ 162 0020 BD46     	 mov sp,r7
+ 163              	.LCFI16:
+ 164              	 .cfi_def_cfa_register 13
+ 165              	 
+ 166 0022 5DF8047B 	 ldr r7,[sp],#4
+ 167              	.LCFI17:
+ 168              	 .cfi_restore 7
+ 169              	 .cfi_def_cfa_offset 0
+ 170 0026 7047     	 bx lr
+ 171              	 .cfi_endproc
+ 172              	.LFE133:
+ 174              	 .section .text.XMC_LIST_Init,"ax",%progbits
+ 175              	 .align 2
+ 176              	 .global XMC_LIST_Init
+ 177              	 .thumb
+ 178              	 .thumb_func
+ 180              	XMC_LIST_Init:
+ 181              	.LFB135:
+ 182              	 .file 2 "../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_common.c"
+   1:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_common.c **** /**
+   2:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_common.c ****  * @file xmc_common.c
+   3:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_common.c ****  * @date 2017-02-25
+   4:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_common.c ****  *
+   5:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_common.c ****  * @cond
+   6:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_common.c ****  **************************************************************************************************
+   7:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_common.c ****  * XMClib v2.1.20 - XMC Peripheral Driver Library 
+   8:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_common.c ****  *
+   9:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_common.c ****  * Copyright (c) 2015-2018, Infineon Technologies AG
+  10:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_common.c ****  * All rights reserved.                        
+  11:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_common.c ****  *                                             
+  12:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_common.c ****  * Redistribution and use in source and binary forms, with or without modification,are permitted pr
+  13:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_common.c ****  * following conditions are met:   
+  14:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_common.c ****  *                                                                              
+  15:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_common.c ****  * Redistributions of source code must retain the above copyright notice, this list of conditions a
+  16:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_common.c ****  * disclaimer.                        
+  17:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_common.c ****  * 
+  18:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_common.c ****  * Redistributions in binary form must reproduce the above copyright notice, this list of condition
+  19:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_common.c ****  * disclaimer in the documentation and/or other materials provided with the distribution.          
+  20:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_common.c ****  * 
+  21:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_common.c ****  * Neither the name of the copyright holders nor the names of its contributors may be used to endor
+  22:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_common.c ****  * products derived from this software without specific prior written permission.                  
+  23:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_common.c ****  *                                                                              
+  24:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_common.c ****  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND ANY EXPRESS OR I
+  25:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_common.c ****  * INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTI
+  26:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_common.c ****  * DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE  FOR ANY DIRECT, IN
+  27:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_common.c ****  * SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBS
+  28:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_common.c ****  * SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THE
+  29:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_common.c ****  * WHETHER IN CONTRACT, STRICT LIABILITY,OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY
+  30:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_common.c ****  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.                            
+  31:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_common.c ****  *                                                                              
+  32:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_common.c ****  * To improve the quality of the software, users are encouraged to share modifications, enhancement
+  33:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_common.c ****  * Infineon Technologies AG dave@infineon.com).                                                    
+  34:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_common.c ****  **************************************************************************************************
+  35:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_common.c ****  *
+  36:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_common.c ****  * Change History
+  37:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_common.c ****  * --------------
+  38:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_common.c ****  *
+  39:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_common.c ****  * 2015-02-20:
+  40:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_common.c ****  *     - Initial <br>
+  41:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_common.c ****  *      
+  42:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_common.c ****  * 2017-02-25:
+  43:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_common.c ****  *     - Remove the need to define XMC_USER_ASSERT_FUNCTION
+  44:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_common.c ****  *     - XMC_AssertHandler fixed compilation warnings
+  45:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_common.c ****  *
+  46:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_common.c ****  * @endcond 
+  47:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_common.c ****  *
+  48:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_common.c ****  */
+  49:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_common.c **** 
+  50:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_common.c **** #include "xmc_common.h"
+  51:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_common.c **** 
+  52:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_common.c **** /*******************************************************************************
+  53:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_common.c ****  * DATA STRUCTURES
+  54:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_common.c ****  *******************************************************************************/
+  55:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_common.c **** struct list
+  56:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_common.c **** {
+  57:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_common.c ****   struct list *next;
+  58:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_common.c **** };
+  59:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_common.c **** 
+  60:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_common.c **** /*******************************************************************************
+  61:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_common.c ****  * API IMPLEMENTATION
+  62:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_common.c ****  *******************************************************************************/
+  63:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_common.c **** #if defined(XMC_ASSERT_ENABLE)
+  64:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_common.c **** __WEAK void XMC_AssertHandler(const char *const msg, const char *const file, uint32_t line)
+  65:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_common.c **** {
+  66:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_common.c ****   XMC_UNUSED_ARG(msg);
+  67:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_common.c ****   XMC_UNUSED_ARG(file);
+  68:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_common.c ****   XMC_UNUSED_ARG(line);
+  69:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_common.c **** 
+  70:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_common.c ****   while(1)
+  71:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_common.c ****   {
+  72:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_common.c ****     /* Endless loop */
+  73:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_common.c ****   }
+  74:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_common.c **** }
+  75:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_common.c **** #endif
+  76:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_common.c **** 
+  77:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_common.c **** void XMC_LIST_Init(XMC_LIST_t *list)
+  78:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_common.c **** {
+ 183              	 .loc 2 78 0
+ 184              	 .cfi_startproc
+ 185              	 
+ 186              	 
+ 187              	 
+ 188 0000 80B4     	 push {r7}
+ 189              	.LCFI18:
+ 190              	 .cfi_def_cfa_offset 4
+ 191              	 .cfi_offset 7,-4
+ 192 0002 83B0     	 sub sp,sp,#12
+ 193              	.LCFI19:
+ 194              	 .cfi_def_cfa_offset 16
+ 195 0004 00AF     	 add r7,sp,#0
+ 196              	.LCFI20:
+ 197              	 .cfi_def_cfa_register 7
+ 198 0006 7860     	 str r0,[r7,#4]
+  79:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_common.c ****   *list = NULL;
+ 199              	 .loc 2 79 0
+ 200 0008 7B68     	 ldr r3,[r7,#4]
+ 201 000a 0022     	 movs r2,#0
+ 202 000c 1A60     	 str r2,[r3]
+  80:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_common.c **** }
+ 203              	 .loc 2 80 0
+ 204 000e 0C37     	 adds r7,r7,#12
+ 205              	.LCFI21:
+ 206              	 .cfi_def_cfa_offset 4
+ 207 0010 BD46     	 mov sp,r7
+ 208              	.LCFI22:
+ 209              	 .cfi_def_cfa_register 13
+ 210              	 
+ 211 0012 5DF8047B 	 ldr r7,[sp],#4
+ 212              	.LCFI23:
+ 213              	 .cfi_restore 7
+ 214              	 .cfi_def_cfa_offset 0
+ 215 0016 7047     	 bx lr
+ 216              	 .cfi_endproc
+ 217              	.LFE135:
+ 219              	 .section .text.XMC_LIST_GetHead,"ax",%progbits
+ 220              	 .align 2
+ 221              	 .global XMC_LIST_GetHead
+ 222              	 .thumb
+ 223              	 .thumb_func
+ 225              	XMC_LIST_GetHead:
+ 226              	.LFB136:
+  81:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_common.c **** 
+  82:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_common.c **** void *XMC_LIST_GetHead(XMC_LIST_t *list)
+  83:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_common.c **** {
+ 227              	 .loc 2 83 0
+ 228              	 .cfi_startproc
+ 229              	 
+ 230              	 
+ 231              	 
+ 232 0000 80B4     	 push {r7}
+ 233              	.LCFI24:
+ 234              	 .cfi_def_cfa_offset 4
+ 235              	 .cfi_offset 7,-4
+ 236 0002 83B0     	 sub sp,sp,#12
+ 237              	.LCFI25:
+ 238              	 .cfi_def_cfa_offset 16
+ 239 0004 00AF     	 add r7,sp,#0
+ 240              	.LCFI26:
+ 241              	 .cfi_def_cfa_register 7
+ 242 0006 7860     	 str r0,[r7,#4]
+  84:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_common.c ****   return *list;
+ 243              	 .loc 2 84 0
+ 244 0008 7B68     	 ldr r3,[r7,#4]
+ 245 000a 1B68     	 ldr r3,[r3]
+  85:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_common.c **** }
+ 246              	 .loc 2 85 0
+ 247 000c 1846     	 mov r0,r3
+ 248 000e 0C37     	 adds r7,r7,#12
+ 249              	.LCFI27:
+ 250              	 .cfi_def_cfa_offset 4
+ 251 0010 BD46     	 mov sp,r7
+ 252              	.LCFI28:
+ 253              	 .cfi_def_cfa_register 13
+ 254              	 
+ 255 0012 5DF8047B 	 ldr r7,[sp],#4
+ 256              	.LCFI29:
+ 257              	 .cfi_restore 7
+ 258              	 .cfi_def_cfa_offset 0
+ 259 0016 7047     	 bx lr
+ 260              	 .cfi_endproc
+ 261              	.LFE136:
+ 263              	 .section .text.XMC_LIST_GetTail,"ax",%progbits
+ 264              	 .align 2
+ 265              	 .global XMC_LIST_GetTail
+ 266              	 .thumb
+ 267              	 .thumb_func
+ 269              	XMC_LIST_GetTail:
+ 270              	.LFB137:
+  86:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_common.c **** 
+  87:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_common.c **** void *XMC_LIST_GetTail(XMC_LIST_t *list)
+  88:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_common.c **** {
+ 271              	 .loc 2 88 0
+ 272              	 .cfi_startproc
+ 273              	 
+ 274              	 
+ 275              	 
+ 276 0000 80B4     	 push {r7}
+ 277              	.LCFI30:
+ 278              	 .cfi_def_cfa_offset 4
+ 279              	 .cfi_offset 7,-4
+ 280 0002 85B0     	 sub sp,sp,#20
+ 281              	.LCFI31:
+ 282              	 .cfi_def_cfa_offset 24
+ 283 0004 00AF     	 add r7,sp,#0
+ 284              	.LCFI32:
+ 285              	 .cfi_def_cfa_register 7
+ 286 0006 7860     	 str r0,[r7,#4]
+  89:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_common.c ****   struct list *tail;
+  90:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_common.c ****   
+  91:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_common.c ****   if (*list == NULL) 
+ 287              	 .loc 2 91 0
+ 288 0008 7B68     	 ldr r3,[r7,#4]
+ 289 000a 1B68     	 ldr r3,[r3]
+ 290 000c 002B     	 cmp r3,#0
+ 291 000e 02D1     	 bne .L11
+  92:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_common.c ****   {
+  93:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_common.c ****     tail = NULL;
+ 292              	 .loc 2 93 0
+ 293 0010 0023     	 movs r3,#0
+ 294 0012 FB60     	 str r3,[r7,#12]
+ 295 0014 0AE0     	 b .L12
+ 296              	.L11:
+  94:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_common.c ****   }
+  95:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_common.c ****   else
+  96:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_common.c ****   {
+  97:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_common.c ****     for (tail = (struct list *)*list; tail->next != NULL; tail = tail->next)
+ 297              	 .loc 2 97 0
+ 298 0016 7B68     	 ldr r3,[r7,#4]
+ 299 0018 1B68     	 ldr r3,[r3]
+ 300 001a FB60     	 str r3,[r7,#12]
+ 301 001c 02E0     	 b .L13
+ 302              	.L14:
+ 303              	 .loc 2 97 0 is_stmt 0 discriminator 3
+ 304 001e FB68     	 ldr r3,[r7,#12]
+ 305 0020 1B68     	 ldr r3,[r3]
+ 306 0022 FB60     	 str r3,[r7,#12]
+ 307              	.L13:
+ 308              	 .loc 2 97 0 discriminator 1
+ 309 0024 FB68     	 ldr r3,[r7,#12]
+ 310 0026 1B68     	 ldr r3,[r3]
+ 311 0028 002B     	 cmp r3,#0
+ 312 002a F8D1     	 bne .L14
+ 313              	.L12:
+  98:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_common.c ****     {
+  99:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_common.c ****       /* Loop through the list */
+ 100:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_common.c ****     }  
+ 101:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_common.c ****   }
+ 102:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_common.c ****   
+ 103:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_common.c ****   return tail;    
+ 314              	 .loc 2 103 0 is_stmt 1
+ 315 002c FB68     	 ldr r3,[r7,#12]
+ 104:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_common.c **** }
+ 316              	 .loc 2 104 0
+ 317 002e 1846     	 mov r0,r3
+ 318 0030 1437     	 adds r7,r7,#20
+ 319              	.LCFI33:
+ 320              	 .cfi_def_cfa_offset 4
+ 321 0032 BD46     	 mov sp,r7
+ 322              	.LCFI34:
+ 323              	 .cfi_def_cfa_register 13
+ 324              	 
+ 325 0034 5DF8047B 	 ldr r7,[sp],#4
+ 326              	.LCFI35:
+ 327              	 .cfi_restore 7
+ 328              	 .cfi_def_cfa_offset 0
+ 329 0038 7047     	 bx lr
+ 330              	 .cfi_endproc
+ 331              	.LFE137:
+ 333 003a 00BF     	 .section .text.XMC_LIST_Add,"ax",%progbits
+ 334              	 .align 2
+ 335              	 .global XMC_LIST_Add
+ 336              	 .thumb
+ 337              	 .thumb_func
+ 339              	XMC_LIST_Add:
+ 340              	.LFB138:
+ 105:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_common.c **** 
+ 106:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_common.c **** void XMC_LIST_Add(XMC_LIST_t *list, void *item)
+ 107:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_common.c **** {
+ 341              	 .loc 2 107 0
+ 342              	 .cfi_startproc
+ 343              	 
+ 344              	 
+ 345 0000 80B5     	 push {r7,lr}
+ 346              	.LCFI36:
+ 347              	 .cfi_def_cfa_offset 8
+ 348              	 .cfi_offset 7,-8
+ 349              	 .cfi_offset 14,-4
+ 350 0002 84B0     	 sub sp,sp,#16
+ 351              	.LCFI37:
+ 352              	 .cfi_def_cfa_offset 24
+ 353 0004 00AF     	 add r7,sp,#0
+ 354              	.LCFI38:
+ 355              	 .cfi_def_cfa_register 7
+ 356 0006 7860     	 str r0,[r7,#4]
+ 357 0008 3960     	 str r1,[r7]
+ 108:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_common.c ****   struct list *tail;
+ 109:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_common.c ****   
+ 110:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_common.c ****   ((struct list *)item)->next = NULL;
+ 358              	 .loc 2 110 0
+ 359 000a 3B68     	 ldr r3,[r7]
+ 360 000c 0022     	 movs r2,#0
+ 361 000e 1A70     	 strb r2,[r3]
+ 362 0010 0022     	 movs r2,#0
+ 363 0012 5A70     	 strb r2,[r3,#1]
+ 364 0014 0022     	 movs r2,#0
+ 365 0016 9A70     	 strb r2,[r3,#2]
+ 366 0018 0022     	 movs r2,#0
+ 367 001a DA70     	 strb r2,[r3,#3]
+ 111:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_common.c ****   tail = (struct list *)XMC_LIST_GetTail(list);
+ 368              	 .loc 2 111 0
+ 369 001c 7868     	 ldr r0,[r7,#4]
+ 370 001e FFF7FEFF 	 bl XMC_LIST_GetTail
+ 371 0022 F860     	 str r0,[r7,#12]
+ 112:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_common.c ****   
+ 113:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_common.c ****   if (tail == NULL) 
+ 372              	 .loc 2 113 0
+ 373 0024 FB68     	 ldr r3,[r7,#12]
+ 374 0026 002B     	 cmp r3,#0
+ 375 0028 03D1     	 bne .L17
+ 114:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_common.c ****   {
+ 115:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_common.c ****     *list = item;
+ 376              	 .loc 2 115 0
+ 377 002a 7B68     	 ldr r3,[r7,#4]
+ 378 002c 3A68     	 ldr r2,[r7]
+ 379 002e 1A60     	 str r2,[r3]
+ 380 0030 02E0     	 b .L16
+ 381              	.L17:
+ 116:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_common.c ****   } 
+ 117:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_common.c ****   else 
+ 118:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_common.c ****   {
+ 119:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_common.c ****     tail->next = (struct list *)item;
+ 382              	 .loc 2 119 0
+ 383 0032 FB68     	 ldr r3,[r7,#12]
+ 384 0034 3A68     	 ldr r2,[r7]
+ 385 0036 1A60     	 str r2,[r3]
+ 386              	.L16:
+ 120:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_common.c ****   }
+ 121:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_common.c **** }
+ 387              	 .loc 2 121 0
+ 388 0038 1037     	 adds r7,r7,#16
+ 389              	.LCFI39:
+ 390              	 .cfi_def_cfa_offset 8
+ 391 003a BD46     	 mov sp,r7
+ 392              	.LCFI40:
+ 393              	 .cfi_def_cfa_register 13
+ 394              	 
+ 395 003c 80BD     	 pop {r7,pc}
+ 396              	 .cfi_endproc
+ 397              	.LFE138:
+ 399 003e 00BF     	 .section .text.XMC_LIST_Remove,"ax",%progbits
+ 400              	 .align 2
+ 401              	 .global XMC_LIST_Remove
+ 402              	 .thumb
+ 403              	 .thumb_func
+ 405              	XMC_LIST_Remove:
+ 406              	.LFB139:
+ 122:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_common.c **** 
+ 123:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_common.c **** void XMC_LIST_Remove(XMC_LIST_t *list, void *item)
+ 124:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_common.c **** {
+ 407              	 .loc 2 124 0
+ 408              	 .cfi_startproc
+ 409              	 
+ 410              	 
+ 411              	 
+ 412 0000 80B4     	 push {r7}
+ 413              	.LCFI41:
+ 414              	 .cfi_def_cfa_offset 4
+ 415              	 .cfi_offset 7,-4
+ 416 0002 85B0     	 sub sp,sp,#20
+ 417              	.LCFI42:
+ 418              	 .cfi_def_cfa_offset 24
+ 419 0004 00AF     	 add r7,sp,#0
+ 420              	.LCFI43:
+ 421              	 .cfi_def_cfa_register 7
+ 422 0006 7860     	 str r0,[r7,#4]
+ 423 0008 3960     	 str r1,[r7]
+ 125:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_common.c ****   struct list *right, *left;
+ 126:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_common.c ****   
+ 127:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_common.c ****   if (*list != NULL) 
+ 424              	 .loc 2 127 0
+ 425 000a 7B68     	 ldr r3,[r7,#4]
+ 426 000c 1B68     	 ldr r3,[r3]
+ 427 000e 002B     	 cmp r3,#0
+ 428 0010 27D0     	 beq .L19
+ 128:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_common.c ****   {
+ 129:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_common.c ****     left = NULL;
+ 429              	 .loc 2 129 0
+ 430 0012 0023     	 movs r3,#0
+ 431 0014 BB60     	 str r3,[r7,#8]
+ 130:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_common.c ****     for(right = (struct list *)*list; right != NULL; right = right->next)
+ 432              	 .loc 2 130 0
+ 433 0016 7B68     	 ldr r3,[r7,#4]
+ 434 0018 1B68     	 ldr r3,[r3]
+ 435 001a FB60     	 str r3,[r7,#12]
+ 436 001c 1EE0     	 b .L21
+ 437              	.L25:
+ 131:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_common.c ****     {
+ 132:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_common.c ****       if(right == item) 
+ 438              	 .loc 2 132 0
+ 439 001e FA68     	 ldr r2,[r7,#12]
+ 440 0020 3B68     	 ldr r3,[r7]
+ 441 0022 9A42     	 cmp r2,r3
+ 442 0024 15D1     	 bne .L22
+ 133:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_common.c ****       {
+ 134:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_common.c ****         if(left == NULL) 
+ 443              	 .loc 2 134 0
+ 444 0026 BB68     	 ldr r3,[r7,#8]
+ 445 0028 002B     	 cmp r3,#0
+ 446 002a 04D1     	 bne .L23
+ 135:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_common.c ****         {
+ 136:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_common.c ****           /* First on list */
+ 137:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_common.c ****           *list = right->next;
+ 447              	 .loc 2 137 0
+ 448 002c FB68     	 ldr r3,[r7,#12]
+ 449 002e 1A68     	 ldr r2,[r3]
+ 450 0030 7B68     	 ldr r3,[r7,#4]
+ 451 0032 1A60     	 str r2,[r3]
+ 452 0034 03E0     	 b .L24
+ 453              	.L23:
+ 138:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_common.c ****         } 
+ 139:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_common.c ****         else 
+ 140:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_common.c ****         {
+ 141:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_common.c ****           /* Not first on list */
+ 142:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_common.c ****           left->next = right->next;
+ 454              	 .loc 2 142 0
+ 455 0036 FB68     	 ldr r3,[r7,#12]
+ 456 0038 1A68     	 ldr r2,[r3]
+ 457 003a BB68     	 ldr r3,[r7,#8]
+ 458 003c 1A60     	 str r2,[r3]
+ 459              	.L24:
+ 143:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_common.c ****         }
+ 144:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_common.c ****         right->next = NULL;
+ 460              	 .loc 2 144 0
+ 461 003e FB68     	 ldr r3,[r7,#12]
+ 462 0040 0022     	 movs r2,#0
+ 463 0042 1A70     	 strb r2,[r3]
+ 464 0044 0022     	 movs r2,#0
+ 465 0046 5A70     	 strb r2,[r3,#1]
+ 466 0048 0022     	 movs r2,#0
+ 467 004a 9A70     	 strb r2,[r3,#2]
+ 468 004c 0022     	 movs r2,#0
+ 469 004e DA70     	 strb r2,[r3,#3]
+ 145:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_common.c ****         break;
+ 470              	 .loc 2 145 0
+ 471 0050 07E0     	 b .L19
+ 472              	.L22:
+ 146:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_common.c ****       }
+ 147:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_common.c ****       left = right;
+ 473              	 .loc 2 147 0 discriminator 2
+ 474 0052 FB68     	 ldr r3,[r7,#12]
+ 475 0054 BB60     	 str r3,[r7,#8]
+ 130:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_common.c ****     {
+ 476              	 .loc 2 130 0 discriminator 2
+ 477 0056 FB68     	 ldr r3,[r7,#12]
+ 478 0058 1B68     	 ldr r3,[r3]
+ 479 005a FB60     	 str r3,[r7,#12]
+ 480              	.L21:
+ 130:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_common.c ****     {
+ 481              	 .loc 2 130 0 is_stmt 0 discriminator 1
+ 482 005c FB68     	 ldr r3,[r7,#12]
+ 483 005e 002B     	 cmp r3,#0
+ 484 0060 DDD1     	 bne .L25
+ 485              	.L19:
+ 148:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_common.c ****     }
+ 149:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_common.c ****   }
+ 150:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_common.c **** }
+ 486              	 .loc 2 150 0 is_stmt 1
+ 487 0062 1437     	 adds r7,r7,#20
+ 488              	.LCFI44:
+ 489              	 .cfi_def_cfa_offset 4
+ 490 0064 BD46     	 mov sp,r7
+ 491              	.LCFI45:
+ 492              	 .cfi_def_cfa_register 13
+ 493              	 
+ 494 0066 5DF8047B 	 ldr r7,[sp],#4
+ 495              	.LCFI46:
+ 496              	 .cfi_restore 7
+ 497              	 .cfi_def_cfa_offset 0
+ 498 006a 7047     	 bx lr
+ 499              	 .cfi_endproc
+ 500              	.LFE139:
+ 502              	 .section .text.XMC_LIST_Insert,"ax",%progbits
+ 503              	 .align 2
+ 504              	 .global XMC_LIST_Insert
+ 505              	 .thumb
+ 506              	 .thumb_func
+ 508              	XMC_LIST_Insert:
+ 509              	.LFB140:
+ 151:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_common.c **** 
+ 152:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_common.c **** void XMC_LIST_Insert(XMC_LIST_t *list, void *prev_item, void *new_item)
+ 153:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_common.c **** {
+ 510              	 .loc 2 153 0
+ 511              	 .cfi_startproc
+ 512              	 
+ 513              	 
+ 514              	 
+ 515 0000 80B4     	 push {r7}
+ 516              	.LCFI47:
+ 517              	 .cfi_def_cfa_offset 4
+ 518              	 .cfi_offset 7,-4
+ 519 0002 85B0     	 sub sp,sp,#20
+ 520              	.LCFI48:
+ 521              	 .cfi_def_cfa_offset 24
+ 522 0004 00AF     	 add r7,sp,#0
+ 523              	.LCFI49:
+ 524              	 .cfi_def_cfa_register 7
+ 525 0006 F860     	 str r0,[r7,#12]
+ 526 0008 B960     	 str r1,[r7,#8]
+ 527 000a 7A60     	 str r2,[r7,#4]
+ 154:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_common.c ****   if (prev_item == NULL) 
+ 528              	 .loc 2 154 0
+ 529 000c BB68     	 ldr r3,[r7,#8]
+ 530 000e 002B     	 cmp r3,#0
+ 531 0010 07D1     	 bne .L27
+ 155:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_common.c ****   {
+ 156:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_common.c **** 	((struct list *)new_item)->next = (struct list *)*list;
+ 532              	 .loc 2 156 0
+ 533 0012 FB68     	 ldr r3,[r7,#12]
+ 534 0014 1A68     	 ldr r2,[r3]
+ 535 0016 7B68     	 ldr r3,[r7,#4]
+ 536 0018 1A60     	 str r2,[r3]
+ 157:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_common.c **** 	*list = new_item;
+ 537              	 .loc 2 157 0
+ 538 001a FB68     	 ldr r3,[r7,#12]
+ 539 001c 7A68     	 ldr r2,[r7,#4]
+ 540 001e 1A60     	 str r2,[r3]
+ 541 0020 06E0     	 b .L26
+ 542              	.L27:
+ 158:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_common.c ****   } 
+ 159:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_common.c ****   else 
+ 160:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_common.c ****   {
+ 161:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_common.c ****     ((struct list *)new_item)->next = ((struct list *)prev_item)->next;
+ 543              	 .loc 2 161 0
+ 544 0022 BB68     	 ldr r3,[r7,#8]
+ 545 0024 1A68     	 ldr r2,[r3]
+ 546 0026 7B68     	 ldr r3,[r7,#4]
+ 547 0028 1A60     	 str r2,[r3]
+ 162:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_common.c ****     ((struct list *)prev_item)->next = (struct list *)new_item;
+ 548              	 .loc 2 162 0
+ 549 002a BB68     	 ldr r3,[r7,#8]
+ 550 002c 7A68     	 ldr r2,[r7,#4]
+ 551 002e 1A60     	 str r2,[r3]
+ 552              	.L26:
+ 163:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_common.c ****   }
+ 164:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_common.c **** }
+ 553              	 .loc 2 164 0
+ 554 0030 1437     	 adds r7,r7,#20
+ 555              	.LCFI50:
+ 556              	 .cfi_def_cfa_offset 4
+ 557 0032 BD46     	 mov sp,r7
+ 558              	.LCFI51:
+ 559              	 .cfi_def_cfa_register 13
+ 560              	 
+ 561 0034 5DF8047B 	 ldr r7,[sp],#4
+ 562              	.LCFI52:
+ 563              	 .cfi_restore 7
+ 564              	 .cfi_def_cfa_offset 0
+ 565 0038 7047     	 bx lr
+ 566              	 .cfi_endproc
+ 567              	.LFE140:
+ 569 003a 00BF     	 .section .text.XMC_PRIOARRAY_Init,"ax",%progbits
+ 570              	 .align 2
+ 571              	 .global XMC_PRIOARRAY_Init
+ 572              	 .thumb
+ 573              	 .thumb_func
+ 575              	XMC_PRIOARRAY_Init:
+ 576              	.LFB141:
+ 165:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_common.c **** 
+ 166:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_common.c **** void XMC_PRIOARRAY_Init(XMC_PRIOARRAY_t *prioarray)
+ 167:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_common.c **** {
+ 577              	 .loc 2 167 0
+ 578              	 .cfi_startproc
+ 579              	 
+ 580              	 
+ 581              	 
+ 582 0000 80B4     	 push {r7}
+ 583              	.LCFI53:
+ 584              	 .cfi_def_cfa_offset 4
+ 585              	 .cfi_offset 7,-4
+ 586 0002 83B0     	 sub sp,sp,#12
+ 587              	.LCFI54:
+ 588              	 .cfi_def_cfa_offset 16
+ 589 0004 00AF     	 add r7,sp,#0
+ 590              	.LCFI55:
+ 591              	 .cfi_def_cfa_register 7
+ 592 0006 7860     	 str r0,[r7,#4]
+ 168:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_common.c ****   XMC_ASSERT("XMC_PRIOARRAY_Init: NULL pointer", prioarray != NULL);
+ 169:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_common.c **** 
+ 170:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_common.c ****   /* Initialize head, next points to tail, previous to NULL and the priority is MININT */
+ 171:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_common.c ****   prioarray->items[prioarray->size].next = prioarray->size + 1;
+ 593              	 .loc 2 171 0
+ 594 0008 7B68     	 ldr r3,[r7,#4]
+ 595 000a 5A68     	 ldr r2,[r3,#4]
+ 596 000c 7B68     	 ldr r3,[r7,#4]
+ 597 000e 1B68     	 ldr r3,[r3]
+ 598 0010 1946     	 mov r1,r3
+ 599 0012 0B46     	 mov r3,r1
+ 600 0014 5B00     	 lsls r3,r3,#1
+ 601 0016 0B44     	 add r3,r3,r1
+ 602 0018 9B00     	 lsls r3,r3,#2
+ 603 001a 1344     	 add r3,r3,r2
+ 604 001c 7A68     	 ldr r2,[r7,#4]
+ 605 001e 1268     	 ldr r2,[r2]
+ 606 0020 0132     	 adds r2,r2,#1
+ 607 0022 9A60     	 str r2,[r3,#8]
+ 172:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_common.c ****   prioarray->items[prioarray->size].previous = -1;
+ 608              	 .loc 2 172 0
+ 609 0024 7B68     	 ldr r3,[r7,#4]
+ 610 0026 5A68     	 ldr r2,[r3,#4]
+ 611 0028 7B68     	 ldr r3,[r7,#4]
+ 612 002a 1B68     	 ldr r3,[r3]
+ 613 002c 1946     	 mov r1,r3
+ 614 002e 0B46     	 mov r3,r1
+ 615 0030 5B00     	 lsls r3,r3,#1
+ 616 0032 0B44     	 add r3,r3,r1
+ 617 0034 9B00     	 lsls r3,r3,#2
+ 618 0036 1344     	 add r3,r3,r2
+ 619 0038 4FF0FF32 	 mov r2,#-1
+ 620 003c 1A71     	 strb r2,[r3,#4]
+ 621 003e 4FF0FF32 	 mov r2,#-1
+ 622 0042 5A71     	 strb r2,[r3,#5]
+ 623 0044 4FF0FF32 	 mov r2,#-1
+ 624 0048 9A71     	 strb r2,[r3,#6]
+ 625 004a 4FF0FF32 	 mov r2,#-1
+ 626 004e DA71     	 strb r2,[r3,#7]
+ 173:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_common.c ****   prioarray->items[prioarray->size].priority = INT32_MAX;
+ 627              	 .loc 2 173 0
+ 628 0050 7B68     	 ldr r3,[r7,#4]
+ 629 0052 5A68     	 ldr r2,[r3,#4]
+ 630 0054 7B68     	 ldr r3,[r7,#4]
+ 631 0056 1B68     	 ldr r3,[r3]
+ 632 0058 1946     	 mov r1,r3
+ 633 005a 0B46     	 mov r3,r1
+ 634 005c 5B00     	 lsls r3,r3,#1
+ 635 005e 0B44     	 add r3,r3,r1
+ 636 0060 9B00     	 lsls r3,r3,#2
+ 637 0062 1344     	 add r3,r3,r2
+ 638 0064 4FF0FF32 	 mov r2,#-1
+ 639 0068 1A70     	 strb r2,[r3]
+ 640 006a 4FF0FF32 	 mov r2,#-1
+ 641 006e 5A70     	 strb r2,[r3,#1]
+ 642 0070 4FF0FF32 	 mov r2,#-1
+ 643 0074 9A70     	 strb r2,[r3,#2]
+ 644 0076 0022     	 movs r2,#0
+ 645 0078 42F07F02 	 orr r2,r2,#127
+ 646 007c DA70     	 strb r2,[r3,#3]
+ 174:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_common.c **** 
+ 175:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_common.c ****   /* Initialize tail, next points to NULL, previous is the head and the priority is MAXINT */
+ 176:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_common.c ****   prioarray->items[prioarray->size + 1].next = -1;
+ 647              	 .loc 2 176 0
+ 648 007e 7B68     	 ldr r3,[r7,#4]
+ 649 0080 5968     	 ldr r1,[r3,#4]
+ 650 0082 7B68     	 ldr r3,[r7,#4]
+ 651 0084 1B68     	 ldr r3,[r3]
+ 652 0086 5A1C     	 adds r2,r3,#1
+ 653 0088 1346     	 mov r3,r2
+ 654 008a 5B00     	 lsls r3,r3,#1
+ 655 008c 1344     	 add r3,r3,r2
+ 656 008e 9B00     	 lsls r3,r3,#2
+ 657 0090 0B44     	 add r3,r3,r1
+ 658 0092 4FF0FF32 	 mov r2,#-1
+ 659 0096 1A72     	 strb r2,[r3,#8]
+ 660 0098 4FF0FF32 	 mov r2,#-1
+ 661 009c 5A72     	 strb r2,[r3,#9]
+ 662 009e 4FF0FF32 	 mov r2,#-1
+ 663 00a2 9A72     	 strb r2,[r3,#10]
+ 664 00a4 4FF0FF32 	 mov r2,#-1
+ 665 00a8 DA72     	 strb r2,[r3,#11]
+ 177:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_common.c ****   prioarray->items[prioarray->size + 1].previous = prioarray->size;
+ 666              	 .loc 2 177 0
+ 667 00aa 7B68     	 ldr r3,[r7,#4]
+ 668 00ac 5968     	 ldr r1,[r3,#4]
+ 669 00ae 7B68     	 ldr r3,[r7,#4]
+ 670 00b0 1B68     	 ldr r3,[r3]
+ 671 00b2 5A1C     	 adds r2,r3,#1
+ 672 00b4 1346     	 mov r3,r2
+ 673 00b6 5B00     	 lsls r3,r3,#1
+ 674 00b8 1344     	 add r3,r3,r2
+ 675 00ba 9B00     	 lsls r3,r3,#2
+ 676 00bc 0B44     	 add r3,r3,r1
+ 677 00be 7A68     	 ldr r2,[r7,#4]
+ 678 00c0 1268     	 ldr r2,[r2]
+ 679 00c2 5A60     	 str r2,[r3,#4]
+ 178:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_common.c ****   prioarray->items[prioarray->size + 1].priority = INT32_MIN;
+ 680              	 .loc 2 178 0
+ 681 00c4 7B68     	 ldr r3,[r7,#4]
+ 682 00c6 5968     	 ldr r1,[r3,#4]
+ 683 00c8 7B68     	 ldr r3,[r7,#4]
+ 684 00ca 1B68     	 ldr r3,[r3]
+ 685 00cc 5A1C     	 adds r2,r3,#1
+ 686 00ce 1346     	 mov r3,r2
+ 687 00d0 5B00     	 lsls r3,r3,#1
+ 688 00d2 1344     	 add r3,r3,r2
+ 689 00d4 9B00     	 lsls r3,r3,#2
+ 690 00d6 0B44     	 add r3,r3,r1
+ 691 00d8 0022     	 movs r2,#0
+ 692 00da 1A70     	 strb r2,[r3]
+ 693 00dc 0022     	 movs r2,#0
+ 694 00de 5A70     	 strb r2,[r3,#1]
+ 695 00e0 0022     	 movs r2,#0
+ 696 00e2 9A70     	 strb r2,[r3,#2]
+ 697 00e4 0022     	 movs r2,#0
+ 698 00e6 62F07F02 	 orn r2,r2,#127
+ 699 00ea DA70     	 strb r2,[r3,#3]
+ 179:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_common.c **** 
+ 180:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_common.c **** }
+ 700              	 .loc 2 180 0
+ 701 00ec 0C37     	 adds r7,r7,#12
+ 702              	.LCFI56:
+ 703              	 .cfi_def_cfa_offset 4
+ 704 00ee BD46     	 mov sp,r7
+ 705              	.LCFI57:
+ 706              	 .cfi_def_cfa_register 13
+ 707              	 
+ 708 00f0 5DF8047B 	 ldr r7,[sp],#4
+ 709              	.LCFI58:
+ 710              	 .cfi_restore 7
+ 711              	 .cfi_def_cfa_offset 0
+ 712 00f4 7047     	 bx lr
+ 713              	 .cfi_endproc
+ 714              	.LFE141:
+ 716 00f6 00BF     	 .section .text.XMC_PRIOARRAY_Add,"ax",%progbits
+ 717              	 .align 2
+ 718              	 .global XMC_PRIOARRAY_Add
+ 719              	 .thumb
+ 720              	 .thumb_func
+ 722              	XMC_PRIOARRAY_Add:
+ 723              	.LFB142:
+ 181:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_common.c **** 
+ 182:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_common.c **** void XMC_PRIOARRAY_Add(XMC_PRIOARRAY_t *prioarray, int32_t item, int32_t priority)
+ 183:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_common.c **** {
+ 724              	 .loc 2 183 0
+ 725              	 .cfi_startproc
+ 726              	 
+ 727              	 
+ 728 0000 80B5     	 push {r7,lr}
+ 729              	.LCFI59:
+ 730              	 .cfi_def_cfa_offset 8
+ 731              	 .cfi_offset 7,-8
+ 732              	 .cfi_offset 14,-4
+ 733 0002 86B0     	 sub sp,sp,#24
+ 734              	.LCFI60:
+ 735              	 .cfi_def_cfa_offset 32
+ 736 0004 00AF     	 add r7,sp,#0
+ 737              	.LCFI61:
+ 738              	 .cfi_def_cfa_register 7
+ 739 0006 F860     	 str r0,[r7,#12]
+ 740 0008 B960     	 str r1,[r7,#8]
+ 741 000a 7A60     	 str r2,[r7,#4]
+ 184:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_common.c ****   int32_t next;
+ 185:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_common.c ****   int32_t previous;
+ 186:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_common.c **** 
+ 187:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_common.c ****   XMC_ASSERT("XMC_PRIOARRAY_Add: item out of range", (item >= 0) && (item < prioarray->size));
+ 188:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_common.c ****   
+ 189:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_common.c ****   next = XMC_PRIOARRAY_GetHead(prioarray);
+ 742              	 .loc 2 189 0
+ 743 000c F868     	 ldr r0,[r7,#12]
+ 744 000e FFF7FEFF 	 bl XMC_PRIOARRAY_GetHead
+ 745 0012 7861     	 str r0,[r7,#20]
+ 190:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_common.c ****   while (XMC_PRIOARRAY_GetItemPriority(prioarray, next) > priority)
+ 746              	 .loc 2 190 0
+ 747 0014 04E0     	 b .L31
+ 748              	.L32:
+ 191:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_common.c ****   {
+ 192:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_common.c ****     next = XMC_PRIOARRAY_GetItemNext(prioarray, next);
+ 749              	 .loc 2 192 0
+ 750 0016 F868     	 ldr r0,[r7,#12]
+ 751 0018 7969     	 ldr r1,[r7,#20]
+ 752 001a FFF7FEFF 	 bl XMC_PRIOARRAY_GetItemNext
+ 753 001e 7861     	 str r0,[r7,#20]
+ 754              	.L31:
+ 190:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_common.c ****   while (XMC_PRIOARRAY_GetItemPriority(prioarray, next) > priority)
+ 755              	 .loc 2 190 0
+ 756 0020 F868     	 ldr r0,[r7,#12]
+ 757 0022 7969     	 ldr r1,[r7,#20]
+ 758 0024 FFF7FEFF 	 bl XMC_PRIOARRAY_GetItemPriority
+ 759 0028 0246     	 mov r2,r0
+ 760 002a 7B68     	 ldr r3,[r7,#4]
+ 761 002c 9A42     	 cmp r2,r3
+ 762 002e F2DC     	 bgt .L32
+ 193:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_common.c ****   }
+ 194:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_common.c **** 
+ 195:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_common.c ****   previous = prioarray->items[next].previous;
+ 763              	 .loc 2 195 0
+ 764 0030 FB68     	 ldr r3,[r7,#12]
+ 765 0032 5968     	 ldr r1,[r3,#4]
+ 766 0034 7A69     	 ldr r2,[r7,#20]
+ 767 0036 1346     	 mov r3,r2
+ 768 0038 5B00     	 lsls r3,r3,#1
+ 769 003a 1344     	 add r3,r3,r2
+ 770 003c 9B00     	 lsls r3,r3,#2
+ 771 003e 0B44     	 add r3,r3,r1
+ 772 0040 5B68     	 ldr r3,[r3,#4]
+ 773 0042 3B61     	 str r3,[r7,#16]
+ 196:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_common.c **** 
+ 197:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_common.c ****   prioarray->items[item].next = next;
+ 774              	 .loc 2 197 0
+ 775 0044 FB68     	 ldr r3,[r7,#12]
+ 776 0046 5968     	 ldr r1,[r3,#4]
+ 777 0048 BA68     	 ldr r2,[r7,#8]
+ 778 004a 1346     	 mov r3,r2
+ 779 004c 5B00     	 lsls r3,r3,#1
+ 780 004e 1344     	 add r3,r3,r2
+ 781 0050 9B00     	 lsls r3,r3,#2
+ 782 0052 0B44     	 add r3,r3,r1
+ 783 0054 7A69     	 ldr r2,[r7,#20]
+ 784 0056 9A60     	 str r2,[r3,#8]
+ 198:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_common.c ****   prioarray->items[item].previous = previous;
+ 785              	 .loc 2 198 0
+ 786 0058 FB68     	 ldr r3,[r7,#12]
+ 787 005a 5968     	 ldr r1,[r3,#4]
+ 788 005c BA68     	 ldr r2,[r7,#8]
+ 789 005e 1346     	 mov r3,r2
+ 790 0060 5B00     	 lsls r3,r3,#1
+ 791 0062 1344     	 add r3,r3,r2
+ 792 0064 9B00     	 lsls r3,r3,#2
+ 793 0066 0B44     	 add r3,r3,r1
+ 794 0068 3A69     	 ldr r2,[r7,#16]
+ 795 006a 5A60     	 str r2,[r3,#4]
+ 199:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_common.c ****   prioarray->items[item].priority = priority;
+ 796              	 .loc 2 199 0
+ 797 006c FB68     	 ldr r3,[r7,#12]
+ 798 006e 5968     	 ldr r1,[r3,#4]
+ 799 0070 BA68     	 ldr r2,[r7,#8]
+ 800 0072 1346     	 mov r3,r2
+ 801 0074 5B00     	 lsls r3,r3,#1
+ 802 0076 1344     	 add r3,r3,r2
+ 803 0078 9B00     	 lsls r3,r3,#2
+ 804 007a 0B44     	 add r3,r3,r1
+ 805 007c 7A68     	 ldr r2,[r7,#4]
+ 806 007e 1A60     	 str r2,[r3]
+ 200:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_common.c **** 
+ 201:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_common.c ****   prioarray->items[previous].next = item;
+ 807              	 .loc 2 201 0
+ 808 0080 FB68     	 ldr r3,[r7,#12]
+ 809 0082 5968     	 ldr r1,[r3,#4]
+ 810 0084 3A69     	 ldr r2,[r7,#16]
+ 811 0086 1346     	 mov r3,r2
+ 812 0088 5B00     	 lsls r3,r3,#1
+ 813 008a 1344     	 add r3,r3,r2
+ 814 008c 9B00     	 lsls r3,r3,#2
+ 815 008e 0B44     	 add r3,r3,r1
+ 816 0090 BA68     	 ldr r2,[r7,#8]
+ 817 0092 9A60     	 str r2,[r3,#8]
+ 202:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_common.c ****   prioarray->items[next].previous = item;
+ 818              	 .loc 2 202 0
+ 819 0094 FB68     	 ldr r3,[r7,#12]
+ 820 0096 5968     	 ldr r1,[r3,#4]
+ 821 0098 7A69     	 ldr r2,[r7,#20]
+ 822 009a 1346     	 mov r3,r2
+ 823 009c 5B00     	 lsls r3,r3,#1
+ 824 009e 1344     	 add r3,r3,r2
+ 825 00a0 9B00     	 lsls r3,r3,#2
+ 826 00a2 0B44     	 add r3,r3,r1
+ 827 00a4 BA68     	 ldr r2,[r7,#8]
+ 828 00a6 5A60     	 str r2,[r3,#4]
+ 203:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_common.c **** }
+ 829              	 .loc 2 203 0
+ 830 00a8 1837     	 adds r7,r7,#24
+ 831              	.LCFI62:
+ 832              	 .cfi_def_cfa_offset 8
+ 833 00aa BD46     	 mov sp,r7
+ 834              	.LCFI63:
+ 835              	 .cfi_def_cfa_register 13
+ 836              	 
+ 837 00ac 80BD     	 pop {r7,pc}
+ 838              	 .cfi_endproc
+ 839              	.LFE142:
+ 841 00ae 00BF     	 .section .text.XMC_PRIOARRAY_Remove,"ax",%progbits
+ 842              	 .align 2
+ 843              	 .global XMC_PRIOARRAY_Remove
+ 844              	 .thumb
+ 845              	 .thumb_func
+ 847              	XMC_PRIOARRAY_Remove:
+ 848              	.LFB143:
+ 204:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_common.c **** 
+ 205:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_common.c **** void XMC_PRIOARRAY_Remove(XMC_PRIOARRAY_t *prioarray, int32_t item)
+ 206:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_common.c **** {
+ 849              	 .loc 2 206 0
+ 850              	 .cfi_startproc
+ 851              	 
+ 852              	 
+ 853              	 
+ 854 0000 80B4     	 push {r7}
+ 855              	.LCFI64:
+ 856              	 .cfi_def_cfa_offset 4
+ 857              	 .cfi_offset 7,-4
+ 858 0002 85B0     	 sub sp,sp,#20
+ 859              	.LCFI65:
+ 860              	 .cfi_def_cfa_offset 24
+ 861 0004 00AF     	 add r7,sp,#0
+ 862              	.LCFI66:
+ 863              	 .cfi_def_cfa_register 7
+ 864 0006 7860     	 str r0,[r7,#4]
+ 865 0008 3960     	 str r1,[r7]
+ 207:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_common.c ****   int32_t next;
+ 208:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_common.c ****   int32_t previous;
+ 209:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_common.c **** 
+ 210:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_common.c ****   XMC_ASSERT("XMC_PRIOARRAY_Add: item out of range", (item >= 0) && (item < prioarray->size));
+ 211:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_common.c ****   
+ 212:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_common.c ****   next = prioarray->items[item].next;
+ 866              	 .loc 2 212 0
+ 867 000a 7B68     	 ldr r3,[r7,#4]
+ 868 000c 5968     	 ldr r1,[r3,#4]
+ 869 000e 3A68     	 ldr r2,[r7]
+ 870 0010 1346     	 mov r3,r2
+ 871 0012 5B00     	 lsls r3,r3,#1
+ 872 0014 1344     	 add r3,r3,r2
+ 873 0016 9B00     	 lsls r3,r3,#2
+ 874 0018 0B44     	 add r3,r3,r1
+ 875 001a 9B68     	 ldr r3,[r3,#8]
+ 876 001c FB60     	 str r3,[r7,#12]
+ 213:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_common.c ****   previous = prioarray->items[item].previous;
+ 877              	 .loc 2 213 0
+ 878 001e 7B68     	 ldr r3,[r7,#4]
+ 879 0020 5968     	 ldr r1,[r3,#4]
+ 880 0022 3A68     	 ldr r2,[r7]
+ 881 0024 1346     	 mov r3,r2
+ 882 0026 5B00     	 lsls r3,r3,#1
+ 883 0028 1344     	 add r3,r3,r2
+ 884 002a 9B00     	 lsls r3,r3,#2
+ 885 002c 0B44     	 add r3,r3,r1
+ 886 002e 5B68     	 ldr r3,[r3,#4]
+ 887 0030 BB60     	 str r3,[r7,#8]
+ 214:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_common.c **** 
+ 215:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_common.c ****   prioarray->items[previous].next = next;
+ 888              	 .loc 2 215 0
+ 889 0032 7B68     	 ldr r3,[r7,#4]
+ 890 0034 5968     	 ldr r1,[r3,#4]
+ 891 0036 BA68     	 ldr r2,[r7,#8]
+ 892 0038 1346     	 mov r3,r2
+ 893 003a 5B00     	 lsls r3,r3,#1
+ 894 003c 1344     	 add r3,r3,r2
+ 895 003e 9B00     	 lsls r3,r3,#2
+ 896 0040 0B44     	 add r3,r3,r1
+ 897 0042 FA68     	 ldr r2,[r7,#12]
+ 898 0044 9A60     	 str r2,[r3,#8]
+ 216:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_common.c ****   prioarray->items[next].previous = previous;
+ 899              	 .loc 2 216 0
+ 900 0046 7B68     	 ldr r3,[r7,#4]
+ 901 0048 5968     	 ldr r1,[r3,#4]
+ 902 004a FA68     	 ldr r2,[r7,#12]
+ 903 004c 1346     	 mov r3,r2
+ 904 004e 5B00     	 lsls r3,r3,#1
+ 905 0050 1344     	 add r3,r3,r2
+ 906 0052 9B00     	 lsls r3,r3,#2
+ 907 0054 0B44     	 add r3,r3,r1
+ 908 0056 BA68     	 ldr r2,[r7,#8]
+ 909 0058 5A60     	 str r2,[r3,#4]
+ 217:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_common.c **** }
+ 910              	 .loc 2 217 0
+ 911 005a 1437     	 adds r7,r7,#20
+ 912              	.LCFI67:
+ 913              	 .cfi_def_cfa_offset 4
+ 914 005c BD46     	 mov sp,r7
+ 915              	.LCFI68:
+ 916              	 .cfi_def_cfa_register 13
+ 917              	 
+ 918 005e 5DF8047B 	 ldr r7,[sp],#4
+ 919              	.LCFI69:
+ 920              	 .cfi_restore 7
+ 921              	 .cfi_def_cfa_offset 0
+ 922 0062 7047     	 bx lr
+ 923              	 .cfi_endproc
+ 924              	.LFE143:
+ 926              	 .text
+ 927              	.Letext0:
+ 928              	 .file 3 "d:\\xmc\\dave-ide-4.4.2-64bit\\eclipse\\arm-gcc-49\\arm-none-eabi\\include\\machine\\_default_types.h"
+ 929              	 .file 4 "d:\\xmc\\dave-ide-4.4.2-64bit\\eclipse\\arm-gcc-49\\arm-none-eabi\\include\\stdint.h"
+ 930              	 .file 5 "D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/lib/main/CMSIS/Core/Include/core_cm4.h"
+DEFINED SYMBOLS
+                            *ABS*:00000000 xmc_common.c
+    {standard input}:20     .text.XMC_PRIOARRAY_GetHead:00000000 $t
+    {standard input}:24     .text.XMC_PRIOARRAY_GetHead:00000000 XMC_PRIOARRAY_GetHead
+    {standard input}:73     .text.XMC_PRIOARRAY_GetItemPriority:00000000 $t
+    {standard input}:77     .text.XMC_PRIOARRAY_GetItemPriority:00000000 XMC_PRIOARRAY_GetItemPriority
+    {standard input}:124    .text.XMC_PRIOARRAY_GetItemNext:00000000 $t
+    {standard input}:128    .text.XMC_PRIOARRAY_GetItemNext:00000000 XMC_PRIOARRAY_GetItemNext
+    {standard input}:175    .text.XMC_LIST_Init:00000000 $t
+    {standard input}:180    .text.XMC_LIST_Init:00000000 XMC_LIST_Init
+    {standard input}:220    .text.XMC_LIST_GetHead:00000000 $t
+    {standard input}:225    .text.XMC_LIST_GetHead:00000000 XMC_LIST_GetHead
+    {standard input}:264    .text.XMC_LIST_GetTail:00000000 $t
+    {standard input}:269    .text.XMC_LIST_GetTail:00000000 XMC_LIST_GetTail
+    {standard input}:334    .text.XMC_LIST_Add:00000000 $t
+    {standard input}:339    .text.XMC_LIST_Add:00000000 XMC_LIST_Add
+    {standard input}:400    .text.XMC_LIST_Remove:00000000 $t
+    {standard input}:405    .text.XMC_LIST_Remove:00000000 XMC_LIST_Remove
+    {standard input}:503    .text.XMC_LIST_Insert:00000000 $t
+    {standard input}:508    .text.XMC_LIST_Insert:00000000 XMC_LIST_Insert
+    {standard input}:570    .text.XMC_PRIOARRAY_Init:00000000 $t
+    {standard input}:575    .text.XMC_PRIOARRAY_Init:00000000 XMC_PRIOARRAY_Init
+    {standard input}:717    .text.XMC_PRIOARRAY_Add:00000000 $t
+    {standard input}:722    .text.XMC_PRIOARRAY_Add:00000000 XMC_PRIOARRAY_Add
+    {standard input}:842    .text.XMC_PRIOARRAY_Remove:00000000 $t
+    {standard input}:847    .text.XMC_PRIOARRAY_Remove:00000000 XMC_PRIOARRAY_Remove
+                     .debug_frame:00000010 $d
+
+NO UNDEFINED SYMBOLS

@@ -1,0 +1,2716 @@
+   1              	 .syntax unified
+   2              	 .cpu cortex-m4
+   3              	 .eabi_attribute 27,3
+   4              	 .fpu fpv4-sp-d16
+   5              	 .eabi_attribute 20,1
+   6              	 .eabi_attribute 21,1
+   7              	 .eabi_attribute 23,3
+   8              	 .eabi_attribute 24,1
+   9              	 .eabi_attribute 25,1
+  10              	 .eabi_attribute 26,1
+  11              	 .eabi_attribute 30,6
+  12              	 .eabi_attribute 34,1
+  13              	 .eabi_attribute 18,4
+  14              	 .thumb
+  15              	 .file "blackbox_encoding.c"
+  16              	 .text
+  17              	.Ltext0:
+  18              	 .cfi_sections .debug_frame
+  19              	 .section .text._putc,"ax",%progbits
+  20              	 .align 2
+  21              	 .thumb
+  22              	 .thumb_func
+  24              	_putc:
+  25              	.LFB521:
+  26              	 .file 1 "../cleanflight/src/main/blackbox/blackbox_encoding.c"
+   1:../cleanflight/src/main/blackbox/blackbox_encoding.c **** /*
+   2:../cleanflight/src/main/blackbox/blackbox_encoding.c ****  * This file is part of Cleanflight and Betaflight.
+   3:../cleanflight/src/main/blackbox/blackbox_encoding.c ****  *
+   4:../cleanflight/src/main/blackbox/blackbox_encoding.c ****  * Cleanflight and Betaflight are free software. You can redistribute
+   5:../cleanflight/src/main/blackbox/blackbox_encoding.c ****  * this software and/or modify this software under the terms of the
+   6:../cleanflight/src/main/blackbox/blackbox_encoding.c ****  * GNU General Public License as published by the Free Software
+   7:../cleanflight/src/main/blackbox/blackbox_encoding.c ****  * Foundation, either version 3 of the License, or (at your option)
+   8:../cleanflight/src/main/blackbox/blackbox_encoding.c ****  * any later version.
+   9:../cleanflight/src/main/blackbox/blackbox_encoding.c ****  *
+  10:../cleanflight/src/main/blackbox/blackbox_encoding.c ****  * Cleanflight and Betaflight are distributed in the hope that they
+  11:../cleanflight/src/main/blackbox/blackbox_encoding.c ****  * will be useful, but WITHOUT ANY WARRANTY; without even the implied
+  12:../cleanflight/src/main/blackbox/blackbox_encoding.c ****  * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+  13:../cleanflight/src/main/blackbox/blackbox_encoding.c ****  * See the GNU General Public License for more details.
+  14:../cleanflight/src/main/blackbox/blackbox_encoding.c ****  *
+  15:../cleanflight/src/main/blackbox/blackbox_encoding.c ****  * You should have received a copy of the GNU General Public License
+  16:../cleanflight/src/main/blackbox/blackbox_encoding.c ****  * along with this software.
+  17:../cleanflight/src/main/blackbox/blackbox_encoding.c ****  *
+  18:../cleanflight/src/main/blackbox/blackbox_encoding.c ****  * If not, see <http://www.gnu.org/licenses/>.
+  19:../cleanflight/src/main/blackbox/blackbox_encoding.c ****  */
+  20:../cleanflight/src/main/blackbox/blackbox_encoding.c **** 
+  21:../cleanflight/src/main/blackbox/blackbox_encoding.c **** #include <stdint.h>
+  22:../cleanflight/src/main/blackbox/blackbox_encoding.c **** #include <stdbool.h>
+  23:../cleanflight/src/main/blackbox/blackbox_encoding.c **** #include <stdlib.h>
+  24:../cleanflight/src/main/blackbox/blackbox_encoding.c **** #include <stdarg.h>
+  25:../cleanflight/src/main/blackbox/blackbox_encoding.c **** #include <string.h>
+  26:../cleanflight/src/main/blackbox/blackbox_encoding.c **** 
+  27:../cleanflight/src/main/blackbox/blackbox_encoding.c **** #include "platform.h"
+  28:../cleanflight/src/main/blackbox/blackbox_encoding.c **** 
+  29:../cleanflight/src/main/blackbox/blackbox_encoding.c **** #ifdef USE_BLACKBOX
+  30:../cleanflight/src/main/blackbox/blackbox_encoding.c **** 
+  31:../cleanflight/src/main/blackbox/blackbox_encoding.c **** #include "blackbox_encoding.h"
+  32:../cleanflight/src/main/blackbox/blackbox_encoding.c **** #include "blackbox_io.h"
+  33:../cleanflight/src/main/blackbox/blackbox_encoding.c **** 
+  34:../cleanflight/src/main/blackbox/blackbox_encoding.c **** #include "common/encoding.h"
+  35:../cleanflight/src/main/blackbox/blackbox_encoding.c **** #include "common/printf.h"
+  36:../cleanflight/src/main/blackbox/blackbox_encoding.c **** 
+  37:../cleanflight/src/main/blackbox/blackbox_encoding.c **** 
+  38:../cleanflight/src/main/blackbox/blackbox_encoding.c **** static void _putc(void *p, char c)
+  39:../cleanflight/src/main/blackbox/blackbox_encoding.c **** {
+  27              	 .loc 1 39 0
+  28              	 .cfi_startproc
+  29              	 
+  30              	 
+  31 0000 80B5     	 push {r7,lr}
+  32              	.LCFI0:
+  33              	 .cfi_def_cfa_offset 8
+  34              	 .cfi_offset 7,-8
+  35              	 .cfi_offset 14,-4
+  36 0002 82B0     	 sub sp,sp,#8
+  37              	.LCFI1:
+  38              	 .cfi_def_cfa_offset 16
+  39 0004 00AF     	 add r7,sp,#0
+  40              	.LCFI2:
+  41              	 .cfi_def_cfa_register 7
+  42 0006 7860     	 str r0,[r7,#4]
+  43 0008 0B46     	 mov r3,r1
+  44 000a FB70     	 strb r3,[r7,#3]
+  40:../cleanflight/src/main/blackbox/blackbox_encoding.c ****     (void)p;
+  41:../cleanflight/src/main/blackbox/blackbox_encoding.c ****     blackboxWrite(c);
+  45              	 .loc 1 41 0
+  46 000c FB78     	 ldrb r3,[r7,#3]
+  47 000e 1846     	 mov r0,r3
+  48 0010 FFF7FEFF 	 bl blackboxWrite
+  42:../cleanflight/src/main/blackbox/blackbox_encoding.c **** }
+  49              	 .loc 1 42 0
+  50 0014 0837     	 adds r7,r7,#8
+  51              	.LCFI3:
+  52              	 .cfi_def_cfa_offset 8
+  53 0016 BD46     	 mov sp,r7
+  54              	.LCFI4:
+  55              	 .cfi_def_cfa_register 13
+  56              	 
+  57 0018 80BD     	 pop {r7,pc}
+  58              	 .cfi_endproc
+  59              	.LFE521:
+  61 001a 00BF     	 .section .text.blackboxPrintfv,"ax",%progbits
+  62              	 .align 2
+  63              	 .thumb
+  64              	 .thumb_func
+  66              	blackboxPrintfv:
+  67              	.LFB522:
+  43:../cleanflight/src/main/blackbox/blackbox_encoding.c **** 
+  44:../cleanflight/src/main/blackbox/blackbox_encoding.c **** static int blackboxPrintfv(const char *fmt, va_list va)
+  45:../cleanflight/src/main/blackbox/blackbox_encoding.c **** {
+  68              	 .loc 1 45 0
+  69              	 .cfi_startproc
+  70              	 
+  71              	 
+  72 0000 80B5     	 push {r7,lr}
+  73              	.LCFI5:
+  74              	 .cfi_def_cfa_offset 8
+  75              	 .cfi_offset 7,-8
+  76              	 .cfi_offset 14,-4
+  77 0002 82B0     	 sub sp,sp,#8
+  78              	.LCFI6:
+  79              	 .cfi_def_cfa_offset 16
+  80 0004 00AF     	 add r7,sp,#0
+  81              	.LCFI7:
+  82              	 .cfi_def_cfa_register 7
+  83 0006 7860     	 str r0,[r7,#4]
+  84 0008 3960     	 str r1,[r7]
+  46:../cleanflight/src/main/blackbox/blackbox_encoding.c ****     return tfp_format(NULL, _putc, fmt, va);
+  85              	 .loc 1 46 0
+  86 000a 0020     	 movs r0,#0
+  87 000c 0449     	 ldr r1,.L4
+  88 000e 7A68     	 ldr r2,[r7,#4]
+  89 0010 3B68     	 ldr r3,[r7]
+  90 0012 FFF7FEFF 	 bl tfp_format
+  91 0016 0346     	 mov r3,r0
+  47:../cleanflight/src/main/blackbox/blackbox_encoding.c **** }
+  92              	 .loc 1 47 0
+  93 0018 1846     	 mov r0,r3
+  94 001a 0837     	 adds r7,r7,#8
+  95              	.LCFI8:
+  96              	 .cfi_def_cfa_offset 8
+  97 001c BD46     	 mov sp,r7
+  98              	.LCFI9:
+  99              	 .cfi_def_cfa_register 13
+ 100              	 
+ 101 001e 80BD     	 pop {r7,pc}
+ 102              	.L5:
+ 103              	 .align 2
+ 104              	.L4:
+ 105 0020 00000000 	 .word _putc
+ 106              	 .cfi_endproc
+ 107              	.LFE522:
+ 109              	 .section .text.blackboxPrintf,"ax",%progbits
+ 110              	 .align 2
+ 111              	 .global blackboxPrintf
+ 112              	 .thumb
+ 113              	 .thumb_func
+ 115              	blackboxPrintf:
+ 116              	.LFB523:
+  48:../cleanflight/src/main/blackbox/blackbox_encoding.c **** 
+  49:../cleanflight/src/main/blackbox/blackbox_encoding.c **** 
+  50:../cleanflight/src/main/blackbox/blackbox_encoding.c **** //printf() to the blackbox serial port with no blocking shenanigans (so it's caller's responsibilit
+  51:../cleanflight/src/main/blackbox/blackbox_encoding.c **** int blackboxPrintf(const char *fmt, ...)
+  52:../cleanflight/src/main/blackbox/blackbox_encoding.c **** {
+ 117              	 .loc 1 52 0
+ 118              	 .cfi_startproc
+ 119              	 
+ 120              	 
+ 121 0000 0FB4     	 push {r0,r1,r2,r3}
+ 122              	.LCFI10:
+ 123              	 .cfi_def_cfa_offset 16
+ 124              	 .cfi_offset 0,-16
+ 125              	 .cfi_offset 1,-12
+ 126              	 .cfi_offset 2,-8
+ 127              	 .cfi_offset 3,-4
+ 128 0002 80B5     	 push {r7,lr}
+ 129              	.LCFI11:
+ 130              	 .cfi_def_cfa_offset 24
+ 131              	 .cfi_offset 7,-24
+ 132              	 .cfi_offset 14,-20
+ 133 0004 82B0     	 sub sp,sp,#8
+ 134              	.LCFI12:
+ 135              	 .cfi_def_cfa_offset 32
+ 136 0006 00AF     	 add r7,sp,#0
+ 137              	.LCFI13:
+ 138              	 .cfi_def_cfa_register 7
+  53:../cleanflight/src/main/blackbox/blackbox_encoding.c ****     va_list va;
+  54:../cleanflight/src/main/blackbox/blackbox_encoding.c **** 
+  55:../cleanflight/src/main/blackbox/blackbox_encoding.c ****     va_start(va, fmt);
+ 139              	 .loc 1 55 0
+ 140 0008 07F11403 	 add r3,r7,#20
+ 141 000c 3B60     	 str r3,[r7]
+  56:../cleanflight/src/main/blackbox/blackbox_encoding.c **** 
+  57:../cleanflight/src/main/blackbox/blackbox_encoding.c ****     const int written = blackboxPrintfv(fmt, va);
+ 142              	 .loc 1 57 0
+ 143 000e 3869     	 ldr r0,[r7,#16]
+ 144 0010 3968     	 ldr r1,[r7]
+ 145 0012 FFF7FEFF 	 bl blackboxPrintfv
+ 146 0016 7860     	 str r0,[r7,#4]
+  58:../cleanflight/src/main/blackbox/blackbox_encoding.c **** 
+  59:../cleanflight/src/main/blackbox/blackbox_encoding.c ****     va_end(va);
+  60:../cleanflight/src/main/blackbox/blackbox_encoding.c **** 
+  61:../cleanflight/src/main/blackbox/blackbox_encoding.c ****     return written;
+ 147              	 .loc 1 61 0
+ 148 0018 7B68     	 ldr r3,[r7,#4]
+  62:../cleanflight/src/main/blackbox/blackbox_encoding.c **** }
+ 149              	 .loc 1 62 0
+ 150 001a 1846     	 mov r0,r3
+ 151 001c 0837     	 adds r7,r7,#8
+ 152              	.LCFI14:
+ 153              	 .cfi_def_cfa_offset 24
+ 154 001e BD46     	 mov sp,r7
+ 155              	.LCFI15:
+ 156              	 .cfi_def_cfa_register 13
+ 157              	 
+ 158 0020 BDE88040 	 pop {r7,lr}
+ 159              	.LCFI16:
+ 160              	 .cfi_restore 14
+ 161              	 .cfi_restore 7
+ 162              	 .cfi_def_cfa_offset 16
+ 163 0024 04B0     	 add sp,sp,#16
+ 164              	.LCFI17:
+ 165              	 .cfi_restore 3
+ 166              	 .cfi_restore 2
+ 167              	 .cfi_restore 1
+ 168              	 .cfi_restore 0
+ 169              	 .cfi_def_cfa_offset 0
+ 170 0026 7047     	 bx lr
+ 171              	 .cfi_endproc
+ 172              	.LFE523:
+ 174              	 .section .text.blackboxPrintfHeaderLine,"ax",%progbits
+ 175              	 .align 2
+ 176              	 .global blackboxPrintfHeaderLine
+ 177              	 .thumb
+ 178              	 .thumb_func
+ 180              	blackboxPrintfHeaderLine:
+ 181              	.LFB524:
+  63:../cleanflight/src/main/blackbox/blackbox_encoding.c **** 
+  64:../cleanflight/src/main/blackbox/blackbox_encoding.c **** /*
+  65:../cleanflight/src/main/blackbox/blackbox_encoding.c ****  * printf a Blackbox header line with a leading "H " and trailing "\n" added automatically. blackbo
+  66:../cleanflight/src/main/blackbox/blackbox_encoding.c ****  * decreased to account for the number of bytes written.
+  67:../cleanflight/src/main/blackbox/blackbox_encoding.c ****  */
+  68:../cleanflight/src/main/blackbox/blackbox_encoding.c **** void blackboxPrintfHeaderLine(const char *name, const char *fmt, ...)
+  69:../cleanflight/src/main/blackbox/blackbox_encoding.c **** {
+ 182              	 .loc 1 69 0
+ 183              	 .cfi_startproc
+ 184              	 
+ 185              	 
+ 186 0000 0EB4     	 push {r1,r2,r3}
+ 187              	.LCFI18:
+ 188              	 .cfi_def_cfa_offset 12
+ 189              	 .cfi_offset 1,-12
+ 190              	 .cfi_offset 2,-8
+ 191              	 .cfi_offset 3,-4
+ 192 0002 80B5     	 push {r7,lr}
+ 193              	.LCFI19:
+ 194              	 .cfi_def_cfa_offset 20
+ 195              	 .cfi_offset 7,-20
+ 196              	 .cfi_offset 14,-16
+ 197 0004 85B0     	 sub sp,sp,#20
+ 198              	.LCFI20:
+ 199              	 .cfi_def_cfa_offset 40
+ 200 0006 00AF     	 add r7,sp,#0
+ 201              	.LCFI21:
+ 202              	 .cfi_def_cfa_register 7
+ 203 0008 7860     	 str r0,[r7,#4]
+  70:../cleanflight/src/main/blackbox/blackbox_encoding.c ****     va_list va;
+  71:../cleanflight/src/main/blackbox/blackbox_encoding.c **** 
+  72:../cleanflight/src/main/blackbox/blackbox_encoding.c ****     blackboxWrite('H');
+ 204              	 .loc 1 72 0
+ 205 000a 4820     	 movs r0,#72
+ 206 000c FFF7FEFF 	 bl blackboxWrite
+  73:../cleanflight/src/main/blackbox/blackbox_encoding.c ****     blackboxWrite(' ');
+ 207              	 .loc 1 73 0
+ 208 0010 2020     	 movs r0,#32
+ 209 0012 FFF7FEFF 	 bl blackboxWrite
+  74:../cleanflight/src/main/blackbox/blackbox_encoding.c ****     blackboxWriteString(name);
+ 210              	 .loc 1 74 0
+ 211 0016 7868     	 ldr r0,[r7,#4]
+ 212 0018 FFF7FEFF 	 bl blackboxWriteString
+  75:../cleanflight/src/main/blackbox/blackbox_encoding.c ****     blackboxWrite(':');
+ 213              	 .loc 1 75 0
+ 214 001c 3A20     	 movs r0,#58
+ 215 001e FFF7FEFF 	 bl blackboxWrite
+  76:../cleanflight/src/main/blackbox/blackbox_encoding.c **** 
+  77:../cleanflight/src/main/blackbox/blackbox_encoding.c ****     va_start(va, fmt);
+ 216              	 .loc 1 77 0
+ 217 0022 07F12003 	 add r3,r7,#32
+ 218 0026 BB60     	 str r3,[r7,#8]
+  78:../cleanflight/src/main/blackbox/blackbox_encoding.c **** 
+  79:../cleanflight/src/main/blackbox/blackbox_encoding.c ****     const int written = blackboxPrintfv(fmt, va);
+ 219              	 .loc 1 79 0
+ 220 0028 F869     	 ldr r0,[r7,#28]
+ 221 002a B968     	 ldr r1,[r7,#8]
+ 222 002c FFF7FEFF 	 bl blackboxPrintfv
+ 223 0030 F860     	 str r0,[r7,#12]
+  80:../cleanflight/src/main/blackbox/blackbox_encoding.c **** 
+  81:../cleanflight/src/main/blackbox/blackbox_encoding.c ****     va_end(va);
+  82:../cleanflight/src/main/blackbox/blackbox_encoding.c **** 
+  83:../cleanflight/src/main/blackbox/blackbox_encoding.c ****     blackboxWrite('\n');
+ 224              	 .loc 1 83 0
+ 225 0032 0A20     	 movs r0,#10
+ 226 0034 FFF7FEFF 	 bl blackboxWrite
+  84:../cleanflight/src/main/blackbox/blackbox_encoding.c **** 
+  85:../cleanflight/src/main/blackbox/blackbox_encoding.c ****     blackboxHeaderBudget -= written + 3;
+ 227              	 .loc 1 85 0
+ 228 0038 FA68     	 ldr r2,[r7,#12]
+ 229 003a 6FF00203 	 mvn r3,#2
+ 230 003e 9B1A     	 subs r3,r3,r2
+ 231 0040 054A     	 ldr r2,.L9
+ 232 0042 1268     	 ldr r2,[r2]
+ 233 0044 1344     	 add r3,r3,r2
+ 234 0046 044A     	 ldr r2,.L9
+ 235 0048 1360     	 str r3,[r2]
+  86:../cleanflight/src/main/blackbox/blackbox_encoding.c **** }
+ 236              	 .loc 1 86 0
+ 237 004a 1437     	 adds r7,r7,#20
+ 238              	.LCFI22:
+ 239              	 .cfi_def_cfa_offset 20
+ 240 004c BD46     	 mov sp,r7
+ 241              	.LCFI23:
+ 242              	 .cfi_def_cfa_register 13
+ 243              	 
+ 244 004e BDE88040 	 pop {r7,lr}
+ 245              	.LCFI24:
+ 246              	 .cfi_restore 14
+ 247              	 .cfi_restore 7
+ 248              	 .cfi_def_cfa_offset 12
+ 249 0052 03B0     	 add sp,sp,#12
+ 250              	.LCFI25:
+ 251              	 .cfi_restore 3
+ 252              	 .cfi_restore 2
+ 253              	 .cfi_restore 1
+ 254              	 .cfi_def_cfa_offset 0
+ 255 0054 7047     	 bx lr
+ 256              	.L10:
+ 257 0056 00BF     	 .align 2
+ 258              	.L9:
+ 259 0058 00000000 	 .word blackboxHeaderBudget
+ 260              	 .cfi_endproc
+ 261              	.LFE524:
+ 263              	 .section .text.blackboxWriteUnsignedVB,"ax",%progbits
+ 264              	 .align 2
+ 265              	 .global blackboxWriteUnsignedVB
+ 266              	 .thumb
+ 267              	 .thumb_func
+ 269              	blackboxWriteUnsignedVB:
+ 270              	.LFB525:
+  87:../cleanflight/src/main/blackbox/blackbox_encoding.c **** 
+  88:../cleanflight/src/main/blackbox/blackbox_encoding.c **** /**
+  89:../cleanflight/src/main/blackbox/blackbox_encoding.c ****  * Write an unsigned integer to the blackbox serial port using variable byte encoding.
+  90:../cleanflight/src/main/blackbox/blackbox_encoding.c ****  */
+  91:../cleanflight/src/main/blackbox/blackbox_encoding.c **** void blackboxWriteUnsignedVB(uint32_t value)
+  92:../cleanflight/src/main/blackbox/blackbox_encoding.c **** {
+ 271              	 .loc 1 92 0
+ 272              	 .cfi_startproc
+ 273              	 
+ 274              	 
+ 275 0000 80B5     	 push {r7,lr}
+ 276              	.LCFI26:
+ 277              	 .cfi_def_cfa_offset 8
+ 278              	 .cfi_offset 7,-8
+ 279              	 .cfi_offset 14,-4
+ 280 0002 82B0     	 sub sp,sp,#8
+ 281              	.LCFI27:
+ 282              	 .cfi_def_cfa_offset 16
+ 283 0004 00AF     	 add r7,sp,#0
+ 284              	.LCFI28:
+ 285              	 .cfi_def_cfa_register 7
+ 286 0006 7860     	 str r0,[r7,#4]
+  93:../cleanflight/src/main/blackbox/blackbox_encoding.c ****     //While this isn't the final byte (we can only write 7 bits at a time)
+  94:../cleanflight/src/main/blackbox/blackbox_encoding.c ****     while (value > 127) {
+ 287              	 .loc 1 94 0
+ 288 0008 0AE0     	 b .L12
+ 289              	.L13:
+  95:../cleanflight/src/main/blackbox/blackbox_encoding.c ****         blackboxWrite((uint8_t) (value | 0x80)); // Set the high bit to mean "more bytes follow"
+ 290              	 .loc 1 95 0
+ 291 000a 7B68     	 ldr r3,[r7,#4]
+ 292 000c DBB2     	 uxtb r3,r3
+ 293 000e 63F07F03 	 orn r3,r3,#127
+ 294 0012 DBB2     	 uxtb r3,r3
+ 295 0014 1846     	 mov r0,r3
+ 296 0016 FFF7FEFF 	 bl blackboxWrite
+  96:../cleanflight/src/main/blackbox/blackbox_encoding.c ****         value >>= 7;
+ 297              	 .loc 1 96 0
+ 298 001a 7B68     	 ldr r3,[r7,#4]
+ 299 001c DB09     	 lsrs r3,r3,#7
+ 300 001e 7B60     	 str r3,[r7,#4]
+ 301              	.L12:
+  94:../cleanflight/src/main/blackbox/blackbox_encoding.c ****         blackboxWrite((uint8_t) (value | 0x80)); // Set the high bit to mean "more bytes follow"
+ 302              	 .loc 1 94 0
+ 303 0020 7B68     	 ldr r3,[r7,#4]
+ 304 0022 7F2B     	 cmp r3,#127
+ 305 0024 F1D8     	 bhi .L13
+  97:../cleanflight/src/main/blackbox/blackbox_encoding.c ****     }
+  98:../cleanflight/src/main/blackbox/blackbox_encoding.c ****     blackboxWrite(value);
+ 306              	 .loc 1 98 0
+ 307 0026 7B68     	 ldr r3,[r7,#4]
+ 308 0028 DBB2     	 uxtb r3,r3
+ 309 002a 1846     	 mov r0,r3
+ 310 002c FFF7FEFF 	 bl blackboxWrite
+  99:../cleanflight/src/main/blackbox/blackbox_encoding.c **** }
+ 311              	 .loc 1 99 0
+ 312 0030 0837     	 adds r7,r7,#8
+ 313              	.LCFI29:
+ 314              	 .cfi_def_cfa_offset 8
+ 315 0032 BD46     	 mov sp,r7
+ 316              	.LCFI30:
+ 317              	 .cfi_def_cfa_register 13
+ 318              	 
+ 319 0034 80BD     	 pop {r7,pc}
+ 320              	 .cfi_endproc
+ 321              	.LFE525:
+ 323 0036 00BF     	 .section .text.blackboxWriteSignedVB,"ax",%progbits
+ 324              	 .align 2
+ 325              	 .global blackboxWriteSignedVB
+ 326              	 .thumb
+ 327              	 .thumb_func
+ 329              	blackboxWriteSignedVB:
+ 330              	.LFB526:
+ 100:../cleanflight/src/main/blackbox/blackbox_encoding.c **** 
+ 101:../cleanflight/src/main/blackbox/blackbox_encoding.c **** /**
+ 102:../cleanflight/src/main/blackbox/blackbox_encoding.c ****  * Write a signed integer to the blackbox serial port using ZigZig and variable byte encoding.
+ 103:../cleanflight/src/main/blackbox/blackbox_encoding.c ****  */
+ 104:../cleanflight/src/main/blackbox/blackbox_encoding.c **** void blackboxWriteSignedVB(int32_t value)
+ 105:../cleanflight/src/main/blackbox/blackbox_encoding.c **** {
+ 331              	 .loc 1 105 0
+ 332              	 .cfi_startproc
+ 333              	 
+ 334              	 
+ 335 0000 80B5     	 push {r7,lr}
+ 336              	.LCFI31:
+ 337              	 .cfi_def_cfa_offset 8
+ 338              	 .cfi_offset 7,-8
+ 339              	 .cfi_offset 14,-4
+ 340 0002 82B0     	 sub sp,sp,#8
+ 341              	.LCFI32:
+ 342              	 .cfi_def_cfa_offset 16
+ 343 0004 00AF     	 add r7,sp,#0
+ 344              	.LCFI33:
+ 345              	 .cfi_def_cfa_register 7
+ 346 0006 7860     	 str r0,[r7,#4]
+ 106:../cleanflight/src/main/blackbox/blackbox_encoding.c ****     //ZigZag encode to make the value always positive
+ 107:../cleanflight/src/main/blackbox/blackbox_encoding.c ****     blackboxWriteUnsignedVB(zigzagEncode(value));
+ 347              	 .loc 1 107 0
+ 348 0008 7868     	 ldr r0,[r7,#4]
+ 349 000a FFF7FEFF 	 bl zigzagEncode
+ 350 000e 0346     	 mov r3,r0
+ 351 0010 1846     	 mov r0,r3
+ 352 0012 FFF7FEFF 	 bl blackboxWriteUnsignedVB
+ 108:../cleanflight/src/main/blackbox/blackbox_encoding.c **** }
+ 353              	 .loc 1 108 0
+ 354 0016 0837     	 adds r7,r7,#8
+ 355              	.LCFI34:
+ 356              	 .cfi_def_cfa_offset 8
+ 357 0018 BD46     	 mov sp,r7
+ 358              	.LCFI35:
+ 359              	 .cfi_def_cfa_register 13
+ 360              	 
+ 361 001a 80BD     	 pop {r7,pc}
+ 362              	 .cfi_endproc
+ 363              	.LFE526:
+ 365              	 .section .text.blackboxWriteSignedVBArray,"ax",%progbits
+ 366              	 .align 2
+ 367              	 .global blackboxWriteSignedVBArray
+ 368              	 .thumb
+ 369              	 .thumb_func
+ 371              	blackboxWriteSignedVBArray:
+ 372              	.LFB527:
+ 109:../cleanflight/src/main/blackbox/blackbox_encoding.c **** 
+ 110:../cleanflight/src/main/blackbox/blackbox_encoding.c **** void blackboxWriteSignedVBArray(int32_t *array, int count)
+ 111:../cleanflight/src/main/blackbox/blackbox_encoding.c **** {
+ 373              	 .loc 1 111 0
+ 374              	 .cfi_startproc
+ 375              	 
+ 376              	 
+ 377 0000 80B5     	 push {r7,lr}
+ 378              	.LCFI36:
+ 379              	 .cfi_def_cfa_offset 8
+ 380              	 .cfi_offset 7,-8
+ 381              	 .cfi_offset 14,-4
+ 382 0002 84B0     	 sub sp,sp,#16
+ 383              	.LCFI37:
+ 384              	 .cfi_def_cfa_offset 24
+ 385 0004 00AF     	 add r7,sp,#0
+ 386              	.LCFI38:
+ 387              	 .cfi_def_cfa_register 7
+ 388 0006 7860     	 str r0,[r7,#4]
+ 389 0008 3960     	 str r1,[r7]
+ 390              	.LBB2:
+ 112:../cleanflight/src/main/blackbox/blackbox_encoding.c ****     for (int i = 0; i < count; i++) {
+ 391              	 .loc 1 112 0
+ 392 000a 0023     	 movs r3,#0
+ 393 000c FB60     	 str r3,[r7,#12]
+ 394 000e 0AE0     	 b .L16
+ 395              	.L17:
+ 113:../cleanflight/src/main/blackbox/blackbox_encoding.c ****         blackboxWriteSignedVB(array[i]);
+ 396              	 .loc 1 113 0 discriminator 3
+ 397 0010 FB68     	 ldr r3,[r7,#12]
+ 398 0012 9B00     	 lsls r3,r3,#2
+ 399 0014 7A68     	 ldr r2,[r7,#4]
+ 400 0016 1344     	 add r3,r3,r2
+ 401 0018 1B68     	 ldr r3,[r3]
+ 402 001a 1846     	 mov r0,r3
+ 403 001c FFF7FEFF 	 bl blackboxWriteSignedVB
+ 112:../cleanflight/src/main/blackbox/blackbox_encoding.c ****     for (int i = 0; i < count; i++) {
+ 404              	 .loc 1 112 0 discriminator 3
+ 405 0020 FB68     	 ldr r3,[r7,#12]
+ 406 0022 0133     	 adds r3,r3,#1
+ 407 0024 FB60     	 str r3,[r7,#12]
+ 408              	.L16:
+ 112:../cleanflight/src/main/blackbox/blackbox_encoding.c ****     for (int i = 0; i < count; i++) {
+ 409              	 .loc 1 112 0 is_stmt 0 discriminator 1
+ 410 0026 FA68     	 ldr r2,[r7,#12]
+ 411 0028 3B68     	 ldr r3,[r7]
+ 412 002a 9A42     	 cmp r2,r3
+ 413 002c F0DB     	 blt .L17
+ 414              	.LBE2:
+ 114:../cleanflight/src/main/blackbox/blackbox_encoding.c ****     }
+ 115:../cleanflight/src/main/blackbox/blackbox_encoding.c **** }
+ 415              	 .loc 1 115 0 is_stmt 1
+ 416 002e 1037     	 adds r7,r7,#16
+ 417              	.LCFI39:
+ 418              	 .cfi_def_cfa_offset 8
+ 419 0030 BD46     	 mov sp,r7
+ 420              	.LCFI40:
+ 421              	 .cfi_def_cfa_register 13
+ 422              	 
+ 423 0032 80BD     	 pop {r7,pc}
+ 424              	 .cfi_endproc
+ 425              	.LFE527:
+ 427              	 .section .text.blackboxWriteSigned16VBArray,"ax",%progbits
+ 428              	 .align 2
+ 429              	 .global blackboxWriteSigned16VBArray
+ 430              	 .thumb
+ 431              	 .thumb_func
+ 433              	blackboxWriteSigned16VBArray:
+ 434              	.LFB528:
+ 116:../cleanflight/src/main/blackbox/blackbox_encoding.c **** 
+ 117:../cleanflight/src/main/blackbox/blackbox_encoding.c **** void blackboxWriteSigned16VBArray(int16_t *array, int count)
+ 118:../cleanflight/src/main/blackbox/blackbox_encoding.c **** {
+ 435              	 .loc 1 118 0
+ 436              	 .cfi_startproc
+ 437              	 
+ 438              	 
+ 439 0000 80B5     	 push {r7,lr}
+ 440              	.LCFI41:
+ 441              	 .cfi_def_cfa_offset 8
+ 442              	 .cfi_offset 7,-8
+ 443              	 .cfi_offset 14,-4
+ 444 0002 84B0     	 sub sp,sp,#16
+ 445              	.LCFI42:
+ 446              	 .cfi_def_cfa_offset 24
+ 447 0004 00AF     	 add r7,sp,#0
+ 448              	.LCFI43:
+ 449              	 .cfi_def_cfa_register 7
+ 450 0006 7860     	 str r0,[r7,#4]
+ 451 0008 3960     	 str r1,[r7]
+ 452              	.LBB3:
+ 119:../cleanflight/src/main/blackbox/blackbox_encoding.c ****     for (int i = 0; i < count; i++) {
+ 453              	 .loc 1 119 0
+ 454 000a 0023     	 movs r3,#0
+ 455 000c FB60     	 str r3,[r7,#12]
+ 456 000e 0BE0     	 b .L19
+ 457              	.L20:
+ 120:../cleanflight/src/main/blackbox/blackbox_encoding.c ****         blackboxWriteSignedVB(array[i]);
+ 458              	 .loc 1 120 0 discriminator 3
+ 459 0010 FB68     	 ldr r3,[r7,#12]
+ 460 0012 5B00     	 lsls r3,r3,#1
+ 461 0014 7A68     	 ldr r2,[r7,#4]
+ 462 0016 1344     	 add r3,r3,r2
+ 463 0018 1B88     	 ldrh r3,[r3]
+ 464 001a 1BB2     	 sxth r3,r3
+ 465 001c 1846     	 mov r0,r3
+ 466 001e FFF7FEFF 	 bl blackboxWriteSignedVB
+ 119:../cleanflight/src/main/blackbox/blackbox_encoding.c ****     for (int i = 0; i < count; i++) {
+ 467              	 .loc 1 119 0 discriminator 3
+ 468 0022 FB68     	 ldr r3,[r7,#12]
+ 469 0024 0133     	 adds r3,r3,#1
+ 470 0026 FB60     	 str r3,[r7,#12]
+ 471              	.L19:
+ 119:../cleanflight/src/main/blackbox/blackbox_encoding.c ****     for (int i = 0; i < count; i++) {
+ 472              	 .loc 1 119 0 is_stmt 0 discriminator 1
+ 473 0028 FA68     	 ldr r2,[r7,#12]
+ 474 002a 3B68     	 ldr r3,[r7]
+ 475 002c 9A42     	 cmp r2,r3
+ 476 002e EFDB     	 blt .L20
+ 477              	.LBE3:
+ 121:../cleanflight/src/main/blackbox/blackbox_encoding.c ****     }
+ 122:../cleanflight/src/main/blackbox/blackbox_encoding.c **** }
+ 478              	 .loc 1 122 0 is_stmt 1
+ 479 0030 1037     	 adds r7,r7,#16
+ 480              	.LCFI44:
+ 481              	 .cfi_def_cfa_offset 8
+ 482 0032 BD46     	 mov sp,r7
+ 483              	.LCFI45:
+ 484              	 .cfi_def_cfa_register 13
+ 485              	 
+ 486 0034 80BD     	 pop {r7,pc}
+ 487              	 .cfi_endproc
+ 488              	.LFE528:
+ 490 0036 00BF     	 .section .text.blackboxWriteS16,"ax",%progbits
+ 491              	 .align 2
+ 492              	 .global blackboxWriteS16
+ 493              	 .thumb
+ 494              	 .thumb_func
+ 496              	blackboxWriteS16:
+ 497              	.LFB529:
+ 123:../cleanflight/src/main/blackbox/blackbox_encoding.c **** 
+ 124:../cleanflight/src/main/blackbox/blackbox_encoding.c **** void blackboxWriteS16(int16_t value)
+ 125:../cleanflight/src/main/blackbox/blackbox_encoding.c **** {
+ 498              	 .loc 1 125 0
+ 499              	 .cfi_startproc
+ 500              	 
+ 501              	 
+ 502 0000 80B5     	 push {r7,lr}
+ 503              	.LCFI46:
+ 504              	 .cfi_def_cfa_offset 8
+ 505              	 .cfi_offset 7,-8
+ 506              	 .cfi_offset 14,-4
+ 507 0002 82B0     	 sub sp,sp,#8
+ 508              	.LCFI47:
+ 509              	 .cfi_def_cfa_offset 16
+ 510 0004 00AF     	 add r7,sp,#0
+ 511              	.LCFI48:
+ 512              	 .cfi_def_cfa_register 7
+ 513 0006 0346     	 mov r3,r0
+ 514 0008 FB80     	 strh r3,[r7,#6]
+ 126:../cleanflight/src/main/blackbox/blackbox_encoding.c ****     blackboxWrite(value & 0xFF);
+ 515              	 .loc 1 126 0
+ 516 000a FB88     	 ldrh r3,[r7,#6]
+ 517 000c DBB2     	 uxtb r3,r3
+ 518 000e 1846     	 mov r0,r3
+ 519 0010 FFF7FEFF 	 bl blackboxWrite
+ 127:../cleanflight/src/main/blackbox/blackbox_encoding.c ****     blackboxWrite((value >> 8) & 0xFF);
+ 520              	 .loc 1 127 0
+ 521 0014 B7F90630 	 ldrsh r3,[r7,#6]
+ 522 0018 1B12     	 asrs r3,r3,#8
+ 523 001a 9BB2     	 uxth r3,r3
+ 524 001c DBB2     	 uxtb r3,r3
+ 525 001e 1846     	 mov r0,r3
+ 526 0020 FFF7FEFF 	 bl blackboxWrite
+ 128:../cleanflight/src/main/blackbox/blackbox_encoding.c **** }
+ 527              	 .loc 1 128 0
+ 528 0024 0837     	 adds r7,r7,#8
+ 529              	.LCFI49:
+ 530              	 .cfi_def_cfa_offset 8
+ 531 0026 BD46     	 mov sp,r7
+ 532              	.LCFI50:
+ 533              	 .cfi_def_cfa_register 13
+ 534              	 
+ 535 0028 80BD     	 pop {r7,pc}
+ 536              	 .cfi_endproc
+ 537              	.LFE529:
+ 539 002a 00BF     	 .section .text.blackboxWriteTag2_3S32,"ax",%progbits
+ 540              	 .align 2
+ 541              	 .global blackboxWriteTag2_3S32
+ 542              	 .thumb
+ 543              	 .thumb_func
+ 545              	blackboxWriteTag2_3S32:
+ 546              	.LFB530:
+ 129:../cleanflight/src/main/blackbox/blackbox_encoding.c **** 
+ 130:../cleanflight/src/main/blackbox/blackbox_encoding.c **** /**
+ 131:../cleanflight/src/main/blackbox/blackbox_encoding.c ****  * Write a 2 bit tag followed by 3 signed fields of 2, 4, 6 or 32 bits
+ 132:../cleanflight/src/main/blackbox/blackbox_encoding.c ****  */
+ 133:../cleanflight/src/main/blackbox/blackbox_encoding.c **** void blackboxWriteTag2_3S32(int32_t *values)
+ 134:../cleanflight/src/main/blackbox/blackbox_encoding.c **** {
+ 547              	 .loc 1 134 0
+ 548              	 .cfi_startproc
+ 549              	 
+ 550              	 
+ 551 0000 80B5     	 push {r7,lr}
+ 552              	.LCFI51:
+ 553              	 .cfi_def_cfa_offset 8
+ 554              	 .cfi_offset 7,-8
+ 555              	 .cfi_offset 14,-4
+ 556 0002 88B0     	 sub sp,sp,#32
+ 557              	.LCFI52:
+ 558              	 .cfi_def_cfa_offset 40
+ 559 0004 00AF     	 add r7,sp,#0
+ 560              	.LCFI53:
+ 561              	 .cfi_def_cfa_register 7
+ 562 0006 7860     	 str r0,[r7,#4]
+ 135:../cleanflight/src/main/blackbox/blackbox_encoding.c ****     static const int NUM_FIELDS = 3;
+ 136:../cleanflight/src/main/blackbox/blackbox_encoding.c **** 
+ 137:../cleanflight/src/main/blackbox/blackbox_encoding.c ****     //Need to be enums rather than const ints if we want to switch on them (due to being C)
+ 138:../cleanflight/src/main/blackbox/blackbox_encoding.c ****     enum {
+ 139:../cleanflight/src/main/blackbox/blackbox_encoding.c ****         BITS_2  = 0,
+ 140:../cleanflight/src/main/blackbox/blackbox_encoding.c ****         BITS_4  = 1,
+ 141:../cleanflight/src/main/blackbox/blackbox_encoding.c ****         BITS_6  = 2,
+ 142:../cleanflight/src/main/blackbox/blackbox_encoding.c ****         BITS_32 = 3
+ 143:../cleanflight/src/main/blackbox/blackbox_encoding.c ****     };
+ 144:../cleanflight/src/main/blackbox/blackbox_encoding.c **** 
+ 145:../cleanflight/src/main/blackbox/blackbox_encoding.c ****     enum {
+ 146:../cleanflight/src/main/blackbox/blackbox_encoding.c ****         BYTES_1  = 0,
+ 147:../cleanflight/src/main/blackbox/blackbox_encoding.c ****         BYTES_2  = 1,
+ 148:../cleanflight/src/main/blackbox/blackbox_encoding.c ****         BYTES_3  = 2,
+ 149:../cleanflight/src/main/blackbox/blackbox_encoding.c ****         BYTES_4  = 3
+ 150:../cleanflight/src/main/blackbox/blackbox_encoding.c ****     };
+ 151:../cleanflight/src/main/blackbox/blackbox_encoding.c **** 
+ 152:../cleanflight/src/main/blackbox/blackbox_encoding.c ****     int selector = BITS_2, selector2;
+ 563              	 .loc 1 152 0
+ 564 0008 0023     	 movs r3,#0
+ 565 000a FB61     	 str r3,[r7,#28]
+ 566              	.LBB4:
+ 153:../cleanflight/src/main/blackbox/blackbox_encoding.c **** 
+ 154:../cleanflight/src/main/blackbox/blackbox_encoding.c ****     /*
+ 155:../cleanflight/src/main/blackbox/blackbox_encoding.c ****      * Find out how many bits the largest value requires to encode, and use it to choose one of the
+ 156:../cleanflight/src/main/blackbox/blackbox_encoding.c ****      * below:
+ 157:../cleanflight/src/main/blackbox/blackbox_encoding.c ****      *
+ 158:../cleanflight/src/main/blackbox/blackbox_encoding.c ****      * Selector possibilities
+ 159:../cleanflight/src/main/blackbox/blackbox_encoding.c ****      *
+ 160:../cleanflight/src/main/blackbox/blackbox_encoding.c ****      * 2 bits per field  ss11 2233,
+ 161:../cleanflight/src/main/blackbox/blackbox_encoding.c ****      * 4 bits per field  ss00 1111 2222 3333
+ 162:../cleanflight/src/main/blackbox/blackbox_encoding.c ****      * 6 bits per field  ss11 1111 0022 2222 0033 3333
+ 163:../cleanflight/src/main/blackbox/blackbox_encoding.c ****      * 32 bits per field sstt tttt followed by fields of various byte counts
+ 164:../cleanflight/src/main/blackbox/blackbox_encoding.c ****      */
+ 165:../cleanflight/src/main/blackbox/blackbox_encoding.c ****     for (int x = 0; x < NUM_FIELDS; x++) {
+ 567              	 .loc 1 165 0
+ 568 000c 0023     	 movs r3,#0
+ 569 000e 7B61     	 str r3,[r7,#20]
+ 570 0010 3EE0     	 b .L23
+ 571              	.L32:
+ 166:../cleanflight/src/main/blackbox/blackbox_encoding.c ****         //Require more than 6 bits?
+ 167:../cleanflight/src/main/blackbox/blackbox_encoding.c ****         if (values[x] >= 32 || values[x] < -32) {
+ 572              	 .loc 1 167 0
+ 573 0012 7B69     	 ldr r3,[r7,#20]
+ 574 0014 9B00     	 lsls r3,r3,#2
+ 575 0016 7A68     	 ldr r2,[r7,#4]
+ 576 0018 1344     	 add r3,r3,r2
+ 577 001a 1B68     	 ldr r3,[r3]
+ 578 001c 1F2B     	 cmp r3,#31
+ 579 001e 07DC     	 bgt .L24
+ 580              	 .loc 1 167 0 is_stmt 0 discriminator 1
+ 581 0020 7B69     	 ldr r3,[r7,#20]
+ 582 0022 9B00     	 lsls r3,r3,#2
+ 583 0024 7A68     	 ldr r2,[r7,#4]
+ 584 0026 1344     	 add r3,r3,r2
+ 585 0028 1B68     	 ldr r3,[r3]
+ 586 002a 13F1200F 	 cmn r3,#32
+ 587 002e 02DA     	 bge .L25
+ 588              	.L24:
+ 168:../cleanflight/src/main/blackbox/blackbox_encoding.c ****             selector = BITS_32;
+ 589              	 .loc 1 168 0 is_stmt 1
+ 590 0030 0323     	 movs r3,#3
+ 591 0032 FB61     	 str r3,[r7,#28]
+ 169:../cleanflight/src/main/blackbox/blackbox_encoding.c ****             break;
+ 592              	 .loc 1 169 0
+ 593 0034 30E0     	 b .L26
+ 594              	.L25:
+ 170:../cleanflight/src/main/blackbox/blackbox_encoding.c ****         }
+ 171:../cleanflight/src/main/blackbox/blackbox_encoding.c **** 
+ 172:../cleanflight/src/main/blackbox/blackbox_encoding.c ****         //Require more than 4 bits?
+ 173:../cleanflight/src/main/blackbox/blackbox_encoding.c ****         if (values[x] >= 8 || values[x] < -8) {
+ 595              	 .loc 1 173 0
+ 596 0036 7B69     	 ldr r3,[r7,#20]
+ 597 0038 9B00     	 lsls r3,r3,#2
+ 598 003a 7A68     	 ldr r2,[r7,#4]
+ 599 003c 1344     	 add r3,r3,r2
+ 600 003e 1B68     	 ldr r3,[r3]
+ 601 0040 072B     	 cmp r3,#7
+ 602 0042 07DC     	 bgt .L27
+ 603              	 .loc 1 173 0 is_stmt 0 discriminator 1
+ 604 0044 7B69     	 ldr r3,[r7,#20]
+ 605 0046 9B00     	 lsls r3,r3,#2
+ 606 0048 7A68     	 ldr r2,[r7,#4]
+ 607 004a 1344     	 add r3,r3,r2
+ 608 004c 1B68     	 ldr r3,[r3]
+ 609 004e 13F1080F 	 cmn r3,#8
+ 610 0052 06DA     	 bge .L28
+ 611              	.L27:
+ 174:../cleanflight/src/main/blackbox/blackbox_encoding.c ****              if (selector < BITS_6) {
+ 612              	 .loc 1 174 0 is_stmt 1
+ 613 0054 FB69     	 ldr r3,[r7,#28]
+ 614 0056 012B     	 cmp r3,#1
+ 615 0058 02DC     	 bgt .L29
+ 175:../cleanflight/src/main/blackbox/blackbox_encoding.c ****                  selector = BITS_6;
+ 616              	 .loc 1 175 0
+ 617 005a 0223     	 movs r3,#2
+ 618 005c FB61     	 str r3,[r7,#28]
+ 174:../cleanflight/src/main/blackbox/blackbox_encoding.c ****              if (selector < BITS_6) {
+ 619              	 .loc 1 174 0
+ 620 005e 14E0     	 b .L30
+ 621              	.L29:
+ 622 0060 13E0     	 b .L30
+ 623              	.L28:
+ 176:../cleanflight/src/main/blackbox/blackbox_encoding.c ****              }
+ 177:../cleanflight/src/main/blackbox/blackbox_encoding.c ****         } else if (values[x] >= 2 || values[x] < -2) { //Require more than 2 bits?
+ 624              	 .loc 1 177 0
+ 625 0062 7B69     	 ldr r3,[r7,#20]
+ 626 0064 9B00     	 lsls r3,r3,#2
+ 627 0066 7A68     	 ldr r2,[r7,#4]
+ 628 0068 1344     	 add r3,r3,r2
+ 629 006a 1B68     	 ldr r3,[r3]
+ 630 006c 012B     	 cmp r3,#1
+ 631 006e 07DC     	 bgt .L31
+ 632              	 .loc 1 177 0 is_stmt 0 discriminator 1
+ 633 0070 7B69     	 ldr r3,[r7,#20]
+ 634 0072 9B00     	 lsls r3,r3,#2
+ 635 0074 7A68     	 ldr r2,[r7,#4]
+ 636 0076 1344     	 add r3,r3,r2
+ 637 0078 1B68     	 ldr r3,[r3]
+ 638 007a 13F1020F 	 cmn r3,#2
+ 639 007e 04DA     	 bge .L30
+ 640              	.L31:
+ 178:../cleanflight/src/main/blackbox/blackbox_encoding.c ****             if (selector < BITS_4) {
+ 641              	 .loc 1 178 0 is_stmt 1
+ 642 0080 FB69     	 ldr r3,[r7,#28]
+ 643 0082 002B     	 cmp r3,#0
+ 644 0084 01DC     	 bgt .L30
+ 179:../cleanflight/src/main/blackbox/blackbox_encoding.c ****                 selector = BITS_4;
+ 645              	 .loc 1 179 0
+ 646 0086 0123     	 movs r3,#1
+ 647 0088 FB61     	 str r3,[r7,#28]
+ 648              	.L30:
+ 165:../cleanflight/src/main/blackbox/blackbox_encoding.c ****         //Require more than 6 bits?
+ 649              	 .loc 1 165 0 discriminator 2
+ 650 008a 7B69     	 ldr r3,[r7,#20]
+ 651 008c 0133     	 adds r3,r3,#1
+ 652 008e 7B61     	 str r3,[r7,#20]
+ 653              	.L23:
+ 165:../cleanflight/src/main/blackbox/blackbox_encoding.c ****         //Require more than 6 bits?
+ 654              	 .loc 1 165 0 is_stmt 0 discriminator 1
+ 655 0090 0322     	 movs r2,#3
+ 656 0092 7B69     	 ldr r3,[r7,#20]
+ 657 0094 9342     	 cmp r3,r2
+ 658 0096 BCDB     	 blt .L32
+ 659              	.L26:
+ 660              	.LBE4:
+ 180:../cleanflight/src/main/blackbox/blackbox_encoding.c ****             }
+ 181:../cleanflight/src/main/blackbox/blackbox_encoding.c ****         }
+ 182:../cleanflight/src/main/blackbox/blackbox_encoding.c ****     }
+ 183:../cleanflight/src/main/blackbox/blackbox_encoding.c **** 
+ 184:../cleanflight/src/main/blackbox/blackbox_encoding.c ****     switch (selector) {
+ 661              	 .loc 1 184 0 is_stmt 1
+ 662 0098 FB69     	 ldr r3,[r7,#28]
+ 663 009a 032B     	 cmp r3,#3
+ 664 009c 00F24981 	 bhi .L22
+ 665 00a0 01A2     	 adr r2,.L35
+ 666 00a2 52F823F0 	 ldr pc,[r2,r3,lsl#2]
+ 667 00a6 00BF     	 .p2align 2
+ 668              	.L35:
+ 669 00a8 B9000000 	 .word .L34+1
+ 670 00ac FD000000 	 .word .L36+1
+ 671 00b0 41010000 	 .word .L37+1
+ 672 00b4 7D010000 	 .word .L38+1
+ 673              	 .p2align 1
+ 674              	.L34:
+ 185:../cleanflight/src/main/blackbox/blackbox_encoding.c ****     case BITS_2:
+ 186:../cleanflight/src/main/blackbox/blackbox_encoding.c ****         blackboxWrite((selector << 6) | ((values[0] & 0x03) << 4) | ((values[1] & 0x03) << 2) | (va
+ 675              	 .loc 1 186 0
+ 676 00b8 FB69     	 ldr r3,[r7,#28]
+ 677 00ba 9B01     	 lsls r3,r3,#6
+ 678 00bc DAB2     	 uxtb r2,r3
+ 679 00be 7B68     	 ldr r3,[r7,#4]
+ 680 00c0 1B68     	 ldr r3,[r3]
+ 681 00c2 03F00303 	 and r3,r3,#3
+ 682 00c6 1B01     	 lsls r3,r3,#4
+ 683 00c8 DBB2     	 uxtb r3,r3
+ 684 00ca 1343     	 orrs r3,r3,r2
+ 685 00cc DAB2     	 uxtb r2,r3
+ 686 00ce 7B68     	 ldr r3,[r7,#4]
+ 687 00d0 0433     	 adds r3,r3,#4
+ 688 00d2 1B68     	 ldr r3,[r3]
+ 689 00d4 03F00303 	 and r3,r3,#3
+ 690 00d8 9B00     	 lsls r3,r3,#2
+ 691 00da DBB2     	 uxtb r3,r3
+ 692 00dc 1343     	 orrs r3,r3,r2
+ 693 00de DAB2     	 uxtb r2,r3
+ 694 00e0 7B68     	 ldr r3,[r7,#4]
+ 695 00e2 0833     	 adds r3,r3,#8
+ 696 00e4 1B68     	 ldr r3,[r3]
+ 697 00e6 DBB2     	 uxtb r3,r3
+ 698 00e8 03F00303 	 and r3,r3,#3
+ 699 00ec DBB2     	 uxtb r3,r3
+ 700 00ee 1343     	 orrs r3,r3,r2
+ 701 00f0 DBB2     	 uxtb r3,r3
+ 702 00f2 DBB2     	 uxtb r3,r3
+ 703 00f4 1846     	 mov r0,r3
+ 704 00f6 FFF7FEFF 	 bl blackboxWrite
+ 187:../cleanflight/src/main/blackbox/blackbox_encoding.c ****         break;
+ 705              	 .loc 1 187 0
+ 706 00fa 1AE1     	 b .L22
+ 707              	.L36:
+ 188:../cleanflight/src/main/blackbox/blackbox_encoding.c ****     case BITS_4:
+ 189:../cleanflight/src/main/blackbox/blackbox_encoding.c ****         blackboxWrite((selector << 6) | (values[0] & 0x0F));
+ 708              	 .loc 1 189 0
+ 709 00fc FB69     	 ldr r3,[r7,#28]
+ 710 00fe 9B01     	 lsls r3,r3,#6
+ 711 0100 DAB2     	 uxtb r2,r3
+ 712 0102 7B68     	 ldr r3,[r7,#4]
+ 713 0104 1B68     	 ldr r3,[r3]
+ 714 0106 DBB2     	 uxtb r3,r3
+ 715 0108 03F00F03 	 and r3,r3,#15
+ 716 010c DBB2     	 uxtb r3,r3
+ 717 010e 1343     	 orrs r3,r3,r2
+ 718 0110 DBB2     	 uxtb r3,r3
+ 719 0112 DBB2     	 uxtb r3,r3
+ 720 0114 1846     	 mov r0,r3
+ 721 0116 FFF7FEFF 	 bl blackboxWrite
+ 190:../cleanflight/src/main/blackbox/blackbox_encoding.c ****         blackboxWrite((values[1] << 4) | (values[2] & 0x0F));
+ 722              	 .loc 1 190 0
+ 723 011a 7B68     	 ldr r3,[r7,#4]
+ 724 011c 0433     	 adds r3,r3,#4
+ 725 011e 1B68     	 ldr r3,[r3]
+ 726 0120 1B01     	 lsls r3,r3,#4
+ 727 0122 DAB2     	 uxtb r2,r3
+ 728 0124 7B68     	 ldr r3,[r7,#4]
+ 729 0126 0833     	 adds r3,r3,#8
+ 730 0128 1B68     	 ldr r3,[r3]
+ 731 012a DBB2     	 uxtb r3,r3
+ 732 012c 03F00F03 	 and r3,r3,#15
+ 733 0130 DBB2     	 uxtb r3,r3
+ 734 0132 1343     	 orrs r3,r3,r2
+ 735 0134 DBB2     	 uxtb r3,r3
+ 736 0136 DBB2     	 uxtb r3,r3
+ 737 0138 1846     	 mov r0,r3
+ 738 013a FFF7FEFF 	 bl blackboxWrite
+ 191:../cleanflight/src/main/blackbox/blackbox_encoding.c ****         break;
+ 739              	 .loc 1 191 0
+ 740 013e F8E0     	 b .L22
+ 741              	.L37:
+ 192:../cleanflight/src/main/blackbox/blackbox_encoding.c ****     case BITS_6:
+ 193:../cleanflight/src/main/blackbox/blackbox_encoding.c ****         blackboxWrite((selector << 6) | (values[0] & 0x3F));
+ 742              	 .loc 1 193 0
+ 743 0140 FB69     	 ldr r3,[r7,#28]
+ 744 0142 9B01     	 lsls r3,r3,#6
+ 745 0144 DAB2     	 uxtb r2,r3
+ 746 0146 7B68     	 ldr r3,[r7,#4]
+ 747 0148 1B68     	 ldr r3,[r3]
+ 748 014a DBB2     	 uxtb r3,r3
+ 749 014c 03F03F03 	 and r3,r3,#63
+ 750 0150 DBB2     	 uxtb r3,r3
+ 751 0152 1343     	 orrs r3,r3,r2
+ 752 0154 DBB2     	 uxtb r3,r3
+ 753 0156 DBB2     	 uxtb r3,r3
+ 754 0158 1846     	 mov r0,r3
+ 755 015a FFF7FEFF 	 bl blackboxWrite
+ 194:../cleanflight/src/main/blackbox/blackbox_encoding.c ****         blackboxWrite((uint8_t)values[1]);
+ 756              	 .loc 1 194 0
+ 757 015e 7B68     	 ldr r3,[r7,#4]
+ 758 0160 0433     	 adds r3,r3,#4
+ 759 0162 1B68     	 ldr r3,[r3]
+ 760 0164 DBB2     	 uxtb r3,r3
+ 761 0166 1846     	 mov r0,r3
+ 762 0168 FFF7FEFF 	 bl blackboxWrite
+ 195:../cleanflight/src/main/blackbox/blackbox_encoding.c ****         blackboxWrite((uint8_t)values[2]);
+ 763              	 .loc 1 195 0
+ 764 016c 7B68     	 ldr r3,[r7,#4]
+ 765 016e 0833     	 adds r3,r3,#8
+ 766 0170 1B68     	 ldr r3,[r3]
+ 767 0172 DBB2     	 uxtb r3,r3
+ 768 0174 1846     	 mov r0,r3
+ 769 0176 FFF7FEFF 	 bl blackboxWrite
+ 196:../cleanflight/src/main/blackbox/blackbox_encoding.c ****         break;
+ 770              	 .loc 1 196 0
+ 771 017a DAE0     	 b .L22
+ 772              	.L38:
+ 197:../cleanflight/src/main/blackbox/blackbox_encoding.c ****     case BITS_32:
+ 198:../cleanflight/src/main/blackbox/blackbox_encoding.c ****         /*
+ 199:../cleanflight/src/main/blackbox/blackbox_encoding.c ****          * Do another round to compute a selector for each field, assuming that they are at least 8
+ 200:../cleanflight/src/main/blackbox/blackbox_encoding.c ****          *
+ 201:../cleanflight/src/main/blackbox/blackbox_encoding.c ****          * Selector2 field possibilities
+ 202:../cleanflight/src/main/blackbox/blackbox_encoding.c ****          * 0 - 8 bits
+ 203:../cleanflight/src/main/blackbox/blackbox_encoding.c ****          * 1 - 16 bits
+ 204:../cleanflight/src/main/blackbox/blackbox_encoding.c ****          * 2 - 24 bits
+ 205:../cleanflight/src/main/blackbox/blackbox_encoding.c ****          * 3 - 32 bits
+ 206:../cleanflight/src/main/blackbox/blackbox_encoding.c ****          */
+ 207:../cleanflight/src/main/blackbox/blackbox_encoding.c ****         selector2 = 0;
+ 773              	 .loc 1 207 0
+ 774 017c 0023     	 movs r3,#0
+ 775 017e BB61     	 str r3,[r7,#24]
+ 776              	.LBB5:
+ 208:../cleanflight/src/main/blackbox/blackbox_encoding.c **** 
+ 209:../cleanflight/src/main/blackbox/blackbox_encoding.c ****         //Encode in reverse order so the first field is in the low bits:
+ 210:../cleanflight/src/main/blackbox/blackbox_encoding.c ****         for (int x = NUM_FIELDS - 1; x >= 0; x--) {
+ 777              	 .loc 1 210 0
+ 778 0180 0323     	 movs r3,#3
+ 779 0182 013B     	 subs r3,r3,#1
+ 780 0184 3B61     	 str r3,[r7,#16]
+ 781 0186 43E0     	 b .L39
+ 782              	.L44:
+ 211:../cleanflight/src/main/blackbox/blackbox_encoding.c ****             selector2 <<= 2;
+ 783              	 .loc 1 211 0
+ 784 0188 BB69     	 ldr r3,[r7,#24]
+ 785 018a 9B00     	 lsls r3,r3,#2
+ 786 018c BB61     	 str r3,[r7,#24]
+ 212:../cleanflight/src/main/blackbox/blackbox_encoding.c **** 
+ 213:../cleanflight/src/main/blackbox/blackbox_encoding.c ****             if (values[x] < 128 && values[x] >= -128) {
+ 787              	 .loc 1 213 0
+ 788 018e 3B69     	 ldr r3,[r7,#16]
+ 789 0190 9B00     	 lsls r3,r3,#2
+ 790 0192 7A68     	 ldr r2,[r7,#4]
+ 791 0194 1344     	 add r3,r3,r2
+ 792 0196 1B68     	 ldr r3,[r3]
+ 793 0198 7F2B     	 cmp r3,#127
+ 794 019a 08DC     	 bgt .L40
+ 795              	 .loc 1 213 0 is_stmt 0 discriminator 1
+ 796 019c 3B69     	 ldr r3,[r7,#16]
+ 797 019e 9B00     	 lsls r3,r3,#2
+ 798 01a0 7A68     	 ldr r2,[r7,#4]
+ 799 01a2 1344     	 add r3,r3,r2
+ 800 01a4 1B68     	 ldr r3,[r3]
+ 801 01a6 13F1800F 	 cmn r3,#128
+ 802 01aa 00DB     	 blt .L40
+ 214:../cleanflight/src/main/blackbox/blackbox_encoding.c ****                 selector2 |= BYTES_1;
+ 803              	 .loc 1 214 0 is_stmt 1
+ 804 01ac 2DE0     	 b .L41
+ 805              	.L40:
+ 215:../cleanflight/src/main/blackbox/blackbox_encoding.c ****             } else if (values[x] < 32768 && values[x] >= -32768) {
+ 806              	 .loc 1 215 0
+ 807 01ae 3B69     	 ldr r3,[r7,#16]
+ 808 01b0 9B00     	 lsls r3,r3,#2
+ 809 01b2 7A68     	 ldr r2,[r7,#4]
+ 810 01b4 1344     	 add r3,r3,r2
+ 811 01b6 1B68     	 ldr r3,[r3]
+ 812 01b8 B3F5004F 	 cmp r3,#32768
+ 813 01bc 0CDA     	 bge .L42
+ 814              	 .loc 1 215 0 is_stmt 0 discriminator 1
+ 815 01be 3B69     	 ldr r3,[r7,#16]
+ 816 01c0 9B00     	 lsls r3,r3,#2
+ 817 01c2 7A68     	 ldr r2,[r7,#4]
+ 818 01c4 1344     	 add r3,r3,r2
+ 819 01c6 1B68     	 ldr r3,[r3]
+ 820 01c8 13F5004F 	 cmn r3,#32768
+ 821 01cc 04DB     	 blt .L42
+ 216:../cleanflight/src/main/blackbox/blackbox_encoding.c ****                 selector2 |= BYTES_2;
+ 822              	 .loc 1 216 0 is_stmt 1
+ 823 01ce BB69     	 ldr r3,[r7,#24]
+ 824 01d0 43F00103 	 orr r3,r3,#1
+ 825 01d4 BB61     	 str r3,[r7,#24]
+ 826 01d6 18E0     	 b .L41
+ 827              	.L42:
+ 217:../cleanflight/src/main/blackbox/blackbox_encoding.c ****             } else if (values[x] < 8388608 && values[x] >= -8388608) {
+ 828              	 .loc 1 217 0
+ 829 01d8 3B69     	 ldr r3,[r7,#16]
+ 830 01da 9B00     	 lsls r3,r3,#2
+ 831 01dc 7A68     	 ldr r2,[r7,#4]
+ 832 01de 1344     	 add r3,r3,r2
+ 833 01e0 1B68     	 ldr r3,[r3]
+ 834 01e2 B3F5000F 	 cmp r3,#8388608
+ 835 01e6 0CDA     	 bge .L43
+ 836              	 .loc 1 217 0 is_stmt 0 discriminator 1
+ 837 01e8 3B69     	 ldr r3,[r7,#16]
+ 838 01ea 9B00     	 lsls r3,r3,#2
+ 839 01ec 7A68     	 ldr r2,[r7,#4]
+ 840 01ee 1344     	 add r3,r3,r2
+ 841 01f0 1B68     	 ldr r3,[r3]
+ 842 01f2 13F5000F 	 cmn r3,#8388608
+ 843 01f6 04DB     	 blt .L43
+ 218:../cleanflight/src/main/blackbox/blackbox_encoding.c ****                 selector2 |= BYTES_3;
+ 844              	 .loc 1 218 0 is_stmt 1
+ 845 01f8 BB69     	 ldr r3,[r7,#24]
+ 846 01fa 43F00203 	 orr r3,r3,#2
+ 847 01fe BB61     	 str r3,[r7,#24]
+ 848 0200 03E0     	 b .L41
+ 849              	.L43:
+ 219:../cleanflight/src/main/blackbox/blackbox_encoding.c ****             } else {
+ 220:../cleanflight/src/main/blackbox/blackbox_encoding.c ****                 selector2 |= BYTES_4;
+ 850              	 .loc 1 220 0
+ 851 0202 BB69     	 ldr r3,[r7,#24]
+ 852 0204 43F00303 	 orr r3,r3,#3
+ 853 0208 BB61     	 str r3,[r7,#24]
+ 854              	.L41:
+ 210:../cleanflight/src/main/blackbox/blackbox_encoding.c ****             selector2 <<= 2;
+ 855              	 .loc 1 210 0 discriminator 2
+ 856 020a 3B69     	 ldr r3,[r7,#16]
+ 857 020c 013B     	 subs r3,r3,#1
+ 858 020e 3B61     	 str r3,[r7,#16]
+ 859              	.L39:
+ 210:../cleanflight/src/main/blackbox/blackbox_encoding.c ****             selector2 <<= 2;
+ 860              	 .loc 1 210 0 is_stmt 0 discriminator 1
+ 861 0210 3B69     	 ldr r3,[r7,#16]
+ 862 0212 002B     	 cmp r3,#0
+ 863 0214 B8DA     	 bge .L44
+ 864              	.LBE5:
+ 221:../cleanflight/src/main/blackbox/blackbox_encoding.c ****             }
+ 222:../cleanflight/src/main/blackbox/blackbox_encoding.c ****         }
+ 223:../cleanflight/src/main/blackbox/blackbox_encoding.c **** 
+ 224:../cleanflight/src/main/blackbox/blackbox_encoding.c ****         //Write the selectors
+ 225:../cleanflight/src/main/blackbox/blackbox_encoding.c ****         blackboxWrite((selector << 6) | selector2);
+ 865              	 .loc 1 225 0 is_stmt 1
+ 866 0216 FB69     	 ldr r3,[r7,#28]
+ 867 0218 9B01     	 lsls r3,r3,#6
+ 868 021a DAB2     	 uxtb r2,r3
+ 869 021c BB69     	 ldr r3,[r7,#24]
+ 870 021e DBB2     	 uxtb r3,r3
+ 871 0220 1343     	 orrs r3,r3,r2
+ 872 0222 DBB2     	 uxtb r3,r3
+ 873 0224 DBB2     	 uxtb r3,r3
+ 874 0226 1846     	 mov r0,r3
+ 875 0228 FFF7FEFF 	 bl blackboxWrite
+ 876              	.LBB6:
+ 226:../cleanflight/src/main/blackbox/blackbox_encoding.c **** 
+ 227:../cleanflight/src/main/blackbox/blackbox_encoding.c ****         //And now the values according to the selectors we picked for them
+ 228:../cleanflight/src/main/blackbox/blackbox_encoding.c ****         for (int x = 0; x < NUM_FIELDS; x++, selector2 >>= 2) {
+ 877              	 .loc 1 228 0
+ 878 022c 0023     	 movs r3,#0
+ 879 022e FB60     	 str r3,[r7,#12]
+ 880 0230 7AE0     	 b .L45
+ 881              	.L52:
+ 229:../cleanflight/src/main/blackbox/blackbox_encoding.c ****             switch (selector2 & 0x03) {
+ 882              	 .loc 1 229 0
+ 883 0232 BB69     	 ldr r3,[r7,#24]
+ 884 0234 03F00303 	 and r3,r3,#3
+ 885 0238 032B     	 cmp r3,#3
+ 886 023a 6FD8     	 bhi .L46
+ 887 023c 01A2     	 adr r2,.L48
+ 888 023e 52F823F0 	 ldr pc,[r2,r3,lsl#2]
+ 889 0242 00BF     	 .p2align 2
+ 890              	.L48:
+ 891 0244 55020000 	 .word .L47+1
+ 892 0248 69020000 	 .word .L49+1
+ 893 024c 91020000 	 .word .L50+1
+ 894 0250 CD020000 	 .word .L51+1
+ 895              	 .p2align 1
+ 896              	.L47:
+ 230:../cleanflight/src/main/blackbox/blackbox_encoding.c ****             case BYTES_1:
+ 231:../cleanflight/src/main/blackbox/blackbox_encoding.c ****                 blackboxWrite(values[x]);
+ 897              	 .loc 1 231 0
+ 898 0254 FB68     	 ldr r3,[r7,#12]
+ 899 0256 9B00     	 lsls r3,r3,#2
+ 900 0258 7A68     	 ldr r2,[r7,#4]
+ 901 025a 1344     	 add r3,r3,r2
+ 902 025c 1B68     	 ldr r3,[r3]
+ 903 025e DBB2     	 uxtb r3,r3
+ 904 0260 1846     	 mov r0,r3
+ 905 0262 FFF7FEFF 	 bl blackboxWrite
+ 232:../cleanflight/src/main/blackbox/blackbox_encoding.c ****                 break;
+ 906              	 .loc 1 232 0
+ 907 0266 59E0     	 b .L46
+ 908              	.L49:
+ 233:../cleanflight/src/main/blackbox/blackbox_encoding.c ****             case BYTES_2:
+ 234:../cleanflight/src/main/blackbox/blackbox_encoding.c ****                 blackboxWrite(values[x]);
+ 909              	 .loc 1 234 0
+ 910 0268 FB68     	 ldr r3,[r7,#12]
+ 911 026a 9B00     	 lsls r3,r3,#2
+ 912 026c 7A68     	 ldr r2,[r7,#4]
+ 913 026e 1344     	 add r3,r3,r2
+ 914 0270 1B68     	 ldr r3,[r3]
+ 915 0272 DBB2     	 uxtb r3,r3
+ 916 0274 1846     	 mov r0,r3
+ 917 0276 FFF7FEFF 	 bl blackboxWrite
+ 235:../cleanflight/src/main/blackbox/blackbox_encoding.c ****                 blackboxWrite(values[x] >> 8);
+ 918              	 .loc 1 235 0
+ 919 027a FB68     	 ldr r3,[r7,#12]
+ 920 027c 9B00     	 lsls r3,r3,#2
+ 921 027e 7A68     	 ldr r2,[r7,#4]
+ 922 0280 1344     	 add r3,r3,r2
+ 923 0282 1B68     	 ldr r3,[r3]
+ 924 0284 1B12     	 asrs r3,r3,#8
+ 925 0286 DBB2     	 uxtb r3,r3
+ 926 0288 1846     	 mov r0,r3
+ 927 028a FFF7FEFF 	 bl blackboxWrite
+ 236:../cleanflight/src/main/blackbox/blackbox_encoding.c ****                 break;
+ 928              	 .loc 1 236 0
+ 929 028e 45E0     	 b .L46
+ 930              	.L50:
+ 237:../cleanflight/src/main/blackbox/blackbox_encoding.c ****             case BYTES_3:
+ 238:../cleanflight/src/main/blackbox/blackbox_encoding.c ****                 blackboxWrite(values[x]);
+ 931              	 .loc 1 238 0
+ 932 0290 FB68     	 ldr r3,[r7,#12]
+ 933 0292 9B00     	 lsls r3,r3,#2
+ 934 0294 7A68     	 ldr r2,[r7,#4]
+ 935 0296 1344     	 add r3,r3,r2
+ 936 0298 1B68     	 ldr r3,[r3]
+ 937 029a DBB2     	 uxtb r3,r3
+ 938 029c 1846     	 mov r0,r3
+ 939 029e FFF7FEFF 	 bl blackboxWrite
+ 239:../cleanflight/src/main/blackbox/blackbox_encoding.c ****                 blackboxWrite(values[x] >> 8);
+ 940              	 .loc 1 239 0
+ 941 02a2 FB68     	 ldr r3,[r7,#12]
+ 942 02a4 9B00     	 lsls r3,r3,#2
+ 943 02a6 7A68     	 ldr r2,[r7,#4]
+ 944 02a8 1344     	 add r3,r3,r2
+ 945 02aa 1B68     	 ldr r3,[r3]
+ 946 02ac 1B12     	 asrs r3,r3,#8
+ 947 02ae DBB2     	 uxtb r3,r3
+ 948 02b0 1846     	 mov r0,r3
+ 949 02b2 FFF7FEFF 	 bl blackboxWrite
+ 240:../cleanflight/src/main/blackbox/blackbox_encoding.c ****                 blackboxWrite(values[x] >> 16);
+ 950              	 .loc 1 240 0
+ 951 02b6 FB68     	 ldr r3,[r7,#12]
+ 952 02b8 9B00     	 lsls r3,r3,#2
+ 953 02ba 7A68     	 ldr r2,[r7,#4]
+ 954 02bc 1344     	 add r3,r3,r2
+ 955 02be 1B68     	 ldr r3,[r3]
+ 956 02c0 1B14     	 asrs r3,r3,#16
+ 957 02c2 DBB2     	 uxtb r3,r3
+ 958 02c4 1846     	 mov r0,r3
+ 959 02c6 FFF7FEFF 	 bl blackboxWrite
+ 241:../cleanflight/src/main/blackbox/blackbox_encoding.c ****                 break;
+ 960              	 .loc 1 241 0
+ 961 02ca 27E0     	 b .L46
+ 962              	.L51:
+ 242:../cleanflight/src/main/blackbox/blackbox_encoding.c ****             case BYTES_4:
+ 243:../cleanflight/src/main/blackbox/blackbox_encoding.c ****                 blackboxWrite(values[x]);
+ 963              	 .loc 1 243 0
+ 964 02cc FB68     	 ldr r3,[r7,#12]
+ 965 02ce 9B00     	 lsls r3,r3,#2
+ 966 02d0 7A68     	 ldr r2,[r7,#4]
+ 967 02d2 1344     	 add r3,r3,r2
+ 968 02d4 1B68     	 ldr r3,[r3]
+ 969 02d6 DBB2     	 uxtb r3,r3
+ 970 02d8 1846     	 mov r0,r3
+ 971 02da FFF7FEFF 	 bl blackboxWrite
+ 244:../cleanflight/src/main/blackbox/blackbox_encoding.c ****                 blackboxWrite(values[x] >> 8);
+ 972              	 .loc 1 244 0
+ 973 02de FB68     	 ldr r3,[r7,#12]
+ 974 02e0 9B00     	 lsls r3,r3,#2
+ 975 02e2 7A68     	 ldr r2,[r7,#4]
+ 976 02e4 1344     	 add r3,r3,r2
+ 977 02e6 1B68     	 ldr r3,[r3]
+ 978 02e8 1B12     	 asrs r3,r3,#8
+ 979 02ea DBB2     	 uxtb r3,r3
+ 980 02ec 1846     	 mov r0,r3
+ 981 02ee FFF7FEFF 	 bl blackboxWrite
+ 245:../cleanflight/src/main/blackbox/blackbox_encoding.c ****                 blackboxWrite(values[x] >> 16);
+ 982              	 .loc 1 245 0
+ 983 02f2 FB68     	 ldr r3,[r7,#12]
+ 984 02f4 9B00     	 lsls r3,r3,#2
+ 985 02f6 7A68     	 ldr r2,[r7,#4]
+ 986 02f8 1344     	 add r3,r3,r2
+ 987 02fa 1B68     	 ldr r3,[r3]
+ 988 02fc 1B14     	 asrs r3,r3,#16
+ 989 02fe DBB2     	 uxtb r3,r3
+ 990 0300 1846     	 mov r0,r3
+ 991 0302 FFF7FEFF 	 bl blackboxWrite
+ 246:../cleanflight/src/main/blackbox/blackbox_encoding.c ****                 blackboxWrite(values[x] >> 24);
+ 992              	 .loc 1 246 0
+ 993 0306 FB68     	 ldr r3,[r7,#12]
+ 994 0308 9B00     	 lsls r3,r3,#2
+ 995 030a 7A68     	 ldr r2,[r7,#4]
+ 996 030c 1344     	 add r3,r3,r2
+ 997 030e 1B68     	 ldr r3,[r3]
+ 998 0310 1B16     	 asrs r3,r3,#24
+ 999 0312 DBB2     	 uxtb r3,r3
+ 1000 0314 1846     	 mov r0,r3
+ 1001 0316 FFF7FEFF 	 bl blackboxWrite
+ 247:../cleanflight/src/main/blackbox/blackbox_encoding.c ****                 break;
+ 1002              	 .loc 1 247 0
+ 1003 031a 00BF     	 nop
+ 1004              	.L46:
+ 228:../cleanflight/src/main/blackbox/blackbox_encoding.c ****             switch (selector2 & 0x03) {
+ 1005              	 .loc 1 228 0 discriminator 2
+ 1006 031c FB68     	 ldr r3,[r7,#12]
+ 1007 031e 0133     	 adds r3,r3,#1
+ 1008 0320 FB60     	 str r3,[r7,#12]
+ 1009 0322 BB69     	 ldr r3,[r7,#24]
+ 1010 0324 9B10     	 asrs r3,r3,#2
+ 1011 0326 BB61     	 str r3,[r7,#24]
+ 1012              	.L45:
+ 228:../cleanflight/src/main/blackbox/blackbox_encoding.c ****             switch (selector2 & 0x03) {
+ 1013              	 .loc 1 228 0 is_stmt 0 discriminator 1
+ 1014 0328 0322     	 movs r2,#3
+ 1015 032a FB68     	 ldr r3,[r7,#12]
+ 1016 032c 9342     	 cmp r3,r2
+ 1017 032e 80DB     	 blt .L52
+ 1018              	.LBE6:
+ 248:../cleanflight/src/main/blackbox/blackbox_encoding.c ****             }
+ 249:../cleanflight/src/main/blackbox/blackbox_encoding.c ****         }
+ 250:../cleanflight/src/main/blackbox/blackbox_encoding.c ****         break;
+ 1019              	 .loc 1 250 0 is_stmt 1
+ 1020 0330 00BF     	 nop
+ 1021              	.L22:
+ 251:../cleanflight/src/main/blackbox/blackbox_encoding.c ****     }
+ 252:../cleanflight/src/main/blackbox/blackbox_encoding.c **** }
+ 1022              	 .loc 1 252 0
+ 1023 0332 2037     	 adds r7,r7,#32
+ 1024              	.LCFI54:
+ 1025              	 .cfi_def_cfa_offset 8
+ 1026 0334 BD46     	 mov sp,r7
+ 1027              	.LCFI55:
+ 1028              	 .cfi_def_cfa_register 13
+ 1029              	 
+ 1030 0336 80BD     	 pop {r7,pc}
+ 1031              	 .cfi_endproc
+ 1032              	.LFE530:
+ 1034              	 .section .text.blackboxWriteTag2_3SVariable,"ax",%progbits
+ 1035              	 .align 2
+ 1036              	 .global blackboxWriteTag2_3SVariable
+ 1037              	 .thumb
+ 1038              	 .thumb_func
+ 1040              	blackboxWriteTag2_3SVariable:
+ 1041              	.LFB531:
+ 253:../cleanflight/src/main/blackbox/blackbox_encoding.c **** 
+ 254:../cleanflight/src/main/blackbox/blackbox_encoding.c **** /**
+ 255:../cleanflight/src/main/blackbox/blackbox_encoding.c ****  * Write a 2 bit tag followed by 3 signed fields of 2, 554, 877 or 32 bits
+ 256:../cleanflight/src/main/blackbox/blackbox_encoding.c ****  */
+ 257:../cleanflight/src/main/blackbox/blackbox_encoding.c **** int blackboxWriteTag2_3SVariable(int32_t *values)
+ 258:../cleanflight/src/main/blackbox/blackbox_encoding.c **** {
+ 1042              	 .loc 1 258 0
+ 1043              	 .cfi_startproc
+ 1044              	 
+ 1045              	 
+ 1046 0000 80B5     	 push {r7,lr}
+ 1047              	.LCFI56:
+ 1048              	 .cfi_def_cfa_offset 8
+ 1049              	 .cfi_offset 7,-8
+ 1050              	 .cfi_offset 14,-4
+ 1051 0002 86B0     	 sub sp,sp,#24
+ 1052              	.LCFI57:
+ 1053              	 .cfi_def_cfa_offset 32
+ 1054 0004 00AF     	 add r7,sp,#0
+ 1055              	.LCFI58:
+ 1056              	 .cfi_def_cfa_register 7
+ 1057 0006 7860     	 str r0,[r7,#4]
+ 259:../cleanflight/src/main/blackbox/blackbox_encoding.c ****     static const int FIELD_COUNT = 3;
+ 260:../cleanflight/src/main/blackbox/blackbox_encoding.c ****     enum {
+ 261:../cleanflight/src/main/blackbox/blackbox_encoding.c ****         BITS_2  = 0,
+ 262:../cleanflight/src/main/blackbox/blackbox_encoding.c ****         BITS_554  = 1,
+ 263:../cleanflight/src/main/blackbox/blackbox_encoding.c ****         BITS_877  = 2,
+ 264:../cleanflight/src/main/blackbox/blackbox_encoding.c ****         BITS_32 = 3
+ 265:../cleanflight/src/main/blackbox/blackbox_encoding.c ****     };
+ 266:../cleanflight/src/main/blackbox/blackbox_encoding.c **** 
+ 267:../cleanflight/src/main/blackbox/blackbox_encoding.c ****     enum {
+ 268:../cleanflight/src/main/blackbox/blackbox_encoding.c ****         BYTES_1  = 0,
+ 269:../cleanflight/src/main/blackbox/blackbox_encoding.c ****         BYTES_2  = 1,
+ 270:../cleanflight/src/main/blackbox/blackbox_encoding.c ****         BYTES_3  = 2,
+ 271:../cleanflight/src/main/blackbox/blackbox_encoding.c ****         BYTES_4  = 3
+ 272:../cleanflight/src/main/blackbox/blackbox_encoding.c ****     };
+ 273:../cleanflight/src/main/blackbox/blackbox_encoding.c **** 
+ 274:../cleanflight/src/main/blackbox/blackbox_encoding.c **** 
+ 275:../cleanflight/src/main/blackbox/blackbox_encoding.c ****     /*
+ 276:../cleanflight/src/main/blackbox/blackbox_encoding.c ****      * Find out how many bits the largest value requires to encode, and use it to choose one of the
+ 277:../cleanflight/src/main/blackbox/blackbox_encoding.c ****      * below:
+ 278:../cleanflight/src/main/blackbox/blackbox_encoding.c ****      *
+ 279:../cleanflight/src/main/blackbox/blackbox_encoding.c ****      * Selector possibilities
+ 280:../cleanflight/src/main/blackbox/blackbox_encoding.c ****      *
+ 281:../cleanflight/src/main/blackbox/blackbox_encoding.c ****      * 2 bits per field  ss11 2233,
+ 282:../cleanflight/src/main/blackbox/blackbox_encoding.c ****      * 554 bits per field  ss11 1112 2222 3333
+ 283:../cleanflight/src/main/blackbox/blackbox_encoding.c ****      * 877 bits per field  ss11 1111 1122 2222 2333 3333
+ 284:../cleanflight/src/main/blackbox/blackbox_encoding.c ****      * 32 bits per field sstt tttt followed by fields of various byte counts
+ 285:../cleanflight/src/main/blackbox/blackbox_encoding.c ****      */
+ 286:../cleanflight/src/main/blackbox/blackbox_encoding.c ****     int selector = BITS_2;
+ 1058              	 .loc 1 286 0
+ 1059 0008 0023     	 movs r3,#0
+ 1060 000a 7B61     	 str r3,[r7,#20]
+ 287:../cleanflight/src/main/blackbox/blackbox_encoding.c ****     int selector2 = 0;
+ 1061              	 .loc 1 287 0
+ 1062 000c 0023     	 movs r3,#0
+ 1063 000e 3B61     	 str r3,[r7,#16]
+ 288:../cleanflight/src/main/blackbox/blackbox_encoding.c ****     // Require more than 877 bits?
+ 289:../cleanflight/src/main/blackbox/blackbox_encoding.c ****     if (values[0] >= 256 || values[0] < -256
+ 1064              	 .loc 1 289 0
+ 1065 0010 7B68     	 ldr r3,[r7,#4]
+ 1066 0012 1B68     	 ldr r3,[r3]
+ 1067 0014 FF2B     	 cmp r3,#255
+ 1068 0016 1ADC     	 bgt .L54
+ 1069              	 .loc 1 289 0 is_stmt 0 discriminator 1
+ 1070 0018 7B68     	 ldr r3,[r7,#4]
+ 1071 001a 1B68     	 ldr r3,[r3]
+ 1072 001c 13F5807F 	 cmn r3,#256
+ 1073 0020 15DB     	 blt .L54
+ 290:../cleanflight/src/main/blackbox/blackbox_encoding.c ****             || values[1] >= 128 || values[1] < -128
+ 1074              	 .loc 1 290 0 is_stmt 1
+ 1075 0022 7B68     	 ldr r3,[r7,#4]
+ 1076 0024 0433     	 adds r3,r3,#4
+ 1077 0026 1B68     	 ldr r3,[r3]
+ 1078 0028 7F2B     	 cmp r3,#127
+ 1079 002a 10DC     	 bgt .L54
+ 1080              	 .loc 1 290 0 is_stmt 0 discriminator 1
+ 1081 002c 7B68     	 ldr r3,[r7,#4]
+ 1082 002e 0433     	 adds r3,r3,#4
+ 1083 0030 1B68     	 ldr r3,[r3]
+ 1084 0032 13F1800F 	 cmn r3,#128
+ 1085 0036 0ADB     	 blt .L54
+ 291:../cleanflight/src/main/blackbox/blackbox_encoding.c ****             || values[2] >= 128 || values[2] < -128) {
+ 1086              	 .loc 1 291 0 is_stmt 1
+ 1087 0038 7B68     	 ldr r3,[r7,#4]
+ 1088 003a 0833     	 adds r3,r3,#8
+ 1089 003c 1B68     	 ldr r3,[r3]
+ 1090 003e 7F2B     	 cmp r3,#127
+ 1091 0040 05DC     	 bgt .L54
+ 1092              	 .loc 1 291 0 is_stmt 0 discriminator 1
+ 1093 0042 7B68     	 ldr r3,[r7,#4]
+ 1094 0044 0833     	 adds r3,r3,#8
+ 1095 0046 1B68     	 ldr r3,[r3]
+ 1096 0048 13F1800F 	 cmn r3,#128
+ 1097 004c 02DA     	 bge .L55
+ 1098              	.L54:
+ 292:../cleanflight/src/main/blackbox/blackbox_encoding.c ****         selector = BITS_32;
+ 1099              	 .loc 1 292 0 is_stmt 1
+ 1100 004e 0323     	 movs r3,#3
+ 1101 0050 7B61     	 str r3,[r7,#20]
+ 1102 0052 42E0     	 b .L56
+ 1103              	.L55:
+ 293:../cleanflight/src/main/blackbox/blackbox_encoding.c ****    // Require more than 554 bits?
+ 294:../cleanflight/src/main/blackbox/blackbox_encoding.c ****     } else if (values[0] >= 16 || values[0] < -16
+ 1104              	 .loc 1 294 0
+ 1105 0054 7B68     	 ldr r3,[r7,#4]
+ 1106 0056 1B68     	 ldr r3,[r3]
+ 1107 0058 0F2B     	 cmp r3,#15
+ 1108 005a 1ADC     	 bgt .L57
+ 1109              	 .loc 1 294 0 is_stmt 0 discriminator 1
+ 1110 005c 7B68     	 ldr r3,[r7,#4]
+ 1111 005e 1B68     	 ldr r3,[r3]
+ 1112 0060 13F1100F 	 cmn r3,#16
+ 1113 0064 15DB     	 blt .L57
+ 295:../cleanflight/src/main/blackbox/blackbox_encoding.c ****             || values[1] >= 16 || values[1] < -16
+ 1114              	 .loc 1 295 0 is_stmt 1
+ 1115 0066 7B68     	 ldr r3,[r7,#4]
+ 1116 0068 0433     	 adds r3,r3,#4
+ 1117 006a 1B68     	 ldr r3,[r3]
+ 1118 006c 0F2B     	 cmp r3,#15
+ 1119 006e 10DC     	 bgt .L57
+ 1120              	 .loc 1 295 0 is_stmt 0 discriminator 1
+ 1121 0070 7B68     	 ldr r3,[r7,#4]
+ 1122 0072 0433     	 adds r3,r3,#4
+ 1123 0074 1B68     	 ldr r3,[r3]
+ 1124 0076 13F1100F 	 cmn r3,#16
+ 1125 007a 0ADB     	 blt .L57
+ 296:../cleanflight/src/main/blackbox/blackbox_encoding.c ****             || values[2] >= 8 || values[2] < -8) {
+ 1126              	 .loc 1 296 0 is_stmt 1
+ 1127 007c 7B68     	 ldr r3,[r7,#4]
+ 1128 007e 0833     	 adds r3,r3,#8
+ 1129 0080 1B68     	 ldr r3,[r3]
+ 1130 0082 072B     	 cmp r3,#7
+ 1131 0084 05DC     	 bgt .L57
+ 1132              	 .loc 1 296 0 is_stmt 0 discriminator 1
+ 1133 0086 7B68     	 ldr r3,[r7,#4]
+ 1134 0088 0833     	 adds r3,r3,#8
+ 1135 008a 1B68     	 ldr r3,[r3]
+ 1136 008c 13F1080F 	 cmn r3,#8
+ 1137 0090 02DA     	 bge .L58
+ 1138              	.L57:
+ 297:../cleanflight/src/main/blackbox/blackbox_encoding.c ****         selector = BITS_877;
+ 1139              	 .loc 1 297 0 is_stmt 1
+ 1140 0092 0223     	 movs r3,#2
+ 1141 0094 7B61     	 str r3,[r7,#20]
+ 1142 0096 20E0     	 b .L56
+ 1143              	.L58:
+ 298:../cleanflight/src/main/blackbox/blackbox_encoding.c ****         // Require more than 2 bits?
+ 299:../cleanflight/src/main/blackbox/blackbox_encoding.c ****     } else if (values[0] >= 2 || values[0] < -2
+ 1144              	 .loc 1 299 0
+ 1145 0098 7B68     	 ldr r3,[r7,#4]
+ 1146 009a 1B68     	 ldr r3,[r3]
+ 1147 009c 012B     	 cmp r3,#1
+ 1148 009e 1ADC     	 bgt .L59
+ 1149              	 .loc 1 299 0 is_stmt 0 discriminator 1
+ 1150 00a0 7B68     	 ldr r3,[r7,#4]
+ 1151 00a2 1B68     	 ldr r3,[r3]
+ 1152 00a4 13F1020F 	 cmn r3,#2
+ 1153 00a8 15DB     	 blt .L59
+ 300:../cleanflight/src/main/blackbox/blackbox_encoding.c ****             || values[1] >= 2 || values[1] < -2
+ 1154              	 .loc 1 300 0 is_stmt 1
+ 1155 00aa 7B68     	 ldr r3,[r7,#4]
+ 1156 00ac 0433     	 adds r3,r3,#4
+ 1157 00ae 1B68     	 ldr r3,[r3]
+ 1158 00b0 012B     	 cmp r3,#1
+ 1159 00b2 10DC     	 bgt .L59
+ 1160              	 .loc 1 300 0 is_stmt 0 discriminator 1
+ 1161 00b4 7B68     	 ldr r3,[r7,#4]
+ 1162 00b6 0433     	 adds r3,r3,#4
+ 1163 00b8 1B68     	 ldr r3,[r3]
+ 1164 00ba 13F1020F 	 cmn r3,#2
+ 1165 00be 0ADB     	 blt .L59
+ 301:../cleanflight/src/main/blackbox/blackbox_encoding.c ****             || values[2] >= 2 || values[2] < -2) {
+ 1166              	 .loc 1 301 0 is_stmt 1
+ 1167 00c0 7B68     	 ldr r3,[r7,#4]
+ 1168 00c2 0833     	 adds r3,r3,#8
+ 1169 00c4 1B68     	 ldr r3,[r3]
+ 1170 00c6 012B     	 cmp r3,#1
+ 1171 00c8 05DC     	 bgt .L59
+ 1172              	 .loc 1 301 0 is_stmt 0 discriminator 1
+ 1173 00ca 7B68     	 ldr r3,[r7,#4]
+ 1174 00cc 0833     	 adds r3,r3,#8
+ 1175 00ce 1B68     	 ldr r3,[r3]
+ 1176 00d0 13F1020F 	 cmn r3,#2
+ 1177 00d4 01DA     	 bge .L56
+ 1178              	.L59:
+ 302:../cleanflight/src/main/blackbox/blackbox_encoding.c ****         selector = BITS_554;
+ 1179              	 .loc 1 302 0 is_stmt 1
+ 1180 00d6 0123     	 movs r3,#1
+ 1181 00d8 7B61     	 str r3,[r7,#20]
+ 1182              	.L56:
+ 303:../cleanflight/src/main/blackbox/blackbox_encoding.c ****     }
+ 304:../cleanflight/src/main/blackbox/blackbox_encoding.c **** 
+ 305:../cleanflight/src/main/blackbox/blackbox_encoding.c ****     switch (selector) {
+ 1183              	 .loc 1 305 0
+ 1184 00da 7B69     	 ldr r3,[r7,#20]
+ 1185 00dc 032B     	 cmp r3,#3
+ 1186 00de 00F26481 	 bhi .L60
+ 1187 00e2 01A2     	 adr r2,.L62
+ 1188 00e4 52F823F0 	 ldr pc,[r2,r3,lsl#2]
+ 1189              	 .p2align 2
+ 1190              	.L62:
+ 1191 00e8 F9000000 	 .word .L61+1
+ 1192 00ec 3D010000 	 .word .L63+1
+ 1193 00f0 93010000 	 .word .L64+1
+ 1194 00f4 F7010000 	 .word .L65+1
+ 1195              	 .p2align 1
+ 1196              	.L61:
+ 306:../cleanflight/src/main/blackbox/blackbox_encoding.c ****     case BITS_2:
+ 307:../cleanflight/src/main/blackbox/blackbox_encoding.c ****         blackboxWrite((selector << 6) | ((values[0] & 0x03) << 4) | ((values[1] & 0x03) << 2) | (va
+ 1197              	 .loc 1 307 0
+ 1198 00f8 7B69     	 ldr r3,[r7,#20]
+ 1199 00fa 9B01     	 lsls r3,r3,#6
+ 1200 00fc DAB2     	 uxtb r2,r3
+ 1201 00fe 7B68     	 ldr r3,[r7,#4]
+ 1202 0100 1B68     	 ldr r3,[r3]
+ 1203 0102 03F00303 	 and r3,r3,#3
+ 1204 0106 1B01     	 lsls r3,r3,#4
+ 1205 0108 DBB2     	 uxtb r3,r3
+ 1206 010a 1343     	 orrs r3,r3,r2
+ 1207 010c DAB2     	 uxtb r2,r3
+ 1208 010e 7B68     	 ldr r3,[r7,#4]
+ 1209 0110 0433     	 adds r3,r3,#4
+ 1210 0112 1B68     	 ldr r3,[r3]
+ 1211 0114 03F00303 	 and r3,r3,#3
+ 1212 0118 9B00     	 lsls r3,r3,#2
+ 1213 011a DBB2     	 uxtb r3,r3
+ 1214 011c 1343     	 orrs r3,r3,r2
+ 1215 011e DAB2     	 uxtb r2,r3
+ 1216 0120 7B68     	 ldr r3,[r7,#4]
+ 1217 0122 0833     	 adds r3,r3,#8
+ 1218 0124 1B68     	 ldr r3,[r3]
+ 1219 0126 DBB2     	 uxtb r3,r3
+ 1220 0128 03F00303 	 and r3,r3,#3
+ 1221 012c DBB2     	 uxtb r3,r3
+ 1222 012e 1343     	 orrs r3,r3,r2
+ 1223 0130 DBB2     	 uxtb r3,r3
+ 1224 0132 DBB2     	 uxtb r3,r3
+ 1225 0134 1846     	 mov r0,r3
+ 1226 0136 FFF7FEFF 	 bl blackboxWrite
+ 308:../cleanflight/src/main/blackbox/blackbox_encoding.c ****         break;
+ 1227              	 .loc 1 308 0
+ 1228 013a 36E1     	 b .L60
+ 1229              	.L63:
+ 309:../cleanflight/src/main/blackbox/blackbox_encoding.c ****     case BITS_554:
+ 310:../cleanflight/src/main/blackbox/blackbox_encoding.c ****         // 554 bits per field  ss11 1112 2222 3333
+ 311:../cleanflight/src/main/blackbox/blackbox_encoding.c ****         blackboxWrite((selector << 6) | ((values[0] & 0x1F) << 1) | ((values[1] & 0x1F) >> 4));
+ 1230              	 .loc 1 311 0
+ 1231 013c 7B69     	 ldr r3,[r7,#20]
+ 1232 013e 9B01     	 lsls r3,r3,#6
+ 1233 0140 DAB2     	 uxtb r2,r3
+ 1234 0142 7B68     	 ldr r3,[r7,#4]
+ 1235 0144 1B68     	 ldr r3,[r3]
+ 1236 0146 03F01F03 	 and r3,r3,#31
+ 1237 014a 5B00     	 lsls r3,r3,#1
+ 1238 014c DBB2     	 uxtb r3,r3
+ 1239 014e 1343     	 orrs r3,r3,r2
+ 1240 0150 DAB2     	 uxtb r2,r3
+ 1241 0152 7B68     	 ldr r3,[r7,#4]
+ 1242 0154 0433     	 adds r3,r3,#4
+ 1243 0156 1B68     	 ldr r3,[r3]
+ 1244 0158 03F01F03 	 and r3,r3,#31
+ 1245 015c 1B11     	 asrs r3,r3,#4
+ 1246 015e DBB2     	 uxtb r3,r3
+ 1247 0160 1343     	 orrs r3,r3,r2
+ 1248 0162 DBB2     	 uxtb r3,r3
+ 1249 0164 DBB2     	 uxtb r3,r3
+ 1250 0166 1846     	 mov r0,r3
+ 1251 0168 FFF7FEFF 	 bl blackboxWrite
+ 312:../cleanflight/src/main/blackbox/blackbox_encoding.c ****         blackboxWrite(((values[1] & 0x0F) << 4) | (values[2] & 0x0F));
+ 1252              	 .loc 1 312 0
+ 1253 016c 7B68     	 ldr r3,[r7,#4]
+ 1254 016e 0433     	 adds r3,r3,#4
+ 1255 0170 1B68     	 ldr r3,[r3]
+ 1256 0172 1B01     	 lsls r3,r3,#4
+ 1257 0174 DAB2     	 uxtb r2,r3
+ 1258 0176 7B68     	 ldr r3,[r7,#4]
+ 1259 0178 0833     	 adds r3,r3,#8
+ 1260 017a 1B68     	 ldr r3,[r3]
+ 1261 017c DBB2     	 uxtb r3,r3
+ 1262 017e 03F00F03 	 and r3,r3,#15
+ 1263 0182 DBB2     	 uxtb r3,r3
+ 1264 0184 1343     	 orrs r3,r3,r2
+ 1265 0186 DBB2     	 uxtb r3,r3
+ 1266 0188 DBB2     	 uxtb r3,r3
+ 1267 018a 1846     	 mov r0,r3
+ 1268 018c FFF7FEFF 	 bl blackboxWrite
+ 313:../cleanflight/src/main/blackbox/blackbox_encoding.c ****         break;
+ 1269              	 .loc 1 313 0
+ 1270 0190 0BE1     	 b .L60
+ 1271              	.L64:
+ 314:../cleanflight/src/main/blackbox/blackbox_encoding.c ****     case BITS_877:
+ 315:../cleanflight/src/main/blackbox/blackbox_encoding.c ****         // 877 bits per field  ss11 1111 1122 2222 2333 3333
+ 316:../cleanflight/src/main/blackbox/blackbox_encoding.c ****         blackboxWrite((selector << 6) | ((values[0] & 0xFF) >> 2));
+ 1272              	 .loc 1 316 0
+ 1273 0192 7B69     	 ldr r3,[r7,#20]
+ 1274 0194 9B01     	 lsls r3,r3,#6
+ 1275 0196 DAB2     	 uxtb r2,r3
+ 1276 0198 7B68     	 ldr r3,[r7,#4]
+ 1277 019a 1B68     	 ldr r3,[r3]
+ 1278 019c DBB2     	 uxtb r3,r3
+ 1279 019e 9B10     	 asrs r3,r3,#2
+ 1280 01a0 DBB2     	 uxtb r3,r3
+ 1281 01a2 1343     	 orrs r3,r3,r2
+ 1282 01a4 DBB2     	 uxtb r3,r3
+ 1283 01a6 DBB2     	 uxtb r3,r3
+ 1284 01a8 1846     	 mov r0,r3
+ 1285 01aa FFF7FEFF 	 bl blackboxWrite
+ 317:../cleanflight/src/main/blackbox/blackbox_encoding.c ****         blackboxWrite(((values[0] & 0x03) << 6) | ((values[1] & 0x7F) >> 1));
+ 1286              	 .loc 1 317 0
+ 1287 01ae 7B68     	 ldr r3,[r7,#4]
+ 1288 01b0 1B68     	 ldr r3,[r3]
+ 1289 01b2 9B01     	 lsls r3,r3,#6
+ 1290 01b4 DAB2     	 uxtb r2,r3
+ 1291 01b6 7B68     	 ldr r3,[r7,#4]
+ 1292 01b8 0433     	 adds r3,r3,#4
+ 1293 01ba 1B68     	 ldr r3,[r3]
+ 1294 01bc 03F07F03 	 and r3,r3,#127
+ 1295 01c0 5B10     	 asrs r3,r3,#1
+ 1296 01c2 DBB2     	 uxtb r3,r3
+ 1297 01c4 1343     	 orrs r3,r3,r2
+ 1298 01c6 DBB2     	 uxtb r3,r3
+ 1299 01c8 DBB2     	 uxtb r3,r3
+ 1300 01ca 1846     	 mov r0,r3
+ 1301 01cc FFF7FEFF 	 bl blackboxWrite
+ 318:../cleanflight/src/main/blackbox/blackbox_encoding.c ****         blackboxWrite(((values[1] & 0x01) << 7) | (values[2] & 0x7F));
+ 1302              	 .loc 1 318 0
+ 1303 01d0 7B68     	 ldr r3,[r7,#4]
+ 1304 01d2 0433     	 adds r3,r3,#4
+ 1305 01d4 1B68     	 ldr r3,[r3]
+ 1306 01d6 DB01     	 lsls r3,r3,#7
+ 1307 01d8 DAB2     	 uxtb r2,r3
+ 1308 01da 7B68     	 ldr r3,[r7,#4]
+ 1309 01dc 0833     	 adds r3,r3,#8
+ 1310 01de 1B68     	 ldr r3,[r3]
+ 1311 01e0 DBB2     	 uxtb r3,r3
+ 1312 01e2 03F07F03 	 and r3,r3,#127
+ 1313 01e6 DBB2     	 uxtb r3,r3
+ 1314 01e8 1343     	 orrs r3,r3,r2
+ 1315 01ea DBB2     	 uxtb r3,r3
+ 1316 01ec DBB2     	 uxtb r3,r3
+ 1317 01ee 1846     	 mov r0,r3
+ 1318 01f0 FFF7FEFF 	 bl blackboxWrite
+ 319:../cleanflight/src/main/blackbox/blackbox_encoding.c ****         break;
+ 1319              	 .loc 1 319 0
+ 1320 01f4 D9E0     	 b .L60
+ 1321              	.L65:
+ 320:../cleanflight/src/main/blackbox/blackbox_encoding.c ****     case BITS_32:
+ 321:../cleanflight/src/main/blackbox/blackbox_encoding.c ****         /*
+ 322:../cleanflight/src/main/blackbox/blackbox_encoding.c ****          * Do another round to compute a selector for each field, assuming that they are at least 8
+ 323:../cleanflight/src/main/blackbox/blackbox_encoding.c ****          *
+ 324:../cleanflight/src/main/blackbox/blackbox_encoding.c ****          * Selector2 field possibilities
+ 325:../cleanflight/src/main/blackbox/blackbox_encoding.c ****          * 0 - 8 bits
+ 326:../cleanflight/src/main/blackbox/blackbox_encoding.c ****          * 1 - 16 bits
+ 327:../cleanflight/src/main/blackbox/blackbox_encoding.c ****          * 2 - 24 bits
+ 328:../cleanflight/src/main/blackbox/blackbox_encoding.c ****          * 3 - 32 bits
+ 329:../cleanflight/src/main/blackbox/blackbox_encoding.c ****          */
+ 330:../cleanflight/src/main/blackbox/blackbox_encoding.c ****         selector2 = 0;
+ 1322              	 .loc 1 330 0
+ 1323 01f6 0023     	 movs r3,#0
+ 1324 01f8 3B61     	 str r3,[r7,#16]
+ 1325              	.LBB7:
+ 331:../cleanflight/src/main/blackbox/blackbox_encoding.c ****         //Encode in reverse order so the first field is in the low bits:
+ 332:../cleanflight/src/main/blackbox/blackbox_encoding.c ****         for (int x = FIELD_COUNT - 1; x >= 0; x--) {
+ 1326              	 .loc 1 332 0
+ 1327 01fa 0323     	 movs r3,#3
+ 1328 01fc 013B     	 subs r3,r3,#1
+ 1329 01fe FB60     	 str r3,[r7,#12]
+ 1330 0200 43E0     	 b .L66
+ 1331              	.L71:
+ 333:../cleanflight/src/main/blackbox/blackbox_encoding.c ****             selector2 <<= 2;
+ 1332              	 .loc 1 333 0
+ 1333 0202 3B69     	 ldr r3,[r7,#16]
+ 1334 0204 9B00     	 lsls r3,r3,#2
+ 1335 0206 3B61     	 str r3,[r7,#16]
+ 334:../cleanflight/src/main/blackbox/blackbox_encoding.c **** 
+ 335:../cleanflight/src/main/blackbox/blackbox_encoding.c ****             if (values[x] < 128 && values[x] >= -128) {
+ 1336              	 .loc 1 335 0
+ 1337 0208 FB68     	 ldr r3,[r7,#12]
+ 1338 020a 9B00     	 lsls r3,r3,#2
+ 1339 020c 7A68     	 ldr r2,[r7,#4]
+ 1340 020e 1344     	 add r3,r3,r2
+ 1341 0210 1B68     	 ldr r3,[r3]
+ 1342 0212 7F2B     	 cmp r3,#127
+ 1343 0214 08DC     	 bgt .L67
+ 1344              	 .loc 1 335 0 is_stmt 0 discriminator 1
+ 1345 0216 FB68     	 ldr r3,[r7,#12]
+ 1346 0218 9B00     	 lsls r3,r3,#2
+ 1347 021a 7A68     	 ldr r2,[r7,#4]
+ 1348 021c 1344     	 add r3,r3,r2
+ 1349 021e 1B68     	 ldr r3,[r3]
+ 1350 0220 13F1800F 	 cmn r3,#128
+ 1351 0224 00DB     	 blt .L67
+ 336:../cleanflight/src/main/blackbox/blackbox_encoding.c ****                 selector2 |= BYTES_1;
+ 1352              	 .loc 1 336 0 is_stmt 1
+ 1353 0226 2DE0     	 b .L68
+ 1354              	.L67:
+ 337:../cleanflight/src/main/blackbox/blackbox_encoding.c ****             } else if (values[x] < 32768 && values[x] >= -32768) {
+ 1355              	 .loc 1 337 0
+ 1356 0228 FB68     	 ldr r3,[r7,#12]
+ 1357 022a 9B00     	 lsls r3,r3,#2
+ 1358 022c 7A68     	 ldr r2,[r7,#4]
+ 1359 022e 1344     	 add r3,r3,r2
+ 1360 0230 1B68     	 ldr r3,[r3]
+ 1361 0232 B3F5004F 	 cmp r3,#32768
+ 1362 0236 0CDA     	 bge .L69
+ 1363              	 .loc 1 337 0 is_stmt 0 discriminator 1
+ 1364 0238 FB68     	 ldr r3,[r7,#12]
+ 1365 023a 9B00     	 lsls r3,r3,#2
+ 1366 023c 7A68     	 ldr r2,[r7,#4]
+ 1367 023e 1344     	 add r3,r3,r2
+ 1368 0240 1B68     	 ldr r3,[r3]
+ 1369 0242 13F5004F 	 cmn r3,#32768
+ 1370 0246 04DB     	 blt .L69
+ 338:../cleanflight/src/main/blackbox/blackbox_encoding.c ****                 selector2 |= BYTES_2;
+ 1371              	 .loc 1 338 0 is_stmt 1
+ 1372 0248 3B69     	 ldr r3,[r7,#16]
+ 1373 024a 43F00103 	 orr r3,r3,#1
+ 1374 024e 3B61     	 str r3,[r7,#16]
+ 1375 0250 18E0     	 b .L68
+ 1376              	.L69:
+ 339:../cleanflight/src/main/blackbox/blackbox_encoding.c ****             } else if (values[x] < 8388608 && values[x] >= -8388608) {
+ 1377              	 .loc 1 339 0
+ 1378 0252 FB68     	 ldr r3,[r7,#12]
+ 1379 0254 9B00     	 lsls r3,r3,#2
+ 1380 0256 7A68     	 ldr r2,[r7,#4]
+ 1381 0258 1344     	 add r3,r3,r2
+ 1382 025a 1B68     	 ldr r3,[r3]
+ 1383 025c B3F5000F 	 cmp r3,#8388608
+ 1384 0260 0CDA     	 bge .L70
+ 1385              	 .loc 1 339 0 is_stmt 0 discriminator 1
+ 1386 0262 FB68     	 ldr r3,[r7,#12]
+ 1387 0264 9B00     	 lsls r3,r3,#2
+ 1388 0266 7A68     	 ldr r2,[r7,#4]
+ 1389 0268 1344     	 add r3,r3,r2
+ 1390 026a 1B68     	 ldr r3,[r3]
+ 1391 026c 13F5000F 	 cmn r3,#8388608
+ 1392 0270 04DB     	 blt .L70
+ 340:../cleanflight/src/main/blackbox/blackbox_encoding.c ****                 selector2 |= BYTES_3;
+ 1393              	 .loc 1 340 0 is_stmt 1
+ 1394 0272 3B69     	 ldr r3,[r7,#16]
+ 1395 0274 43F00203 	 orr r3,r3,#2
+ 1396 0278 3B61     	 str r3,[r7,#16]
+ 1397 027a 03E0     	 b .L68
+ 1398              	.L70:
+ 341:../cleanflight/src/main/blackbox/blackbox_encoding.c ****             } else {
+ 342:../cleanflight/src/main/blackbox/blackbox_encoding.c ****                 selector2 |= BYTES_4;
+ 1399              	 .loc 1 342 0
+ 1400 027c 3B69     	 ldr r3,[r7,#16]
+ 1401 027e 43F00303 	 orr r3,r3,#3
+ 1402 0282 3B61     	 str r3,[r7,#16]
+ 1403              	.L68:
+ 332:../cleanflight/src/main/blackbox/blackbox_encoding.c ****             selector2 <<= 2;
+ 1404              	 .loc 1 332 0 discriminator 2
+ 1405 0284 FB68     	 ldr r3,[r7,#12]
+ 1406 0286 013B     	 subs r3,r3,#1
+ 1407 0288 FB60     	 str r3,[r7,#12]
+ 1408              	.L66:
+ 332:../cleanflight/src/main/blackbox/blackbox_encoding.c ****             selector2 <<= 2;
+ 1409              	 .loc 1 332 0 is_stmt 0 discriminator 1
+ 1410 028a FB68     	 ldr r3,[r7,#12]
+ 1411 028c 002B     	 cmp r3,#0
+ 1412 028e B8DA     	 bge .L71
+ 1413              	.LBE7:
+ 343:../cleanflight/src/main/blackbox/blackbox_encoding.c ****             }
+ 344:../cleanflight/src/main/blackbox/blackbox_encoding.c ****         }
+ 345:../cleanflight/src/main/blackbox/blackbox_encoding.c **** 
+ 346:../cleanflight/src/main/blackbox/blackbox_encoding.c ****         //Write the selectors
+ 347:../cleanflight/src/main/blackbox/blackbox_encoding.c ****         blackboxWrite((selector << 6) | selector2);
+ 1414              	 .loc 1 347 0 is_stmt 1
+ 1415 0290 7B69     	 ldr r3,[r7,#20]
+ 1416 0292 9B01     	 lsls r3,r3,#6
+ 1417 0294 DAB2     	 uxtb r2,r3
+ 1418 0296 3B69     	 ldr r3,[r7,#16]
+ 1419 0298 DBB2     	 uxtb r3,r3
+ 1420 029a 1343     	 orrs r3,r3,r2
+ 1421 029c DBB2     	 uxtb r3,r3
+ 1422 029e DBB2     	 uxtb r3,r3
+ 1423 02a0 1846     	 mov r0,r3
+ 1424 02a2 FFF7FEFF 	 bl blackboxWrite
+ 1425              	.LBB8:
+ 348:../cleanflight/src/main/blackbox/blackbox_encoding.c **** 
+ 349:../cleanflight/src/main/blackbox/blackbox_encoding.c ****         //And now the values according to the selectors we picked for them
+ 350:../cleanflight/src/main/blackbox/blackbox_encoding.c ****         for (int x = 0; x < FIELD_COUNT; x++, selector2 >>= 2) {
+ 1426              	 .loc 1 350 0
+ 1427 02a6 0023     	 movs r3,#0
+ 1428 02a8 BB60     	 str r3,[r7,#8]
+ 1429 02aa 79E0     	 b .L72
+ 1430              	.L79:
+ 351:../cleanflight/src/main/blackbox/blackbox_encoding.c ****             switch (selector2 & 0x03) {
+ 1431              	 .loc 1 351 0
+ 1432 02ac 3B69     	 ldr r3,[r7,#16]
+ 1433 02ae 03F00303 	 and r3,r3,#3
+ 1434 02b2 032B     	 cmp r3,#3
+ 1435 02b4 6ED8     	 bhi .L73
+ 1436 02b6 01A2     	 adr r2,.L75
+ 1437 02b8 52F823F0 	 ldr pc,[r2,r3,lsl#2]
+ 1438              	 .p2align 2
+ 1439              	.L75:
+ 1440 02bc CD020000 	 .word .L74+1
+ 1441 02c0 E1020000 	 .word .L76+1
+ 1442 02c4 09030000 	 .word .L77+1
+ 1443 02c8 45030000 	 .word .L78+1
+ 1444              	 .p2align 1
+ 1445              	.L74:
+ 352:../cleanflight/src/main/blackbox/blackbox_encoding.c ****             case BYTES_1:
+ 353:../cleanflight/src/main/blackbox/blackbox_encoding.c ****                 blackboxWrite(values[x]);
+ 1446              	 .loc 1 353 0
+ 1447 02cc BB68     	 ldr r3,[r7,#8]
+ 1448 02ce 9B00     	 lsls r3,r3,#2
+ 1449 02d0 7A68     	 ldr r2,[r7,#4]
+ 1450 02d2 1344     	 add r3,r3,r2
+ 1451 02d4 1B68     	 ldr r3,[r3]
+ 1452 02d6 DBB2     	 uxtb r3,r3
+ 1453 02d8 1846     	 mov r0,r3
+ 1454 02da FFF7FEFF 	 bl blackboxWrite
+ 354:../cleanflight/src/main/blackbox/blackbox_encoding.c ****                 break;
+ 1455              	 .loc 1 354 0
+ 1456 02de 59E0     	 b .L73
+ 1457              	.L76:
+ 355:../cleanflight/src/main/blackbox/blackbox_encoding.c ****             case BYTES_2:
+ 356:../cleanflight/src/main/blackbox/blackbox_encoding.c ****                 blackboxWrite(values[x]);
+ 1458              	 .loc 1 356 0
+ 1459 02e0 BB68     	 ldr r3,[r7,#8]
+ 1460 02e2 9B00     	 lsls r3,r3,#2
+ 1461 02e4 7A68     	 ldr r2,[r7,#4]
+ 1462 02e6 1344     	 add r3,r3,r2
+ 1463 02e8 1B68     	 ldr r3,[r3]
+ 1464 02ea DBB2     	 uxtb r3,r3
+ 1465 02ec 1846     	 mov r0,r3
+ 1466 02ee FFF7FEFF 	 bl blackboxWrite
+ 357:../cleanflight/src/main/blackbox/blackbox_encoding.c ****                 blackboxWrite(values[x] >> 8);
+ 1467              	 .loc 1 357 0
+ 1468 02f2 BB68     	 ldr r3,[r7,#8]
+ 1469 02f4 9B00     	 lsls r3,r3,#2
+ 1470 02f6 7A68     	 ldr r2,[r7,#4]
+ 1471 02f8 1344     	 add r3,r3,r2
+ 1472 02fa 1B68     	 ldr r3,[r3]
+ 1473 02fc 1B12     	 asrs r3,r3,#8
+ 1474 02fe DBB2     	 uxtb r3,r3
+ 1475 0300 1846     	 mov r0,r3
+ 1476 0302 FFF7FEFF 	 bl blackboxWrite
+ 358:../cleanflight/src/main/blackbox/blackbox_encoding.c ****                 break;
+ 1477              	 .loc 1 358 0
+ 1478 0306 45E0     	 b .L73
+ 1479              	.L77:
+ 359:../cleanflight/src/main/blackbox/blackbox_encoding.c ****             case BYTES_3:
+ 360:../cleanflight/src/main/blackbox/blackbox_encoding.c ****                 blackboxWrite(values[x]);
+ 1480              	 .loc 1 360 0
+ 1481 0308 BB68     	 ldr r3,[r7,#8]
+ 1482 030a 9B00     	 lsls r3,r3,#2
+ 1483 030c 7A68     	 ldr r2,[r7,#4]
+ 1484 030e 1344     	 add r3,r3,r2
+ 1485 0310 1B68     	 ldr r3,[r3]
+ 1486 0312 DBB2     	 uxtb r3,r3
+ 1487 0314 1846     	 mov r0,r3
+ 1488 0316 FFF7FEFF 	 bl blackboxWrite
+ 361:../cleanflight/src/main/blackbox/blackbox_encoding.c ****                 blackboxWrite(values[x] >> 8);
+ 1489              	 .loc 1 361 0
+ 1490 031a BB68     	 ldr r3,[r7,#8]
+ 1491 031c 9B00     	 lsls r3,r3,#2
+ 1492 031e 7A68     	 ldr r2,[r7,#4]
+ 1493 0320 1344     	 add r3,r3,r2
+ 1494 0322 1B68     	 ldr r3,[r3]
+ 1495 0324 1B12     	 asrs r3,r3,#8
+ 1496 0326 DBB2     	 uxtb r3,r3
+ 1497 0328 1846     	 mov r0,r3
+ 1498 032a FFF7FEFF 	 bl blackboxWrite
+ 362:../cleanflight/src/main/blackbox/blackbox_encoding.c ****                 blackboxWrite(values[x] >> 16);
+ 1499              	 .loc 1 362 0
+ 1500 032e BB68     	 ldr r3,[r7,#8]
+ 1501 0330 9B00     	 lsls r3,r3,#2
+ 1502 0332 7A68     	 ldr r2,[r7,#4]
+ 1503 0334 1344     	 add r3,r3,r2
+ 1504 0336 1B68     	 ldr r3,[r3]
+ 1505 0338 1B14     	 asrs r3,r3,#16
+ 1506 033a DBB2     	 uxtb r3,r3
+ 1507 033c 1846     	 mov r0,r3
+ 1508 033e FFF7FEFF 	 bl blackboxWrite
+ 363:../cleanflight/src/main/blackbox/blackbox_encoding.c ****                 break;
+ 1509              	 .loc 1 363 0
+ 1510 0342 27E0     	 b .L73
+ 1511              	.L78:
+ 364:../cleanflight/src/main/blackbox/blackbox_encoding.c ****             case BYTES_4:
+ 365:../cleanflight/src/main/blackbox/blackbox_encoding.c ****                 blackboxWrite(values[x]);
+ 1512              	 .loc 1 365 0
+ 1513 0344 BB68     	 ldr r3,[r7,#8]
+ 1514 0346 9B00     	 lsls r3,r3,#2
+ 1515 0348 7A68     	 ldr r2,[r7,#4]
+ 1516 034a 1344     	 add r3,r3,r2
+ 1517 034c 1B68     	 ldr r3,[r3]
+ 1518 034e DBB2     	 uxtb r3,r3
+ 1519 0350 1846     	 mov r0,r3
+ 1520 0352 FFF7FEFF 	 bl blackboxWrite
+ 366:../cleanflight/src/main/blackbox/blackbox_encoding.c ****                 blackboxWrite(values[x] >> 8);
+ 1521              	 .loc 1 366 0
+ 1522 0356 BB68     	 ldr r3,[r7,#8]
+ 1523 0358 9B00     	 lsls r3,r3,#2
+ 1524 035a 7A68     	 ldr r2,[r7,#4]
+ 1525 035c 1344     	 add r3,r3,r2
+ 1526 035e 1B68     	 ldr r3,[r3]
+ 1527 0360 1B12     	 asrs r3,r3,#8
+ 1528 0362 DBB2     	 uxtb r3,r3
+ 1529 0364 1846     	 mov r0,r3
+ 1530 0366 FFF7FEFF 	 bl blackboxWrite
+ 367:../cleanflight/src/main/blackbox/blackbox_encoding.c ****                 blackboxWrite(values[x] >> 16);
+ 1531              	 .loc 1 367 0
+ 1532 036a BB68     	 ldr r3,[r7,#8]
+ 1533 036c 9B00     	 lsls r3,r3,#2
+ 1534 036e 7A68     	 ldr r2,[r7,#4]
+ 1535 0370 1344     	 add r3,r3,r2
+ 1536 0372 1B68     	 ldr r3,[r3]
+ 1537 0374 1B14     	 asrs r3,r3,#16
+ 1538 0376 DBB2     	 uxtb r3,r3
+ 1539 0378 1846     	 mov r0,r3
+ 1540 037a FFF7FEFF 	 bl blackboxWrite
+ 368:../cleanflight/src/main/blackbox/blackbox_encoding.c ****                 blackboxWrite(values[x] >> 24);
+ 1541              	 .loc 1 368 0
+ 1542 037e BB68     	 ldr r3,[r7,#8]
+ 1543 0380 9B00     	 lsls r3,r3,#2
+ 1544 0382 7A68     	 ldr r2,[r7,#4]
+ 1545 0384 1344     	 add r3,r3,r2
+ 1546 0386 1B68     	 ldr r3,[r3]
+ 1547 0388 1B16     	 asrs r3,r3,#24
+ 1548 038a DBB2     	 uxtb r3,r3
+ 1549 038c 1846     	 mov r0,r3
+ 1550 038e FFF7FEFF 	 bl blackboxWrite
+ 369:../cleanflight/src/main/blackbox/blackbox_encoding.c ****                 break;
+ 1551              	 .loc 1 369 0
+ 1552 0392 00BF     	 nop
+ 1553              	.L73:
+ 350:../cleanflight/src/main/blackbox/blackbox_encoding.c ****             switch (selector2 & 0x03) {
+ 1554              	 .loc 1 350 0 discriminator 2
+ 1555 0394 BB68     	 ldr r3,[r7,#8]
+ 1556 0396 0133     	 adds r3,r3,#1
+ 1557 0398 BB60     	 str r3,[r7,#8]
+ 1558 039a 3B69     	 ldr r3,[r7,#16]
+ 1559 039c 9B10     	 asrs r3,r3,#2
+ 1560 039e 3B61     	 str r3,[r7,#16]
+ 1561              	.L72:
+ 350:../cleanflight/src/main/blackbox/blackbox_encoding.c ****             switch (selector2 & 0x03) {
+ 1562              	 .loc 1 350 0 is_stmt 0 discriminator 1
+ 1563 03a0 0322     	 movs r2,#3
+ 1564 03a2 BB68     	 ldr r3,[r7,#8]
+ 1565 03a4 9342     	 cmp r3,r2
+ 1566 03a6 81DB     	 blt .L79
+ 1567              	.LBE8:
+ 370:../cleanflight/src/main/blackbox/blackbox_encoding.c ****             }
+ 371:../cleanflight/src/main/blackbox/blackbox_encoding.c ****         }
+ 372:../cleanflight/src/main/blackbox/blackbox_encoding.c ****     break;
+ 1568              	 .loc 1 372 0 is_stmt 1
+ 1569 03a8 00BF     	 nop
+ 1570              	.L60:
+ 373:../cleanflight/src/main/blackbox/blackbox_encoding.c ****     }
+ 374:../cleanflight/src/main/blackbox/blackbox_encoding.c ****     return selector;
+ 1571              	 .loc 1 374 0
+ 1572 03aa 7B69     	 ldr r3,[r7,#20]
+ 375:../cleanflight/src/main/blackbox/blackbox_encoding.c **** }
+ 1573              	 .loc 1 375 0
+ 1574 03ac 1846     	 mov r0,r3
+ 1575 03ae 1837     	 adds r7,r7,#24
+ 1576              	.LCFI59:
+ 1577              	 .cfi_def_cfa_offset 8
+ 1578 03b0 BD46     	 mov sp,r7
+ 1579              	.LCFI60:
+ 1580              	 .cfi_def_cfa_register 13
+ 1581              	 
+ 1582 03b2 80BD     	 pop {r7,pc}
+ 1583              	 .cfi_endproc
+ 1584              	.LFE531:
+ 1586              	 .section .text.blackboxWriteTag8_4S16,"ax",%progbits
+ 1587              	 .align 2
+ 1588              	 .global blackboxWriteTag8_4S16
+ 1589              	 .thumb
+ 1590              	 .thumb_func
+ 1592              	blackboxWriteTag8_4S16:
+ 1593              	.LFB532:
+ 376:../cleanflight/src/main/blackbox/blackbox_encoding.c **** 
+ 377:../cleanflight/src/main/blackbox/blackbox_encoding.c **** /**
+ 378:../cleanflight/src/main/blackbox/blackbox_encoding.c ****  * Write an 8-bit selector followed by four signed fields of size 0, 4, 8 or 16 bits.
+ 379:../cleanflight/src/main/blackbox/blackbox_encoding.c ****  */
+ 380:../cleanflight/src/main/blackbox/blackbox_encoding.c **** void blackboxWriteTag8_4S16(int32_t *values)
+ 381:../cleanflight/src/main/blackbox/blackbox_encoding.c **** {
+ 1594              	 .loc 1 381 0
+ 1595              	 .cfi_startproc
+ 1596              	 
+ 1597              	 
+ 1598 0000 80B5     	 push {r7,lr}
+ 1599              	.LCFI61:
+ 1600              	 .cfi_def_cfa_offset 8
+ 1601              	 .cfi_offset 7,-8
+ 1602              	 .cfi_offset 14,-4
+ 1603 0002 88B0     	 sub sp,sp,#32
+ 1604              	.LCFI62:
+ 1605              	 .cfi_def_cfa_offset 40
+ 1606 0004 00AF     	 add r7,sp,#0
+ 1607              	.LCFI63:
+ 1608              	 .cfi_def_cfa_register 7
+ 1609 0006 7860     	 str r0,[r7,#4]
+ 382:../cleanflight/src/main/blackbox/blackbox_encoding.c **** 
+ 383:../cleanflight/src/main/blackbox/blackbox_encoding.c ****     //Need to be enums rather than const ints if we want to switch on them (due to being C)
+ 384:../cleanflight/src/main/blackbox/blackbox_encoding.c ****     enum {
+ 385:../cleanflight/src/main/blackbox/blackbox_encoding.c ****         FIELD_ZERO  = 0,
+ 386:../cleanflight/src/main/blackbox/blackbox_encoding.c ****         FIELD_4BIT  = 1,
+ 387:../cleanflight/src/main/blackbox/blackbox_encoding.c ****         FIELD_8BIT  = 2,
+ 388:../cleanflight/src/main/blackbox/blackbox_encoding.c ****         FIELD_16BIT = 3
+ 389:../cleanflight/src/main/blackbox/blackbox_encoding.c ****     };
+ 390:../cleanflight/src/main/blackbox/blackbox_encoding.c **** 
+ 391:../cleanflight/src/main/blackbox/blackbox_encoding.c ****     uint8_t selector = 0;
+ 1610              	 .loc 1 391 0
+ 1611 0008 0023     	 movs r3,#0
+ 1612 000a FB77     	 strb r3,[r7,#31]
+ 1613              	.LBB9:
+ 392:../cleanflight/src/main/blackbox/blackbox_encoding.c ****     //Encode in reverse order so the first field is in the low bits:
+ 393:../cleanflight/src/main/blackbox/blackbox_encoding.c ****     for (int x = 3; x >= 0; x--) {
+ 1614              	 .loc 1 393 0
+ 1615 000c 0323     	 movs r3,#3
+ 1616 000e BB61     	 str r3,[r7,#24]
+ 1617 0010 38E0     	 b .L82
+ 1618              	.L87:
+ 394:../cleanflight/src/main/blackbox/blackbox_encoding.c ****         selector <<= 2;
+ 1619              	 .loc 1 394 0
+ 1620 0012 FB7F     	 ldrb r3,[r7,#31]
+ 1621 0014 9B00     	 lsls r3,r3,#2
+ 1622 0016 FB77     	 strb r3,[r7,#31]
+ 395:../cleanflight/src/main/blackbox/blackbox_encoding.c **** 
+ 396:../cleanflight/src/main/blackbox/blackbox_encoding.c ****         if (values[x] == 0) {
+ 1623              	 .loc 1 396 0
+ 1624 0018 BB69     	 ldr r3,[r7,#24]
+ 1625 001a 9B00     	 lsls r3,r3,#2
+ 1626 001c 7A68     	 ldr r2,[r7,#4]
+ 1627 001e 1344     	 add r3,r3,r2
+ 1628 0020 1B68     	 ldr r3,[r3]
+ 1629 0022 002B     	 cmp r3,#0
+ 1630 0024 2BD0     	 beq .L84
+ 397:../cleanflight/src/main/blackbox/blackbox_encoding.c ****             selector |= FIELD_ZERO;
+ 398:../cleanflight/src/main/blackbox/blackbox_encoding.c ****         } else if (values[x] < 8 && values[x] >= -8) {
+ 1631              	 .loc 1 398 0
+ 1632 0026 BB69     	 ldr r3,[r7,#24]
+ 1633 0028 9B00     	 lsls r3,r3,#2
+ 1634 002a 7A68     	 ldr r2,[r7,#4]
+ 1635 002c 1344     	 add r3,r3,r2
+ 1636 002e 1B68     	 ldr r3,[r3]
+ 1637 0030 072B     	 cmp r3,#7
+ 1638 0032 0CDC     	 bgt .L85
+ 1639              	 .loc 1 398 0 is_stmt 0 discriminator 1
+ 1640 0034 BB69     	 ldr r3,[r7,#24]
+ 1641 0036 9B00     	 lsls r3,r3,#2
+ 1642 0038 7A68     	 ldr r2,[r7,#4]
+ 1643 003a 1344     	 add r3,r3,r2
+ 1644 003c 1B68     	 ldr r3,[r3]
+ 1645 003e 13F1080F 	 cmn r3,#8
+ 1646 0042 04DB     	 blt .L85
+ 399:../cleanflight/src/main/blackbox/blackbox_encoding.c ****             selector |= FIELD_4BIT;
+ 1647              	 .loc 1 399 0 is_stmt 1
+ 1648 0044 FB7F     	 ldrb r3,[r7,#31]
+ 1649 0046 43F00103 	 orr r3,r3,#1
+ 1650 004a FB77     	 strb r3,[r7,#31]
+ 1651 004c 17E0     	 b .L84
+ 1652              	.L85:
+ 400:../cleanflight/src/main/blackbox/blackbox_encoding.c ****         } else if (values[x] < 128 && values[x] >= -128) {
+ 1653              	 .loc 1 400 0
+ 1654 004e BB69     	 ldr r3,[r7,#24]
+ 1655 0050 9B00     	 lsls r3,r3,#2
+ 1656 0052 7A68     	 ldr r2,[r7,#4]
+ 1657 0054 1344     	 add r3,r3,r2
+ 1658 0056 1B68     	 ldr r3,[r3]
+ 1659 0058 7F2B     	 cmp r3,#127
+ 1660 005a 0CDC     	 bgt .L86
+ 1661              	 .loc 1 400 0 is_stmt 0 discriminator 1
+ 1662 005c BB69     	 ldr r3,[r7,#24]
+ 1663 005e 9B00     	 lsls r3,r3,#2
+ 1664 0060 7A68     	 ldr r2,[r7,#4]
+ 1665 0062 1344     	 add r3,r3,r2
+ 1666 0064 1B68     	 ldr r3,[r3]
+ 1667 0066 13F1800F 	 cmn r3,#128
+ 1668 006a 04DB     	 blt .L86
+ 401:../cleanflight/src/main/blackbox/blackbox_encoding.c ****             selector |= FIELD_8BIT;
+ 1669              	 .loc 1 401 0 is_stmt 1
+ 1670 006c FB7F     	 ldrb r3,[r7,#31]
+ 1671 006e 43F00203 	 orr r3,r3,#2
+ 1672 0072 FB77     	 strb r3,[r7,#31]
+ 1673 0074 03E0     	 b .L84
+ 1674              	.L86:
+ 402:../cleanflight/src/main/blackbox/blackbox_encoding.c ****         } else {
+ 403:../cleanflight/src/main/blackbox/blackbox_encoding.c ****             selector |= FIELD_16BIT;
+ 1675              	 .loc 1 403 0
+ 1676 0076 FB7F     	 ldrb r3,[r7,#31]
+ 1677 0078 43F00303 	 orr r3,r3,#3
+ 1678 007c FB77     	 strb r3,[r7,#31]
+ 1679              	.L84:
+ 393:../cleanflight/src/main/blackbox/blackbox_encoding.c ****         selector <<= 2;
+ 1680              	 .loc 1 393 0 discriminator 2
+ 1681 007e BB69     	 ldr r3,[r7,#24]
+ 1682 0080 013B     	 subs r3,r3,#1
+ 1683 0082 BB61     	 str r3,[r7,#24]
+ 1684              	.L82:
+ 393:../cleanflight/src/main/blackbox/blackbox_encoding.c ****         selector <<= 2;
+ 1685              	 .loc 1 393 0 is_stmt 0 discriminator 1
+ 1686 0084 BB69     	 ldr r3,[r7,#24]
+ 1687 0086 002B     	 cmp r3,#0
+ 1688 0088 C3DA     	 bge .L87
+ 1689              	.LBE9:
+ 404:../cleanflight/src/main/blackbox/blackbox_encoding.c ****         }
+ 405:../cleanflight/src/main/blackbox/blackbox_encoding.c ****     }
+ 406:../cleanflight/src/main/blackbox/blackbox_encoding.c **** 
+ 407:../cleanflight/src/main/blackbox/blackbox_encoding.c ****     blackboxWrite(selector);
+ 1690              	 .loc 1 407 0 is_stmt 1
+ 1691 008a FB7F     	 ldrb r3,[r7,#31]
+ 1692 008c 1846     	 mov r0,r3
+ 1693 008e FFF7FEFF 	 bl blackboxWrite
+ 408:../cleanflight/src/main/blackbox/blackbox_encoding.c **** 
+ 409:../cleanflight/src/main/blackbox/blackbox_encoding.c ****     int nibbleIndex = 0;
+ 1694              	 .loc 1 409 0
+ 1695 0092 0023     	 movs r3,#0
+ 1696 0094 7B61     	 str r3,[r7,#20]
+ 410:../cleanflight/src/main/blackbox/blackbox_encoding.c ****     uint8_t buffer = 0;
+ 1697              	 .loc 1 410 0
+ 1698 0096 0023     	 movs r3,#0
+ 1699 0098 FB74     	 strb r3,[r7,#19]
+ 1700              	.LBB10:
+ 411:../cleanflight/src/main/blackbox/blackbox_encoding.c ****     for (int x = 0; x < 4; x++, selector >>= 2) {
+ 1701              	 .loc 1 411 0
+ 1702 009a 0023     	 movs r3,#0
+ 1703 009c FB60     	 str r3,[r7,#12]
+ 1704 009e 9AE0     	 b .L88
+ 1705              	.L101:
+ 412:../cleanflight/src/main/blackbox/blackbox_encoding.c ****         switch (selector & 0x03) {
+ 1706              	 .loc 1 412 0
+ 1707 00a0 FB7F     	 ldrb r3,[r7,#31]
+ 1708 00a2 03F00303 	 and r3,r3,#3
+ 1709 00a6 032B     	 cmp r3,#3
+ 1710 00a8 00F28F80 	 bhi .L89
+ 1711 00ac 01A2     	 adr r2,.L91
+ 1712 00ae 52F823F0 	 ldr pc,[r2,r3,lsl#2]
+ 1713 00b2 00BF     	 .p2align 2
+ 1714              	.L91:
+ 1715 00b4 CB010000 	 .word .L89+1
+ 1716 00b8 C5000000 	 .word .L92+1
+ 1717 00bc 07010000 	 .word .L93+1
+ 1718 00c0 55010000 	 .word .L94+1
+ 1719              	 .p2align 1
+ 1720              	.L92:
+ 413:../cleanflight/src/main/blackbox/blackbox_encoding.c ****         case FIELD_ZERO:
+ 414:../cleanflight/src/main/blackbox/blackbox_encoding.c ****             //No-op
+ 415:../cleanflight/src/main/blackbox/blackbox_encoding.c ****             break;
+ 416:../cleanflight/src/main/blackbox/blackbox_encoding.c ****         case FIELD_4BIT:
+ 417:../cleanflight/src/main/blackbox/blackbox_encoding.c ****             if (nibbleIndex == 0) {
+ 1721              	 .loc 1 417 0
+ 1722 00c4 7B69     	 ldr r3,[r7,#20]
+ 1723 00c6 002B     	 cmp r3,#0
+ 1724 00c8 0AD1     	 bne .L95
+ 418:../cleanflight/src/main/blackbox/blackbox_encoding.c ****                 //We fill high-bits first
+ 419:../cleanflight/src/main/blackbox/blackbox_encoding.c ****                 buffer = values[x] << 4;
+ 1725              	 .loc 1 419 0
+ 1726 00ca FB68     	 ldr r3,[r7,#12]
+ 1727 00cc 9B00     	 lsls r3,r3,#2
+ 1728 00ce 7A68     	 ldr r2,[r7,#4]
+ 1729 00d0 1344     	 add r3,r3,r2
+ 1730 00d2 1B68     	 ldr r3,[r3]
+ 1731 00d4 DBB2     	 uxtb r3,r3
+ 1732 00d6 1B01     	 lsls r3,r3,#4
+ 1733 00d8 FB74     	 strb r3,[r7,#19]
+ 420:../cleanflight/src/main/blackbox/blackbox_encoding.c ****                 nibbleIndex = 1;
+ 1734              	 .loc 1 420 0
+ 1735 00da 0123     	 movs r3,#1
+ 1736 00dc 7B61     	 str r3,[r7,#20]
+ 421:../cleanflight/src/main/blackbox/blackbox_encoding.c ****             } else {
+ 422:../cleanflight/src/main/blackbox/blackbox_encoding.c ****                 blackboxWrite(buffer | (values[x] & 0x0F));
+ 423:../cleanflight/src/main/blackbox/blackbox_encoding.c ****                 nibbleIndex = 0;
+ 424:../cleanflight/src/main/blackbox/blackbox_encoding.c ****             }
+ 425:../cleanflight/src/main/blackbox/blackbox_encoding.c ****             break;
+ 1737              	 .loc 1 425 0
+ 1738 00de 74E0     	 b .L89
+ 1739              	.L95:
+ 422:../cleanflight/src/main/blackbox/blackbox_encoding.c ****                 nibbleIndex = 0;
+ 1740              	 .loc 1 422 0
+ 1741 00e0 FB68     	 ldr r3,[r7,#12]
+ 1742 00e2 9B00     	 lsls r3,r3,#2
+ 1743 00e4 7A68     	 ldr r2,[r7,#4]
+ 1744 00e6 1344     	 add r3,r3,r2
+ 1745 00e8 1B68     	 ldr r3,[r3]
+ 1746 00ea DBB2     	 uxtb r3,r3
+ 1747 00ec 03F00F03 	 and r3,r3,#15
+ 1748 00f0 DAB2     	 uxtb r2,r3
+ 1749 00f2 FB7C     	 ldrb r3,[r7,#19]
+ 1750 00f4 1343     	 orrs r3,r3,r2
+ 1751 00f6 DBB2     	 uxtb r3,r3
+ 1752 00f8 DBB2     	 uxtb r3,r3
+ 1753 00fa 1846     	 mov r0,r3
+ 1754 00fc FFF7FEFF 	 bl blackboxWrite
+ 423:../cleanflight/src/main/blackbox/blackbox_encoding.c ****             }
+ 1755              	 .loc 1 423 0
+ 1756 0100 0023     	 movs r3,#0
+ 1757 0102 7B61     	 str r3,[r7,#20]
+ 1758              	 .loc 1 425 0
+ 1759 0104 61E0     	 b .L89
+ 1760              	.L93:
+ 426:../cleanflight/src/main/blackbox/blackbox_encoding.c ****         case FIELD_8BIT:
+ 427:../cleanflight/src/main/blackbox/blackbox_encoding.c ****             if (nibbleIndex == 0) {
+ 1761              	 .loc 1 427 0
+ 1762 0106 7B69     	 ldr r3,[r7,#20]
+ 1763 0108 002B     	 cmp r3,#0
+ 1764 010a 09D1     	 bne .L97
+ 428:../cleanflight/src/main/blackbox/blackbox_encoding.c ****                 blackboxWrite(values[x]);
+ 1765              	 .loc 1 428 0
+ 1766 010c FB68     	 ldr r3,[r7,#12]
+ 1767 010e 9B00     	 lsls r3,r3,#2
+ 1768 0110 7A68     	 ldr r2,[r7,#4]
+ 1769 0112 1344     	 add r3,r3,r2
+ 1770 0114 1B68     	 ldr r3,[r3]
+ 1771 0116 DBB2     	 uxtb r3,r3
+ 1772 0118 1846     	 mov r0,r3
+ 1773 011a FFF7FEFF 	 bl blackboxWrite
+ 429:../cleanflight/src/main/blackbox/blackbox_encoding.c ****             } else {
+ 430:../cleanflight/src/main/blackbox/blackbox_encoding.c ****                 //Write the high bits of the value first (mask to avoid sign extension)
+ 431:../cleanflight/src/main/blackbox/blackbox_encoding.c ****                 blackboxWrite(buffer | ((values[x] >> 4) & 0x0F));
+ 432:../cleanflight/src/main/blackbox/blackbox_encoding.c ****                 //Now put the leftover low bits into the top of the next buffer entry
+ 433:../cleanflight/src/main/blackbox/blackbox_encoding.c ****                 buffer = values[x] << 4;
+ 434:../cleanflight/src/main/blackbox/blackbox_encoding.c ****             }
+ 435:../cleanflight/src/main/blackbox/blackbox_encoding.c ****             break;
+ 1774              	 .loc 1 435 0
+ 1775 011e 54E0     	 b .L89
+ 1776              	.L97:
+ 431:../cleanflight/src/main/blackbox/blackbox_encoding.c ****                 //Now put the leftover low bits into the top of the next buffer entry
+ 1777              	 .loc 1 431 0
+ 1778 0120 FB68     	 ldr r3,[r7,#12]
+ 1779 0122 9B00     	 lsls r3,r3,#2
+ 1780 0124 7A68     	 ldr r2,[r7,#4]
+ 1781 0126 1344     	 add r3,r3,r2
+ 1782 0128 1B68     	 ldr r3,[r3]
+ 1783 012a 1B11     	 asrs r3,r3,#4
+ 1784 012c DBB2     	 uxtb r3,r3
+ 1785 012e 03F00F03 	 and r3,r3,#15
+ 1786 0132 DAB2     	 uxtb r2,r3
+ 1787 0134 FB7C     	 ldrb r3,[r7,#19]
+ 1788 0136 1343     	 orrs r3,r3,r2
+ 1789 0138 DBB2     	 uxtb r3,r3
+ 1790 013a DBB2     	 uxtb r3,r3
+ 1791 013c 1846     	 mov r0,r3
+ 1792 013e FFF7FEFF 	 bl blackboxWrite
+ 433:../cleanflight/src/main/blackbox/blackbox_encoding.c ****             }
+ 1793              	 .loc 1 433 0
+ 1794 0142 FB68     	 ldr r3,[r7,#12]
+ 1795 0144 9B00     	 lsls r3,r3,#2
+ 1796 0146 7A68     	 ldr r2,[r7,#4]
+ 1797 0148 1344     	 add r3,r3,r2
+ 1798 014a 1B68     	 ldr r3,[r3]
+ 1799 014c DBB2     	 uxtb r3,r3
+ 1800 014e 1B01     	 lsls r3,r3,#4
+ 1801 0150 FB74     	 strb r3,[r7,#19]
+ 1802              	 .loc 1 435 0
+ 1803 0152 3AE0     	 b .L89
+ 1804              	.L94:
+ 436:../cleanflight/src/main/blackbox/blackbox_encoding.c ****         case FIELD_16BIT:
+ 437:../cleanflight/src/main/blackbox/blackbox_encoding.c ****             if (nibbleIndex == 0) {
+ 1805              	 .loc 1 437 0
+ 1806 0154 7B69     	 ldr r3,[r7,#20]
+ 1807 0156 002B     	 cmp r3,#0
+ 1808 0158 13D1     	 bne .L99
+ 438:../cleanflight/src/main/blackbox/blackbox_encoding.c ****                 //Write high byte first
+ 439:../cleanflight/src/main/blackbox/blackbox_encoding.c ****                 blackboxWrite(values[x] >> 8);
+ 1809              	 .loc 1 439 0
+ 1810 015a FB68     	 ldr r3,[r7,#12]
+ 1811 015c 9B00     	 lsls r3,r3,#2
+ 1812 015e 7A68     	 ldr r2,[r7,#4]
+ 1813 0160 1344     	 add r3,r3,r2
+ 1814 0162 1B68     	 ldr r3,[r3]
+ 1815 0164 1B12     	 asrs r3,r3,#8
+ 1816 0166 DBB2     	 uxtb r3,r3
+ 1817 0168 1846     	 mov r0,r3
+ 1818 016a FFF7FEFF 	 bl blackboxWrite
+ 440:../cleanflight/src/main/blackbox/blackbox_encoding.c ****                 blackboxWrite(values[x]);
+ 1819              	 .loc 1 440 0
+ 1820 016e FB68     	 ldr r3,[r7,#12]
+ 1821 0170 9B00     	 lsls r3,r3,#2
+ 1822 0172 7A68     	 ldr r2,[r7,#4]
+ 1823 0174 1344     	 add r3,r3,r2
+ 1824 0176 1B68     	 ldr r3,[r3]
+ 1825 0178 DBB2     	 uxtb r3,r3
+ 1826 017a 1846     	 mov r0,r3
+ 1827 017c FFF7FEFF 	 bl blackboxWrite
+ 441:../cleanflight/src/main/blackbox/blackbox_encoding.c ****             } else {
+ 442:../cleanflight/src/main/blackbox/blackbox_encoding.c ****                 //First write the highest 4 bits
+ 443:../cleanflight/src/main/blackbox/blackbox_encoding.c ****                 blackboxWrite(buffer | ((values[x] >> 12) & 0x0F));
+ 444:../cleanflight/src/main/blackbox/blackbox_encoding.c ****                 // Then the middle 8
+ 445:../cleanflight/src/main/blackbox/blackbox_encoding.c ****                 blackboxWrite(values[x] >> 4);
+ 446:../cleanflight/src/main/blackbox/blackbox_encoding.c ****                 //Only the smallest 4 bits are still left to write
+ 447:../cleanflight/src/main/blackbox/blackbox_encoding.c ****                 buffer = values[x] << 4;
+ 448:../cleanflight/src/main/blackbox/blackbox_encoding.c ****             }
+ 449:../cleanflight/src/main/blackbox/blackbox_encoding.c ****             break;
+ 1828              	 .loc 1 449 0
+ 1829 0180 22E0     	 b .L103
+ 1830              	.L99:
+ 443:../cleanflight/src/main/blackbox/blackbox_encoding.c ****                 // Then the middle 8
+ 1831              	 .loc 1 443 0
+ 1832 0182 FB68     	 ldr r3,[r7,#12]
+ 1833 0184 9B00     	 lsls r3,r3,#2
+ 1834 0186 7A68     	 ldr r2,[r7,#4]
+ 1835 0188 1344     	 add r3,r3,r2
+ 1836 018a 1B68     	 ldr r3,[r3]
+ 1837 018c 1B13     	 asrs r3,r3,#12
+ 1838 018e DBB2     	 uxtb r3,r3
+ 1839 0190 03F00F03 	 and r3,r3,#15
+ 1840 0194 DAB2     	 uxtb r2,r3
+ 1841 0196 FB7C     	 ldrb r3,[r7,#19]
+ 1842 0198 1343     	 orrs r3,r3,r2
+ 1843 019a DBB2     	 uxtb r3,r3
+ 1844 019c DBB2     	 uxtb r3,r3
+ 1845 019e 1846     	 mov r0,r3
+ 1846 01a0 FFF7FEFF 	 bl blackboxWrite
+ 445:../cleanflight/src/main/blackbox/blackbox_encoding.c ****                 //Only the smallest 4 bits are still left to write
+ 1847              	 .loc 1 445 0
+ 1848 01a4 FB68     	 ldr r3,[r7,#12]
+ 1849 01a6 9B00     	 lsls r3,r3,#2
+ 1850 01a8 7A68     	 ldr r2,[r7,#4]
+ 1851 01aa 1344     	 add r3,r3,r2
+ 1852 01ac 1B68     	 ldr r3,[r3]
+ 1853 01ae 1B11     	 asrs r3,r3,#4
+ 1854 01b0 DBB2     	 uxtb r3,r3
+ 1855 01b2 1846     	 mov r0,r3
+ 1856 01b4 FFF7FEFF 	 bl blackboxWrite
+ 447:../cleanflight/src/main/blackbox/blackbox_encoding.c ****             }
+ 1857              	 .loc 1 447 0
+ 1858 01b8 FB68     	 ldr r3,[r7,#12]
+ 1859 01ba 9B00     	 lsls r3,r3,#2
+ 1860 01bc 7A68     	 ldr r2,[r7,#4]
+ 1861 01be 1344     	 add r3,r3,r2
+ 1862 01c0 1B68     	 ldr r3,[r3]
+ 1863 01c2 DBB2     	 uxtb r3,r3
+ 1864 01c4 1B01     	 lsls r3,r3,#4
+ 1865 01c6 FB74     	 strb r3,[r7,#19]
+ 1866              	.L103:
+ 1867              	 .loc 1 449 0
+ 1868 01c8 00BF     	 nop
+ 1869              	.L89:
+ 411:../cleanflight/src/main/blackbox/blackbox_encoding.c ****         switch (selector & 0x03) {
+ 1870              	 .loc 1 411 0 discriminator 2
+ 1871 01ca FB68     	 ldr r3,[r7,#12]
+ 1872 01cc 0133     	 adds r3,r3,#1
+ 1873 01ce FB60     	 str r3,[r7,#12]
+ 1874 01d0 FB7F     	 ldrb r3,[r7,#31]
+ 1875 01d2 9B08     	 lsrs r3,r3,#2
+ 1876 01d4 FB77     	 strb r3,[r7,#31]
+ 1877              	.L88:
+ 411:../cleanflight/src/main/blackbox/blackbox_encoding.c ****         switch (selector & 0x03) {
+ 1878              	 .loc 1 411 0 is_stmt 0 discriminator 1
+ 1879 01d6 FB68     	 ldr r3,[r7,#12]
+ 1880 01d8 032B     	 cmp r3,#3
+ 1881 01da 7FF761AF 	 ble .L101
+ 1882              	.LBE10:
+ 450:../cleanflight/src/main/blackbox/blackbox_encoding.c ****         }
+ 451:../cleanflight/src/main/blackbox/blackbox_encoding.c ****     }
+ 452:../cleanflight/src/main/blackbox/blackbox_encoding.c ****     //Anything left over to write?
+ 453:../cleanflight/src/main/blackbox/blackbox_encoding.c ****     if (nibbleIndex == 1) {
+ 1883              	 .loc 1 453 0 is_stmt 1
+ 1884 01de 7B69     	 ldr r3,[r7,#20]
+ 1885 01e0 012B     	 cmp r3,#1
+ 1886 01e2 03D1     	 bne .L81
+ 454:../cleanflight/src/main/blackbox/blackbox_encoding.c ****         blackboxWrite(buffer);
+ 1887              	 .loc 1 454 0
+ 1888 01e4 FB7C     	 ldrb r3,[r7,#19]
+ 1889 01e6 1846     	 mov r0,r3
+ 1890 01e8 FFF7FEFF 	 bl blackboxWrite
+ 1891              	.L81:
+ 455:../cleanflight/src/main/blackbox/blackbox_encoding.c ****     }
+ 456:../cleanflight/src/main/blackbox/blackbox_encoding.c **** }
+ 1892              	 .loc 1 456 0
+ 1893 01ec 2037     	 adds r7,r7,#32
+ 1894              	.LCFI64:
+ 1895              	 .cfi_def_cfa_offset 8
+ 1896 01ee BD46     	 mov sp,r7
+ 1897              	.LCFI65:
+ 1898              	 .cfi_def_cfa_register 13
+ 1899              	 
+ 1900 01f0 80BD     	 pop {r7,pc}
+ 1901              	 .cfi_endproc
+ 1902              	.LFE532:
+ 1904 01f2 00BF     	 .section .text.blackboxWriteTag8_8SVB,"ax",%progbits
+ 1905              	 .align 2
+ 1906              	 .global blackboxWriteTag8_8SVB
+ 1907              	 .thumb
+ 1908              	 .thumb_func
+ 1910              	blackboxWriteTag8_8SVB:
+ 1911              	.LFB533:
+ 457:../cleanflight/src/main/blackbox/blackbox_encoding.c **** 
+ 458:../cleanflight/src/main/blackbox/blackbox_encoding.c **** /**
+ 459:../cleanflight/src/main/blackbox/blackbox_encoding.c ****  * Write `valueCount` fields from `values` to the Blackbox using signed variable byte encoding. A 1
+ 460:../cleanflight/src/main/blackbox/blackbox_encoding.c ****  * written first which specifies which fields are non-zero (so this encoding is compact when most f
+ 461:../cleanflight/src/main/blackbox/blackbox_encoding.c ****  *
+ 462:../cleanflight/src/main/blackbox/blackbox_encoding.c ****  * valueCount must be 8 or less.
+ 463:../cleanflight/src/main/blackbox/blackbox_encoding.c ****  */
+ 464:../cleanflight/src/main/blackbox/blackbox_encoding.c **** void blackboxWriteTag8_8SVB(int32_t *values, int valueCount)
+ 465:../cleanflight/src/main/blackbox/blackbox_encoding.c **** {
+ 1912              	 .loc 1 465 0
+ 1913              	 .cfi_startproc
+ 1914              	 
+ 1915              	 
+ 1916 0000 80B5     	 push {r7,lr}
+ 1917              	.LCFI66:
+ 1918              	 .cfi_def_cfa_offset 8
+ 1919              	 .cfi_offset 7,-8
+ 1920              	 .cfi_offset 14,-4
+ 1921 0002 86B0     	 sub sp,sp,#24
+ 1922              	.LCFI67:
+ 1923              	 .cfi_def_cfa_offset 32
+ 1924 0004 00AF     	 add r7,sp,#0
+ 1925              	.LCFI68:
+ 1926              	 .cfi_def_cfa_register 7
+ 1927 0006 7860     	 str r0,[r7,#4]
+ 1928 0008 3960     	 str r1,[r7]
+ 466:../cleanflight/src/main/blackbox/blackbox_encoding.c ****     uint8_t header;
+ 467:../cleanflight/src/main/blackbox/blackbox_encoding.c **** 
+ 468:../cleanflight/src/main/blackbox/blackbox_encoding.c ****     if (valueCount > 0) {
+ 1929              	 .loc 1 468 0
+ 1930 000a 3B68     	 ldr r3,[r7]
+ 1931 000c 002B     	 cmp r3,#0
+ 1932 000e 3FDD     	 ble .L104
+ 469:../cleanflight/src/main/blackbox/blackbox_encoding.c ****         //If we're only writing one field then we can skip the header
+ 470:../cleanflight/src/main/blackbox/blackbox_encoding.c ****         if (valueCount == 1) {
+ 1933              	 .loc 1 470 0
+ 1934 0010 3B68     	 ldr r3,[r7]
+ 1935 0012 012B     	 cmp r3,#1
+ 1936 0014 05D1     	 bne .L106
+ 471:../cleanflight/src/main/blackbox/blackbox_encoding.c ****             blackboxWriteSignedVB(values[0]);
+ 1937              	 .loc 1 471 0
+ 1938 0016 7B68     	 ldr r3,[r7,#4]
+ 1939 0018 1B68     	 ldr r3,[r3]
+ 1940 001a 1846     	 mov r0,r3
+ 1941 001c FFF7FEFF 	 bl blackboxWriteSignedVB
+ 1942 0020 36E0     	 b .L104
+ 1943              	.L106:
+ 472:../cleanflight/src/main/blackbox/blackbox_encoding.c ****         } else {
+ 473:../cleanflight/src/main/blackbox/blackbox_encoding.c ****             //First write a one-byte header that marks which fields are non-zero
+ 474:../cleanflight/src/main/blackbox/blackbox_encoding.c ****             header = 0;
+ 1944              	 .loc 1 474 0
+ 1945 0022 0023     	 movs r3,#0
+ 1946 0024 FB75     	 strb r3,[r7,#23]
+ 1947              	.LBB11:
+ 475:../cleanflight/src/main/blackbox/blackbox_encoding.c **** 
+ 476:../cleanflight/src/main/blackbox/blackbox_encoding.c ****             // First field should be in low bits of header
+ 477:../cleanflight/src/main/blackbox/blackbox_encoding.c ****             for (int i = valueCount - 1; i >= 0; i--) {
+ 1948              	 .loc 1 477 0
+ 1949 0026 3B68     	 ldr r3,[r7]
+ 1950 0028 013B     	 subs r3,r3,#1
+ 1951 002a 3B61     	 str r3,[r7,#16]
+ 1952 002c 10E0     	 b .L107
+ 1953              	.L109:
+ 478:../cleanflight/src/main/blackbox/blackbox_encoding.c ****                 header <<= 1;
+ 1954              	 .loc 1 478 0
+ 1955 002e FB7D     	 ldrb r3,[r7,#23]
+ 1956 0030 5B00     	 lsls r3,r3,#1
+ 1957 0032 FB75     	 strb r3,[r7,#23]
+ 479:../cleanflight/src/main/blackbox/blackbox_encoding.c **** 
+ 480:../cleanflight/src/main/blackbox/blackbox_encoding.c ****                 if (values[i] != 0) {
+ 1958              	 .loc 1 480 0
+ 1959 0034 3B69     	 ldr r3,[r7,#16]
+ 1960 0036 9B00     	 lsls r3,r3,#2
+ 1961 0038 7A68     	 ldr r2,[r7,#4]
+ 1962 003a 1344     	 add r3,r3,r2
+ 1963 003c 1B68     	 ldr r3,[r3]
+ 1964 003e 002B     	 cmp r3,#0
+ 1965 0040 03D0     	 beq .L108
+ 481:../cleanflight/src/main/blackbox/blackbox_encoding.c ****                     header |= 0x01;
+ 1966              	 .loc 1 481 0
+ 1967 0042 FB7D     	 ldrb r3,[r7,#23]
+ 1968 0044 43F00103 	 orr r3,r3,#1
+ 1969 0048 FB75     	 strb r3,[r7,#23]
+ 1970              	.L108:
+ 477:../cleanflight/src/main/blackbox/blackbox_encoding.c ****                 header <<= 1;
+ 1971              	 .loc 1 477 0 discriminator 2
+ 1972 004a 3B69     	 ldr r3,[r7,#16]
+ 1973 004c 013B     	 subs r3,r3,#1
+ 1974 004e 3B61     	 str r3,[r7,#16]
+ 1975              	.L107:
+ 477:../cleanflight/src/main/blackbox/blackbox_encoding.c ****                 header <<= 1;
+ 1976              	 .loc 1 477 0 is_stmt 0 discriminator 1
+ 1977 0050 3B69     	 ldr r3,[r7,#16]
+ 1978 0052 002B     	 cmp r3,#0
+ 1979 0054 EBDA     	 bge .L109
+ 1980              	.LBE11:
+ 482:../cleanflight/src/main/blackbox/blackbox_encoding.c ****                 }
+ 483:../cleanflight/src/main/blackbox/blackbox_encoding.c ****             }
+ 484:../cleanflight/src/main/blackbox/blackbox_encoding.c **** 
+ 485:../cleanflight/src/main/blackbox/blackbox_encoding.c ****             blackboxWrite(header);
+ 1981              	 .loc 1 485 0 is_stmt 1
+ 1982 0056 FB7D     	 ldrb r3,[r7,#23]
+ 1983 0058 1846     	 mov r0,r3
+ 1984 005a FFF7FEFF 	 bl blackboxWrite
+ 1985              	.LBB12:
+ 486:../cleanflight/src/main/blackbox/blackbox_encoding.c **** 
+ 487:../cleanflight/src/main/blackbox/blackbox_encoding.c ****             for (int i = 0; i < valueCount; i++) {
+ 1986              	 .loc 1 487 0
+ 1987 005e 0023     	 movs r3,#0
+ 1988 0060 FB60     	 str r3,[r7,#12]
+ 1989 0062 11E0     	 b .L110
+ 1990              	.L112:
+ 488:../cleanflight/src/main/blackbox/blackbox_encoding.c ****                 if (values[i] != 0) {
+ 1991              	 .loc 1 488 0
+ 1992 0064 FB68     	 ldr r3,[r7,#12]
+ 1993 0066 9B00     	 lsls r3,r3,#2
+ 1994 0068 7A68     	 ldr r2,[r7,#4]
+ 1995 006a 1344     	 add r3,r3,r2
+ 1996 006c 1B68     	 ldr r3,[r3]
+ 1997 006e 002B     	 cmp r3,#0
+ 1998 0070 07D0     	 beq .L111
+ 489:../cleanflight/src/main/blackbox/blackbox_encoding.c ****                     blackboxWriteSignedVB(values[i]);
+ 1999              	 .loc 1 489 0
+ 2000 0072 FB68     	 ldr r3,[r7,#12]
+ 2001 0074 9B00     	 lsls r3,r3,#2
+ 2002 0076 7A68     	 ldr r2,[r7,#4]
+ 2003 0078 1344     	 add r3,r3,r2
+ 2004 007a 1B68     	 ldr r3,[r3]
+ 2005 007c 1846     	 mov r0,r3
+ 2006 007e FFF7FEFF 	 bl blackboxWriteSignedVB
+ 2007              	.L111:
+ 487:../cleanflight/src/main/blackbox/blackbox_encoding.c ****                 if (values[i] != 0) {
+ 2008              	 .loc 1 487 0 discriminator 2
+ 2009 0082 FB68     	 ldr r3,[r7,#12]
+ 2010 0084 0133     	 adds r3,r3,#1
+ 2011 0086 FB60     	 str r3,[r7,#12]
+ 2012              	.L110:
+ 487:../cleanflight/src/main/blackbox/blackbox_encoding.c ****                 if (values[i] != 0) {
+ 2013              	 .loc 1 487 0 is_stmt 0 discriminator 1
+ 2014 0088 FA68     	 ldr r2,[r7,#12]
+ 2015 008a 3B68     	 ldr r3,[r7]
+ 2016 008c 9A42     	 cmp r2,r3
+ 2017 008e E9DB     	 blt .L112
+ 2018              	.L104:
+ 2019              	.LBE12:
+ 490:../cleanflight/src/main/blackbox/blackbox_encoding.c ****                 }
+ 491:../cleanflight/src/main/blackbox/blackbox_encoding.c ****             }
+ 492:../cleanflight/src/main/blackbox/blackbox_encoding.c ****         }
+ 493:../cleanflight/src/main/blackbox/blackbox_encoding.c ****     }
+ 494:../cleanflight/src/main/blackbox/blackbox_encoding.c **** }
+ 2020              	 .loc 1 494 0 is_stmt 1
+ 2021 0090 1837     	 adds r7,r7,#24
+ 2022              	.LCFI69:
+ 2023              	 .cfi_def_cfa_offset 8
+ 2024 0092 BD46     	 mov sp,r7
+ 2025              	.LCFI70:
+ 2026              	 .cfi_def_cfa_register 13
+ 2027              	 
+ 2028 0094 80BD     	 pop {r7,pc}
+ 2029              	 .cfi_endproc
+ 2030              	.LFE533:
+ 2032 0096 00BF     	 .section .text.blackboxWriteU32,"ax",%progbits
+ 2033              	 .align 2
+ 2034              	 .global blackboxWriteU32
+ 2035              	 .thumb
+ 2036              	 .thumb_func
+ 2038              	blackboxWriteU32:
+ 2039              	.LFB534:
+ 495:../cleanflight/src/main/blackbox/blackbox_encoding.c **** 
+ 496:../cleanflight/src/main/blackbox/blackbox_encoding.c **** /** Write unsigned integer **/
+ 497:../cleanflight/src/main/blackbox/blackbox_encoding.c **** void blackboxWriteU32(int32_t value)
+ 498:../cleanflight/src/main/blackbox/blackbox_encoding.c **** {
+ 2040              	 .loc 1 498 0
+ 2041              	 .cfi_startproc
+ 2042              	 
+ 2043              	 
+ 2044 0000 80B5     	 push {r7,lr}
+ 2045              	.LCFI71:
+ 2046              	 .cfi_def_cfa_offset 8
+ 2047              	 .cfi_offset 7,-8
+ 2048              	 .cfi_offset 14,-4
+ 2049 0002 82B0     	 sub sp,sp,#8
+ 2050              	.LCFI72:
+ 2051              	 .cfi_def_cfa_offset 16
+ 2052 0004 00AF     	 add r7,sp,#0
+ 2053              	.LCFI73:
+ 2054              	 .cfi_def_cfa_register 7
+ 2055 0006 7860     	 str r0,[r7,#4]
+ 499:../cleanflight/src/main/blackbox/blackbox_encoding.c ****     blackboxWrite(value & 0xFF);
+ 2056              	 .loc 1 499 0
+ 2057 0008 7B68     	 ldr r3,[r7,#4]
+ 2058 000a DBB2     	 uxtb r3,r3
+ 2059 000c 1846     	 mov r0,r3
+ 2060 000e FFF7FEFF 	 bl blackboxWrite
+ 500:../cleanflight/src/main/blackbox/blackbox_encoding.c ****     blackboxWrite((value >> 8) & 0xFF);
+ 2061              	 .loc 1 500 0
+ 2062 0012 7B68     	 ldr r3,[r7,#4]
+ 2063 0014 1B12     	 asrs r3,r3,#8
+ 2064 0016 DBB2     	 uxtb r3,r3
+ 2065 0018 1846     	 mov r0,r3
+ 2066 001a FFF7FEFF 	 bl blackboxWrite
+ 501:../cleanflight/src/main/blackbox/blackbox_encoding.c ****     blackboxWrite((value >> 16) & 0xFF);
+ 2067              	 .loc 1 501 0
+ 2068 001e 7B68     	 ldr r3,[r7,#4]
+ 2069 0020 1B14     	 asrs r3,r3,#16
+ 2070 0022 DBB2     	 uxtb r3,r3
+ 2071 0024 1846     	 mov r0,r3
+ 2072 0026 FFF7FEFF 	 bl blackboxWrite
+ 502:../cleanflight/src/main/blackbox/blackbox_encoding.c ****     blackboxWrite((value >> 24) & 0xFF);
+ 2073              	 .loc 1 502 0
+ 2074 002a 7B68     	 ldr r3,[r7,#4]
+ 2075 002c 1B0E     	 lsrs r3,r3,#24
+ 2076 002e DBB2     	 uxtb r3,r3
+ 2077 0030 1846     	 mov r0,r3
+ 2078 0032 FFF7FEFF 	 bl blackboxWrite
+ 503:../cleanflight/src/main/blackbox/blackbox_encoding.c **** }
+ 2079              	 .loc 1 503 0
+ 2080 0036 0837     	 adds r7,r7,#8
+ 2081              	.LCFI74:
+ 2082              	 .cfi_def_cfa_offset 8
+ 2083 0038 BD46     	 mov sp,r7
+ 2084              	.LCFI75:
+ 2085              	 .cfi_def_cfa_register 13
+ 2086              	 
+ 2087 003a 80BD     	 pop {r7,pc}
+ 2088              	 .cfi_endproc
+ 2089              	.LFE534:
+ 2091              	 .section .text.blackboxWriteFloat,"ax",%progbits
+ 2092              	 .align 2
+ 2093              	 .global blackboxWriteFloat
+ 2094              	 .thumb
+ 2095              	 .thumb_func
+ 2097              	blackboxWriteFloat:
+ 2098              	.LFB535:
+ 504:../cleanflight/src/main/blackbox/blackbox_encoding.c **** 
+ 505:../cleanflight/src/main/blackbox/blackbox_encoding.c **** /** Write float value in the integer form **/
+ 506:../cleanflight/src/main/blackbox/blackbox_encoding.c **** void blackboxWriteFloat(float value)
+ 507:../cleanflight/src/main/blackbox/blackbox_encoding.c **** {
+ 2099              	 .loc 1 507 0
+ 2100              	 .cfi_startproc
+ 2101              	 
+ 2102              	 
+ 2103 0000 80B5     	 push {r7,lr}
+ 2104              	.LCFI76:
+ 2105              	 .cfi_def_cfa_offset 8
+ 2106              	 .cfi_offset 7,-8
+ 2107              	 .cfi_offset 14,-4
+ 2108 0002 82B0     	 sub sp,sp,#8
+ 2109              	.LCFI77:
+ 2110              	 .cfi_def_cfa_offset 16
+ 2111 0004 00AF     	 add r7,sp,#0
+ 2112              	.LCFI78:
+ 2113              	 .cfi_def_cfa_register 7
+ 2114 0006 7860     	 str r0,[r7,#4]
+ 508:../cleanflight/src/main/blackbox/blackbox_encoding.c ****     blackboxWriteU32(castFloatBytesToInt(value));
+ 2115              	 .loc 1 508 0
+ 2116 0008 7868     	 ldr r0,[r7,#4]
+ 2117 000a FFF7FEFF 	 bl castFloatBytesToInt
+ 2118 000e 0346     	 mov r3,r0
+ 2119 0010 1846     	 mov r0,r3
+ 2120 0012 FFF7FEFF 	 bl blackboxWriteU32
+ 509:../cleanflight/src/main/blackbox/blackbox_encoding.c **** }
+ 2121              	 .loc 1 509 0
+ 2122 0016 0837     	 adds r7,r7,#8
+ 2123              	.LCFI79:
+ 2124              	 .cfi_def_cfa_offset 8
+ 2125 0018 BD46     	 mov sp,r7
+ 2126              	.LCFI80:
+ 2127              	 .cfi_def_cfa_register 13
+ 2128              	 
+ 2129 001a 80BD     	 pop {r7,pc}
+ 2130              	 .cfi_endproc
+ 2131              	.LFE535:
+ 2133              	 .section .rodata.NUM_FIELDS.11971,"a",%progbits
+ 2134              	 .align 2
+ 2137              	NUM_FIELDS.11971:
+ 2138 0000 03000000 	 .word 3
+ 2139              	 .section .rodata.FIELD_COUNT.12009,"a",%progbits
+ 2140              	 .align 2
+ 2143              	FIELD_COUNT.12009:
+ 2144 0000 03000000 	 .word 3
+ 2145              	 .text
+ 2146              	.Letext0:
+ 2147              	 .file 2 "d:\\xmc\\dave-ide-4.4.2-64bit\\eclipse\\arm-gcc-49\\arm-none-eabi\\include\\machine\\_default_types.h"
+ 2148              	 .file 3 "d:\\xmc\\dave-ide-4.4.2-64bit\\eclipse\\arm-gcc-49\\arm-none-eabi\\include\\stdint.h"
+ 2149              	 .file 4 "d:\\xmc\\dave-ide-4.4.2-64bit\\eclipse\\arm-gcc-49\\lib\\gcc\\arm-none-eabi\\4.9.3\\include\\stdarg.h"
+ 2150              	 .file 5 "D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/lib/main/CMSIS/Core/Include/core_cm4.h"
+ 2151              	 .file 6 "D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/lib/main/XMC4000/system_XMC4700.h"
+ 2152              	 .file 7 "../cleanflight/src/main/blackbox/blackbox_io.h"
+ 2153              	 .file 8 "<built-in>"
+DEFINED SYMBOLS
+                            *ABS*:00000000 blackbox_encoding.c
+    {standard input}:20     .text._putc:00000000 $t
+    {standard input}:24     .text._putc:00000000 _putc
+    {standard input}:62     .text.blackboxPrintfv:00000000 $t
+    {standard input}:66     .text.blackboxPrintfv:00000000 blackboxPrintfv
+    {standard input}:105    .text.blackboxPrintfv:00000020 $d
+    {standard input}:110    .text.blackboxPrintf:00000000 $t
+    {standard input}:115    .text.blackboxPrintf:00000000 blackboxPrintf
+    {standard input}:175    .text.blackboxPrintfHeaderLine:00000000 $t
+    {standard input}:180    .text.blackboxPrintfHeaderLine:00000000 blackboxPrintfHeaderLine
+    {standard input}:259    .text.blackboxPrintfHeaderLine:00000058 $d
+    {standard input}:264    .text.blackboxWriteUnsignedVB:00000000 $t
+    {standard input}:269    .text.blackboxWriteUnsignedVB:00000000 blackboxWriteUnsignedVB
+    {standard input}:324    .text.blackboxWriteSignedVB:00000000 $t
+    {standard input}:329    .text.blackboxWriteSignedVB:00000000 blackboxWriteSignedVB
+    {standard input}:366    .text.blackboxWriteSignedVBArray:00000000 $t
+    {standard input}:371    .text.blackboxWriteSignedVBArray:00000000 blackboxWriteSignedVBArray
+    {standard input}:428    .text.blackboxWriteSigned16VBArray:00000000 $t
+    {standard input}:433    .text.blackboxWriteSigned16VBArray:00000000 blackboxWriteSigned16VBArray
+    {standard input}:491    .text.blackboxWriteS16:00000000 $t
+    {standard input}:496    .text.blackboxWriteS16:00000000 blackboxWriteS16
+    {standard input}:540    .text.blackboxWriteTag2_3S32:00000000 $t
+    {standard input}:545    .text.blackboxWriteTag2_3S32:00000000 blackboxWriteTag2_3S32
+    {standard input}:669    .text.blackboxWriteTag2_3S32:000000a8 $d
+    {standard input}:673    .text.blackboxWriteTag2_3S32:000000b8 $t
+    {standard input}:891    .text.blackboxWriteTag2_3S32:00000244 $d
+    {standard input}:895    .text.blackboxWriteTag2_3S32:00000254 $t
+    {standard input}:1035   .text.blackboxWriteTag2_3SVariable:00000000 $t
+    {standard input}:1040   .text.blackboxWriteTag2_3SVariable:00000000 blackboxWriteTag2_3SVariable
+    {standard input}:1191   .text.blackboxWriteTag2_3SVariable:000000e8 $d
+    {standard input}:1195   .text.blackboxWriteTag2_3SVariable:000000f8 $t
+    {standard input}:1440   .text.blackboxWriteTag2_3SVariable:000002bc $d
+    {standard input}:1444   .text.blackboxWriteTag2_3SVariable:000002cc $t
+    {standard input}:1587   .text.blackboxWriteTag8_4S16:00000000 $t
+    {standard input}:1592   .text.blackboxWriteTag8_4S16:00000000 blackboxWriteTag8_4S16
+    {standard input}:1715   .text.blackboxWriteTag8_4S16:000000b4 $d
+    {standard input}:1719   .text.blackboxWriteTag8_4S16:000000c4 $t
+    {standard input}:1905   .text.blackboxWriteTag8_8SVB:00000000 $t
+    {standard input}:1910   .text.blackboxWriteTag8_8SVB:00000000 blackboxWriteTag8_8SVB
+    {standard input}:2033   .text.blackboxWriteU32:00000000 $t
+    {standard input}:2038   .text.blackboxWriteU32:00000000 blackboxWriteU32
+    {standard input}:2092   .text.blackboxWriteFloat:00000000 $t
+    {standard input}:2097   .text.blackboxWriteFloat:00000000 blackboxWriteFloat
+    {standard input}:2134   .rodata.NUM_FIELDS.11971:00000000 $d
+    {standard input}:2137   .rodata.NUM_FIELDS.11971:00000000 NUM_FIELDS.11971
+    {standard input}:2140   .rodata.FIELD_COUNT.12009:00000000 $d
+    {standard input}:2143   .rodata.FIELD_COUNT.12009:00000000 FIELD_COUNT.12009
+                     .debug_frame:00000010 $d
+
+UNDEFINED SYMBOLS
+blackboxWrite
+tfp_format
+blackboxWriteString
+blackboxHeaderBudget
+zigzagEncode
+castFloatBytesToInt

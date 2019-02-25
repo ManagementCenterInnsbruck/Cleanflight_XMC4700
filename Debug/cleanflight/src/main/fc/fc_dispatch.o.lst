@@ -1,0 +1,518 @@
+   1              	 .syntax unified
+   2              	 .cpu cortex-m4
+   3              	 .eabi_attribute 27,3
+   4              	 .fpu fpv4-sp-d16
+   5              	 .eabi_attribute 20,1
+   6              	 .eabi_attribute 21,1
+   7              	 .eabi_attribute 23,3
+   8              	 .eabi_attribute 24,1
+   9              	 .eabi_attribute 25,1
+  10              	 .eabi_attribute 26,1
+  11              	 .eabi_attribute 30,6
+  12              	 .eabi_attribute 34,1
+  13              	 .eabi_attribute 18,4
+  14              	 .thumb
+  15              	 .file "fc_dispatch.c"
+  16              	 .text
+  17              	.Ltext0:
+  18              	 .cfi_sections .debug_frame
+  19              	 .section .text.cmp32,"ax",%progbits
+  20              	 .align 2
+  21              	 .thumb
+  22              	 .thumb_func
+  24              	cmp32:
+  25              	.LFB520:
+  26              	 .file 1 "D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/common/utils.h"
+   1:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/common\utils.h **** /*
+   2:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/common\utils.h ****  * This file is part of Cleanflight and Betaflight.
+   3:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/common\utils.h ****  *
+   4:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/common\utils.h ****  * Cleanflight and Betaflight are free software. You can redistribute
+   5:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/common\utils.h ****  * this software and/or modify this software under the terms of the
+   6:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/common\utils.h ****  * GNU General Public License as published by the Free Software
+   7:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/common\utils.h ****  * Foundation, either version 3 of the License, or (at your option)
+   8:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/common\utils.h ****  * any later version.
+   9:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/common\utils.h ****  *
+  10:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/common\utils.h ****  * Cleanflight and Betaflight are distributed in the hope that they
+  11:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/common\utils.h ****  * will be useful, but WITHOUT ANY WARRANTY; without even the implied
+  12:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/common\utils.h ****  * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+  13:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/common\utils.h ****  * See the GNU General Public License for more details.
+  14:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/common\utils.h ****  *
+  15:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/common\utils.h ****  * You should have received a copy of the GNU General Public License
+  16:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/common\utils.h ****  * along with this software.
+  17:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/common\utils.h ****  *
+  18:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/common\utils.h ****  * If not, see <http://www.gnu.org/licenses/>.
+  19:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/common\utils.h ****  */
+  20:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/common\utils.h **** 
+  21:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/common\utils.h **** #pragma once
+  22:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/common\utils.h **** 
+  23:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/common\utils.h **** #include <stddef.h>
+  24:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/common\utils.h **** #include <stdint.h>
+  25:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/common\utils.h **** 
+  26:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/common\utils.h **** #define NOOP do {} while (0)
+  27:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/common\utils.h **** 
+  28:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/common\utils.h **** #define ARRAYLEN(x) (sizeof(x) / sizeof((x)[0]))
+  29:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/common\utils.h **** #define ARRAYEND(x) (&(x)[ARRAYLEN(x)])
+  30:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/common\utils.h **** 
+  31:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/common\utils.h **** #define CONST_CAST(type, value) ((type)(value))
+  32:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/common\utils.h **** 
+  33:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/common\utils.h **** #define CONCAT_HELPER(x,y) x ## y
+  34:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/common\utils.h **** #define CONCAT(x,y) CONCAT_HELPER(x, y)
+  35:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/common\utils.h **** #define CONCAT2(_1,_2) CONCAT(_1, _2)
+  36:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/common\utils.h **** #define CONCAT3(_1,_2,_3)  CONCAT(CONCAT(_1, _2), _3)
+  37:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/common\utils.h **** #define CONCAT4(_1,_2,_3,_4)  CONCAT(CONCAT3(_1, _2, _3), _4)
+  38:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/common\utils.h **** 
+  39:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/common\utils.h **** #define STR_HELPER(x) #x
+  40:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/common\utils.h **** #define STR(x) STR_HELPER(x)
+  41:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/common\utils.h **** 
+  42:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/common\utils.h **** #define EXPAND_I(x) x
+  43:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/common\utils.h **** #define EXPAND(x) EXPAND_I(x)
+  44:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/common\utils.h **** 
+  45:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/common\utils.h **** // expand to t if bit is 1, f when bit is 0. Other bit values are not supported
+  46:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/common\utils.h **** #define PP_IIF(bit, t, f) PP_IIF_I(bit, t, f)
+  47:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/common\utils.h **** #define PP_IIF_I(bit, t, f) PP_IIF_ ## bit(t, f)
+  48:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/common\utils.h **** #define PP_IIF_0(t, f) f
+  49:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/common\utils.h **** #define PP_IIF_1(t, f) t
+  50:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/common\utils.h **** 
+  51:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/common\utils.h **** // Expand all argumens and call macro with them. When expansion of some argument contains ',', it w
+  52:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/common\utils.h **** // #define TAKE3(_1,_2,_3) CONCAT3(_1,_2,_3)
+  53:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/common\utils.h **** // #define MULTI2 A,B
+  54:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/common\utils.h **** // PP_CALL(TAKE3, MULTI2, C) expands to ABC
+  55:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/common\utils.h **** #define PP_CALL(macro, ...) macro(__VA_ARGS__)
+  56:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/common\utils.h **** 
+  57:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/common\utils.h **** #if !defined(UNUSED)
+  58:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/common\utils.h **** #define UNUSED(x) (void)(x)
+  59:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/common\utils.h **** #endif
+  60:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/common\utils.h **** #define BUILD_BUG_ON(condition) ((void)sizeof(char[1 - 2*!!(condition)]))
+  61:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/common\utils.h **** #define STATIC_ASSERT(condition, name) \
+  62:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/common\utils.h ****     typedef char assert_failed_ ## name [(condition) ? 1 : -1 ] __attribute__((unused))
+  63:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/common\utils.h **** 
+  64:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/common\utils.h **** 
+  65:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/common\utils.h **** #define BIT(x) (1 << (x))
+  66:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/common\utils.h **** 
+  67:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/common\utils.h **** /*
+  68:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/common\utils.h **** http://resnet.uoregon.edu/~gurney_j/jmpc/bitwise.html
+  69:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/common\utils.h **** */
+  70:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/common\utils.h **** #define BITCOUNT(x) (((BX_(x)+(BX_(x)>>4)) & 0x0F0F0F0F) % 255)
+  71:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/common\utils.h **** #define BX_(x) ((x) - (((x)>>1)&0x77777777) - (((x)>>2)&0x33333333) - (((x)>>3)&0x11111111))
+  72:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/common\utils.h **** 
+  73:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/common\utils.h **** 
+  74:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/common\utils.h **** /*
+  75:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/common\utils.h ****  * https://groups.google.com/forum/?hl=en#!msg/comp.lang.c/attFnqwhvGk/sGBKXvIkY3AJ
+  76:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/common\utils.h ****  * Return (v ? floor(log2(v)) : 0) when 0 <= v < 1<<[8, 16, 32, 64].
+  77:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/common\utils.h ****  * Inefficient algorithm, intended for compile-time constants.
+  78:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/common\utils.h ****  */
+  79:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/common\utils.h **** #define LOG2_8BIT(v)  (8 - 90/(((v)/4+14)|1) - 2/((v)/2+1))
+  80:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/common\utils.h **** #define LOG2_16BIT(v) (8*((v)>255) + LOG2_8BIT((v) >>8*((v)>255)))
+  81:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/common\utils.h **** #define LOG2_32BIT(v) (16*((v)>65535L) + LOG2_16BIT((v)*1L >>16*((v)>65535L)))
+  82:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/common\utils.h **** #define LOG2_64BIT(v) \
+  83:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/common\utils.h ****     (32*((v)/2L>>31 > 0) \
+  84:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/common\utils.h ****      + LOG2_32BIT((v)*1L >>16*((v)/2L>>31 > 0) \
+  85:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/common\utils.h ****                          >>16*((v)/2L>>31 > 0)))
+  86:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/common\utils.h **** #define LOG2(v) LOG2_64BIT(v)
+  87:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/common\utils.h **** 
+  88:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/common\utils.h **** #if 0
+  89:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/common\utils.h **** // ISO C version, but no type checking
+  90:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/common\utils.h **** #define container_of(ptr, type, member) \
+  91:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/common\utils.h ****                       ((type *) ((char *)(ptr) - offsetof(type, member)))
+  92:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/common\utils.h **** #else
+  93:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/common\utils.h **** // non ISO variant from linux kernel; checks ptr type, but triggers 'ISO C forbids braced-groups wi
+  94:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/common\utils.h **** //  __extension__ is here to disable this warning
+  95:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/common\utils.h **** #define container_of(ptr, type, member)  ( __extension__ ({     \
+  96:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/common\utils.h ****         const typeof( ((type *)0)->member ) *__mptr = (ptr);    \
+  97:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/common\utils.h ****         (type *)( (char *)__mptr - offsetof(type,member) );}))
+  98:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/common\utils.h **** 
+  99:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/common\utils.h **** static inline int16_t cmp16(uint16_t a, uint16_t b) { return (int16_t)(a-b); }
+ 100:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/common\utils.h **** static inline int32_t cmp32(uint32_t a, uint32_t b) { return (int32_t)(a-b); }
+  27              	 .loc 1 100 0
+  28              	 .cfi_startproc
+  29              	 
+  30              	 
+  31              	 
+  32 0000 80B4     	 push {r7}
+  33              	.LCFI0:
+  34              	 .cfi_def_cfa_offset 4
+  35              	 .cfi_offset 7,-4
+  36 0002 83B0     	 sub sp,sp,#12
+  37              	.LCFI1:
+  38              	 .cfi_def_cfa_offset 16
+  39 0004 00AF     	 add r7,sp,#0
+  40              	.LCFI2:
+  41              	 .cfi_def_cfa_register 7
+  42 0006 7860     	 str r0,[r7,#4]
+  43 0008 3960     	 str r1,[r7]
+  44              	 .loc 1 100 0
+  45 000a 7A68     	 ldr r2,[r7,#4]
+  46 000c 3B68     	 ldr r3,[r7]
+  47 000e D31A     	 subs r3,r2,r3
+  48 0010 1846     	 mov r0,r3
+  49 0012 0C37     	 adds r7,r7,#12
+  50              	.LCFI3:
+  51              	 .cfi_def_cfa_offset 4
+  52 0014 BD46     	 mov sp,r7
+  53              	.LCFI4:
+  54              	 .cfi_def_cfa_register 13
+  55              	 
+  56 0016 5DF8047B 	 ldr r7,[sp],#4
+  57              	.LCFI5:
+  58              	 .cfi_restore 7
+  59              	 .cfi_def_cfa_offset 0
+  60 001a 7047     	 bx lr
+  61              	 .cfi_endproc
+  62              	.LFE520:
+  64              	 .section .bss.head,"aw",%nobits
+  65              	 .align 2
+  68              	head:
+  69 0000 00000000 	 .space 4
+  70              	 .section .bss.dispatchEnabled,"aw",%nobits
+  73              	dispatchEnabled:
+  74 0000 00       	 .space 1
+  75              	 .section .text.dispatchIsEnabled,"ax",%progbits
+  76              	 .align 2
+  77              	 .global dispatchIsEnabled
+  78              	 .thumb
+  79              	 .thumb_func
+  81              	dispatchIsEnabled:
+  82              	.LFB527:
+  83              	 .file 2 "../cleanflight/src/main/fc/fc_dispatch.c"
+   1:../cleanflight/src/main/fc/fc_dispatch.c **** /*
+   2:../cleanflight/src/main/fc/fc_dispatch.c ****  * This file is part of Cleanflight and Betaflight.
+   3:../cleanflight/src/main/fc/fc_dispatch.c ****  *
+   4:../cleanflight/src/main/fc/fc_dispatch.c ****  * Cleanflight and Betaflight are free software. You can redistribute
+   5:../cleanflight/src/main/fc/fc_dispatch.c ****  * this software and/or modify this software under the terms of the
+   6:../cleanflight/src/main/fc/fc_dispatch.c ****  * GNU General Public License as published by the Free Software
+   7:../cleanflight/src/main/fc/fc_dispatch.c ****  * Foundation, either version 3 of the License, or (at your option)
+   8:../cleanflight/src/main/fc/fc_dispatch.c ****  * any later version.
+   9:../cleanflight/src/main/fc/fc_dispatch.c ****  *
+  10:../cleanflight/src/main/fc/fc_dispatch.c ****  * Cleanflight and Betaflight are distributed in the hope that they
+  11:../cleanflight/src/main/fc/fc_dispatch.c ****  * will be useful, but WITHOUT ANY WARRANTY; without even the implied
+  12:../cleanflight/src/main/fc/fc_dispatch.c ****  * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+  13:../cleanflight/src/main/fc/fc_dispatch.c ****  * See the GNU General Public License for more details.
+  14:../cleanflight/src/main/fc/fc_dispatch.c ****  *
+  15:../cleanflight/src/main/fc/fc_dispatch.c ****  * You should have received a copy of the GNU General Public License
+  16:../cleanflight/src/main/fc/fc_dispatch.c ****  * along with this software.
+  17:../cleanflight/src/main/fc/fc_dispatch.c ****  *
+  18:../cleanflight/src/main/fc/fc_dispatch.c ****  * If not, see <http://www.gnu.org/licenses/>.
+  19:../cleanflight/src/main/fc/fc_dispatch.c ****  */
+  20:../cleanflight/src/main/fc/fc_dispatch.c **** 
+  21:../cleanflight/src/main/fc/fc_dispatch.c **** #include <stdbool.h>
+  22:../cleanflight/src/main/fc/fc_dispatch.c **** #include <stdlib.h>
+  23:../cleanflight/src/main/fc/fc_dispatch.c **** #include <stdint.h>
+  24:../cleanflight/src/main/fc/fc_dispatch.c **** 
+  25:../cleanflight/src/main/fc/fc_dispatch.c **** #include "platform.h"
+  26:../cleanflight/src/main/fc/fc_dispatch.c **** 
+  27:../cleanflight/src/main/fc/fc_dispatch.c **** #include "common/utils.h"
+  28:../cleanflight/src/main/fc/fc_dispatch.c **** 
+  29:../cleanflight/src/main/fc/fc_dispatch.c **** #include "drivers/time.h"
+  30:../cleanflight/src/main/fc/fc_dispatch.c **** 
+  31:../cleanflight/src/main/fc/fc_dispatch.c **** #include "fc/fc_dispatch.h"
+  32:../cleanflight/src/main/fc/fc_dispatch.c **** 
+  33:../cleanflight/src/main/fc/fc_dispatch.c **** static dispatchEntry_t *head = NULL;
+  34:../cleanflight/src/main/fc/fc_dispatch.c **** static bool dispatchEnabled = false;
+  35:../cleanflight/src/main/fc/fc_dispatch.c **** 
+  36:../cleanflight/src/main/fc/fc_dispatch.c **** bool dispatchIsEnabled(void)
+  37:../cleanflight/src/main/fc/fc_dispatch.c **** {
+  84              	 .loc 2 37 0
+  85              	 .cfi_startproc
+  86              	 
+  87              	 
+  88              	 
+  89 0000 80B4     	 push {r7}
+  90              	.LCFI6:
+  91              	 .cfi_def_cfa_offset 4
+  92              	 .cfi_offset 7,-4
+  93 0002 00AF     	 add r7,sp,#0
+  94              	.LCFI7:
+  95              	 .cfi_def_cfa_register 7
+  38:../cleanflight/src/main/fc/fc_dispatch.c ****     return dispatchEnabled;
+  96              	 .loc 2 38 0
+  97 0004 034B     	 ldr r3,.L5
+  98 0006 1B78     	 ldrb r3,[r3]
+  39:../cleanflight/src/main/fc/fc_dispatch.c **** }
+  99              	 .loc 2 39 0
+ 100 0008 1846     	 mov r0,r3
+ 101 000a BD46     	 mov sp,r7
+ 102              	.LCFI8:
+ 103              	 .cfi_def_cfa_register 13
+ 104              	 
+ 105 000c 5DF8047B 	 ldr r7,[sp],#4
+ 106              	.LCFI9:
+ 107              	 .cfi_restore 7
+ 108              	 .cfi_def_cfa_offset 0
+ 109 0010 7047     	 bx lr
+ 110              	.L6:
+ 111 0012 00BF     	 .align 2
+ 112              	.L5:
+ 113 0014 00000000 	 .word dispatchEnabled
+ 114              	 .cfi_endproc
+ 115              	.LFE527:
+ 117              	 .section .text.dispatchEnable,"ax",%progbits
+ 118              	 .align 2
+ 119              	 .global dispatchEnable
+ 120              	 .thumb
+ 121              	 .thumb_func
+ 123              	dispatchEnable:
+ 124              	.LFB528:
+  40:../cleanflight/src/main/fc/fc_dispatch.c **** 
+  41:../cleanflight/src/main/fc/fc_dispatch.c **** void dispatchEnable(void)
+  42:../cleanflight/src/main/fc/fc_dispatch.c **** {
+ 125              	 .loc 2 42 0
+ 126              	 .cfi_startproc
+ 127              	 
+ 128              	 
+ 129              	 
+ 130 0000 80B4     	 push {r7}
+ 131              	.LCFI10:
+ 132              	 .cfi_def_cfa_offset 4
+ 133              	 .cfi_offset 7,-4
+ 134 0002 00AF     	 add r7,sp,#0
+ 135              	.LCFI11:
+ 136              	 .cfi_def_cfa_register 7
+  43:../cleanflight/src/main/fc/fc_dispatch.c ****     dispatchEnabled = true;
+ 137              	 .loc 2 43 0
+ 138 0004 034B     	 ldr r3,.L8
+ 139 0006 0122     	 movs r2,#1
+ 140 0008 1A70     	 strb r2,[r3]
+  44:../cleanflight/src/main/fc/fc_dispatch.c **** }
+ 141              	 .loc 2 44 0
+ 142 000a BD46     	 mov sp,r7
+ 143              	.LCFI12:
+ 144              	 .cfi_def_cfa_register 13
+ 145              	 
+ 146 000c 5DF8047B 	 ldr r7,[sp],#4
+ 147              	.LCFI13:
+ 148              	 .cfi_restore 7
+ 149              	 .cfi_def_cfa_offset 0
+ 150 0010 7047     	 bx lr
+ 151              	.L9:
+ 152 0012 00BF     	 .align 2
+ 153              	.L8:
+ 154 0014 00000000 	 .word dispatchEnabled
+ 155              	 .cfi_endproc
+ 156              	.LFE528:
+ 158              	 .section .text.dispatchProcess,"ax",%progbits
+ 159              	 .align 2
+ 160              	 .global dispatchProcess
+ 161              	 .thumb
+ 162              	 .thumb_func
+ 164              	dispatchProcess:
+ 165              	.LFB529:
+  45:../cleanflight/src/main/fc/fc_dispatch.c **** 
+  46:../cleanflight/src/main/fc/fc_dispatch.c **** void dispatchProcess(uint32_t currentTime)
+  47:../cleanflight/src/main/fc/fc_dispatch.c **** {
+ 166              	 .loc 2 47 0
+ 167              	 .cfi_startproc
+ 168              	 
+ 169              	 
+ 170 0000 80B5     	 push {r7,lr}
+ 171              	.LCFI14:
+ 172              	 .cfi_def_cfa_offset 8
+ 173              	 .cfi_offset 7,-8
+ 174              	 .cfi_offset 14,-4
+ 175 0002 84B0     	 sub sp,sp,#16
+ 176              	.LCFI15:
+ 177              	 .cfi_def_cfa_offset 24
+ 178 0004 00AF     	 add r7,sp,#0
+ 179              	.LCFI16:
+ 180              	 .cfi_def_cfa_register 7
+ 181 0006 7860     	 str r0,[r7,#4]
+ 182              	.LBB2:
+  48:../cleanflight/src/main/fc/fc_dispatch.c ****     for (dispatchEntry_t **p = &head; *p; ) {
+ 183              	 .loc 2 48 0
+ 184 0008 104B     	 ldr r3,.L15
+ 185 000a FB60     	 str r3,[r7,#12]
+ 186 000c 16E0     	 b .L11
+ 187              	.L14:
+ 188              	.LBB3:
+  49:../cleanflight/src/main/fc/fc_dispatch.c ****         if (cmp32(currentTime, (*p)->delayedUntil) < 0)
+ 189              	 .loc 2 49 0
+ 190 000e FB68     	 ldr r3,[r7,#12]
+ 191 0010 1B68     	 ldr r3,[r3]
+ 192 0012 5B68     	 ldr r3,[r3,#4]
+ 193 0014 7868     	 ldr r0,[r7,#4]
+ 194 0016 1946     	 mov r1,r3
+ 195 0018 FFF7FEFF 	 bl cmp32
+ 196 001c 0346     	 mov r3,r0
+ 197 001e 002B     	 cmp r3,#0
+ 198 0020 00DA     	 bge .L12
+  50:../cleanflight/src/main/fc/fc_dispatch.c ****             break;
+ 199              	 .loc 2 50 0
+ 200 0022 0FE0     	 b .L10
+ 201              	.L12:
+  51:../cleanflight/src/main/fc/fc_dispatch.c ****         // unlink entry first, so handler can replan self
+  52:../cleanflight/src/main/fc/fc_dispatch.c ****         dispatchEntry_t *current = *p;
+ 202              	 .loc 2 52 0
+ 203 0024 FB68     	 ldr r3,[r7,#12]
+ 204 0026 1B68     	 ldr r3,[r3]
+ 205 0028 BB60     	 str r3,[r7,#8]
+  53:../cleanflight/src/main/fc/fc_dispatch.c ****         *p = (*p)->next;
+ 206              	 .loc 2 53 0
+ 207 002a FB68     	 ldr r3,[r7,#12]
+ 208 002c 1B68     	 ldr r3,[r3]
+ 209 002e 9A68     	 ldr r2,[r3,#8]
+ 210 0030 FB68     	 ldr r3,[r7,#12]
+ 211 0032 1A60     	 str r2,[r3]
+  54:../cleanflight/src/main/fc/fc_dispatch.c ****         (*current->dispatch)(current);
+ 212              	 .loc 2 54 0
+ 213 0034 BB68     	 ldr r3,[r7,#8]
+ 214 0036 1B68     	 ldr r3,[r3]
+ 215 0038 B868     	 ldr r0,[r7,#8]
+ 216 003a 9847     	 blx r3
+ 217              	.L11:
+ 218              	.LBE3:
+  48:../cleanflight/src/main/fc/fc_dispatch.c ****         if (cmp32(currentTime, (*p)->delayedUntil) < 0)
+ 219              	 .loc 2 48 0 discriminator 1
+ 220 003c FB68     	 ldr r3,[r7,#12]
+ 221 003e 1B68     	 ldr r3,[r3]
+ 222 0040 002B     	 cmp r3,#0
+ 223 0042 E4D1     	 bne .L14
+ 224              	.L10:
+ 225              	.LBE2:
+  55:../cleanflight/src/main/fc/fc_dispatch.c ****     }
+  56:../cleanflight/src/main/fc/fc_dispatch.c **** }
+ 226              	 .loc 2 56 0
+ 227 0044 1037     	 adds r7,r7,#16
+ 228              	.LCFI17:
+ 229              	 .cfi_def_cfa_offset 8
+ 230 0046 BD46     	 mov sp,r7
+ 231              	.LCFI18:
+ 232              	 .cfi_def_cfa_register 13
+ 233              	 
+ 234 0048 80BD     	 pop {r7,pc}
+ 235              	.L16:
+ 236 004a 00BF     	 .align 2
+ 237              	.L15:
+ 238 004c 00000000 	 .word head
+ 239              	 .cfi_endproc
+ 240              	.LFE529:
+ 242              	 .section .text.dispatchAdd,"ax",%progbits
+ 243              	 .align 2
+ 244              	 .global dispatchAdd
+ 245              	 .thumb
+ 246              	 .thumb_func
+ 248              	dispatchAdd:
+ 249              	.LFB530:
+  57:../cleanflight/src/main/fc/fc_dispatch.c **** 
+  58:../cleanflight/src/main/fc/fc_dispatch.c **** void dispatchAdd(dispatchEntry_t *entry, int delayUs)
+  59:../cleanflight/src/main/fc/fc_dispatch.c **** {
+ 250              	 .loc 2 59 0
+ 251              	 .cfi_startproc
+ 252              	 
+ 253              	 
+ 254 0000 80B5     	 push {r7,lr}
+ 255              	.LCFI19:
+ 256              	 .cfi_def_cfa_offset 8
+ 257              	 .cfi_offset 7,-8
+ 258              	 .cfi_offset 14,-4
+ 259 0002 84B0     	 sub sp,sp,#16
+ 260              	.LCFI20:
+ 261              	 .cfi_def_cfa_offset 24
+ 262 0004 00AF     	 add r7,sp,#0
+ 263              	.LCFI21:
+ 264              	 .cfi_def_cfa_register 7
+ 265 0006 7860     	 str r0,[r7,#4]
+ 266 0008 3960     	 str r1,[r7]
+  60:../cleanflight/src/main/fc/fc_dispatch.c ****     uint32_t delayedUntil = micros() + delayUs;
+ 267              	 .loc 2 60 0
+ 268 000a FFF7FEFF 	 bl micros
+ 269 000e 0246     	 mov r2,r0
+ 270 0010 3B68     	 ldr r3,[r7]
+ 271 0012 1344     	 add r3,r3,r2
+ 272 0014 BB60     	 str r3,[r7,#8]
+  61:../cleanflight/src/main/fc/fc_dispatch.c ****     entry->delayedUntil = delayedUntil;
+ 273              	 .loc 2 61 0
+ 274 0016 7B68     	 ldr r3,[r7,#4]
+ 275 0018 BA68     	 ldr r2,[r7,#8]
+ 276 001a 5A60     	 str r2,[r3,#4]
+  62:../cleanflight/src/main/fc/fc_dispatch.c ****     dispatchEntry_t **p = &head;
+ 277              	 .loc 2 62 0
+ 278 001c 0F4B     	 ldr r3,.L21
+ 279 001e FB60     	 str r3,[r7,#12]
+  63:../cleanflight/src/main/fc/fc_dispatch.c ****     while (*p && cmp32((*p)->delayedUntil, delayedUntil) < 0)
+ 280              	 .loc 2 63 0
+ 281 0020 03E0     	 b .L18
+ 282              	.L20:
+  64:../cleanflight/src/main/fc/fc_dispatch.c ****         p = &(*p)->next;
+ 283              	 .loc 2 64 0
+ 284 0022 FB68     	 ldr r3,[r7,#12]
+ 285 0024 1B68     	 ldr r3,[r3]
+ 286 0026 0833     	 adds r3,r3,#8
+ 287 0028 FB60     	 str r3,[r7,#12]
+ 288              	.L18:
+  63:../cleanflight/src/main/fc/fc_dispatch.c ****     while (*p && cmp32((*p)->delayedUntil, delayedUntil) < 0)
+ 289              	 .loc 2 63 0
+ 290 002a FB68     	 ldr r3,[r7,#12]
+ 291 002c 1B68     	 ldr r3,[r3]
+ 292 002e 002B     	 cmp r3,#0
+ 293 0030 09D0     	 beq .L19
+  63:../cleanflight/src/main/fc/fc_dispatch.c ****     while (*p && cmp32((*p)->delayedUntil, delayedUntil) < 0)
+ 294              	 .loc 2 63 0 is_stmt 0 discriminator 1
+ 295 0032 FB68     	 ldr r3,[r7,#12]
+ 296 0034 1B68     	 ldr r3,[r3]
+ 297 0036 5B68     	 ldr r3,[r3,#4]
+ 298 0038 1846     	 mov r0,r3
+ 299 003a B968     	 ldr r1,[r7,#8]
+ 300 003c FFF7FEFF 	 bl cmp32
+ 301 0040 0346     	 mov r3,r0
+ 302 0042 002B     	 cmp r3,#0
+ 303 0044 EDDB     	 blt .L20
+ 304              	.L19:
+  65:../cleanflight/src/main/fc/fc_dispatch.c ****     entry->next = *p;
+ 305              	 .loc 2 65 0 is_stmt 1
+ 306 0046 FB68     	 ldr r3,[r7,#12]
+ 307 0048 1A68     	 ldr r2,[r3]
+ 308 004a 7B68     	 ldr r3,[r7,#4]
+ 309 004c 9A60     	 str r2,[r3,#8]
+  66:../cleanflight/src/main/fc/fc_dispatch.c ****     *p = entry;
+ 310              	 .loc 2 66 0
+ 311 004e FB68     	 ldr r3,[r7,#12]
+ 312 0050 7A68     	 ldr r2,[r7,#4]
+ 313 0052 1A60     	 str r2,[r3]
+  67:../cleanflight/src/main/fc/fc_dispatch.c **** }
+ 314              	 .loc 2 67 0
+ 315 0054 1037     	 adds r7,r7,#16
+ 316              	.LCFI22:
+ 317              	 .cfi_def_cfa_offset 8
+ 318 0056 BD46     	 mov sp,r7
+ 319              	.LCFI23:
+ 320              	 .cfi_def_cfa_register 13
+ 321              	 
+ 322 0058 80BD     	 pop {r7,pc}
+ 323              	.L22:
+ 324 005a 00BF     	 .align 2
+ 325              	.L21:
+ 326 005c 00000000 	 .word head
+ 327              	 .cfi_endproc
+ 328              	.LFE530:
+ 330              	 .text
+ 331              	.Letext0:
+ 332              	 .file 3 "d:\\xmc\\dave-ide-4.4.2-64bit\\eclipse\\arm-gcc-49\\arm-none-eabi\\include\\machine\\_default_types.h"
+ 333              	 .file 4 "d:\\xmc\\dave-ide-4.4.2-64bit\\eclipse\\arm-gcc-49\\arm-none-eabi\\include\\stdint.h"
+ 334              	 .file 5 "D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/lib/main/XMC4000/XMCLib/inc/xmc_usic.h"
+ 335              	 .file 6 "D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/common/time.h"
+ 336              	 .file 7 "D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/fc/fc_dispatch.h"
+ 337              	 .file 8 "D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/lib/main/CMSIS/Core/Include/core_cm4.h"
+ 338              	 .file 9 "D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/lib/main/XMC4000/system_XMC4700.h"
+DEFINED SYMBOLS
+                            *ABS*:00000000 fc_dispatch.c
+    {standard input}:20     .text.cmp32:00000000 $t
+    {standard input}:24     .text.cmp32:00000000 cmp32
+    {standard input}:65     .bss.head:00000000 $d
+    {standard input}:68     .bss.head:00000000 head
+    {standard input}:73     .bss.dispatchEnabled:00000000 dispatchEnabled
+    {standard input}:74     .bss.dispatchEnabled:00000000 $d
+    {standard input}:76     .text.dispatchIsEnabled:00000000 $t
+    {standard input}:81     .text.dispatchIsEnabled:00000000 dispatchIsEnabled
+    {standard input}:113    .text.dispatchIsEnabled:00000014 $d
+    {standard input}:118    .text.dispatchEnable:00000000 $t
+    {standard input}:123    .text.dispatchEnable:00000000 dispatchEnable
+    {standard input}:154    .text.dispatchEnable:00000014 $d
+    {standard input}:159    .text.dispatchProcess:00000000 $t
+    {standard input}:164    .text.dispatchProcess:00000000 dispatchProcess
+    {standard input}:238    .text.dispatchProcess:0000004c $d
+    {standard input}:243    .text.dispatchAdd:00000000 $t
+    {standard input}:248    .text.dispatchAdd:00000000 dispatchAdd
+    {standard input}:326    .text.dispatchAdd:0000005c $d
+                     .debug_frame:00000010 $d
+
+UNDEFINED SYMBOLS
+micros

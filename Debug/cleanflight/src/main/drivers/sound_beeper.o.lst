@@ -1,0 +1,228 @@
+   1              	 .syntax unified
+   2              	 .cpu cortex-m4
+   3              	 .eabi_attribute 27,3
+   4              	 .fpu fpv4-sp-d16
+   5              	 .eabi_attribute 20,1
+   6              	 .eabi_attribute 21,1
+   7              	 .eabi_attribute 23,3
+   8              	 .eabi_attribute 24,1
+   9              	 .eabi_attribute 25,1
+  10              	 .eabi_attribute 26,1
+  11              	 .eabi_attribute 30,6
+  12              	 .eabi_attribute 34,1
+  13              	 .eabi_attribute 18,4
+  14              	 .thumb
+  15              	 .file "sound_beeper.c"
+  16              	 .text
+  17              	.Ltext0:
+  18              	 .cfi_sections .debug_frame
+  19              	 .section .text.systemBeep,"ax",%progbits
+  20              	 .align 2
+  21              	 .global systemBeep
+  22              	 .thumb
+  23              	 .thumb_func
+  25              	systemBeep:
+  26              	.LFB526:
+  27              	 .file 1 "../cleanflight/src/main/drivers/sound_beeper.c"
+   1:../cleanflight/src/main/drivers/sound_beeper.c **** /*
+   2:../cleanflight/src/main/drivers/sound_beeper.c ****  * This file is part of Cleanflight and Betaflight.
+   3:../cleanflight/src/main/drivers/sound_beeper.c ****  *
+   4:../cleanflight/src/main/drivers/sound_beeper.c ****  * Cleanflight and Betaflight are free software. You can redistribute
+   5:../cleanflight/src/main/drivers/sound_beeper.c ****  * this software and/or modify this software under the terms of the
+   6:../cleanflight/src/main/drivers/sound_beeper.c ****  * GNU General Public License as published by the Free Software
+   7:../cleanflight/src/main/drivers/sound_beeper.c ****  * Foundation, either version 3 of the License, or (at your option)
+   8:../cleanflight/src/main/drivers/sound_beeper.c ****  * any later version.
+   9:../cleanflight/src/main/drivers/sound_beeper.c ****  *
+  10:../cleanflight/src/main/drivers/sound_beeper.c ****  * Cleanflight and Betaflight are distributed in the hope that they
+  11:../cleanflight/src/main/drivers/sound_beeper.c ****  * will be useful, but WITHOUT ANY WARRANTY; without even the implied
+  12:../cleanflight/src/main/drivers/sound_beeper.c ****  * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+  13:../cleanflight/src/main/drivers/sound_beeper.c ****  * See the GNU General Public License for more details.
+  14:../cleanflight/src/main/drivers/sound_beeper.c ****  *
+  15:../cleanflight/src/main/drivers/sound_beeper.c ****  * You should have received a copy of the GNU General Public License
+  16:../cleanflight/src/main/drivers/sound_beeper.c ****  * along with this software.
+  17:../cleanflight/src/main/drivers/sound_beeper.c ****  *
+  18:../cleanflight/src/main/drivers/sound_beeper.c ****  * If not, see <http://www.gnu.org/licenses/>.
+  19:../cleanflight/src/main/drivers/sound_beeper.c ****  */
+  20:../cleanflight/src/main/drivers/sound_beeper.c **** 
+  21:../cleanflight/src/main/drivers/sound_beeper.c **** #include <stdbool.h>
+  22:../cleanflight/src/main/drivers/sound_beeper.c **** #include <stdint.h>
+  23:../cleanflight/src/main/drivers/sound_beeper.c **** 
+  24:../cleanflight/src/main/drivers/sound_beeper.c **** #include "platform.h"
+  25:../cleanflight/src/main/drivers/sound_beeper.c **** 
+  26:../cleanflight/src/main/drivers/sound_beeper.c **** #include "drivers/io.h"
+  27:../cleanflight/src/main/drivers/sound_beeper.c **** #include "drivers/pwm_output.h"
+  28:../cleanflight/src/main/drivers/sound_beeper.c **** 
+  29:../cleanflight/src/main/drivers/sound_beeper.c **** #include "pg/beeper_dev.h"
+  30:../cleanflight/src/main/drivers/sound_beeper.c **** 
+  31:../cleanflight/src/main/drivers/sound_beeper.c **** #include "sound_beeper.h"
+  32:../cleanflight/src/main/drivers/sound_beeper.c **** 
+  33:../cleanflight/src/main/drivers/sound_beeper.c **** #ifdef USE_BEEPER
+  34:../cleanflight/src/main/drivers/sound_beeper.c **** static IO_t beeperIO = DEFIO_IO(NONE);
+  35:../cleanflight/src/main/drivers/sound_beeper.c **** static bool beeperInverted = false;
+  36:../cleanflight/src/main/drivers/sound_beeper.c **** static uint16_t beeperFrequency = 0;
+  37:../cleanflight/src/main/drivers/sound_beeper.c **** #endif
+  38:../cleanflight/src/main/drivers/sound_beeper.c **** 
+  39:../cleanflight/src/main/drivers/sound_beeper.c **** void systemBeep(bool onoff)
+  40:../cleanflight/src/main/drivers/sound_beeper.c **** {
+  28              	 .loc 1 40 0
+  29              	 .cfi_startproc
+  30              	 
+  31              	 
+  32              	 
+  33 0000 80B4     	 push {r7}
+  34              	.LCFI0:
+  35              	 .cfi_def_cfa_offset 4
+  36              	 .cfi_offset 7,-4
+  37 0002 83B0     	 sub sp,sp,#12
+  38              	.LCFI1:
+  39              	 .cfi_def_cfa_offset 16
+  40 0004 00AF     	 add r7,sp,#0
+  41              	.LCFI2:
+  42              	 .cfi_def_cfa_register 7
+  43 0006 0346     	 mov r3,r0
+  44 0008 FB71     	 strb r3,[r7,#7]
+  41:../cleanflight/src/main/drivers/sound_beeper.c **** #ifdef USE_BEEPER
+  42:../cleanflight/src/main/drivers/sound_beeper.c ****     if (beeperFrequency == 0) {
+  43:../cleanflight/src/main/drivers/sound_beeper.c ****         IOWrite(beeperIO, beeperInverted ? onoff : !onoff);
+  44:../cleanflight/src/main/drivers/sound_beeper.c ****     } else {
+  45:../cleanflight/src/main/drivers/sound_beeper.c ****         pwmWriteBeeper(onoff);
+  46:../cleanflight/src/main/drivers/sound_beeper.c ****     }
+  47:../cleanflight/src/main/drivers/sound_beeper.c **** #else
+  48:../cleanflight/src/main/drivers/sound_beeper.c ****     UNUSED(onoff);
+  49:../cleanflight/src/main/drivers/sound_beeper.c **** #endif
+  50:../cleanflight/src/main/drivers/sound_beeper.c **** }
+  45              	 .loc 1 50 0
+  46 000a 0C37     	 adds r7,r7,#12
+  47              	.LCFI3:
+  48              	 .cfi_def_cfa_offset 4
+  49 000c BD46     	 mov sp,r7
+  50              	.LCFI4:
+  51              	 .cfi_def_cfa_register 13
+  52              	 
+  53 000e 5DF8047B 	 ldr r7,[sp],#4
+  54              	.LCFI5:
+  55              	 .cfi_restore 7
+  56              	 .cfi_def_cfa_offset 0
+  57 0012 7047     	 bx lr
+  58              	 .cfi_endproc
+  59              	.LFE526:
+  61              	 .section .text.systemBeepToggle,"ax",%progbits
+  62              	 .align 2
+  63              	 .global systemBeepToggle
+  64              	 .thumb
+  65              	 .thumb_func
+  67              	systemBeepToggle:
+  68              	.LFB527:
+  51:../cleanflight/src/main/drivers/sound_beeper.c **** 
+  52:../cleanflight/src/main/drivers/sound_beeper.c **** void systemBeepToggle(void)
+  53:../cleanflight/src/main/drivers/sound_beeper.c **** {
+  69              	 .loc 1 53 0
+  70              	 .cfi_startproc
+  71              	 
+  72              	 
+  73              	 
+  74 0000 80B4     	 push {r7}
+  75              	.LCFI6:
+  76              	 .cfi_def_cfa_offset 4
+  77              	 .cfi_offset 7,-4
+  78 0002 00AF     	 add r7,sp,#0
+  79              	.LCFI7:
+  80              	 .cfi_def_cfa_register 7
+  54:../cleanflight/src/main/drivers/sound_beeper.c **** #ifdef USE_BEEPER
+  55:../cleanflight/src/main/drivers/sound_beeper.c ****     if (beeperFrequency == 0) {
+  56:../cleanflight/src/main/drivers/sound_beeper.c ****         IOToggle(beeperIO);
+  57:../cleanflight/src/main/drivers/sound_beeper.c ****     } else {
+  58:../cleanflight/src/main/drivers/sound_beeper.c ****         pwmToggleBeeper();
+  59:../cleanflight/src/main/drivers/sound_beeper.c ****     }
+  60:../cleanflight/src/main/drivers/sound_beeper.c **** #endif
+  61:../cleanflight/src/main/drivers/sound_beeper.c **** }
+  81              	 .loc 1 61 0
+  82 0004 BD46     	 mov sp,r7
+  83              	.LCFI8:
+  84              	 .cfi_def_cfa_register 13
+  85              	 
+  86 0006 5DF8047B 	 ldr r7,[sp],#4
+  87              	.LCFI9:
+  88              	 .cfi_restore 7
+  89              	 .cfi_def_cfa_offset 0
+  90 000a 7047     	 bx lr
+  91              	 .cfi_endproc
+  92              	.LFE527:
+  94              	 .section .text.beeperInit,"ax",%progbits
+  95              	 .align 2
+  96              	 .global beeperInit
+  97              	 .thumb
+  98              	 .thumb_func
+ 100              	beeperInit:
+ 101              	.LFB528:
+  62:../cleanflight/src/main/drivers/sound_beeper.c **** 
+  63:../cleanflight/src/main/drivers/sound_beeper.c **** void beeperInit(const beeperDevConfig_t *config)
+  64:../cleanflight/src/main/drivers/sound_beeper.c **** {
+ 102              	 .loc 1 64 0
+ 103              	 .cfi_startproc
+ 104              	 
+ 105              	 
+ 106              	 
+ 107 0000 80B4     	 push {r7}
+ 108              	.LCFI10:
+ 109              	 .cfi_def_cfa_offset 4
+ 110              	 .cfi_offset 7,-4
+ 111 0002 83B0     	 sub sp,sp,#12
+ 112              	.LCFI11:
+ 113              	 .cfi_def_cfa_offset 16
+ 114 0004 00AF     	 add r7,sp,#0
+ 115              	.LCFI12:
+ 116              	 .cfi_def_cfa_register 7
+ 117 0006 7860     	 str r0,[r7,#4]
+  65:../cleanflight/src/main/drivers/sound_beeper.c **** #ifdef USE_BEEPER
+  66:../cleanflight/src/main/drivers/sound_beeper.c ****     beeperFrequency = config->frequency;
+  67:../cleanflight/src/main/drivers/sound_beeper.c ****     if (beeperFrequency == 0) {
+  68:../cleanflight/src/main/drivers/sound_beeper.c ****         beeperIO = IOGetByTag(config->ioTag);
+  69:../cleanflight/src/main/drivers/sound_beeper.c ****         beeperInverted = config->isInverted;
+  70:../cleanflight/src/main/drivers/sound_beeper.c ****         if (beeperIO) {
+  71:../cleanflight/src/main/drivers/sound_beeper.c ****             IOInit(beeperIO, OWNER_BEEPER, 0);
+  72:../cleanflight/src/main/drivers/sound_beeper.c ****             IOConfigGPIO(beeperIO, config->isOpenDrain ? IOCFG_OUT_OD : IOCFG_OUT_PP);
+  73:../cleanflight/src/main/drivers/sound_beeper.c ****         }
+  74:../cleanflight/src/main/drivers/sound_beeper.c ****         systemBeep(false);
+  75:../cleanflight/src/main/drivers/sound_beeper.c ****     } else {
+  76:../cleanflight/src/main/drivers/sound_beeper.c ****         const ioTag_t beeperTag = config->ioTag;
+  77:../cleanflight/src/main/drivers/sound_beeper.c ****         beeperPwmInit(beeperTag, beeperFrequency);
+  78:../cleanflight/src/main/drivers/sound_beeper.c ****     }
+  79:../cleanflight/src/main/drivers/sound_beeper.c **** #else
+  80:../cleanflight/src/main/drivers/sound_beeper.c ****     UNUSED(config);
+  81:../cleanflight/src/main/drivers/sound_beeper.c **** #endif
+  82:../cleanflight/src/main/drivers/sound_beeper.c **** }
+ 118              	 .loc 1 82 0
+ 119 0008 0C37     	 adds r7,r7,#12
+ 120              	.LCFI13:
+ 121              	 .cfi_def_cfa_offset 4
+ 122 000a BD46     	 mov sp,r7
+ 123              	.LCFI14:
+ 124              	 .cfi_def_cfa_register 13
+ 125              	 
+ 126 000c 5DF8047B 	 ldr r7,[sp],#4
+ 127              	.LCFI15:
+ 128              	 .cfi_restore 7
+ 129              	 .cfi_def_cfa_offset 0
+ 130 0010 7047     	 bx lr
+ 131              	 .cfi_endproc
+ 132              	.LFE528:
+ 134 0012 00BF     	 .text
+ 135              	.Letext0:
+ 136              	 .file 2 "d:\\xmc\\dave-ide-4.4.2-64bit\\eclipse\\arm-gcc-49\\arm-none-eabi\\include\\machine\\_default_types.h"
+ 137              	 .file 3 "d:\\xmc\\dave-ide-4.4.2-64bit\\eclipse\\arm-gcc-49\\arm-none-eabi\\include\\stdint.h"
+ 138              	 .file 4 "D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/drivers/io_types.h"
+ 139              	 .file 5 "D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/pg/beeper_dev.h"
+ 140              	 .file 6 "D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/lib/main/CMSIS/Core/Include/core_cm4.h"
+ 141              	 .file 7 "D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/lib/main/XMC4000/system_XMC4700.h"
+DEFINED SYMBOLS
+                            *ABS*:00000000 sound_beeper.c
+    {standard input}:20     .text.systemBeep:00000000 $t
+    {standard input}:25     .text.systemBeep:00000000 systemBeep
+    {standard input}:62     .text.systemBeepToggle:00000000 $t
+    {standard input}:67     .text.systemBeepToggle:00000000 systemBeepToggle
+    {standard input}:95     .text.beeperInit:00000000 $t
+    {standard input}:100    .text.beeperInit:00000000 beeperInit
+                     .debug_frame:00000010 $d
+
+NO UNDEFINED SYMBOLS

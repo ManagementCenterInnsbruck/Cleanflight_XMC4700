@@ -1,0 +1,2528 @@
+   1              	 .syntax unified
+   2              	 .cpu cortex-m4
+   3              	 .eabi_attribute 27,3
+   4              	 .fpu fpv4-sp-d16
+   5              	 .eabi_attribute 20,1
+   6              	 .eabi_attribute 21,1
+   7              	 .eabi_attribute 23,3
+   8              	 .eabi_attribute 24,1
+   9              	 .eabi_attribute 25,1
+  10              	 .eabi_attribute 26,1
+  11              	 .eabi_attribute 30,6
+  12              	 .eabi_attribute 34,1
+  13              	 .eabi_attribute 18,4
+  14              	 .thumb
+  15              	 .file "io.c"
+  16              	 .text
+  17              	.Ltext0:
+  18              	 .cfi_sections .debug_frame
+  19              	 .section .text.XMC_GPIO_SetOutputLevel,"ax",%progbits
+  20              	 .align 2
+  21              	 .thumb
+  22              	 .thumb_func
+  24              	XMC_GPIO_SetOutputLevel:
+  25              	.LFB170:
+  26              	 .file 1 "D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/lib/main/XMC4000/XMCLib/inc/xmc_gpio.h"
+   1:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/lib/main/XMC4000/XMCLib/inc\xmc_gpio.h **** /**
+   2:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/lib/main/XMC4000/XMCLib/inc\xmc_gpio.h ****  * @file xmc_gpio.h
+   3:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/lib/main/XMC4000/XMCLib/inc\xmc_gpio.h ****  * @date 2015-06-20
+   4:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/lib/main/XMC4000/XMCLib/inc\xmc_gpio.h ****  *
+   5:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/lib/main/XMC4000/XMCLib/inc\xmc_gpio.h ****  * @cond
+   6:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/lib/main/XMC4000/XMCLib/inc\xmc_gpio.h ****  **************************************************************************************************
+   7:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/lib/main/XMC4000/XMCLib/inc\xmc_gpio.h ****  * XMClib v2.1.20 - XMC Peripheral Driver Library 
+   8:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/lib/main/XMC4000/XMCLib/inc\xmc_gpio.h ****  *
+   9:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/lib/main/XMC4000/XMCLib/inc\xmc_gpio.h ****  * Copyright (c) 2015-2018, Infineon Technologies AG
+  10:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/lib/main/XMC4000/XMCLib/inc\xmc_gpio.h ****  * All rights reserved.                        
+  11:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/lib/main/XMC4000/XMCLib/inc\xmc_gpio.h ****  *                                             
+  12:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/lib/main/XMC4000/XMCLib/inc\xmc_gpio.h ****  * Redistribution and use in source and binary forms, with or without modification,are permitted pr
+  13:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/lib/main/XMC4000/XMCLib/inc\xmc_gpio.h ****  * following conditions are met:   
+  14:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/lib/main/XMC4000/XMCLib/inc\xmc_gpio.h ****  *                                                                              
+  15:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/lib/main/XMC4000/XMCLib/inc\xmc_gpio.h ****  * Redistributions of source code must retain the above copyright notice, this list of conditions a
+  16:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/lib/main/XMC4000/XMCLib/inc\xmc_gpio.h ****  * disclaimer.                        
+  17:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/lib/main/XMC4000/XMCLib/inc\xmc_gpio.h ****  * 
+  18:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/lib/main/XMC4000/XMCLib/inc\xmc_gpio.h ****  * Redistributions in binary form must reproduce the above copyright notice, this list of condition
+  19:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/lib/main/XMC4000/XMCLib/inc\xmc_gpio.h ****  * disclaimer in the documentation and/or other materials provided with the distribution.          
+  20:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/lib/main/XMC4000/XMCLib/inc\xmc_gpio.h ****  * 
+  21:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/lib/main/XMC4000/XMCLib/inc\xmc_gpio.h ****  * Neither the name of the copyright holders nor the names of its contributors may be used to endor
+  22:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/lib/main/XMC4000/XMCLib/inc\xmc_gpio.h ****  * products derived from this software without specific prior written permission.                  
+  23:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/lib/main/XMC4000/XMCLib/inc\xmc_gpio.h ****  *                                                                              
+  24:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/lib/main/XMC4000/XMCLib/inc\xmc_gpio.h ****  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND ANY EXPRESS OR I
+  25:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/lib/main/XMC4000/XMCLib/inc\xmc_gpio.h ****  * INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTI
+  26:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/lib/main/XMC4000/XMCLib/inc\xmc_gpio.h ****  * DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE  FOR ANY DIRECT, IN
+  27:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/lib/main/XMC4000/XMCLib/inc\xmc_gpio.h ****  * SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBS
+  28:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/lib/main/XMC4000/XMCLib/inc\xmc_gpio.h ****  * SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THE
+  29:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/lib/main/XMC4000/XMCLib/inc\xmc_gpio.h ****  * WHETHER IN CONTRACT, STRICT LIABILITY,OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY
+  30:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/lib/main/XMC4000/XMCLib/inc\xmc_gpio.h ****  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.                            
+  31:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/lib/main/XMC4000/XMCLib/inc\xmc_gpio.h ****  *                                                                              
+  32:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/lib/main/XMC4000/XMCLib/inc\xmc_gpio.h ****  * To improve the quality of the software, users are encouraged to share modifications, enhancement
+  33:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/lib/main/XMC4000/XMCLib/inc\xmc_gpio.h ****  * Infineon Technologies AG dave@infineon.com).                                                    
+  34:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/lib/main/XMC4000/XMCLib/inc\xmc_gpio.h ****  **************************************************************************************************
+  35:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/lib/main/XMC4000/XMCLib/inc\xmc_gpio.h ****  *
+  36:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/lib/main/XMC4000/XMCLib/inc\xmc_gpio.h ****  * Change History
+  37:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/lib/main/XMC4000/XMCLib/inc\xmc_gpio.h ****  * --------------
+  38:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/lib/main/XMC4000/XMCLib/inc\xmc_gpio.h ****  *
+  39:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/lib/main/XMC4000/XMCLib/inc\xmc_gpio.h ****  * 2015-02-20:
+  40:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/lib/main/XMC4000/XMCLib/inc\xmc_gpio.h ****  *     - Initial draft<br>
+  41:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/lib/main/XMC4000/XMCLib/inc\xmc_gpio.h ****  *     - Documentation improved <br>
+  42:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/lib/main/XMC4000/XMCLib/inc\xmc_gpio.h ****  *      
+  43:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/lib/main/XMC4000/XMCLib/inc\xmc_gpio.h ****  * 2015-06-20:
+  44:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/lib/main/XMC4000/XMCLib/inc\xmc_gpio.h ****  *     - Removed version macros and declaration of GetDriverVersion API
+  45:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/lib/main/XMC4000/XMCLib/inc\xmc_gpio.h ****  *
+  46:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/lib/main/XMC4000/XMCLib/inc\xmc_gpio.h ****  * @endcond
+  47:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/lib/main/XMC4000/XMCLib/inc\xmc_gpio.h ****  *
+  48:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/lib/main/XMC4000/XMCLib/inc\xmc_gpio.h ****  */
+  49:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/lib/main/XMC4000/XMCLib/inc\xmc_gpio.h **** 
+  50:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/lib/main/XMC4000/XMCLib/inc\xmc_gpio.h **** #ifndef XMC_GPIO_H
+  51:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/lib/main/XMC4000/XMCLib/inc\xmc_gpio.h **** #define XMC_GPIO_H
+  52:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/lib/main/XMC4000/XMCLib/inc\xmc_gpio.h **** 
+  53:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/lib/main/XMC4000/XMCLib/inc\xmc_gpio.h **** /**************************************************************************************************
+  54:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/lib/main/XMC4000/XMCLib/inc\xmc_gpio.h ****  * HEADER FILES
+  55:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/lib/main/XMC4000/XMCLib/inc\xmc_gpio.h ****  **************************************************************************************************
+  56:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/lib/main/XMC4000/XMCLib/inc\xmc_gpio.h **** 
+  57:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/lib/main/XMC4000/XMCLib/inc\xmc_gpio.h **** #include "xmc_common.h"
+  58:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/lib/main/XMC4000/XMCLib/inc\xmc_gpio.h **** 
+  59:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/lib/main/XMC4000/XMCLib/inc\xmc_gpio.h **** /**
+  60:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/lib/main/XMC4000/XMCLib/inc\xmc_gpio.h ****  * @addtogroup XMClib XMC Peripheral Library
+  61:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/lib/main/XMC4000/XMCLib/inc\xmc_gpio.h ****  * @{
+  62:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/lib/main/XMC4000/XMCLib/inc\xmc_gpio.h ****  */
+  63:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/lib/main/XMC4000/XMCLib/inc\xmc_gpio.h **** 
+  64:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/lib/main/XMC4000/XMCLib/inc\xmc_gpio.h **** /**
+  65:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/lib/main/XMC4000/XMCLib/inc\xmc_gpio.h ****  * @addtogroup GPIO
+  66:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/lib/main/XMC4000/XMCLib/inc\xmc_gpio.h ****  * @brief General Purpose Input Output (GPIO) driver for the XMC microcontroller family.
+  67:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/lib/main/XMC4000/XMCLib/inc\xmc_gpio.h ****  *
+  68:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/lib/main/XMC4000/XMCLib/inc\xmc_gpio.h ****  * GPIO driver provide a generic and very flexible software interface for all standard digital I/O 
+  69:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/lib/main/XMC4000/XMCLib/inc\xmc_gpio.h ****  * Each port slice has individual interfaces for the operation as General Purpose I/O and it furthe
+  70:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/lib/main/XMC4000/XMCLib/inc\xmc_gpio.h ****  * connectivity to the on-chip periphery and the control for the pad characteristics. 
+  71:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/lib/main/XMC4000/XMCLib/inc\xmc_gpio.h ****  *
+  72:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/lib/main/XMC4000/XMCLib/inc\xmc_gpio.h ****  * The driver is divided into Input and Output mode.
+  73:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/lib/main/XMC4000/XMCLib/inc\xmc_gpio.h ****  *
+  74:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/lib/main/XMC4000/XMCLib/inc\xmc_gpio.h ****  * Input mode features:
+  75:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/lib/main/XMC4000/XMCLib/inc\xmc_gpio.h ****  * -# Configuration structure XMC_GPIO_CONFIG_t and initialization function XMC_GPIO_Init()
+  76:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/lib/main/XMC4000/XMCLib/inc\xmc_gpio.h ****  * -# Allows the selection of weak pull-up or pull-down device. Configuration structure XMC_GPIO_MO
+  77:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/lib/main/XMC4000/XMCLib/inc\xmc_gpio.h ****  * \if XMC1
+  78:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/lib/main/XMC4000/XMCLib/inc\xmc_gpio.h ****  * -# Allows the selection of input hysteresis. XMC_GPIO_SetInputHysteresis()
+  79:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/lib/main/XMC4000/XMCLib/inc\xmc_gpio.h ****  * \endif
+  80:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/lib/main/XMC4000/XMCLib/inc\xmc_gpio.h ****  *
+  81:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/lib/main/XMC4000/XMCLib/inc\xmc_gpio.h ****  * 
+  82:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/lib/main/XMC4000/XMCLib/inc\xmc_gpio.h ****  * Output mode features:
+  83:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/lib/main/XMC4000/XMCLib/inc\xmc_gpio.h ****  * -# Allows the selection of push pull/open drain and Alternate output. Configuration structure XM
+  84:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/lib/main/XMC4000/XMCLib/inc\xmc_gpio.h ****  * \if XMC4
+  85:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/lib/main/XMC4000/XMCLib/inc\xmc_gpio.h ****  * -# Allows the selection of pad driver strength. Configuration structure XMC_GPIO_OUTPUT_STRENGTH
+  86:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/lib/main/XMC4000/XMCLib/inc\xmc_gpio.h ****  * \endif
+  87:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/lib/main/XMC4000/XMCLib/inc\xmc_gpio.h ****  *
+  88:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/lib/main/XMC4000/XMCLib/inc\xmc_gpio.h ****  * -# Allows the selection of initial output level. Configuration structure XMC_GPIO_OUTPUT_LEVEL_t
+  89:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/lib/main/XMC4000/XMCLib/inc\xmc_gpio.h ****  *
+  90:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/lib/main/XMC4000/XMCLib/inc\xmc_gpio.h ****  *@{
+  91:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/lib/main/XMC4000/XMCLib/inc\xmc_gpio.h ****  */
+  92:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/lib/main/XMC4000/XMCLib/inc\xmc_gpio.h ****  
+  93:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/lib/main/XMC4000/XMCLib/inc\xmc_gpio.h **** /**************************************************************************************************
+  94:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/lib/main/XMC4000/XMCLib/inc\xmc_gpio.h ****  * MACROS
+  95:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/lib/main/XMC4000/XMCLib/inc\xmc_gpio.h ****  **************************************************************************************************
+  96:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/lib/main/XMC4000/XMCLib/inc\xmc_gpio.h **** 
+  97:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/lib/main/XMC4000/XMCLib/inc\xmc_gpio.h **** #define PORT_IOCR_PC_Pos PORT0_IOCR0_PC0_Pos
+  98:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/lib/main/XMC4000/XMCLib/inc\xmc_gpio.h **** #define PORT_IOCR_PC_Msk PORT0_IOCR0_PC0_Msk
+  99:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/lib/main/XMC4000/XMCLib/inc\xmc_gpio.h **** 
+ 100:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/lib/main/XMC4000/XMCLib/inc\xmc_gpio.h **** #define PORT_IOCR_PC_Size 				(8U)
+ 101:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/lib/main/XMC4000/XMCLib/inc\xmc_gpio.h **** 											
+ 102:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/lib/main/XMC4000/XMCLib/inc\xmc_gpio.h **** 
+ 103:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/lib/main/XMC4000/XMCLib/inc\xmc_gpio.h **** #define XMC_GPIO_CHECK_OUTPUT_LEVEL(level) ((level == XMC_GPIO_OUTPUT_LEVEL_LOW) || \
+ 104:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/lib/main/XMC4000/XMCLib/inc\xmc_gpio.h ****                                             (level == XMC_GPIO_OUTPUT_LEVEL_HIGH))
+ 105:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/lib/main/XMC4000/XMCLib/inc\xmc_gpio.h ****                                             
+ 106:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/lib/main/XMC4000/XMCLib/inc\xmc_gpio.h **** #define XMC_GPIO_CHECK_HWCTRL(hwctrl) ((hwctrl == XMC_GPIO_HWCTRL_DISABLED) || \
+ 107:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/lib/main/XMC4000/XMCLib/inc\xmc_gpio.h ****                                        (hwctrl == XMC_GPIO_HWCTRL_PERIPHERAL1) || \
+ 108:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/lib/main/XMC4000/XMCLib/inc\xmc_gpio.h ****                                        (hwctrl == XMC_GPIO_HWCTRL_PERIPHERAL2))                    
+ 109:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/lib/main/XMC4000/XMCLib/inc\xmc_gpio.h ****                                             
+ 110:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/lib/main/XMC4000/XMCLib/inc\xmc_gpio.h **** /**************************************************************************************************
+ 111:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/lib/main/XMC4000/XMCLib/inc\xmc_gpio.h ****  * ENUMS
+ 112:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/lib/main/XMC4000/XMCLib/inc\xmc_gpio.h ****  **************************************************************************************************
+ 113:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/lib/main/XMC4000/XMCLib/inc\xmc_gpio.h **** 
+ 114:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/lib/main/XMC4000/XMCLib/inc\xmc_gpio.h **** 
+ 115:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/lib/main/XMC4000/XMCLib/inc\xmc_gpio.h **** /**
+ 116:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/lib/main/XMC4000/XMCLib/inc\xmc_gpio.h ****  * Defines output level of a pin. Use type \a XMC_GPIO_OUTPUT_LEVEL_t for this enum.
+ 117:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/lib/main/XMC4000/XMCLib/inc\xmc_gpio.h ****  */
+ 118:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/lib/main/XMC4000/XMCLib/inc\xmc_gpio.h **** typedef enum XMC_GPIO_OUTPUT_LEVEL
+ 119:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/lib/main/XMC4000/XMCLib/inc\xmc_gpio.h **** {
+ 120:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/lib/main/XMC4000/XMCLib/inc\xmc_gpio.h ****   XMC_GPIO_OUTPUT_LEVEL_LOW  = 0x10000U, /**<  Reset bit */
+ 121:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/lib/main/XMC4000/XMCLib/inc\xmc_gpio.h ****   XMC_GPIO_OUTPUT_LEVEL_HIGH = 0x1U, 	/**< Set bit  */
+ 122:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/lib/main/XMC4000/XMCLib/inc\xmc_gpio.h **** } XMC_GPIO_OUTPUT_LEVEL_t;
+ 123:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/lib/main/XMC4000/XMCLib/inc\xmc_gpio.h **** 
+ 124:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/lib/main/XMC4000/XMCLib/inc\xmc_gpio.h **** /**
+ 125:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/lib/main/XMC4000/XMCLib/inc\xmc_gpio.h ****  * Defines direct hardware control characteristics of the pin . Use type \a XMC_GPIO_HWCTRL_t for t
+ 126:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/lib/main/XMC4000/XMCLib/inc\xmc_gpio.h ****  */
+ 127:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/lib/main/XMC4000/XMCLib/inc\xmc_gpio.h **** typedef enum XMC_GPIO_HWCTRL
+ 128:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/lib/main/XMC4000/XMCLib/inc\xmc_gpio.h **** {
+ 129:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/lib/main/XMC4000/XMCLib/inc\xmc_gpio.h ****   XMC_GPIO_HWCTRL_DISABLED     = 0x0U, /**<  Software control only */
+ 130:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/lib/main/XMC4000/XMCLib/inc\xmc_gpio.h ****   XMC_GPIO_HWCTRL_PERIPHERAL1  = 0x1U, /**<  HWI0/HWO0 control path can override the software confi
+ 131:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/lib/main/XMC4000/XMCLib/inc\xmc_gpio.h ****   XMC_GPIO_HWCTRL_PERIPHERAL2  = 0x2U  /**<  HWI1/HWO1 control path can override the software confi
+ 132:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/lib/main/XMC4000/XMCLib/inc\xmc_gpio.h **** } XMC_GPIO_HWCTRL_t;
+ 133:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/lib/main/XMC4000/XMCLib/inc\xmc_gpio.h **** 
+ 134:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/lib/main/XMC4000/XMCLib/inc\xmc_gpio.h **** /**************************************************************************************************
+ 135:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/lib/main/XMC4000/XMCLib/inc\xmc_gpio.h ****  * DEVICE FAMILY EXTENSIONS
+ 136:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/lib/main/XMC4000/XMCLib/inc\xmc_gpio.h ****  **************************************************************************************************
+ 137:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/lib/main/XMC4000/XMCLib/inc\xmc_gpio.h **** 
+ 138:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/lib/main/XMC4000/XMCLib/inc\xmc_gpio.h ****  #if UC_FAMILY == XMC1
+ 139:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/lib/main/XMC4000/XMCLib/inc\xmc_gpio.h **** #include "xmc1_gpio.h"
+ 140:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/lib/main/XMC4000/XMCLib/inc\xmc_gpio.h **** #elif UC_FAMILY == XMC4
+ 141:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/lib/main/XMC4000/XMCLib/inc\xmc_gpio.h **** #include "xmc4_gpio.h"
+ 142:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/lib/main/XMC4000/XMCLib/inc\xmc_gpio.h **** #else
+ 143:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/lib/main/XMC4000/XMCLib/inc\xmc_gpio.h **** #error "xmc_gpio.h: family device not supported"
+ 144:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/lib/main/XMC4000/XMCLib/inc\xmc_gpio.h **** #endif
+ 145:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/lib/main/XMC4000/XMCLib/inc\xmc_gpio.h **** 
+ 146:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/lib/main/XMC4000/XMCLib/inc\xmc_gpio.h **** /**************************************************************************************************
+ 147:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/lib/main/XMC4000/XMCLib/inc\xmc_gpio.h ****  * API PROTOTYPES
+ 148:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/lib/main/XMC4000/XMCLib/inc\xmc_gpio.h ****  **************************************************************************************************
+ 149:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/lib/main/XMC4000/XMCLib/inc\xmc_gpio.h **** 
+ 150:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/lib/main/XMC4000/XMCLib/inc\xmc_gpio.h **** #ifdef __cplusplus
+ 151:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/lib/main/XMC4000/XMCLib/inc\xmc_gpio.h **** extern "C" {
+ 152:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/lib/main/XMC4000/XMCLib/inc\xmc_gpio.h **** #endif
+ 153:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/lib/main/XMC4000/XMCLib/inc\xmc_gpio.h **** 
+ 154:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/lib/main/XMC4000/XMCLib/inc\xmc_gpio.h **** 
+ 155:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/lib/main/XMC4000/XMCLib/inc\xmc_gpio.h **** /**
+ 156:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/lib/main/XMC4000/XMCLib/inc\xmc_gpio.h ****  * @param  port	  Constant pointer pointing to GPIO port, to access port registers like Pn_OUT,Pn_O
+ 157:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/lib/main/XMC4000/XMCLib/inc\xmc_gpio.h ****  * @param  pin	  Port pin number.
+ 158:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/lib/main/XMC4000/XMCLib/inc\xmc_gpio.h ****  * @param  config GPIO configuration data structure. Refer data structure @ref XMC_GPIO_CONFIG_t fo
+ 159:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/lib/main/XMC4000/XMCLib/inc\xmc_gpio.h ****  *
+ 160:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/lib/main/XMC4000/XMCLib/inc\xmc_gpio.h ****  * @return None
+ 161:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/lib/main/XMC4000/XMCLib/inc\xmc_gpio.h ****  *
+ 162:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/lib/main/XMC4000/XMCLib/inc\xmc_gpio.h ****  * \par<b>Description:</b><br>
+ 163:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/lib/main/XMC4000/XMCLib/inc\xmc_gpio.h ****  * \if XMC1
+ 164:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/lib/main/XMC4000/XMCLib/inc\xmc_gpio.h ****  * Initializes input / output mode settings like, pull up / pull down devices,hysteresis, push pull
+ 165:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/lib/main/XMC4000/XMCLib/inc\xmc_gpio.h ****  * Also configures alternate function outputs and clears hardware port control for a selected \a po
+ 166:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/lib/main/XMC4000/XMCLib/inc\xmc_gpio.h ****  * \a config provides selected I/O settings. It configures hardware registers Pn_IOCR,Pn_OUT, Pn_OM
+ 167:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/lib/main/XMC4000/XMCLib/inc\xmc_gpio.h ****  * \endif
+ 168:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/lib/main/XMC4000/XMCLib/inc\xmc_gpio.h ****  * \if XMC4
+ 169:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/lib/main/XMC4000/XMCLib/inc\xmc_gpio.h ****  * Initializes input / output mode settings like, pull up / pull down devices,push pull /open drain
+ 170:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/lib/main/XMC4000/XMCLib/inc\xmc_gpio.h ****  * Also configures alternate function outputs and clears hardware port control for selected \a port
+ 171:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/lib/main/XMC4000/XMCLib/inc\xmc_gpio.h ****  * It configures hardware registers Pn_IOCR,Pn_OUT,Pn_OMR,Pn_PDISC and Pn_PDR.\n
+ 172:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/lib/main/XMC4000/XMCLib/inc\xmc_gpio.h ****  * \endif
+ 173:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/lib/main/XMC4000/XMCLib/inc\xmc_gpio.h ****  *
+ 174:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/lib/main/XMC4000/XMCLib/inc\xmc_gpio.h ****  * \par<b>Related APIs:</b><BR>
+ 175:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/lib/main/XMC4000/XMCLib/inc\xmc_gpio.h ****  *  None
+ 176:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/lib/main/XMC4000/XMCLib/inc\xmc_gpio.h ****  *
+ 177:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/lib/main/XMC4000/XMCLib/inc\xmc_gpio.h ****  * \par<b>Note:</b><br>
+ 178:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/lib/main/XMC4000/XMCLib/inc\xmc_gpio.h ****  * This API is called in definition of DAVE_init by code generation and therefore should not be exp
+ 179:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/lib/main/XMC4000/XMCLib/inc\xmc_gpio.h ****  * for the normal operation. Use other APIs only after DAVE_init is called successfully (returns DA
+ 180:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/lib/main/XMC4000/XMCLib/inc\xmc_gpio.h ****  *
+ 181:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/lib/main/XMC4000/XMCLib/inc\xmc_gpio.h ****  *
+ 182:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/lib/main/XMC4000/XMCLib/inc\xmc_gpio.h ****  */
+ 183:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/lib/main/XMC4000/XMCLib/inc\xmc_gpio.h **** 
+ 184:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/lib/main/XMC4000/XMCLib/inc\xmc_gpio.h ****  
+ 185:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/lib/main/XMC4000/XMCLib/inc\xmc_gpio.h **** void XMC_GPIO_Init(XMC_GPIO_PORT_t *const port, const uint8_t pin, const XMC_GPIO_CONFIG_t *const c
+ 186:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/lib/main/XMC4000/XMCLib/inc\xmc_gpio.h ****  
+ 187:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/lib/main/XMC4000/XMCLib/inc\xmc_gpio.h **** /**
+ 188:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/lib/main/XMC4000/XMCLib/inc\xmc_gpio.h ****  *
+ 189:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/lib/main/XMC4000/XMCLib/inc\xmc_gpio.h ****  * @param  port	Constant pointer pointing to GPIO port, to access hardware register Pn_IOCR.
+ 190:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/lib/main/XMC4000/XMCLib/inc\xmc_gpio.h ****  * @param  pin	Port pin number.
+ 191:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/lib/main/XMC4000/XMCLib/inc\xmc_gpio.h ****  * @param  mode input / output functionality selection. Refer @ref XMC_GPIO_MODE_t for valid values
+ 192:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/lib/main/XMC4000/XMCLib/inc\xmc_gpio.h ****  *
+ 193:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/lib/main/XMC4000/XMCLib/inc\xmc_gpio.h ****  * @return None
+ 194:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/lib/main/XMC4000/XMCLib/inc\xmc_gpio.h ****  *
+ 195:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/lib/main/XMC4000/XMCLib/inc\xmc_gpio.h ****  * \par<b>Description:</b><br>
+ 196:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/lib/main/XMC4000/XMCLib/inc\xmc_gpio.h ****  * Sets digital input and output driver functionality and characteristics of a GPIO port pin. It co
+ 197:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/lib/main/XMC4000/XMCLib/inc\xmc_gpio.h ****  * registers Pn_IOCR. \a mode is initially configured during initialization in XMC_GPIO_Init(). Cal
+ 198:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/lib/main/XMC4000/XMCLib/inc\xmc_gpio.h ****  * the port direction functionality as needed later in the program.
+ 199:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/lib/main/XMC4000/XMCLib/inc\xmc_gpio.h ****  *
+ 200:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/lib/main/XMC4000/XMCLib/inc\xmc_gpio.h ****  * \par<b>Related APIs:</b><BR>
+ 201:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/lib/main/XMC4000/XMCLib/inc\xmc_gpio.h ****  *  None
+ 202:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/lib/main/XMC4000/XMCLib/inc\xmc_gpio.h ****  *
+ 203:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/lib/main/XMC4000/XMCLib/inc\xmc_gpio.h ****  */
+ 204:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/lib/main/XMC4000/XMCLib/inc\xmc_gpio.h **** 
+ 205:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/lib/main/XMC4000/XMCLib/inc\xmc_gpio.h **** void XMC_GPIO_SetMode(XMC_GPIO_PORT_t *const port, const uint8_t pin, const XMC_GPIO_MODE_t mode);
+ 206:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/lib/main/XMC4000/XMCLib/inc\xmc_gpio.h **** 
+ 207:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/lib/main/XMC4000/XMCLib/inc\xmc_gpio.h **** 
+ 208:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/lib/main/XMC4000/XMCLib/inc\xmc_gpio.h **** /**
+ 209:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/lib/main/XMC4000/XMCLib/inc\xmc_gpio.h ****  *
+ 210:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/lib/main/XMC4000/XMCLib/inc\xmc_gpio.h ****  * @param  port	 Constant pointer pointing to GPIO port, to access hardware register Pn_OMR.
+ 211:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/lib/main/XMC4000/XMCLib/inc\xmc_gpio.h ****  * @param  pin	 Port pin number.
+ 212:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/lib/main/XMC4000/XMCLib/inc\xmc_gpio.h ****  * @param  level output level selection. Refer @ref XMC_GPIO_OUTPUT_LEVEL_t for valid values.
+ 213:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/lib/main/XMC4000/XMCLib/inc\xmc_gpio.h ****  *
+ 214:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/lib/main/XMC4000/XMCLib/inc\xmc_gpio.h ****  * @return None
+ 215:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/lib/main/XMC4000/XMCLib/inc\xmc_gpio.h ****  *
+ 216:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/lib/main/XMC4000/XMCLib/inc\xmc_gpio.h ****  * \par<b>Description:</b><br>
+ 217:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/lib/main/XMC4000/XMCLib/inc\xmc_gpio.h ****  * Set port pin output level to high or low.It configures hardware registers Pn_OMR.\a level is ini
+ 218:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/lib/main/XMC4000/XMCLib/inc\xmc_gpio.h ****  * configured during initialization in XMC_GPIO_Init(). Call this API to alter output level as need
+ 219:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/lib/main/XMC4000/XMCLib/inc\xmc_gpio.h ****  *
+ 220:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/lib/main/XMC4000/XMCLib/inc\xmc_gpio.h ****  * \par<b>Related APIs:</b><BR>
+ 221:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/lib/main/XMC4000/XMCLib/inc\xmc_gpio.h ****  *  XMC_GPIO_SetOutputHigh(), XMC_GPIO_SetOutputLow().
+ 222:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/lib/main/XMC4000/XMCLib/inc\xmc_gpio.h ****  *
+ 223:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/lib/main/XMC4000/XMCLib/inc\xmc_gpio.h ****  * \par<b>Note:</b><br>
+ 224:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/lib/main/XMC4000/XMCLib/inc\xmc_gpio.h ****  * Prior to this api, user has to configure port pin to output mode using XMC_GPIO_SetMode().
+ 225:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/lib/main/XMC4000/XMCLib/inc\xmc_gpio.h ****  *
+ 226:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/lib/main/XMC4000/XMCLib/inc\xmc_gpio.h ****  */
+ 227:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/lib/main/XMC4000/XMCLib/inc\xmc_gpio.h **** 
+ 228:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/lib/main/XMC4000/XMCLib/inc\xmc_gpio.h **** 
+ 229:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/lib/main/XMC4000/XMCLib/inc\xmc_gpio.h **** __STATIC_INLINE void XMC_GPIO_SetOutputLevel(XMC_GPIO_PORT_t *const port, const uint8_t pin, const 
+ 230:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/lib/main/XMC4000/XMCLib/inc\xmc_gpio.h **** {
+  27              	 .loc 1 230 0
+  28              	 .cfi_startproc
+  29              	 
+  30              	 
+  31              	 
+  32 0000 80B4     	 push {r7}
+  33              	.LCFI0:
+  34              	 .cfi_def_cfa_offset 4
+  35              	 .cfi_offset 7,-4
+  36 0002 85B0     	 sub sp,sp,#20
+  37              	.LCFI1:
+  38              	 .cfi_def_cfa_offset 24
+  39 0004 00AF     	 add r7,sp,#0
+  40              	.LCFI2:
+  41              	 .cfi_def_cfa_register 7
+  42 0006 F860     	 str r0,[r7,#12]
+  43 0008 0B46     	 mov r3,r1
+  44 000a 7A60     	 str r2,[r7,#4]
+  45 000c FB72     	 strb r3,[r7,#11]
+ 231:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/lib/main/XMC4000/XMCLib/inc\xmc_gpio.h ****   XMC_ASSERT("XMC_GPIO_SetOutputLevel: Invalid port", XMC_GPIO_CHECK_OUTPUT_PORT(port));
+ 232:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/lib/main/XMC4000/XMCLib/inc\xmc_gpio.h ****   XMC_ASSERT("XMC_GPIO_SetOutputLevel: Invalid output level", XMC_GPIO_CHECK_OUTPUT_LEVEL(level));
+ 233:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/lib/main/XMC4000/XMCLib/inc\xmc_gpio.h ****   
+ 234:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/lib/main/XMC4000/XMCLib/inc\xmc_gpio.h ****   port->OMR = (uint32_t)level << pin;
+  46              	 .loc 1 234 0
+  47 000e FB7A     	 ldrb r3,[r7,#11]
+  48 0010 7A68     	 ldr r2,[r7,#4]
+  49 0012 9A40     	 lsls r2,r2,r3
+  50 0014 FB68     	 ldr r3,[r7,#12]
+  51 0016 5968     	 ldr r1,[r3,#4]
+  52 0018 0021     	 movs r1,#0
+  53 001a 0A43     	 orrs r2,r2,r1
+  54 001c 5A60     	 str r2,[r3,#4]
+ 235:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/lib/main/XMC4000/XMCLib/inc\xmc_gpio.h **** }
+  55              	 .loc 1 235 0
+  56 001e 1437     	 adds r7,r7,#20
+  57              	.LCFI3:
+  58              	 .cfi_def_cfa_offset 4
+  59 0020 BD46     	 mov sp,r7
+  60              	.LCFI4:
+  61              	 .cfi_def_cfa_register 13
+  62              	 
+  63 0022 5DF8047B 	 ldr r7,[sp],#4
+  64              	.LCFI5:
+  65              	 .cfi_restore 7
+  66              	 .cfi_def_cfa_offset 0
+  67 0026 7047     	 bx lr
+  68              	 .cfi_endproc
+  69              	.LFE170:
+  71              	 .section .text.XMC_GPIO_SetOutputHigh,"ax",%progbits
+  72              	 .align 2
+  73              	 .thumb
+  74              	 .thumb_func
+  76              	XMC_GPIO_SetOutputHigh:
+  77              	.LFB171:
+ 236:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/lib/main/XMC4000/XMCLib/inc\xmc_gpio.h **** 
+ 237:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/lib/main/XMC4000/XMCLib/inc\xmc_gpio.h **** 
+ 238:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/lib/main/XMC4000/XMCLib/inc\xmc_gpio.h **** /**
+ 239:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/lib/main/XMC4000/XMCLib/inc\xmc_gpio.h ****  * @param  port constant pointer pointing to GPIO port, to access hardware register Pn_OMR.
+ 240:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/lib/main/XMC4000/XMCLib/inc\xmc_gpio.h ****  * @param  pin	Port pin number.
+ 241:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/lib/main/XMC4000/XMCLib/inc\xmc_gpio.h ****  *
+ 242:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/lib/main/XMC4000/XMCLib/inc\xmc_gpio.h ****  * @return None
+ 243:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/lib/main/XMC4000/XMCLib/inc\xmc_gpio.h ****  *
+ 244:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/lib/main/XMC4000/XMCLib/inc\xmc_gpio.h ****  * \par<b>Description:</b><br>
+ 245:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/lib/main/XMC4000/XMCLib/inc\xmc_gpio.h ****  *  Sets port pin output to high. It configures hardware registers Pn_OMR.
+ 246:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/lib/main/XMC4000/XMCLib/inc\xmc_gpio.h ****  *
+ 247:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/lib/main/XMC4000/XMCLib/inc\xmc_gpio.h ****  *  \par<b>Related APIs:</b><BR>
+ 248:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/lib/main/XMC4000/XMCLib/inc\xmc_gpio.h ****  *  XMC_GPIO_SetOutputLow()
+ 249:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/lib/main/XMC4000/XMCLib/inc\xmc_gpio.h ****  *
+ 250:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/lib/main/XMC4000/XMCLib/inc\xmc_gpio.h ****  * \par<b>Note:</b><br>
+ 251:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/lib/main/XMC4000/XMCLib/inc\xmc_gpio.h ****  * Prior to this api, user has to configure port pin to output mode using XMC_GPIO_SetMode().\n
+ 252:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/lib/main/XMC4000/XMCLib/inc\xmc_gpio.h ****  * Register Pn_OMR is virtual and does not contain any flip-flop. A read action delivers the value 
+ 253:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/lib/main/XMC4000/XMCLib/inc\xmc_gpio.h ****  *
+ 254:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/lib/main/XMC4000/XMCLib/inc\xmc_gpio.h ****  */
+ 255:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/lib/main/XMC4000/XMCLib/inc\xmc_gpio.h **** 
+ 256:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/lib/main/XMC4000/XMCLib/inc\xmc_gpio.h **** __STATIC_INLINE void XMC_GPIO_SetOutputHigh(XMC_GPIO_PORT_t *const port, const uint8_t pin)
+ 257:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/lib/main/XMC4000/XMCLib/inc\xmc_gpio.h **** {
+  78              	 .loc 1 257 0
+  79              	 .cfi_startproc
+  80              	 
+  81              	 
+  82              	 
+  83 0000 80B4     	 push {r7}
+  84              	.LCFI6:
+  85              	 .cfi_def_cfa_offset 4
+  86              	 .cfi_offset 7,-4
+  87 0002 83B0     	 sub sp,sp,#12
+  88              	.LCFI7:
+  89              	 .cfi_def_cfa_offset 16
+  90 0004 00AF     	 add r7,sp,#0
+  91              	.LCFI8:
+  92              	 .cfi_def_cfa_register 7
+  93 0006 7860     	 str r0,[r7,#4]
+  94 0008 0B46     	 mov r3,r1
+  95 000a FB70     	 strb r3,[r7,#3]
+ 258:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/lib/main/XMC4000/XMCLib/inc\xmc_gpio.h ****   XMC_ASSERT("XMC_GPIO_SetOutputHigh: Invalid port", XMC_GPIO_CHECK_OUTPUT_PORT(port));
+ 259:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/lib/main/XMC4000/XMCLib/inc\xmc_gpio.h **** 
+ 260:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/lib/main/XMC4000/XMCLib/inc\xmc_gpio.h ****   port->OMR = (uint32_t)0x1U << pin;
+  96              	 .loc 1 260 0
+  97 000c FB78     	 ldrb r3,[r7,#3]
+  98 000e 0122     	 movs r2,#1
+  99 0010 9A40     	 lsls r2,r2,r3
+ 100 0012 7B68     	 ldr r3,[r7,#4]
+ 101 0014 5968     	 ldr r1,[r3,#4]
+ 102 0016 0021     	 movs r1,#0
+ 103 0018 0A43     	 orrs r2,r2,r1
+ 104 001a 5A60     	 str r2,[r3,#4]
+ 261:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/lib/main/XMC4000/XMCLib/inc\xmc_gpio.h **** }
+ 105              	 .loc 1 261 0
+ 106 001c 0C37     	 adds r7,r7,#12
+ 107              	.LCFI9:
+ 108              	 .cfi_def_cfa_offset 4
+ 109 001e BD46     	 mov sp,r7
+ 110              	.LCFI10:
+ 111              	 .cfi_def_cfa_register 13
+ 112              	 
+ 113 0020 5DF8047B 	 ldr r7,[sp],#4
+ 114              	.LCFI11:
+ 115              	 .cfi_restore 7
+ 116              	 .cfi_def_cfa_offset 0
+ 117 0024 7047     	 bx lr
+ 118              	 .cfi_endproc
+ 119              	.LFE171:
+ 121 0026 00BF     	 .section .text.XMC_GPIO_SetOutputLow,"ax",%progbits
+ 122              	 .align 2
+ 123              	 .thumb
+ 124              	 .thumb_func
+ 126              	XMC_GPIO_SetOutputLow:
+ 127              	.LFB172:
+ 262:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/lib/main/XMC4000/XMCLib/inc\xmc_gpio.h **** 
+ 263:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/lib/main/XMC4000/XMCLib/inc\xmc_gpio.h **** /**
+ 264:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/lib/main/XMC4000/XMCLib/inc\xmc_gpio.h ****  *
+ 265:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/lib/main/XMC4000/XMCLib/inc\xmc_gpio.h ****  * @param  port	constant pointer pointing to GPIO port, to access hardware register Pn_OMR.
+ 266:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/lib/main/XMC4000/XMCLib/inc\xmc_gpio.h ****  * @param  pin	port pin number.
+ 267:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/lib/main/XMC4000/XMCLib/inc\xmc_gpio.h ****  *
+ 268:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/lib/main/XMC4000/XMCLib/inc\xmc_gpio.h ****  * @return  None
+ 269:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/lib/main/XMC4000/XMCLib/inc\xmc_gpio.h ****  *
+ 270:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/lib/main/XMC4000/XMCLib/inc\xmc_gpio.h ****  *\par<b>Description:</b><br>
+ 271:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/lib/main/XMC4000/XMCLib/inc\xmc_gpio.h ****  * Sets port pin output to low. It configures hardware registers Pn_OMR.\n
+ 272:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/lib/main/XMC4000/XMCLib/inc\xmc_gpio.h ****  *
+ 273:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/lib/main/XMC4000/XMCLib/inc\xmc_gpio.h ****  * \par<b>Related APIs:</b><BR>>
+ 274:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/lib/main/XMC4000/XMCLib/inc\xmc_gpio.h ****  * XMC_GPIO_SetOutputHigh()
+ 275:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/lib/main/XMC4000/XMCLib/inc\xmc_gpio.h ****  *
+ 276:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/lib/main/XMC4000/XMCLib/inc\xmc_gpio.h ****  *\par<b>Note:</b><br>
+ 277:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/lib/main/XMC4000/XMCLib/inc\xmc_gpio.h ****  * Prior to this api, user has to configure port pin to output mode using XMC_GPIO_SetMode().
+ 278:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/lib/main/XMC4000/XMCLib/inc\xmc_gpio.h ****  * Register Pn_OMR is virtual and does not contain any flip-flop. A read action delivers the value 
+ 279:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/lib/main/XMC4000/XMCLib/inc\xmc_gpio.h ****  *
+ 280:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/lib/main/XMC4000/XMCLib/inc\xmc_gpio.h ****  */
+ 281:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/lib/main/XMC4000/XMCLib/inc\xmc_gpio.h **** 
+ 282:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/lib/main/XMC4000/XMCLib/inc\xmc_gpio.h **** __STATIC_INLINE void XMC_GPIO_SetOutputLow(XMC_GPIO_PORT_t *const port, const uint8_t pin)
+ 283:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/lib/main/XMC4000/XMCLib/inc\xmc_gpio.h **** {
+ 128              	 .loc 1 283 0
+ 129              	 .cfi_startproc
+ 130              	 
+ 131              	 
+ 132              	 
+ 133 0000 80B4     	 push {r7}
+ 134              	.LCFI12:
+ 135              	 .cfi_def_cfa_offset 4
+ 136              	 .cfi_offset 7,-4
+ 137 0002 83B0     	 sub sp,sp,#12
+ 138              	.LCFI13:
+ 139              	 .cfi_def_cfa_offset 16
+ 140 0004 00AF     	 add r7,sp,#0
+ 141              	.LCFI14:
+ 142              	 .cfi_def_cfa_register 7
+ 143 0006 7860     	 str r0,[r7,#4]
+ 144 0008 0B46     	 mov r3,r1
+ 145 000a FB70     	 strb r3,[r7,#3]
+ 284:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/lib/main/XMC4000/XMCLib/inc\xmc_gpio.h ****   XMC_ASSERT("XMC_GPIO_SetOutputLow: Invalid port", XMC_GPIO_CHECK_OUTPUT_PORT(port));
+ 285:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/lib/main/XMC4000/XMCLib/inc\xmc_gpio.h **** 
+ 286:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/lib/main/XMC4000/XMCLib/inc\xmc_gpio.h ****   port->OMR = 0x10000U << pin;
+ 146              	 .loc 1 286 0
+ 147 000c FB78     	 ldrb r3,[r7,#3]
+ 148 000e 4FF48032 	 mov r2,#65536
+ 149 0012 9A40     	 lsls r2,r2,r3
+ 150 0014 7B68     	 ldr r3,[r7,#4]
+ 151 0016 5968     	 ldr r1,[r3,#4]
+ 152 0018 0021     	 movs r1,#0
+ 153 001a 0A43     	 orrs r2,r2,r1
+ 154 001c 5A60     	 str r2,[r3,#4]
+ 287:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/lib/main/XMC4000/XMCLib/inc\xmc_gpio.h **** }
+ 155              	 .loc 1 287 0
+ 156 001e 0C37     	 adds r7,r7,#12
+ 157              	.LCFI15:
+ 158              	 .cfi_def_cfa_offset 4
+ 159 0020 BD46     	 mov sp,r7
+ 160              	.LCFI16:
+ 161              	 .cfi_def_cfa_register 13
+ 162              	 
+ 163 0022 5DF8047B 	 ldr r7,[sp],#4
+ 164              	.LCFI17:
+ 165              	 .cfi_restore 7
+ 166              	 .cfi_def_cfa_offset 0
+ 167 0026 7047     	 bx lr
+ 168              	 .cfi_endproc
+ 169              	.LFE172:
+ 171              	 .section .text.XMC_GPIO_ToggleOutput,"ax",%progbits
+ 172              	 .align 2
+ 173              	 .thumb
+ 174              	 .thumb_func
+ 176              	XMC_GPIO_ToggleOutput:
+ 177              	.LFB173:
+ 288:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/lib/main/XMC4000/XMCLib/inc\xmc_gpio.h **** 
+ 289:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/lib/main/XMC4000/XMCLib/inc\xmc_gpio.h **** /**
+ 290:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/lib/main/XMC4000/XMCLib/inc\xmc_gpio.h ****  *
+ 291:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/lib/main/XMC4000/XMCLib/inc\xmc_gpio.h ****  * @param port constant pointer pointing to GPIO port, to access hardware register Pn_OMR.
+ 292:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/lib/main/XMC4000/XMCLib/inc\xmc_gpio.h ****  * @param pin  port pin number.
+ 293:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/lib/main/XMC4000/XMCLib/inc\xmc_gpio.h ****  *
+ 294:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/lib/main/XMC4000/XMCLib/inc\xmc_gpio.h ****  * @return None
+ 295:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/lib/main/XMC4000/XMCLib/inc\xmc_gpio.h ****  *
+ 296:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/lib/main/XMC4000/XMCLib/inc\xmc_gpio.h ****  * \par<b>Description:</b><br>
+ 297:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/lib/main/XMC4000/XMCLib/inc\xmc_gpio.h ****  * Configures port pin output to Toggle. It configures hardware registers Pn_OMR.
+ 298:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/lib/main/XMC4000/XMCLib/inc\xmc_gpio.h ****  *
+ 299:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/lib/main/XMC4000/XMCLib/inc\xmc_gpio.h ****  * \par<b>Related APIs:</b><BR>
+ 300:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/lib/main/XMC4000/XMCLib/inc\xmc_gpio.h ****  * XMC_GPIO_SetOutputHigh(), XMC_GPIO_SetOutputLow().
+ 301:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/lib/main/XMC4000/XMCLib/inc\xmc_gpio.h ****  *
+ 302:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/lib/main/XMC4000/XMCLib/inc\xmc_gpio.h ****  * \par<b>Note:</b><br>
+ 303:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/lib/main/XMC4000/XMCLib/inc\xmc_gpio.h ****  * Prior to this api, user has to configure port pin to output mode using XMC_GPIO_SetMode(). Regis
+ 304:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/lib/main/XMC4000/XMCLib/inc\xmc_gpio.h ****  * and does not contain any flip-flop. A read action delivers the value of 0.
+ 305:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/lib/main/XMC4000/XMCLib/inc\xmc_gpio.h ****  *
+ 306:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/lib/main/XMC4000/XMCLib/inc\xmc_gpio.h ****  */
+ 307:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/lib/main/XMC4000/XMCLib/inc\xmc_gpio.h **** 
+ 308:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/lib/main/XMC4000/XMCLib/inc\xmc_gpio.h **** __STATIC_INLINE void XMC_GPIO_ToggleOutput(XMC_GPIO_PORT_t *const port, const uint8_t pin)
+ 309:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/lib/main/XMC4000/XMCLib/inc\xmc_gpio.h **** {
+ 178              	 .loc 1 309 0
+ 179              	 .cfi_startproc
+ 180              	 
+ 181              	 
+ 182              	 
+ 183 0000 80B4     	 push {r7}
+ 184              	.LCFI18:
+ 185              	 .cfi_def_cfa_offset 4
+ 186              	 .cfi_offset 7,-4
+ 187 0002 83B0     	 sub sp,sp,#12
+ 188              	.LCFI19:
+ 189              	 .cfi_def_cfa_offset 16
+ 190 0004 00AF     	 add r7,sp,#0
+ 191              	.LCFI20:
+ 192              	 .cfi_def_cfa_register 7
+ 193 0006 7860     	 str r0,[r7,#4]
+ 194 0008 0B46     	 mov r3,r1
+ 195 000a FB70     	 strb r3,[r7,#3]
+ 310:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/lib/main/XMC4000/XMCLib/inc\xmc_gpio.h ****   XMC_ASSERT("XMC_GPIO_ToggleOutput: Invalid port", XMC_GPIO_CHECK_OUTPUT_PORT(port));
+ 311:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/lib/main/XMC4000/XMCLib/inc\xmc_gpio.h **** 
+ 312:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/lib/main/XMC4000/XMCLib/inc\xmc_gpio.h ****   port->OMR = 0x10001U << pin;
+ 196              	 .loc 1 312 0
+ 197 000c FB78     	 ldrb r3,[r7,#3]
+ 198 000e 4FF00112 	 mov r2,#65537
+ 199 0012 9A40     	 lsls r2,r2,r3
+ 200 0014 7B68     	 ldr r3,[r7,#4]
+ 201 0016 5968     	 ldr r1,[r3,#4]
+ 202 0018 0021     	 movs r1,#0
+ 203 001a 0A43     	 orrs r2,r2,r1
+ 204 001c 5A60     	 str r2,[r3,#4]
+ 313:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/lib/main/XMC4000/XMCLib/inc\xmc_gpio.h **** }
+ 205              	 .loc 1 313 0
+ 206 001e 0C37     	 adds r7,r7,#12
+ 207              	.LCFI21:
+ 208              	 .cfi_def_cfa_offset 4
+ 209 0020 BD46     	 mov sp,r7
+ 210              	.LCFI22:
+ 211              	 .cfi_def_cfa_register 13
+ 212              	 
+ 213 0022 5DF8047B 	 ldr r7,[sp],#4
+ 214              	.LCFI23:
+ 215              	 .cfi_restore 7
+ 216              	 .cfi_def_cfa_offset 0
+ 217 0026 7047     	 bx lr
+ 218              	 .cfi_endproc
+ 219              	.LFE173:
+ 221              	 .section .text.XMC_GPIO_GetInput,"ax",%progbits
+ 222              	 .align 2
+ 223              	 .thumb
+ 224              	 .thumb_func
+ 226              	XMC_GPIO_GetInput:
+ 227              	.LFB174:
+ 314:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/lib/main/XMC4000/XMCLib/inc\xmc_gpio.h **** 
+ 315:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/lib/main/XMC4000/XMCLib/inc\xmc_gpio.h **** /**
+ 316:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/lib/main/XMC4000/XMCLib/inc\xmc_gpio.h ****  *
+ 317:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/lib/main/XMC4000/XMCLib/inc\xmc_gpio.h ****  * @param port constant pointer pointing to GPIO port, to access hardware register Pn_IN.
+ 318:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/lib/main/XMC4000/XMCLib/inc\xmc_gpio.h ****  * @param pin  Port pin number.
+ 319:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/lib/main/XMC4000/XMCLib/inc\xmc_gpio.h ****  *
+ 320:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/lib/main/XMC4000/XMCLib/inc\xmc_gpio.h ****  * @return uint32_t pin logic level status.
+ 321:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/lib/main/XMC4000/XMCLib/inc\xmc_gpio.h ****  *
+ 322:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/lib/main/XMC4000/XMCLib/inc\xmc_gpio.h ****  *\par<b>Description:</b><br>
+ 323:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/lib/main/XMC4000/XMCLib/inc\xmc_gpio.h ****  * Reads the Pn_IN register and returns the current logical value at the GPIO pin.
+ 324:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/lib/main/XMC4000/XMCLib/inc\xmc_gpio.h ****  *
+ 325:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/lib/main/XMC4000/XMCLib/inc\xmc_gpio.h ****  * \par<b>Related APIs:</b><BR>
+ 326:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/lib/main/XMC4000/XMCLib/inc\xmc_gpio.h ****  * None
+ 327:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/lib/main/XMC4000/XMCLib/inc\xmc_gpio.h ****  *
+ 328:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/lib/main/XMC4000/XMCLib/inc\xmc_gpio.h ****  * \par<b>Note:</b><br>
+ 329:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/lib/main/XMC4000/XMCLib/inc\xmc_gpio.h ****  * Prior to this api, user has to configure port pin to input mode using XMC_GPIO_SetMode().
+ 330:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/lib/main/XMC4000/XMCLib/inc\xmc_gpio.h ****  *
+ 331:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/lib/main/XMC4000/XMCLib/inc\xmc_gpio.h ****  */
+ 332:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/lib/main/XMC4000/XMCLib/inc\xmc_gpio.h **** 
+ 333:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/lib/main/XMC4000/XMCLib/inc\xmc_gpio.h **** __STATIC_INLINE uint32_t XMC_GPIO_GetInput(XMC_GPIO_PORT_t *const port, const uint8_t pin)
+ 334:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/lib/main/XMC4000/XMCLib/inc\xmc_gpio.h **** {
+ 228              	 .loc 1 334 0
+ 229              	 .cfi_startproc
+ 230              	 
+ 231              	 
+ 232              	 
+ 233 0000 80B4     	 push {r7}
+ 234              	.LCFI24:
+ 235              	 .cfi_def_cfa_offset 4
+ 236              	 .cfi_offset 7,-4
+ 237 0002 83B0     	 sub sp,sp,#12
+ 238              	.LCFI25:
+ 239              	 .cfi_def_cfa_offset 16
+ 240 0004 00AF     	 add r7,sp,#0
+ 241              	.LCFI26:
+ 242              	 .cfi_def_cfa_register 7
+ 243 0006 7860     	 str r0,[r7,#4]
+ 244 0008 0B46     	 mov r3,r1
+ 245 000a FB70     	 strb r3,[r7,#3]
+ 335:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/lib/main/XMC4000/XMCLib/inc\xmc_gpio.h ****   XMC_ASSERT("XMC_GPIO_GetInput: Invalid port", XMC_GPIO_CHECK_PORT(port));
+ 336:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/lib/main/XMC4000/XMCLib/inc\xmc_gpio.h **** 
+ 337:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/lib/main/XMC4000/XMCLib/inc\xmc_gpio.h ****   return (((port->IN) >> pin) & 0x1U);
+ 246              	 .loc 1 337 0
+ 247 000c 7B68     	 ldr r3,[r7,#4]
+ 248 000e 5A6A     	 ldr r2,[r3,#36]
+ 249 0010 FB78     	 ldrb r3,[r7,#3]
+ 250 0012 22FA03F3 	 lsr r3,r2,r3
+ 251 0016 03F00103 	 and r3,r3,#1
+ 338:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/lib/main/XMC4000/XMCLib/inc\xmc_gpio.h **** }
+ 252              	 .loc 1 338 0
+ 253 001a 1846     	 mov r0,r3
+ 254 001c 0C37     	 adds r7,r7,#12
+ 255              	.LCFI27:
+ 256              	 .cfi_def_cfa_offset 4
+ 257 001e BD46     	 mov sp,r7
+ 258              	.LCFI28:
+ 259              	 .cfi_def_cfa_register 13
+ 260              	 
+ 261 0020 5DF8047B 	 ldr r7,[sp],#4
+ 262              	.LCFI29:
+ 263              	 .cfi_restore 7
+ 264              	 .cfi_def_cfa_offset 0
+ 265 0024 7047     	 bx lr
+ 266              	 .cfi_endproc
+ 267              	.LFE174:
+ 269 0026 00BF     	 .section .text.IO_Rec,"ax",%progbits
+ 270              	 .align 2
+ 271              	 .global IO_Rec
+ 272              	 .thumb
+ 273              	 .thumb_func
+ 275              	IO_Rec:
+ 276              	.LFB521:
+ 277              	 .file 2 "../cleanflight/src/main/drivers/io.c"
+   1:../cleanflight/src/main/drivers/io.c **** /*
+   2:../cleanflight/src/main/drivers/io.c ****  * This file is part of Cleanflight and Betaflight.
+   3:../cleanflight/src/main/drivers/io.c ****  *
+   4:../cleanflight/src/main/drivers/io.c ****  * Cleanflight and Betaflight are free software. You can redistribute
+   5:../cleanflight/src/main/drivers/io.c ****  * this software and/or modify this software under the terms of the
+   6:../cleanflight/src/main/drivers/io.c ****  * GNU General Public License as published by the Free Software
+   7:../cleanflight/src/main/drivers/io.c ****  * Foundation, either version 3 of the License, or (at your option)
+   8:../cleanflight/src/main/drivers/io.c ****  * any later version.
+   9:../cleanflight/src/main/drivers/io.c ****  *
+  10:../cleanflight/src/main/drivers/io.c ****  * Cleanflight and Betaflight are distributed in the hope that they
+  11:../cleanflight/src/main/drivers/io.c ****  * will be useful, but WITHOUT ANY WARRANTY; without even the implied
+  12:../cleanflight/src/main/drivers/io.c ****  * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+  13:../cleanflight/src/main/drivers/io.c ****  * See the GNU General Public License for more details.
+  14:../cleanflight/src/main/drivers/io.c ****  *
+  15:../cleanflight/src/main/drivers/io.c ****  * You should have received a copy of the GNU General Public License
+  16:../cleanflight/src/main/drivers/io.c ****  * along with this software.
+  17:../cleanflight/src/main/drivers/io.c ****  *
+  18:../cleanflight/src/main/drivers/io.c ****  * If not, see <http://www.gnu.org/licenses/>.
+  19:../cleanflight/src/main/drivers/io.c ****  */
+  20:../cleanflight/src/main/drivers/io.c **** 
+  21:../cleanflight/src/main/drivers/io.c **** #include "platform.h"
+  22:../cleanflight/src/main/drivers/io.c **** 
+  23:../cleanflight/src/main/drivers/io.c **** #include "drivers/io.h"
+  24:../cleanflight/src/main/drivers/io.c **** #include "drivers/io_impl.h"
+  25:../cleanflight/src/main/drivers/io.c **** #include "drivers/rcc.h"
+  26:../cleanflight/src/main/drivers/io.c **** 
+  27:../cleanflight/src/main/drivers/io.c **** #include "common/utils.h"
+  28:../cleanflight/src/main/drivers/io.c **** 
+  29:../cleanflight/src/main/drivers/io.c **** // io ports defs are stored in array by index now
+  30:../cleanflight/src/main/drivers/io.c **** struct ioPortDef_s {
+  31:../cleanflight/src/main/drivers/io.c ****     rccPeriphTag_t rcc;
+  32:../cleanflight/src/main/drivers/io.c **** };
+  33:../cleanflight/src/main/drivers/io.c **** 
+  34:../cleanflight/src/main/drivers/io.c **** #if defined(STM32F1)
+  35:../cleanflight/src/main/drivers/io.c **** const struct ioPortDef_s ioPortDefs[] = {
+  36:../cleanflight/src/main/drivers/io.c ****     { RCC_APB2(IOPA) },
+  37:../cleanflight/src/main/drivers/io.c ****     { RCC_APB2(IOPB) },
+  38:../cleanflight/src/main/drivers/io.c ****     { RCC_APB2(IOPC) },
+  39:../cleanflight/src/main/drivers/io.c ****     { RCC_APB2(IOPD) },
+  40:../cleanflight/src/main/drivers/io.c ****     { RCC_APB2(IOPE) },
+  41:../cleanflight/src/main/drivers/io.c **** {
+  42:../cleanflight/src/main/drivers/io.c **** #if defined (STM32F10X_HD) || defined (STM32F10X_XL) || defined (STM32F10X_HD_VL)
+  43:../cleanflight/src/main/drivers/io.c ****     RCC_APB2(IOPF),
+  44:../cleanflight/src/main/drivers/io.c **** #else
+  45:../cleanflight/src/main/drivers/io.c ****     0,
+  46:../cleanflight/src/main/drivers/io.c **** #endif
+  47:../cleanflight/src/main/drivers/io.c **** },
+  48:../cleanflight/src/main/drivers/io.c **** {
+  49:../cleanflight/src/main/drivers/io.c **** #if defined (STM32F10X_HD) || defined (STM32F10X_XL) || defined (STM32F10X_HD_VL)
+  50:../cleanflight/src/main/drivers/io.c ****     RCC_APB2(IOPG),
+  51:../cleanflight/src/main/drivers/io.c **** #else
+  52:../cleanflight/src/main/drivers/io.c ****     0,
+  53:../cleanflight/src/main/drivers/io.c **** #endif
+  54:../cleanflight/src/main/drivers/io.c **** },
+  55:../cleanflight/src/main/drivers/io.c **** };
+  56:../cleanflight/src/main/drivers/io.c **** #elif defined(STM32F3)
+  57:../cleanflight/src/main/drivers/io.c **** const struct ioPortDef_s ioPortDefs[] = {
+  58:../cleanflight/src/main/drivers/io.c ****     { RCC_AHB(GPIOA) },
+  59:../cleanflight/src/main/drivers/io.c ****     { RCC_AHB(GPIOB) },
+  60:../cleanflight/src/main/drivers/io.c ****     { RCC_AHB(GPIOC) },
+  61:../cleanflight/src/main/drivers/io.c ****     { RCC_AHB(GPIOD) },
+  62:../cleanflight/src/main/drivers/io.c ****     { RCC_AHB(GPIOE) },
+  63:../cleanflight/src/main/drivers/io.c ****     { RCC_AHB(GPIOF) },
+  64:../cleanflight/src/main/drivers/io.c **** };
+  65:../cleanflight/src/main/drivers/io.c **** #elif defined(STM32F4)
+  66:../cleanflight/src/main/drivers/io.c **** const struct ioPortDef_s ioPortDefs[] = {
+  67:../cleanflight/src/main/drivers/io.c ****     { RCC_AHB1(GPIOA) },
+  68:../cleanflight/src/main/drivers/io.c ****     { RCC_AHB1(GPIOB) },
+  69:../cleanflight/src/main/drivers/io.c ****     { RCC_AHB1(GPIOC) },
+  70:../cleanflight/src/main/drivers/io.c ****     { RCC_AHB1(GPIOD) },
+  71:../cleanflight/src/main/drivers/io.c ****     { RCC_AHB1(GPIOE) },
+  72:../cleanflight/src/main/drivers/io.c ****     { RCC_AHB1(GPIOF) },
+  73:../cleanflight/src/main/drivers/io.c **** };
+  74:../cleanflight/src/main/drivers/io.c **** #elif defined(STM32F7)
+  75:../cleanflight/src/main/drivers/io.c **** const struct ioPortDef_s ioPortDefs[] = {
+  76:../cleanflight/src/main/drivers/io.c ****     { RCC_AHB1(GPIOA) },
+  77:../cleanflight/src/main/drivers/io.c ****     { RCC_AHB1(GPIOB) },
+  78:../cleanflight/src/main/drivers/io.c ****     { RCC_AHB1(GPIOC) },
+  79:../cleanflight/src/main/drivers/io.c ****     { RCC_AHB1(GPIOD) },
+  80:../cleanflight/src/main/drivers/io.c ****     { RCC_AHB1(GPIOE) },
+  81:../cleanflight/src/main/drivers/io.c ****     { RCC_AHB1(GPIOF) },
+  82:../cleanflight/src/main/drivers/io.c **** };
+  83:../cleanflight/src/main/drivers/io.c **** #endif
+  84:../cleanflight/src/main/drivers/io.c **** 
+  85:../cleanflight/src/main/drivers/io.c **** ioRec_t* IO_Rec(IO_t io)
+  86:../cleanflight/src/main/drivers/io.c **** {
+ 278              	 .loc 2 86 0
+ 279              	 .cfi_startproc
+ 280              	 
+ 281              	 
+ 282              	 
+ 283 0000 80B4     	 push {r7}
+ 284              	.LCFI30:
+ 285              	 .cfi_def_cfa_offset 4
+ 286              	 .cfi_offset 7,-4
+ 287 0002 83B0     	 sub sp,sp,#12
+ 288              	.LCFI31:
+ 289              	 .cfi_def_cfa_offset 16
+ 290 0004 00AF     	 add r7,sp,#0
+ 291              	.LCFI32:
+ 292              	 .cfi_def_cfa_register 7
+ 293 0006 7860     	 str r0,[r7,#4]
+  87:../cleanflight/src/main/drivers/io.c ****     return io;
+ 294              	 .loc 2 87 0
+ 295 0008 7B68     	 ldr r3,[r7,#4]
+  88:../cleanflight/src/main/drivers/io.c **** }
+ 296              	 .loc 2 88 0
+ 297 000a 1846     	 mov r0,r3
+ 298 000c 0C37     	 adds r7,r7,#12
+ 299              	.LCFI33:
+ 300              	 .cfi_def_cfa_offset 4
+ 301 000e BD46     	 mov sp,r7
+ 302              	.LCFI34:
+ 303              	 .cfi_def_cfa_register 13
+ 304              	 
+ 305 0010 5DF8047B 	 ldr r7,[sp],#4
+ 306              	.LCFI35:
+ 307              	 .cfi_restore 7
+ 308              	 .cfi_def_cfa_offset 0
+ 309 0014 7047     	 bx lr
+ 310              	 .cfi_endproc
+ 311              	.LFE521:
+ 313 0016 00BF     	 .section .text.IO_GPIO,"ax",%progbits
+ 314              	 .align 2
+ 315              	 .global IO_GPIO
+ 316              	 .thumb
+ 317              	 .thumb_func
+ 319              	IO_GPIO:
+ 320              	.LFB522:
+  89:../cleanflight/src/main/drivers/io.c **** 
+  90:../cleanflight/src/main/drivers/io.c **** GPIO_TypeDef* IO_GPIO(IO_t io)
+  91:../cleanflight/src/main/drivers/io.c **** {
+ 321              	 .loc 2 91 0
+ 322              	 .cfi_startproc
+ 323              	 
+ 324              	 
+ 325 0000 80B5     	 push {r7,lr}
+ 326              	.LCFI36:
+ 327              	 .cfi_def_cfa_offset 8
+ 328              	 .cfi_offset 7,-8
+ 329              	 .cfi_offset 14,-4
+ 330 0002 84B0     	 sub sp,sp,#16
+ 331              	.LCFI37:
+ 332              	 .cfi_def_cfa_offset 24
+ 333 0004 00AF     	 add r7,sp,#0
+ 334              	.LCFI38:
+ 335              	 .cfi_def_cfa_register 7
+ 336 0006 7860     	 str r0,[r7,#4]
+  92:../cleanflight/src/main/drivers/io.c ****     const ioRec_t *ioRec = IO_Rec(io);
+ 337              	 .loc 2 92 0
+ 338 0008 7868     	 ldr r0,[r7,#4]
+ 339 000a FFF7FEFF 	 bl IO_Rec
+ 340 000e F860     	 str r0,[r7,#12]
+  93:../cleanflight/src/main/drivers/io.c ****     return ioRec->gpio;
+ 341              	 .loc 2 93 0
+ 342 0010 FB68     	 ldr r3,[r7,#12]
+ 343 0012 1B68     	 ldr r3,[r3]
+  94:../cleanflight/src/main/drivers/io.c **** }
+ 344              	 .loc 2 94 0
+ 345 0014 1846     	 mov r0,r3
+ 346 0016 1037     	 adds r7,r7,#16
+ 347              	.LCFI39:
+ 348              	 .cfi_def_cfa_offset 8
+ 349 0018 BD46     	 mov sp,r7
+ 350              	.LCFI40:
+ 351              	 .cfi_def_cfa_register 13
+ 352              	 
+ 353 001a 80BD     	 pop {r7,pc}
+ 354              	 .cfi_endproc
+ 355              	.LFE522:
+ 357              	 .section .text.IO_Pin,"ax",%progbits
+ 358              	 .align 2
+ 359              	 .global IO_Pin
+ 360              	 .thumb
+ 361              	 .thumb_func
+ 363              	IO_Pin:
+ 364              	.LFB523:
+  95:../cleanflight/src/main/drivers/io.c **** 
+  96:../cleanflight/src/main/drivers/io.c **** uint16_t IO_Pin(IO_t io)
+  97:../cleanflight/src/main/drivers/io.c **** {
+ 365              	 .loc 2 97 0
+ 366              	 .cfi_startproc
+ 367              	 
+ 368              	 
+ 369 0000 80B5     	 push {r7,lr}
+ 370              	.LCFI41:
+ 371              	 .cfi_def_cfa_offset 8
+ 372              	 .cfi_offset 7,-8
+ 373              	 .cfi_offset 14,-4
+ 374 0002 84B0     	 sub sp,sp,#16
+ 375              	.LCFI42:
+ 376              	 .cfi_def_cfa_offset 24
+ 377 0004 00AF     	 add r7,sp,#0
+ 378              	.LCFI43:
+ 379              	 .cfi_def_cfa_register 7
+ 380 0006 7860     	 str r0,[r7,#4]
+  98:../cleanflight/src/main/drivers/io.c ****     const ioRec_t *ioRec = IO_Rec(io);
+ 381              	 .loc 2 98 0
+ 382 0008 7868     	 ldr r0,[r7,#4]
+ 383 000a FFF7FEFF 	 bl IO_Rec
+ 384 000e F860     	 str r0,[r7,#12]
+  99:../cleanflight/src/main/drivers/io.c ****     return ioRec->pin;
+ 385              	 .loc 2 99 0
+ 386 0010 FB68     	 ldr r3,[r7,#12]
+ 387 0012 9B88     	 ldrh r3,[r3,#4]
+ 388 0014 9BB2     	 uxth r3,r3
+ 100:../cleanflight/src/main/drivers/io.c **** }
+ 389              	 .loc 2 100 0
+ 390 0016 1846     	 mov r0,r3
+ 391 0018 1037     	 adds r7,r7,#16
+ 392              	.LCFI44:
+ 393              	 .cfi_def_cfa_offset 8
+ 394 001a BD46     	 mov sp,r7
+ 395              	.LCFI45:
+ 396              	 .cfi_def_cfa_register 13
+ 397              	 
+ 398 001c 80BD     	 pop {r7,pc}
+ 399              	 .cfi_endproc
+ 400              	.LFE523:
+ 402 001e 00BF     	 .section .text.IO_GPIOPortIdx,"ax",%progbits
+ 403              	 .align 2
+ 404              	 .global IO_GPIOPortIdx
+ 405              	 .thumb
+ 406              	 .thumb_func
+ 408              	IO_GPIOPortIdx:
+ 409              	.LFB524:
+ 101:../cleanflight/src/main/drivers/io.c **** 
+ 102:../cleanflight/src/main/drivers/io.c **** // port index, GPIOA == 0
+ 103:../cleanflight/src/main/drivers/io.c **** int IO_GPIOPortIdx(IO_t io)
+ 104:../cleanflight/src/main/drivers/io.c **** {
+ 410              	 .loc 2 104 0
+ 411              	 .cfi_startproc
+ 412              	 
+ 413              	 
+ 414 0000 80B5     	 push {r7,lr}
+ 415              	.LCFI46:
+ 416              	 .cfi_def_cfa_offset 8
+ 417              	 .cfi_offset 7,-8
+ 418              	 .cfi_offset 14,-4
+ 419 0002 82B0     	 sub sp,sp,#8
+ 420              	.LCFI47:
+ 421              	 .cfi_def_cfa_offset 16
+ 422 0004 00AF     	 add r7,sp,#0
+ 423              	.LCFI48:
+ 424              	 .cfi_def_cfa_register 7
+ 425 0006 7860     	 str r0,[r7,#4]
+ 105:../cleanflight/src/main/drivers/io.c ****     if (!io) {
+ 426              	 .loc 2 105 0
+ 427 0008 7B68     	 ldr r3,[r7,#4]
+ 428 000a 002B     	 cmp r3,#0
+ 429 000c 02D1     	 bne .L14
+ 106:../cleanflight/src/main/drivers/io.c ****         return -1;
+ 430              	 .loc 2 106 0
+ 431 000e 4FF0FF33 	 mov r3,#-1
+ 432 0012 08E0     	 b .L15
+ 433              	.L14:
+ 107:../cleanflight/src/main/drivers/io.c ****     }
+ 108:../cleanflight/src/main/drivers/io.c **** #ifdef XMC4700_F100x2048
+ 109:../cleanflight/src/main/drivers/io.c ****     return (((size_t)IO_GPIO(io) - PORT0_BASE) >> 8);     // ports are 0x400 apart
+ 434              	 .loc 2 109 0
+ 435 0014 7868     	 ldr r0,[r7,#4]
+ 436 0016 FFF7FEFF 	 bl IO_GPIO
+ 437 001a 0346     	 mov r3,r0
+ 438 001c 03F13843 	 add r3,r3,#-1207959552
+ 439 0020 A3F52033 	 sub r3,r3,#163840
+ 440 0024 1B0A     	 lsrs r3,r3,#8
+ 441              	.L15:
+ 110:../cleanflight/src/main/drivers/io.c **** #else
+ 111:../cleanflight/src/main/drivers/io.c ****     return (((size_t)IO_GPIO(io) - GPIOA_BASE) >> 10);     // ports are 0x400 apart
+ 112:../cleanflight/src/main/drivers/io.c **** #endif
+ 113:../cleanflight/src/main/drivers/io.c **** }
+ 442              	 .loc 2 113 0
+ 443 0026 1846     	 mov r0,r3
+ 444 0028 0837     	 adds r7,r7,#8
+ 445              	.LCFI49:
+ 446              	 .cfi_def_cfa_offset 8
+ 447 002a BD46     	 mov sp,r7
+ 448              	.LCFI50:
+ 449              	 .cfi_def_cfa_register 13
+ 450              	 
+ 451 002c 80BD     	 pop {r7,pc}
+ 452              	 .cfi_endproc
+ 453              	.LFE524:
+ 455 002e 00BF     	 .section .text.IO_EXTI_PortSourceGPIO,"ax",%progbits
+ 456              	 .align 2
+ 457              	 .global IO_EXTI_PortSourceGPIO
+ 458              	 .thumb
+ 459              	 .thumb_func
+ 461              	IO_EXTI_PortSourceGPIO:
+ 462              	.LFB525:
+ 114:../cleanflight/src/main/drivers/io.c **** 
+ 115:../cleanflight/src/main/drivers/io.c **** int IO_EXTI_PortSourceGPIO(IO_t io)
+ 116:../cleanflight/src/main/drivers/io.c **** {
+ 463              	 .loc 2 116 0
+ 464              	 .cfi_startproc
+ 465              	 
+ 466              	 
+ 467 0000 80B5     	 push {r7,lr}
+ 468              	.LCFI51:
+ 469              	 .cfi_def_cfa_offset 8
+ 470              	 .cfi_offset 7,-8
+ 471              	 .cfi_offset 14,-4
+ 472 0002 82B0     	 sub sp,sp,#8
+ 473              	.LCFI52:
+ 474              	 .cfi_def_cfa_offset 16
+ 475 0004 00AF     	 add r7,sp,#0
+ 476              	.LCFI53:
+ 477              	 .cfi_def_cfa_register 7
+ 478 0006 7860     	 str r0,[r7,#4]
+ 117:../cleanflight/src/main/drivers/io.c ****     return IO_GPIOPortIdx(io);
+ 479              	 .loc 2 117 0
+ 480 0008 7868     	 ldr r0,[r7,#4]
+ 481 000a FFF7FEFF 	 bl IO_GPIOPortIdx
+ 482 000e 0346     	 mov r3,r0
+ 118:../cleanflight/src/main/drivers/io.c **** }
+ 483              	 .loc 2 118 0
+ 484 0010 1846     	 mov r0,r3
+ 485 0012 0837     	 adds r7,r7,#8
+ 486              	.LCFI54:
+ 487              	 .cfi_def_cfa_offset 8
+ 488 0014 BD46     	 mov sp,r7
+ 489              	.LCFI55:
+ 490              	 .cfi_def_cfa_register 13
+ 491              	 
+ 492 0016 80BD     	 pop {r7,pc}
+ 493              	 .cfi_endproc
+ 494              	.LFE525:
+ 496              	 .section .text.IO_GPIO_PortSource,"ax",%progbits
+ 497              	 .align 2
+ 498              	 .global IO_GPIO_PortSource
+ 499              	 .thumb
+ 500              	 .thumb_func
+ 502              	IO_GPIO_PortSource:
+ 503              	.LFB526:
+ 119:../cleanflight/src/main/drivers/io.c **** 
+ 120:../cleanflight/src/main/drivers/io.c **** int IO_GPIO_PortSource(IO_t io)
+ 121:../cleanflight/src/main/drivers/io.c **** {
+ 504              	 .loc 2 121 0
+ 505              	 .cfi_startproc
+ 506              	 
+ 507              	 
+ 508 0000 80B5     	 push {r7,lr}
+ 509              	.LCFI56:
+ 510              	 .cfi_def_cfa_offset 8
+ 511              	 .cfi_offset 7,-8
+ 512              	 .cfi_offset 14,-4
+ 513 0002 82B0     	 sub sp,sp,#8
+ 514              	.LCFI57:
+ 515              	 .cfi_def_cfa_offset 16
+ 516 0004 00AF     	 add r7,sp,#0
+ 517              	.LCFI58:
+ 518              	 .cfi_def_cfa_register 7
+ 519 0006 7860     	 str r0,[r7,#4]
+ 122:../cleanflight/src/main/drivers/io.c ****     return IO_GPIOPortIdx(io);
+ 520              	 .loc 2 122 0
+ 521 0008 7868     	 ldr r0,[r7,#4]
+ 522 000a FFF7FEFF 	 bl IO_GPIOPortIdx
+ 523 000e 0346     	 mov r3,r0
+ 123:../cleanflight/src/main/drivers/io.c **** }
+ 524              	 .loc 2 123 0
+ 525 0010 1846     	 mov r0,r3
+ 526 0012 0837     	 adds r7,r7,#8
+ 527              	.LCFI59:
+ 528              	 .cfi_def_cfa_offset 8
+ 529 0014 BD46     	 mov sp,r7
+ 530              	.LCFI60:
+ 531              	 .cfi_def_cfa_register 13
+ 532              	 
+ 533 0016 80BD     	 pop {r7,pc}
+ 534              	 .cfi_endproc
+ 535              	.LFE526:
+ 537              	 .section .text.IO_GPIOPinIdx,"ax",%progbits
+ 538              	 .align 2
+ 539              	 .global IO_GPIOPinIdx
+ 540              	 .thumb
+ 541              	 .thumb_func
+ 543              	IO_GPIOPinIdx:
+ 544              	.LFB527:
+ 124:../cleanflight/src/main/drivers/io.c **** 
+ 125:../cleanflight/src/main/drivers/io.c **** // zero based pin index
+ 126:../cleanflight/src/main/drivers/io.c **** int IO_GPIOPinIdx(IO_t io)
+ 127:../cleanflight/src/main/drivers/io.c **** {
+ 545              	 .loc 2 127 0
+ 546              	 .cfi_startproc
+ 547              	 
+ 548              	 
+ 549 0000 80B5     	 push {r7,lr}
+ 550              	.LCFI61:
+ 551              	 .cfi_def_cfa_offset 8
+ 552              	 .cfi_offset 7,-8
+ 553              	 .cfi_offset 14,-4
+ 554 0002 82B0     	 sub sp,sp,#8
+ 555              	.LCFI62:
+ 556              	 .cfi_def_cfa_offset 16
+ 557 0004 00AF     	 add r7,sp,#0
+ 558              	.LCFI63:
+ 559              	 .cfi_def_cfa_register 7
+ 560 0006 7860     	 str r0,[r7,#4]
+ 128:../cleanflight/src/main/drivers/io.c ****     if (!io) {
+ 561              	 .loc 2 128 0
+ 562 0008 7B68     	 ldr r3,[r7,#4]
+ 563 000a 002B     	 cmp r3,#0
+ 564 000c 02D1     	 bne .L21
+ 129:../cleanflight/src/main/drivers/io.c ****         return -1;
+ 565              	 .loc 2 129 0
+ 566 000e 4FF0FF33 	 mov r3,#-1
+ 567 0012 03E0     	 b .L22
+ 568              	.L21:
+ 130:../cleanflight/src/main/drivers/io.c ****     }
+ 131:../cleanflight/src/main/drivers/io.c **** 
+ 132:../cleanflight/src/main/drivers/io.c **** #ifdef XMC4700_F100x2048
+ 133:../cleanflight/src/main/drivers/io.c ****     return IO_Pin(io);
+ 569              	 .loc 2 133 0
+ 570 0014 7868     	 ldr r0,[r7,#4]
+ 571 0016 FFF7FEFF 	 bl IO_Pin
+ 572 001a 0346     	 mov r3,r0
+ 573              	.L22:
+ 134:../cleanflight/src/main/drivers/io.c **** #else
+ 135:../cleanflight/src/main/drivers/io.c ****     return 31 - __builtin_clz(IO_Pin(io));  // CLZ is a bit faster than FFS
+ 136:../cleanflight/src/main/drivers/io.c **** #endif
+ 137:../cleanflight/src/main/drivers/io.c **** }
+ 574              	 .loc 2 137 0
+ 575 001c 1846     	 mov r0,r3
+ 576 001e 0837     	 adds r7,r7,#8
+ 577              	.LCFI64:
+ 578              	 .cfi_def_cfa_offset 8
+ 579 0020 BD46     	 mov sp,r7
+ 580              	.LCFI65:
+ 581              	 .cfi_def_cfa_register 13
+ 582              	 
+ 583 0022 80BD     	 pop {r7,pc}
+ 584              	 .cfi_endproc
+ 585              	.LFE527:
+ 587              	 .section .text.IO_EXTI_PinSource,"ax",%progbits
+ 588              	 .align 2
+ 589              	 .global IO_EXTI_PinSource
+ 590              	 .thumb
+ 591              	 .thumb_func
+ 593              	IO_EXTI_PinSource:
+ 594              	.LFB528:
+ 138:../cleanflight/src/main/drivers/io.c **** 
+ 139:../cleanflight/src/main/drivers/io.c **** int IO_EXTI_PinSource(IO_t io)
+ 140:../cleanflight/src/main/drivers/io.c **** {
+ 595              	 .loc 2 140 0
+ 596              	 .cfi_startproc
+ 597              	 
+ 598              	 
+ 599 0000 80B5     	 push {r7,lr}
+ 600              	.LCFI66:
+ 601              	 .cfi_def_cfa_offset 8
+ 602              	 .cfi_offset 7,-8
+ 603              	 .cfi_offset 14,-4
+ 604 0002 82B0     	 sub sp,sp,#8
+ 605              	.LCFI67:
+ 606              	 .cfi_def_cfa_offset 16
+ 607 0004 00AF     	 add r7,sp,#0
+ 608              	.LCFI68:
+ 609              	 .cfi_def_cfa_register 7
+ 610 0006 7860     	 str r0,[r7,#4]
+ 141:../cleanflight/src/main/drivers/io.c ****     return IO_GPIOPinIdx(io);
+ 611              	 .loc 2 141 0
+ 612 0008 7868     	 ldr r0,[r7,#4]
+ 613 000a FFF7FEFF 	 bl IO_GPIOPinIdx
+ 614 000e 0346     	 mov r3,r0
+ 142:../cleanflight/src/main/drivers/io.c **** }
+ 615              	 .loc 2 142 0
+ 616 0010 1846     	 mov r0,r3
+ 617 0012 0837     	 adds r7,r7,#8
+ 618              	.LCFI69:
+ 619              	 .cfi_def_cfa_offset 8
+ 620 0014 BD46     	 mov sp,r7
+ 621              	.LCFI70:
+ 622              	 .cfi_def_cfa_register 13
+ 623              	 
+ 624 0016 80BD     	 pop {r7,pc}
+ 625              	 .cfi_endproc
+ 626              	.LFE528:
+ 628              	 .section .text.IO_GPIO_PinSource,"ax",%progbits
+ 629              	 .align 2
+ 630              	 .global IO_GPIO_PinSource
+ 631              	 .thumb
+ 632              	 .thumb_func
+ 634              	IO_GPIO_PinSource:
+ 635              	.LFB529:
+ 143:../cleanflight/src/main/drivers/io.c **** 
+ 144:../cleanflight/src/main/drivers/io.c **** int IO_GPIO_PinSource(IO_t io)
+ 145:../cleanflight/src/main/drivers/io.c **** {
+ 636              	 .loc 2 145 0
+ 637              	 .cfi_startproc
+ 638              	 
+ 639              	 
+ 640 0000 80B5     	 push {r7,lr}
+ 641              	.LCFI71:
+ 642              	 .cfi_def_cfa_offset 8
+ 643              	 .cfi_offset 7,-8
+ 644              	 .cfi_offset 14,-4
+ 645 0002 82B0     	 sub sp,sp,#8
+ 646              	.LCFI72:
+ 647              	 .cfi_def_cfa_offset 16
+ 648 0004 00AF     	 add r7,sp,#0
+ 649              	.LCFI73:
+ 650              	 .cfi_def_cfa_register 7
+ 651 0006 7860     	 str r0,[r7,#4]
+ 146:../cleanflight/src/main/drivers/io.c ****     return IO_GPIOPinIdx(io);
+ 652              	 .loc 2 146 0
+ 653 0008 7868     	 ldr r0,[r7,#4]
+ 654 000a FFF7FEFF 	 bl IO_GPIOPinIdx
+ 655 000e 0346     	 mov r3,r0
+ 147:../cleanflight/src/main/drivers/io.c **** }
+ 656              	 .loc 2 147 0
+ 657 0010 1846     	 mov r0,r3
+ 658 0012 0837     	 adds r7,r7,#8
+ 659              	.LCFI74:
+ 660              	 .cfi_def_cfa_offset 8
+ 661 0014 BD46     	 mov sp,r7
+ 662              	.LCFI75:
+ 663              	 .cfi_def_cfa_register 13
+ 664              	 
+ 665 0016 80BD     	 pop {r7,pc}
+ 666              	 .cfi_endproc
+ 667              	.LFE529:
+ 669              	 .section .text.IO_EXTI_Line,"ax",%progbits
+ 670              	 .align 2
+ 671              	 .global IO_EXTI_Line
+ 672              	 .thumb
+ 673              	 .thumb_func
+ 675              	IO_EXTI_Line:
+ 676              	.LFB530:
+ 148:../cleanflight/src/main/drivers/io.c **** 
+ 149:../cleanflight/src/main/drivers/io.c **** // mask on stm32f103, bit index on stm32f303
+ 150:../cleanflight/src/main/drivers/io.c **** uint32_t IO_EXTI_Line(IO_t io)
+ 151:../cleanflight/src/main/drivers/io.c **** {
+ 677              	 .loc 2 151 0
+ 678              	 .cfi_startproc
+ 679              	 
+ 680              	 
+ 681              	 
+ 682 0000 80B4     	 push {r7}
+ 683              	.LCFI76:
+ 684              	 .cfi_def_cfa_offset 4
+ 685              	 .cfi_offset 7,-4
+ 686 0002 83B0     	 sub sp,sp,#12
+ 687              	.LCFI77:
+ 688              	 .cfi_def_cfa_offset 16
+ 689 0004 00AF     	 add r7,sp,#0
+ 690              	.LCFI78:
+ 691              	 .cfi_def_cfa_register 7
+ 692 0006 7860     	 str r0,[r7,#4]
+ 152:../cleanflight/src/main/drivers/io.c ****     if (!io) {
+ 693              	 .loc 2 152 0
+ 694 0008 7B68     	 ldr r3,[r7,#4]
+ 695 000a 002B     	 cmp r3,#0
+ 696 000c 01D1     	 bne .L28
+ 153:../cleanflight/src/main/drivers/io.c ****         return 0;
+ 697              	 .loc 2 153 0
+ 698 000e 0023     	 movs r3,#0
+ 699 0010 00E0     	 b .L29
+ 700              	.L28:
+ 154:../cleanflight/src/main/drivers/io.c ****     }
+ 155:../cleanflight/src/main/drivers/io.c **** #if defined(STM32F1)
+ 156:../cleanflight/src/main/drivers/io.c ****     return 1 << IO_GPIOPinIdx(io);
+ 157:../cleanflight/src/main/drivers/io.c **** #elif defined(STM32F3)
+ 158:../cleanflight/src/main/drivers/io.c ****     return IO_GPIOPinIdx(io);
+ 159:../cleanflight/src/main/drivers/io.c **** #elif defined(STM32F4)
+ 160:../cleanflight/src/main/drivers/io.c ****     return 1 << IO_GPIOPinIdx(io);
+ 161:../cleanflight/src/main/drivers/io.c **** #elif defined(STM32F7)
+ 162:../cleanflight/src/main/drivers/io.c ****     return 1 << IO_GPIOPinIdx(io);
+ 163:../cleanflight/src/main/drivers/io.c **** #elif defined(SIMULATOR_BUILD)
+ 164:../cleanflight/src/main/drivers/io.c ****     return 0;
+ 165:../cleanflight/src/main/drivers/io.c **** #elif defined(XMC4700_F100x2048)
+ 166:../cleanflight/src/main/drivers/io.c ****     return 0;
+ 701              	 .loc 2 166 0
+ 702 0012 0023     	 movs r3,#0
+ 703              	.L29:
+ 167:../cleanflight/src/main/drivers/io.c **** #else
+ 168:../cleanflight/src/main/drivers/io.c **** # error "Unknown target type"
+ 169:../cleanflight/src/main/drivers/io.c **** #endif
+ 170:../cleanflight/src/main/drivers/io.c **** }
+ 704              	 .loc 2 170 0
+ 705 0014 1846     	 mov r0,r3
+ 706 0016 0C37     	 adds r7,r7,#12
+ 707              	.LCFI79:
+ 708              	 .cfi_def_cfa_offset 4
+ 709 0018 BD46     	 mov sp,r7
+ 710              	.LCFI80:
+ 711              	 .cfi_def_cfa_register 13
+ 712              	 
+ 713 001a 5DF8047B 	 ldr r7,[sp],#4
+ 714              	.LCFI81:
+ 715              	 .cfi_restore 7
+ 716              	 .cfi_def_cfa_offset 0
+ 717 001e 7047     	 bx lr
+ 718              	 .cfi_endproc
+ 719              	.LFE530:
+ 721              	 .section .text.IORead,"ax",%progbits
+ 722              	 .align 2
+ 723              	 .global IORead
+ 724              	 .thumb
+ 725              	 .thumb_func
+ 727              	IORead:
+ 728              	.LFB531:
+ 171:../cleanflight/src/main/drivers/io.c **** 
+ 172:../cleanflight/src/main/drivers/io.c **** bool IORead(IO_t io)
+ 173:../cleanflight/src/main/drivers/io.c **** {
+ 729              	 .loc 2 173 0
+ 730              	 .cfi_startproc
+ 731              	 
+ 732              	 
+ 733 0000 90B5     	 push {r4,r7,lr}
+ 734              	.LCFI82:
+ 735              	 .cfi_def_cfa_offset 12
+ 736              	 .cfi_offset 4,-12
+ 737              	 .cfi_offset 7,-8
+ 738              	 .cfi_offset 14,-4
+ 739 0002 83B0     	 sub sp,sp,#12
+ 740              	.LCFI83:
+ 741              	 .cfi_def_cfa_offset 24
+ 742 0004 00AF     	 add r7,sp,#0
+ 743              	.LCFI84:
+ 744              	 .cfi_def_cfa_register 7
+ 745 0006 7860     	 str r0,[r7,#4]
+ 174:../cleanflight/src/main/drivers/io.c ****     if (!io) {
+ 746              	 .loc 2 174 0
+ 747 0008 7B68     	 ldr r3,[r7,#4]
+ 748 000a 002B     	 cmp r3,#0
+ 749 000c 01D1     	 bne .L31
+ 175:../cleanflight/src/main/drivers/io.c ****         return false;
+ 750              	 .loc 2 175 0
+ 751 000e 0023     	 movs r3,#0
+ 752 0010 12E0     	 b .L32
+ 753              	.L31:
+ 176:../cleanflight/src/main/drivers/io.c ****     }
+ 177:../cleanflight/src/main/drivers/io.c **** #ifdef XMC4700_F100x2048
+ 178:../cleanflight/src/main/drivers/io.c ****     return XMC_GPIO_GetInput(IO_GPIO(io), IO_Pin(io));
+ 754              	 .loc 2 178 0
+ 755 0012 7868     	 ldr r0,[r7,#4]
+ 756 0014 FFF7FEFF 	 bl IO_GPIO
+ 757 0018 0446     	 mov r4,r0
+ 758 001a 7868     	 ldr r0,[r7,#4]
+ 759 001c FFF7FEFF 	 bl IO_Pin
+ 760 0020 0346     	 mov r3,r0
+ 761 0022 DBB2     	 uxtb r3,r3
+ 762 0024 2046     	 mov r0,r4
+ 763 0026 1946     	 mov r1,r3
+ 764 0028 FFF7FEFF 	 bl XMC_GPIO_GetInput
+ 765 002c 0346     	 mov r3,r0
+ 766 002e 002B     	 cmp r3,#0
+ 767 0030 14BF     	 ite ne
+ 768 0032 0123     	 movne r3,#1
+ 769 0034 0023     	 moveq r3,#0
+ 770 0036 DBB2     	 uxtb r3,r3
+ 771              	.L32:
+ 179:../cleanflight/src/main/drivers/io.c **** #else
+ 180:../cleanflight/src/main/drivers/io.c **** #if defined(USE_HAL_DRIVER)
+ 181:../cleanflight/src/main/drivers/io.c ****     return (LL_GPIO_ReadInputPort(IO_GPIO(io)) & IO_Pin(io));
+ 182:../cleanflight/src/main/drivers/io.c **** #else
+ 183:../cleanflight/src/main/drivers/io.c ****     return (IO_GPIO(io)->IDR & IO_Pin(io));
+ 184:../cleanflight/src/main/drivers/io.c **** #endif
+ 185:../cleanflight/src/main/drivers/io.c **** #endif
+ 186:../cleanflight/src/main/drivers/io.c **** }
+ 772              	 .loc 2 186 0
+ 773 0038 1846     	 mov r0,r3
+ 774 003a 0C37     	 adds r7,r7,#12
+ 775              	.LCFI85:
+ 776              	 .cfi_def_cfa_offset 12
+ 777 003c BD46     	 mov sp,r7
+ 778              	.LCFI86:
+ 779              	 .cfi_def_cfa_register 13
+ 780              	 
+ 781 003e 90BD     	 pop {r4,r7,pc}
+ 782              	 .cfi_endproc
+ 783              	.LFE531:
+ 785              	 .section .text.IOWrite,"ax",%progbits
+ 786              	 .align 2
+ 787              	 .global IOWrite
+ 788              	 .thumb
+ 789              	 .thumb_func
+ 791              	IOWrite:
+ 792              	.LFB532:
+ 187:../cleanflight/src/main/drivers/io.c **** 
+ 188:../cleanflight/src/main/drivers/io.c **** void IOWrite(IO_t io, bool hi)
+ 189:../cleanflight/src/main/drivers/io.c **** {
+ 793              	 .loc 2 189 0
+ 794              	 .cfi_startproc
+ 795              	 
+ 796              	 
+ 797 0000 90B5     	 push {r4,r7,lr}
+ 798              	.LCFI87:
+ 799              	 .cfi_def_cfa_offset 12
+ 800              	 .cfi_offset 4,-12
+ 801              	 .cfi_offset 7,-8
+ 802              	 .cfi_offset 14,-4
+ 803 0002 83B0     	 sub sp,sp,#12
+ 804              	.LCFI88:
+ 805              	 .cfi_def_cfa_offset 24
+ 806 0004 00AF     	 add r7,sp,#0
+ 807              	.LCFI89:
+ 808              	 .cfi_def_cfa_register 7
+ 809 0006 7860     	 str r0,[r7,#4]
+ 810 0008 0B46     	 mov r3,r1
+ 811 000a FB70     	 strb r3,[r7,#3]
+ 190:../cleanflight/src/main/drivers/io.c ****     if (!io) {
+ 812              	 .loc 2 190 0
+ 813 000c 7B68     	 ldr r3,[r7,#4]
+ 814 000e 002B     	 cmp r3,#0
+ 815 0010 00D1     	 bne .L34
+ 191:../cleanflight/src/main/drivers/io.c ****         return;
+ 816              	 .loc 2 191 0
+ 817 0012 0EE0     	 b .L33
+ 818              	.L34:
+ 192:../cleanflight/src/main/drivers/io.c ****     }
+ 193:../cleanflight/src/main/drivers/io.c **** #ifdef XMC4700_F100x2048
+ 194:../cleanflight/src/main/drivers/io.c ****     XMC_GPIO_SetOutputLevel(IO_GPIO(io), IO_Pin(io), hi);
+ 819              	 .loc 2 194 0
+ 820 0014 7868     	 ldr r0,[r7,#4]
+ 821 0016 FFF7FEFF 	 bl IO_GPIO
+ 822 001a 0446     	 mov r4,r0
+ 823 001c 7868     	 ldr r0,[r7,#4]
+ 824 001e FFF7FEFF 	 bl IO_Pin
+ 825 0022 0346     	 mov r3,r0
+ 826 0024 DAB2     	 uxtb r2,r3
+ 827 0026 FB78     	 ldrb r3,[r7,#3]
+ 828 0028 2046     	 mov r0,r4
+ 829 002a 1146     	 mov r1,r2
+ 830 002c 1A46     	 mov r2,r3
+ 831 002e FFF7FEFF 	 bl XMC_GPIO_SetOutputLevel
+ 832              	.L33:
+ 195:../cleanflight/src/main/drivers/io.c **** #else
+ 196:../cleanflight/src/main/drivers/io.c **** #if defined(USE_HAL_DRIVER)
+ 197:../cleanflight/src/main/drivers/io.c ****     LL_GPIO_SetOutputPin(IO_GPIO(io), IO_Pin(io) << (hi ? 0 : 16));
+ 198:../cleanflight/src/main/drivers/io.c **** #elif defined(STM32F4)
+ 199:../cleanflight/src/main/drivers/io.c ****     if (hi) {
+ 200:../cleanflight/src/main/drivers/io.c ****         IO_GPIO(io)->BSRRL = IO_Pin(io);
+ 201:../cleanflight/src/main/drivers/io.c ****     }
+ 202:../cleanflight/src/main/drivers/io.c ****     else {
+ 203:../cleanflight/src/main/drivers/io.c ****         IO_GPIO(io)->BSRRH = IO_Pin(io);
+ 204:../cleanflight/src/main/drivers/io.c ****     }
+ 205:../cleanflight/src/main/drivers/io.c **** #else
+ 206:../cleanflight/src/main/drivers/io.c ****     IO_GPIO(io)->BSRR = IO_Pin(io) << (hi ? 0 : 16);
+ 207:../cleanflight/src/main/drivers/io.c **** #endif
+ 208:../cleanflight/src/main/drivers/io.c **** #endif
+ 209:../cleanflight/src/main/drivers/io.c **** }
+ 833              	 .loc 2 209 0
+ 834 0032 0C37     	 adds r7,r7,#12
+ 835              	.LCFI90:
+ 836              	 .cfi_def_cfa_offset 12
+ 837 0034 BD46     	 mov sp,r7
+ 838              	.LCFI91:
+ 839              	 .cfi_def_cfa_register 13
+ 840              	 
+ 841 0036 90BD     	 pop {r4,r7,pc}
+ 842              	 .cfi_endproc
+ 843              	.LFE532:
+ 845              	 .section .text.IOHi,"ax",%progbits
+ 846              	 .align 2
+ 847              	 .global IOHi
+ 848              	 .thumb
+ 849              	 .thumb_func
+ 851              	IOHi:
+ 852              	.LFB533:
+ 210:../cleanflight/src/main/drivers/io.c **** 
+ 211:../cleanflight/src/main/drivers/io.c **** void IOHi(IO_t io)
+ 212:../cleanflight/src/main/drivers/io.c **** {
+ 853              	 .loc 2 212 0
+ 854              	 .cfi_startproc
+ 855              	 
+ 856              	 
+ 857 0000 90B5     	 push {r4,r7,lr}
+ 858              	.LCFI92:
+ 859              	 .cfi_def_cfa_offset 12
+ 860              	 .cfi_offset 4,-12
+ 861              	 .cfi_offset 7,-8
+ 862              	 .cfi_offset 14,-4
+ 863 0002 83B0     	 sub sp,sp,#12
+ 864              	.LCFI93:
+ 865              	 .cfi_def_cfa_offset 24
+ 866 0004 00AF     	 add r7,sp,#0
+ 867              	.LCFI94:
+ 868              	 .cfi_def_cfa_register 7
+ 869 0006 7860     	 str r0,[r7,#4]
+ 213:../cleanflight/src/main/drivers/io.c ****     if (!io) {
+ 870              	 .loc 2 213 0
+ 871 0008 7B68     	 ldr r3,[r7,#4]
+ 872 000a 002B     	 cmp r3,#0
+ 873 000c 00D1     	 bne .L37
+ 214:../cleanflight/src/main/drivers/io.c ****         return;
+ 874              	 .loc 2 214 0
+ 875 000e 0CE0     	 b .L36
+ 876              	.L37:
+ 215:../cleanflight/src/main/drivers/io.c ****     }
+ 216:../cleanflight/src/main/drivers/io.c **** #ifdef XMC4700_F100x2048
+ 217:../cleanflight/src/main/drivers/io.c ****     XMC_GPIO_SetOutputHigh(IO_GPIO(io), IO_Pin(io));
+ 877              	 .loc 2 217 0
+ 878 0010 7868     	 ldr r0,[r7,#4]
+ 879 0012 FFF7FEFF 	 bl IO_GPIO
+ 880 0016 0446     	 mov r4,r0
+ 881 0018 7868     	 ldr r0,[r7,#4]
+ 882 001a FFF7FEFF 	 bl IO_Pin
+ 883 001e 0346     	 mov r3,r0
+ 884 0020 DBB2     	 uxtb r3,r3
+ 885 0022 2046     	 mov r0,r4
+ 886 0024 1946     	 mov r1,r3
+ 887 0026 FFF7FEFF 	 bl XMC_GPIO_SetOutputHigh
+ 888              	.L36:
+ 218:../cleanflight/src/main/drivers/io.c **** #else
+ 219:../cleanflight/src/main/drivers/io.c **** #if defined(USE_HAL_DRIVER)
+ 220:../cleanflight/src/main/drivers/io.c ****     LL_GPIO_SetOutputPin(IO_GPIO(io), IO_Pin(io));
+ 221:../cleanflight/src/main/drivers/io.c **** #elif defined(STM32F4)
+ 222:../cleanflight/src/main/drivers/io.c ****     IO_GPIO(io)->BSRRL = IO_Pin(io);
+ 223:../cleanflight/src/main/drivers/io.c **** #else
+ 224:../cleanflight/src/main/drivers/io.c ****     IO_GPIO(io)->BSRR = IO_Pin(io);
+ 225:../cleanflight/src/main/drivers/io.c **** #endif
+ 226:../cleanflight/src/main/drivers/io.c **** #endif
+ 227:../cleanflight/src/main/drivers/io.c **** }
+ 889              	 .loc 2 227 0
+ 890 002a 0C37     	 adds r7,r7,#12
+ 891              	.LCFI95:
+ 892              	 .cfi_def_cfa_offset 12
+ 893 002c BD46     	 mov sp,r7
+ 894              	.LCFI96:
+ 895              	 .cfi_def_cfa_register 13
+ 896              	 
+ 897 002e 90BD     	 pop {r4,r7,pc}
+ 898              	 .cfi_endproc
+ 899              	.LFE533:
+ 901              	 .section .text.IOLo,"ax",%progbits
+ 902              	 .align 2
+ 903              	 .global IOLo
+ 904              	 .thumb
+ 905              	 .thumb_func
+ 907              	IOLo:
+ 908              	.LFB534:
+ 228:../cleanflight/src/main/drivers/io.c **** 
+ 229:../cleanflight/src/main/drivers/io.c **** void IOLo(IO_t io)
+ 230:../cleanflight/src/main/drivers/io.c **** {
+ 909              	 .loc 2 230 0
+ 910              	 .cfi_startproc
+ 911              	 
+ 912              	 
+ 913 0000 90B5     	 push {r4,r7,lr}
+ 914              	.LCFI97:
+ 915              	 .cfi_def_cfa_offset 12
+ 916              	 .cfi_offset 4,-12
+ 917              	 .cfi_offset 7,-8
+ 918              	 .cfi_offset 14,-4
+ 919 0002 83B0     	 sub sp,sp,#12
+ 920              	.LCFI98:
+ 921              	 .cfi_def_cfa_offset 24
+ 922 0004 00AF     	 add r7,sp,#0
+ 923              	.LCFI99:
+ 924              	 .cfi_def_cfa_register 7
+ 925 0006 7860     	 str r0,[r7,#4]
+ 231:../cleanflight/src/main/drivers/io.c ****     if (!io) {
+ 926              	 .loc 2 231 0
+ 927 0008 7B68     	 ldr r3,[r7,#4]
+ 928 000a 002B     	 cmp r3,#0
+ 929 000c 00D1     	 bne .L40
+ 232:../cleanflight/src/main/drivers/io.c ****         return;
+ 930              	 .loc 2 232 0
+ 931 000e 0CE0     	 b .L39
+ 932              	.L40:
+ 233:../cleanflight/src/main/drivers/io.c ****     }
+ 234:../cleanflight/src/main/drivers/io.c **** #ifdef XMC4700_F100x2048
+ 235:../cleanflight/src/main/drivers/io.c ****     XMC_GPIO_SetOutputLow(IO_GPIO(io), IO_Pin(io));
+ 933              	 .loc 2 235 0
+ 934 0010 7868     	 ldr r0,[r7,#4]
+ 935 0012 FFF7FEFF 	 bl IO_GPIO
+ 936 0016 0446     	 mov r4,r0
+ 937 0018 7868     	 ldr r0,[r7,#4]
+ 938 001a FFF7FEFF 	 bl IO_Pin
+ 939 001e 0346     	 mov r3,r0
+ 940 0020 DBB2     	 uxtb r3,r3
+ 941 0022 2046     	 mov r0,r4
+ 942 0024 1946     	 mov r1,r3
+ 943 0026 FFF7FEFF 	 bl XMC_GPIO_SetOutputLow
+ 944              	.L39:
+ 236:../cleanflight/src/main/drivers/io.c **** #else
+ 237:../cleanflight/src/main/drivers/io.c **** #if defined(USE_HAL_DRIVER)
+ 238:../cleanflight/src/main/drivers/io.c ****     LL_GPIO_ResetOutputPin(IO_GPIO(io), IO_Pin(io));
+ 239:../cleanflight/src/main/drivers/io.c **** #elif defined(STM32F4)
+ 240:../cleanflight/src/main/drivers/io.c ****     IO_GPIO(io)->BSRRH = IO_Pin(io);
+ 241:../cleanflight/src/main/drivers/io.c **** #else
+ 242:../cleanflight/src/main/drivers/io.c ****     IO_GPIO(io)->BRR = IO_Pin(io);
+ 243:../cleanflight/src/main/drivers/io.c **** #endif
+ 244:../cleanflight/src/main/drivers/io.c **** #endif
+ 245:../cleanflight/src/main/drivers/io.c **** }
+ 945              	 .loc 2 245 0
+ 946 002a 0C37     	 adds r7,r7,#12
+ 947              	.LCFI100:
+ 948              	 .cfi_def_cfa_offset 12
+ 949 002c BD46     	 mov sp,r7
+ 950              	.LCFI101:
+ 951              	 .cfi_def_cfa_register 13
+ 952              	 
+ 953 002e 90BD     	 pop {r4,r7,pc}
+ 954              	 .cfi_endproc
+ 955              	.LFE534:
+ 957              	 .section .text.IOToggle,"ax",%progbits
+ 958              	 .align 2
+ 959              	 .global IOToggle
+ 960              	 .thumb
+ 961              	 .thumb_func
+ 963              	IOToggle:
+ 964              	.LFB535:
+ 246:../cleanflight/src/main/drivers/io.c **** 
+ 247:../cleanflight/src/main/drivers/io.c **** void IOToggle(IO_t io)
+ 248:../cleanflight/src/main/drivers/io.c **** {
+ 965              	 .loc 2 248 0
+ 966              	 .cfi_startproc
+ 967              	 
+ 968              	 
+ 969 0000 90B5     	 push {r4,r7,lr}
+ 970              	.LCFI102:
+ 971              	 .cfi_def_cfa_offset 12
+ 972              	 .cfi_offset 4,-12
+ 973              	 .cfi_offset 7,-8
+ 974              	 .cfi_offset 14,-4
+ 975 0002 83B0     	 sub sp,sp,#12
+ 976              	.LCFI103:
+ 977              	 .cfi_def_cfa_offset 24
+ 978 0004 00AF     	 add r7,sp,#0
+ 979              	.LCFI104:
+ 980              	 .cfi_def_cfa_register 7
+ 981 0006 7860     	 str r0,[r7,#4]
+ 249:../cleanflight/src/main/drivers/io.c ****     if (!io) {
+ 982              	 .loc 2 249 0
+ 983 0008 7B68     	 ldr r3,[r7,#4]
+ 984 000a 002B     	 cmp r3,#0
+ 985 000c 00D1     	 bne .L43
+ 250:../cleanflight/src/main/drivers/io.c ****         return;
+ 986              	 .loc 2 250 0
+ 987 000e 0CE0     	 b .L42
+ 988              	.L43:
+ 251:../cleanflight/src/main/drivers/io.c ****     }
+ 252:../cleanflight/src/main/drivers/io.c **** 
+ 253:../cleanflight/src/main/drivers/io.c **** #ifdef XMC4700_F100x2048
+ 254:../cleanflight/src/main/drivers/io.c ****     XMC_GPIO_ToggleOutput(IO_GPIO(io), IO_Pin(io));
+ 989              	 .loc 2 254 0
+ 990 0010 7868     	 ldr r0,[r7,#4]
+ 991 0012 FFF7FEFF 	 bl IO_GPIO
+ 992 0016 0446     	 mov r4,r0
+ 993 0018 7868     	 ldr r0,[r7,#4]
+ 994 001a FFF7FEFF 	 bl IO_Pin
+ 995 001e 0346     	 mov r3,r0
+ 996 0020 DBB2     	 uxtb r3,r3
+ 997 0022 2046     	 mov r0,r4
+ 998 0024 1946     	 mov r1,r3
+ 999 0026 FFF7FEFF 	 bl XMC_GPIO_ToggleOutput
+ 1000              	.L42:
+ 255:../cleanflight/src/main/drivers/io.c **** #else
+ 256:../cleanflight/src/main/drivers/io.c ****     uint32_t mask = IO_Pin(io);
+ 257:../cleanflight/src/main/drivers/io.c ****     // Read pin state from ODR but write to BSRR because it only changes the pins
+ 258:../cleanflight/src/main/drivers/io.c ****     // high in the mask value rather than all pins. XORing ODR directly risks
+ 259:../cleanflight/src/main/drivers/io.c ****     // setting other pins incorrectly because it change all pins' state.
+ 260:../cleanflight/src/main/drivers/io.c **** #if defined(USE_HAL_DRIVER)
+ 261:../cleanflight/src/main/drivers/io.c ****     if (LL_GPIO_ReadOutputPort(IO_GPIO(io)) & mask) {
+ 262:../cleanflight/src/main/drivers/io.c ****         mask <<= 16;   // bit is set, shift mask to reset half
+ 263:../cleanflight/src/main/drivers/io.c ****     }
+ 264:../cleanflight/src/main/drivers/io.c ****     LL_GPIO_SetOutputPin(IO_GPIO(io), mask);
+ 265:../cleanflight/src/main/drivers/io.c **** #elif defined(STM32F4)
+ 266:../cleanflight/src/main/drivers/io.c ****     if (IO_GPIO(io)->ODR & mask) {
+ 267:../cleanflight/src/main/drivers/io.c ****         IO_GPIO(io)->BSRRH = mask;
+ 268:../cleanflight/src/main/drivers/io.c ****     } else {
+ 269:../cleanflight/src/main/drivers/io.c ****         IO_GPIO(io)->BSRRL = mask;
+ 270:../cleanflight/src/main/drivers/io.c ****     }
+ 271:../cleanflight/src/main/drivers/io.c **** #else
+ 272:../cleanflight/src/main/drivers/io.c ****     if (IO_GPIO(io)->ODR & mask)
+ 273:../cleanflight/src/main/drivers/io.c ****         mask <<= 16;   // bit is set, shift mask to reset half
+ 274:../cleanflight/src/main/drivers/io.c **** 
+ 275:../cleanflight/src/main/drivers/io.c ****     IO_GPIO(io)->BSRR = mask;
+ 276:../cleanflight/src/main/drivers/io.c **** #endif
+ 277:../cleanflight/src/main/drivers/io.c **** #endif
+ 278:../cleanflight/src/main/drivers/io.c **** }
+ 1001              	 .loc 2 278 0
+ 1002 002a 0C37     	 adds r7,r7,#12
+ 1003              	.LCFI105:
+ 1004              	 .cfi_def_cfa_offset 12
+ 1005 002c BD46     	 mov sp,r7
+ 1006              	.LCFI106:
+ 1007              	 .cfi_def_cfa_register 13
+ 1008              	 
+ 1009 002e 90BD     	 pop {r4,r7,pc}
+ 1010              	 .cfi_endproc
+ 1011              	.LFE535:
+ 1013              	 .section .text.IOInit,"ax",%progbits
+ 1014              	 .align 2
+ 1015              	 .global IOInit
+ 1016              	 .thumb
+ 1017              	 .thumb_func
+ 1019              	IOInit:
+ 1020              	.LFB536:
+ 279:../cleanflight/src/main/drivers/io.c **** 
+ 280:../cleanflight/src/main/drivers/io.c **** // claim IO pin, set owner and resources
+ 281:../cleanflight/src/main/drivers/io.c **** void IOInit(IO_t io, resourceOwner_e owner, uint8_t index)
+ 282:../cleanflight/src/main/drivers/io.c **** {
+ 1021              	 .loc 2 282 0
+ 1022              	 .cfi_startproc
+ 1023              	 
+ 1024              	 
+ 1025 0000 80B5     	 push {r7,lr}
+ 1026              	.LCFI107:
+ 1027              	 .cfi_def_cfa_offset 8
+ 1028              	 .cfi_offset 7,-8
+ 1029              	 .cfi_offset 14,-4
+ 1030 0002 84B0     	 sub sp,sp,#16
+ 1031              	.LCFI108:
+ 1032              	 .cfi_def_cfa_offset 24
+ 1033 0004 00AF     	 add r7,sp,#0
+ 1034              	.LCFI109:
+ 1035              	 .cfi_def_cfa_register 7
+ 1036 0006 7860     	 str r0,[r7,#4]
+ 1037 0008 0B46     	 mov r3,r1
+ 1038 000a FB70     	 strb r3,[r7,#3]
+ 1039 000c 1346     	 mov r3,r2
+ 1040 000e BB70     	 strb r3,[r7,#2]
+ 283:../cleanflight/src/main/drivers/io.c ****     if (!io) {
+ 1041              	 .loc 2 283 0
+ 1042 0010 7B68     	 ldr r3,[r7,#4]
+ 1043 0012 002B     	 cmp r3,#0
+ 1044 0014 00D1     	 bne .L46
+ 284:../cleanflight/src/main/drivers/io.c ****         return;
+ 1045              	 .loc 2 284 0
+ 1046 0016 09E0     	 b .L45
+ 1047              	.L46:
+ 285:../cleanflight/src/main/drivers/io.c ****     }
+ 286:../cleanflight/src/main/drivers/io.c ****     ioRec_t *ioRec = IO_Rec(io);
+ 1048              	 .loc 2 286 0
+ 1049 0018 7868     	 ldr r0,[r7,#4]
+ 1050 001a FFF7FEFF 	 bl IO_Rec
+ 1051 001e F860     	 str r0,[r7,#12]
+ 287:../cleanflight/src/main/drivers/io.c ****     ioRec->owner = owner;
+ 1052              	 .loc 2 287 0
+ 1053 0020 FB68     	 ldr r3,[r7,#12]
+ 1054 0022 FA78     	 ldrb r2,[r7,#3]
+ 1055 0024 9A71     	 strb r2,[r3,#6]
+ 288:../cleanflight/src/main/drivers/io.c ****     ioRec->index = index;
+ 1056              	 .loc 2 288 0
+ 1057 0026 FB68     	 ldr r3,[r7,#12]
+ 1058 0028 BA78     	 ldrb r2,[r7,#2]
+ 1059 002a DA71     	 strb r2,[r3,#7]
+ 1060              	.L45:
+ 289:../cleanflight/src/main/drivers/io.c **** }
+ 1061              	 .loc 2 289 0
+ 1062 002c 1037     	 adds r7,r7,#16
+ 1063              	.LCFI110:
+ 1064              	 .cfi_def_cfa_offset 8
+ 1065 002e BD46     	 mov sp,r7
+ 1066              	.LCFI111:
+ 1067              	 .cfi_def_cfa_register 13
+ 1068              	 
+ 1069 0030 80BD     	 pop {r7,pc}
+ 1070              	 .cfi_endproc
+ 1071              	.LFE536:
+ 1073 0032 00BF     	 .section .text.IORelease,"ax",%progbits
+ 1074              	 .align 2
+ 1075              	 .global IORelease
+ 1076              	 .thumb
+ 1077              	 .thumb_func
+ 1079              	IORelease:
+ 1080              	.LFB537:
+ 290:../cleanflight/src/main/drivers/io.c **** 
+ 291:../cleanflight/src/main/drivers/io.c **** void IORelease(IO_t io)
+ 292:../cleanflight/src/main/drivers/io.c **** {
+ 1081              	 .loc 2 292 0
+ 1082              	 .cfi_startproc
+ 1083              	 
+ 1084              	 
+ 1085 0000 80B5     	 push {r7,lr}
+ 1086              	.LCFI112:
+ 1087              	 .cfi_def_cfa_offset 8
+ 1088              	 .cfi_offset 7,-8
+ 1089              	 .cfi_offset 14,-4
+ 1090 0002 84B0     	 sub sp,sp,#16
+ 1091              	.LCFI113:
+ 1092              	 .cfi_def_cfa_offset 24
+ 1093 0004 00AF     	 add r7,sp,#0
+ 1094              	.LCFI114:
+ 1095              	 .cfi_def_cfa_register 7
+ 1096 0006 7860     	 str r0,[r7,#4]
+ 293:../cleanflight/src/main/drivers/io.c ****     if (!io) {
+ 1097              	 .loc 2 293 0
+ 1098 0008 7B68     	 ldr r3,[r7,#4]
+ 1099 000a 002B     	 cmp r3,#0
+ 1100 000c 00D1     	 bne .L49
+ 294:../cleanflight/src/main/drivers/io.c ****         return;
+ 1101              	 .loc 2 294 0
+ 1102 000e 06E0     	 b .L48
+ 1103              	.L49:
+ 295:../cleanflight/src/main/drivers/io.c ****     }
+ 296:../cleanflight/src/main/drivers/io.c ****     ioRec_t *ioRec = IO_Rec(io);
+ 1104              	 .loc 2 296 0
+ 1105 0010 7868     	 ldr r0,[r7,#4]
+ 1106 0012 FFF7FEFF 	 bl IO_Rec
+ 1107 0016 F860     	 str r0,[r7,#12]
+ 297:../cleanflight/src/main/drivers/io.c ****     ioRec->owner = OWNER_FREE;
+ 1108              	 .loc 2 297 0
+ 1109 0018 FB68     	 ldr r3,[r7,#12]
+ 1110 001a 0022     	 movs r2,#0
+ 1111 001c 9A71     	 strb r2,[r3,#6]
+ 1112              	.L48:
+ 298:../cleanflight/src/main/drivers/io.c **** }
+ 1113              	 .loc 2 298 0
+ 1114 001e 1037     	 adds r7,r7,#16
+ 1115              	.LCFI115:
+ 1116              	 .cfi_def_cfa_offset 8
+ 1117 0020 BD46     	 mov sp,r7
+ 1118              	.LCFI116:
+ 1119              	 .cfi_def_cfa_register 13
+ 1120              	 
+ 1121 0022 80BD     	 pop {r7,pc}
+ 1122              	 .cfi_endproc
+ 1123              	.LFE537:
+ 1125              	 .section .text.IOGetOwner,"ax",%progbits
+ 1126              	 .align 2
+ 1127              	 .global IOGetOwner
+ 1128              	 .thumb
+ 1129              	 .thumb_func
+ 1131              	IOGetOwner:
+ 1132              	.LFB538:
+ 299:../cleanflight/src/main/drivers/io.c **** 
+ 300:../cleanflight/src/main/drivers/io.c **** resourceOwner_e IOGetOwner(IO_t io)
+ 301:../cleanflight/src/main/drivers/io.c **** {
+ 1133              	 .loc 2 301 0
+ 1134              	 .cfi_startproc
+ 1135              	 
+ 1136              	 
+ 1137 0000 80B5     	 push {r7,lr}
+ 1138              	.LCFI117:
+ 1139              	 .cfi_def_cfa_offset 8
+ 1140              	 .cfi_offset 7,-8
+ 1141              	 .cfi_offset 14,-4
+ 1142 0002 84B0     	 sub sp,sp,#16
+ 1143              	.LCFI118:
+ 1144              	 .cfi_def_cfa_offset 24
+ 1145 0004 00AF     	 add r7,sp,#0
+ 1146              	.LCFI119:
+ 1147              	 .cfi_def_cfa_register 7
+ 1148 0006 7860     	 str r0,[r7,#4]
+ 302:../cleanflight/src/main/drivers/io.c ****     if (!io) {
+ 1149              	 .loc 2 302 0
+ 1150 0008 7B68     	 ldr r3,[r7,#4]
+ 1151 000a 002B     	 cmp r3,#0
+ 1152 000c 01D1     	 bne .L52
+ 303:../cleanflight/src/main/drivers/io.c ****         return OWNER_FREE;
+ 1153              	 .loc 2 303 0
+ 1154 000e 0023     	 movs r3,#0
+ 1155 0010 05E0     	 b .L53
+ 1156              	.L52:
+ 304:../cleanflight/src/main/drivers/io.c ****     }
+ 305:../cleanflight/src/main/drivers/io.c ****     const ioRec_t *ioRec = IO_Rec(io);
+ 1157              	 .loc 2 305 0
+ 1158 0012 7868     	 ldr r0,[r7,#4]
+ 1159 0014 FFF7FEFF 	 bl IO_Rec
+ 1160 0018 F860     	 str r0,[r7,#12]
+ 306:../cleanflight/src/main/drivers/io.c ****     return ioRec->owner;
+ 1161              	 .loc 2 306 0
+ 1162 001a FB68     	 ldr r3,[r7,#12]
+ 1163 001c 9B79     	 ldrb r3,[r3,#6]
+ 1164              	.L53:
+ 307:../cleanflight/src/main/drivers/io.c **** }
+ 1165              	 .loc 2 307 0
+ 1166 001e 1846     	 mov r0,r3
+ 1167 0020 1037     	 adds r7,r7,#16
+ 1168              	.LCFI120:
+ 1169              	 .cfi_def_cfa_offset 8
+ 1170 0022 BD46     	 mov sp,r7
+ 1171              	.LCFI121:
+ 1172              	 .cfi_def_cfa_register 13
+ 1173              	 
+ 1174 0024 80BD     	 pop {r7,pc}
+ 1175              	 .cfi_endproc
+ 1176              	.LFE538:
+ 1178 0026 00BF     	 .section .text.IOIsFreeOrPreinit,"ax",%progbits
+ 1179              	 .align 2
+ 1180              	 .global IOIsFreeOrPreinit
+ 1181              	 .thumb
+ 1182              	 .thumb_func
+ 1184              	IOIsFreeOrPreinit:
+ 1185              	.LFB539:
+ 308:../cleanflight/src/main/drivers/io.c **** 
+ 309:../cleanflight/src/main/drivers/io.c **** bool IOIsFreeOrPreinit(IO_t io)
+ 310:../cleanflight/src/main/drivers/io.c **** {
+ 1186              	 .loc 2 310 0
+ 1187              	 .cfi_startproc
+ 1188              	 
+ 1189              	 
+ 1190 0000 80B5     	 push {r7,lr}
+ 1191              	.LCFI122:
+ 1192              	 .cfi_def_cfa_offset 8
+ 1193              	 .cfi_offset 7,-8
+ 1194              	 .cfi_offset 14,-4
+ 1195 0002 84B0     	 sub sp,sp,#16
+ 1196              	.LCFI123:
+ 1197              	 .cfi_def_cfa_offset 24
+ 1198 0004 00AF     	 add r7,sp,#0
+ 1199              	.LCFI124:
+ 1200              	 .cfi_def_cfa_register 7
+ 1201 0006 7860     	 str r0,[r7,#4]
+ 311:../cleanflight/src/main/drivers/io.c ****     resourceOwner_e owner = IOGetOwner(io);
+ 1202              	 .loc 2 311 0
+ 1203 0008 7868     	 ldr r0,[r7,#4]
+ 1204 000a FFF7FEFF 	 bl IOGetOwner
+ 1205 000e 0346     	 mov r3,r0
+ 1206 0010 FB73     	 strb r3,[r7,#15]
+ 312:../cleanflight/src/main/drivers/io.c **** 
+ 313:../cleanflight/src/main/drivers/io.c ****     if (owner == OWNER_FREE || owner == OWNER_SPI_PREINIT_IPU || owner == OWNER_SPI_PREINIT_OPU) {
+ 1207              	 .loc 2 313 0
+ 1208 0012 FB7B     	 ldrb r3,[r7,#15]
+ 1209 0014 002B     	 cmp r3,#0
+ 1210 0016 05D0     	 beq .L55
+ 1211              	 .loc 2 313 0 is_stmt 0 discriminator 1
+ 1212 0018 FB7B     	 ldrb r3,[r7,#15]
+ 1213 001a 352B     	 cmp r3,#53
+ 1214 001c 02D0     	 beq .L55
+ 1215              	 .loc 2 313 0 discriminator 2
+ 1216 001e FB7B     	 ldrb r3,[r7,#15]
+ 1217 0020 362B     	 cmp r3,#54
+ 1218 0022 01D1     	 bne .L56
+ 1219              	.L55:
+ 314:../cleanflight/src/main/drivers/io.c ****         return true;
+ 1220              	 .loc 2 314 0 is_stmt 1
+ 1221 0024 0123     	 movs r3,#1
+ 1222 0026 00E0     	 b .L57
+ 1223              	.L56:
+ 315:../cleanflight/src/main/drivers/io.c ****     }
+ 316:../cleanflight/src/main/drivers/io.c **** 
+ 317:../cleanflight/src/main/drivers/io.c ****     return false;
+ 1224              	 .loc 2 317 0
+ 1225 0028 0023     	 movs r3,#0
+ 1226              	.L57:
+ 318:../cleanflight/src/main/drivers/io.c **** }
+ 1227              	 .loc 2 318 0
+ 1228 002a 1846     	 mov r0,r3
+ 1229 002c 1037     	 adds r7,r7,#16
+ 1230              	.LCFI125:
+ 1231              	 .cfi_def_cfa_offset 8
+ 1232 002e BD46     	 mov sp,r7
+ 1233              	.LCFI126:
+ 1234              	 .cfi_def_cfa_register 13
+ 1235              	 
+ 1236 0030 80BD     	 pop {r7,pc}
+ 1237              	 .cfi_endproc
+ 1238              	.LFE539:
+ 1240 0032 00BF     	 .section .text.IOConfigGPIO,"ax",%progbits
+ 1241              	 .align 2
+ 1242              	 .global IOConfigGPIO
+ 1243              	 .thumb
+ 1244              	 .thumb_func
+ 1246              	IOConfigGPIO:
+ 1247              	.LFB540:
+ 319:../cleanflight/src/main/drivers/io.c **** 
+ 320:../cleanflight/src/main/drivers/io.c **** #if defined(STM32F1)
+ 321:../cleanflight/src/main/drivers/io.c **** 
+ 322:../cleanflight/src/main/drivers/io.c **** void IOConfigGPIO(IO_t io, ioConfig_t cfg)
+ 323:../cleanflight/src/main/drivers/io.c **** {
+ 324:../cleanflight/src/main/drivers/io.c ****     if (!io) {
+ 325:../cleanflight/src/main/drivers/io.c ****         return;
+ 326:../cleanflight/src/main/drivers/io.c ****     }
+ 327:../cleanflight/src/main/drivers/io.c **** 
+ 328:../cleanflight/src/main/drivers/io.c ****     const rccPeriphTag_t rcc = ioPortDefs[IO_GPIOPortIdx(io)].rcc;
+ 329:../cleanflight/src/main/drivers/io.c ****     RCC_ClockCmd(rcc, ENABLE);
+ 330:../cleanflight/src/main/drivers/io.c **** 
+ 331:../cleanflight/src/main/drivers/io.c ****     GPIO_InitTypeDef init = {
+ 332:../cleanflight/src/main/drivers/io.c ****         .GPIO_Pin = IO_Pin(io),
+ 333:../cleanflight/src/main/drivers/io.c ****         .GPIO_Speed = cfg & 0x03,
+ 334:../cleanflight/src/main/drivers/io.c ****         .GPIO_Mode = cfg & 0x7c,
+ 335:../cleanflight/src/main/drivers/io.c ****     };
+ 336:../cleanflight/src/main/drivers/io.c ****     GPIO_Init(IO_GPIO(io), &init);
+ 337:../cleanflight/src/main/drivers/io.c **** }
+ 338:../cleanflight/src/main/drivers/io.c **** 
+ 339:../cleanflight/src/main/drivers/io.c **** #elif defined(STM32F7)
+ 340:../cleanflight/src/main/drivers/io.c **** 
+ 341:../cleanflight/src/main/drivers/io.c **** void IOConfigGPIO(IO_t io, ioConfig_t cfg)
+ 342:../cleanflight/src/main/drivers/io.c **** {
+ 343:../cleanflight/src/main/drivers/io.c ****     IOConfigGPIOAF(io, cfg, 0);
+ 344:../cleanflight/src/main/drivers/io.c **** }
+ 345:../cleanflight/src/main/drivers/io.c **** 
+ 346:../cleanflight/src/main/drivers/io.c **** void IOConfigGPIOAF(IO_t io, ioConfig_t cfg, uint8_t af)
+ 347:../cleanflight/src/main/drivers/io.c **** {
+ 348:../cleanflight/src/main/drivers/io.c ****     if (!io) {
+ 349:../cleanflight/src/main/drivers/io.c ****         return;
+ 350:../cleanflight/src/main/drivers/io.c ****     }
+ 351:../cleanflight/src/main/drivers/io.c **** 
+ 352:../cleanflight/src/main/drivers/io.c ****     const rccPeriphTag_t rcc = ioPortDefs[IO_GPIOPortIdx(io)].rcc;
+ 353:../cleanflight/src/main/drivers/io.c ****     RCC_ClockCmd(rcc, ENABLE);
+ 354:../cleanflight/src/main/drivers/io.c **** 
+ 355:../cleanflight/src/main/drivers/io.c ****     LL_GPIO_InitTypeDef init = {
+ 356:../cleanflight/src/main/drivers/io.c ****         .Pin = IO_Pin(io),
+ 357:../cleanflight/src/main/drivers/io.c ****         .Mode = (cfg >> 0) & 0x03,
+ 358:../cleanflight/src/main/drivers/io.c ****         .Speed = (cfg >> 2) & 0x03,
+ 359:../cleanflight/src/main/drivers/io.c ****         .OutputType = (cfg >> 4) & 0x01,
+ 360:../cleanflight/src/main/drivers/io.c ****         .Pull = (cfg >> 5) & 0x03,
+ 361:../cleanflight/src/main/drivers/io.c ****         .Alternate = af
+ 362:../cleanflight/src/main/drivers/io.c ****     };
+ 363:../cleanflight/src/main/drivers/io.c **** 
+ 364:../cleanflight/src/main/drivers/io.c ****     LL_GPIO_Init(IO_GPIO(io), &init);
+ 365:../cleanflight/src/main/drivers/io.c **** }
+ 366:../cleanflight/src/main/drivers/io.c **** 
+ 367:../cleanflight/src/main/drivers/io.c **** #elif defined(STM32F3) || defined(STM32F4)
+ 368:../cleanflight/src/main/drivers/io.c **** 
+ 369:../cleanflight/src/main/drivers/io.c **** void IOConfigGPIO(IO_t io, ioConfig_t cfg)
+ 370:../cleanflight/src/main/drivers/io.c **** {
+ 371:../cleanflight/src/main/drivers/io.c ****     if (!io) {
+ 372:../cleanflight/src/main/drivers/io.c ****         return;
+ 373:../cleanflight/src/main/drivers/io.c ****     }
+ 374:../cleanflight/src/main/drivers/io.c **** 
+ 375:../cleanflight/src/main/drivers/io.c ****     const rccPeriphTag_t rcc = ioPortDefs[IO_GPIOPortIdx(io)].rcc;
+ 376:../cleanflight/src/main/drivers/io.c ****     RCC_ClockCmd(rcc, ENABLE);
+ 377:../cleanflight/src/main/drivers/io.c **** 
+ 378:../cleanflight/src/main/drivers/io.c ****     GPIO_InitTypeDef init = {
+ 379:../cleanflight/src/main/drivers/io.c ****         .GPIO_Pin = IO_Pin(io),
+ 380:../cleanflight/src/main/drivers/io.c ****         .GPIO_Mode = (cfg >> 0) & 0x03,
+ 381:../cleanflight/src/main/drivers/io.c ****         .GPIO_Speed = (cfg >> 2) & 0x03,
+ 382:../cleanflight/src/main/drivers/io.c ****         .GPIO_OType = (cfg >> 4) & 0x01,
+ 383:../cleanflight/src/main/drivers/io.c ****         .GPIO_PuPd = (cfg >> 5) & 0x03,
+ 384:../cleanflight/src/main/drivers/io.c ****     };
+ 385:../cleanflight/src/main/drivers/io.c ****     GPIO_Init(IO_GPIO(io), &init);
+ 386:../cleanflight/src/main/drivers/io.c **** }
+ 387:../cleanflight/src/main/drivers/io.c **** 
+ 388:../cleanflight/src/main/drivers/io.c **** void IOConfigGPIOAF(IO_t io, ioConfig_t cfg, uint8_t af)
+ 389:../cleanflight/src/main/drivers/io.c **** {
+ 390:../cleanflight/src/main/drivers/io.c ****     if (!io) {
+ 391:../cleanflight/src/main/drivers/io.c ****         return;
+ 392:../cleanflight/src/main/drivers/io.c ****     }
+ 393:../cleanflight/src/main/drivers/io.c **** 
+ 394:../cleanflight/src/main/drivers/io.c ****     const rccPeriphTag_t rcc = ioPortDefs[IO_GPIOPortIdx(io)].rcc;
+ 395:../cleanflight/src/main/drivers/io.c ****     RCC_ClockCmd(rcc, ENABLE);
+ 396:../cleanflight/src/main/drivers/io.c ****     GPIO_PinAFConfig(IO_GPIO(io), IO_GPIO_PinSource(io), af);
+ 397:../cleanflight/src/main/drivers/io.c **** 
+ 398:../cleanflight/src/main/drivers/io.c ****     GPIO_InitTypeDef init = {
+ 399:../cleanflight/src/main/drivers/io.c ****         .GPIO_Pin = IO_Pin(io),
+ 400:../cleanflight/src/main/drivers/io.c ****         .GPIO_Mode = (cfg >> 0) & 0x03,
+ 401:../cleanflight/src/main/drivers/io.c ****         .GPIO_Speed = (cfg >> 2) & 0x03,
+ 402:../cleanflight/src/main/drivers/io.c ****         .GPIO_OType = (cfg >> 4) & 0x01,
+ 403:../cleanflight/src/main/drivers/io.c ****         .GPIO_PuPd = (cfg >> 5) & 0x03,
+ 404:../cleanflight/src/main/drivers/io.c ****     };
+ 405:../cleanflight/src/main/drivers/io.c ****     GPIO_Init(IO_GPIO(io), &init);
+ 406:../cleanflight/src/main/drivers/io.c **** }
+ 407:../cleanflight/src/main/drivers/io.c **** 
+ 408:../cleanflight/src/main/drivers/io.c **** #elif defined(XMC4700_F100x2048)
+ 409:../cleanflight/src/main/drivers/io.c **** 
+ 410:../cleanflight/src/main/drivers/io.c **** void IOConfigGPIO(IO_t io, ioConfig_t cfg)
+ 411:../cleanflight/src/main/drivers/io.c **** {
+ 1248              	 .loc 2 411 0
+ 1249              	 .cfi_startproc
+ 1250              	 
+ 1251              	 
+ 1252 0000 90B5     	 push {r4,r7,lr}
+ 1253              	.LCFI127:
+ 1254              	 .cfi_def_cfa_offset 12
+ 1255              	 .cfi_offset 4,-12
+ 1256              	 .cfi_offset 7,-8
+ 1257              	 .cfi_offset 14,-4
+ 1258 0002 87B0     	 sub sp,sp,#28
+ 1259              	.LCFI128:
+ 1260              	 .cfi_def_cfa_offset 40
+ 1261 0004 00AF     	 add r7,sp,#0
+ 1262              	.LCFI129:
+ 1263              	 .cfi_def_cfa_register 7
+ 1264 0006 7860     	 str r0,[r7,#4]
+ 1265 0008 0B46     	 mov r3,r1
+ 1266 000a FB70     	 strb r3,[r7,#3]
+ 412:../cleanflight/src/main/drivers/io.c **** 	if (!io)
+ 1267              	 .loc 2 412 0
+ 1268 000c 7B68     	 ldr r3,[r7,#4]
+ 1269 000e 002B     	 cmp r3,#0
+ 1270 0010 24D0     	 beq .L58
+ 413:../cleanflight/src/main/drivers/io.c **** 		return;
+ 414:../cleanflight/src/main/drivers/io.c **** 
+ 415:../cleanflight/src/main/drivers/io.c **** 	XMC_GPIO_OUTPUT_LEVEL_t level;
+ 416:../cleanflight/src/main/drivers/io.c **** 
+ 417:../cleanflight/src/main/drivers/io.c **** 	if (cfg & 0x01)
+ 1271              	 .loc 2 417 0
+ 1272 0012 FB78     	 ldrb r3,[r7,#3]
+ 1273 0014 03F00103 	 and r3,r3,#1
+ 1274 0018 002B     	 cmp r3,#0
+ 1275 001a 02D0     	 beq .L61
+ 418:../cleanflight/src/main/drivers/io.c **** 		level = XMC_GPIO_OUTPUT_LEVEL_HIGH;
+ 1276              	 .loc 2 418 0
+ 1277 001c 0123     	 movs r3,#1
+ 1278 001e 7B61     	 str r3,[r7,#20]
+ 1279 0020 02E0     	 b .L62
+ 1280              	.L61:
+ 419:../cleanflight/src/main/drivers/io.c **** 	else
+ 420:../cleanflight/src/main/drivers/io.c **** 		level = XMC_GPIO_OUTPUT_LEVEL_LOW;
+ 1281              	 .loc 2 420 0
+ 1282 0022 4FF48033 	 mov r3,#65536
+ 1283 0026 7B61     	 str r3,[r7,#20]
+ 1284              	.L62:
+ 421:../cleanflight/src/main/drivers/io.c **** 
+ 422:../cleanflight/src/main/drivers/io.c **** 	XMC_GPIO_CONFIG_t config =
+ 1285              	 .loc 2 422 0
+ 1286 0028 FB78     	 ldrb r3,[r7,#3]
+ 1287 002a 23F00103 	 bic r3,r3,#1
+ 1288 002e DBB2     	 uxtb r3,r3
+ 1289 0030 3B73     	 strb r3,[r7,#12]
+ 1290 0032 7B69     	 ldr r3,[r7,#20]
+ 1291 0034 C7F80D30 	 str r3,[r7,#13]
+ 1292 0038 0023     	 movs r3,#0
+ 1293 003a 7B74     	 strb r3,[r7,#17]
+ 423:../cleanflight/src/main/drivers/io.c **** 	{
+ 424:../cleanflight/src/main/drivers/io.c **** 		.mode = (cfg & 0xFFFFFFFE),
+ 425:../cleanflight/src/main/drivers/io.c **** 		.output_level = level,
+ 426:../cleanflight/src/main/drivers/io.c **** 		.output_strength = XMC_GPIO_OUTPUT_STRENGTH_STRONG_SHARP_EDGE,
+ 427:../cleanflight/src/main/drivers/io.c **** 	};
+ 428:../cleanflight/src/main/drivers/io.c **** 
+ 429:../cleanflight/src/main/drivers/io.c **** 	XMC_GPIO_Init(IO_GPIO(io), IO_Pin(io), &config);
+ 1294              	 .loc 2 429 0
+ 1295 003c 7868     	 ldr r0,[r7,#4]
+ 1296 003e FFF7FEFF 	 bl IO_GPIO
+ 1297 0042 0446     	 mov r4,r0
+ 1298 0044 7868     	 ldr r0,[r7,#4]
+ 1299 0046 FFF7FEFF 	 bl IO_Pin
+ 1300 004a 0346     	 mov r3,r0
+ 1301 004c DAB2     	 uxtb r2,r3
+ 1302 004e 07F10C03 	 add r3,r7,#12
+ 1303 0052 2046     	 mov r0,r4
+ 1304 0054 1146     	 mov r1,r2
+ 1305 0056 1A46     	 mov r2,r3
+ 1306 0058 FFF7FEFF 	 bl XMC_GPIO_Init
+ 1307              	.L58:
+ 430:../cleanflight/src/main/drivers/io.c **** }
+ 1308              	 .loc 2 430 0
+ 1309 005c 1C37     	 adds r7,r7,#28
+ 1310              	.LCFI130:
+ 1311              	 .cfi_def_cfa_offset 12
+ 1312 005e BD46     	 mov sp,r7
+ 1313              	.LCFI131:
+ 1314              	 .cfi_def_cfa_register 13
+ 1315              	 
+ 1316 0060 90BD     	 pop {r4,r7,pc}
+ 1317              	 .cfi_endproc
+ 1318              	.LFE540:
+ 1320 0062 00BF     	 .section .text.IOConfigGPIOAF,"ax",%progbits
+ 1321              	 .align 2
+ 1322              	 .global IOConfigGPIOAF
+ 1323              	 .thumb
+ 1324              	 .thumb_func
+ 1326              	IOConfigGPIOAF:
+ 1327              	.LFB541:
+ 431:../cleanflight/src/main/drivers/io.c **** 
+ 432:../cleanflight/src/main/drivers/io.c **** void IOConfigGPIOAF(IO_t io, ioConfig_t cfg, uint8_t af)
+ 433:../cleanflight/src/main/drivers/io.c **** {
+ 1328              	 .loc 2 433 0
+ 1329              	 .cfi_startproc
+ 1330              	 
+ 1331              	 
+ 1332 0000 90B5     	 push {r4,r7,lr}
+ 1333              	.LCFI132:
+ 1334              	 .cfi_def_cfa_offset 12
+ 1335              	 .cfi_offset 4,-12
+ 1336              	 .cfi_offset 7,-8
+ 1337              	 .cfi_offset 14,-4
+ 1338 0002 87B0     	 sub sp,sp,#28
+ 1339              	.LCFI133:
+ 1340              	 .cfi_def_cfa_offset 40
+ 1341 0004 00AF     	 add r7,sp,#0
+ 1342              	.LCFI134:
+ 1343              	 .cfi_def_cfa_register 7
+ 1344 0006 7860     	 str r0,[r7,#4]
+ 1345 0008 0B46     	 mov r3,r1
+ 1346 000a FB70     	 strb r3,[r7,#3]
+ 1347 000c 1346     	 mov r3,r2
+ 1348 000e BB70     	 strb r3,[r7,#2]
+ 434:../cleanflight/src/main/drivers/io.c ****     if (!io)
+ 1349              	 .loc 2 434 0
+ 1350 0010 7B68     	 ldr r3,[r7,#4]
+ 1351 0012 002B     	 cmp r3,#0
+ 1352 0014 24D0     	 beq .L63
+ 435:../cleanflight/src/main/drivers/io.c ****         return;
+ 436:../cleanflight/src/main/drivers/io.c **** 
+ 437:../cleanflight/src/main/drivers/io.c **** 	XMC_GPIO_OUTPUT_LEVEL_t level;
+ 438:../cleanflight/src/main/drivers/io.c **** 
+ 439:../cleanflight/src/main/drivers/io.c **** 	if (cfg & 0x01)
+ 1353              	 .loc 2 439 0
+ 1354 0016 FB78     	 ldrb r3,[r7,#3]
+ 1355 0018 03F00103 	 and r3,r3,#1
+ 1356 001c 002B     	 cmp r3,#0
+ 1357 001e 02D0     	 beq .L66
+ 440:../cleanflight/src/main/drivers/io.c **** 		level = XMC_GPIO_OUTPUT_LEVEL_HIGH;
+ 1358              	 .loc 2 440 0
+ 1359 0020 0123     	 movs r3,#1
+ 1360 0022 7B61     	 str r3,[r7,#20]
+ 1361 0024 02E0     	 b .L67
+ 1362              	.L66:
+ 441:../cleanflight/src/main/drivers/io.c **** 	else
+ 442:../cleanflight/src/main/drivers/io.c **** 		level = XMC_GPIO_OUTPUT_LEVEL_LOW;
+ 1363              	 .loc 2 442 0
+ 1364 0026 4FF48033 	 mov r3,#65536
+ 1365 002a 7B61     	 str r3,[r7,#20]
+ 1366              	.L67:
+ 443:../cleanflight/src/main/drivers/io.c **** 
+ 444:../cleanflight/src/main/drivers/io.c ****     XMC_GPIO_CONFIG_t config =
+ 1367              	 .loc 2 444 0
+ 1368 002c BB78     	 ldrb r3,[r7,#2]
+ 1369 002e 23F00103 	 bic r3,r3,#1
+ 1370 0032 DBB2     	 uxtb r3,r3
+ 1371 0034 3B73     	 strb r3,[r7,#12]
+ 1372 0036 7B69     	 ldr r3,[r7,#20]
+ 1373 0038 C7F80D30 	 str r3,[r7,#13]
+ 1374 003c 0023     	 movs r3,#0
+ 1375 003e 7B74     	 strb r3,[r7,#17]
+ 445:../cleanflight/src/main/drivers/io.c ****     {
+ 446:../cleanflight/src/main/drivers/io.c ****     	.mode = (af & 0xFFFFFFFE),
+ 447:../cleanflight/src/main/drivers/io.c **** 		.output_level = level,
+ 448:../cleanflight/src/main/drivers/io.c **** 		.output_strength = XMC_GPIO_OUTPUT_STRENGTH_STRONG_SHARP_EDGE,
+ 449:../cleanflight/src/main/drivers/io.c ****     };
+ 450:../cleanflight/src/main/drivers/io.c **** 
+ 451:../cleanflight/src/main/drivers/io.c ****     XMC_GPIO_Init(IO_GPIO(io), IO_Pin(io), &config);
+ 1376              	 .loc 2 451 0
+ 1377 0040 7868     	 ldr r0,[r7,#4]
+ 1378 0042 FFF7FEFF 	 bl IO_GPIO
+ 1379 0046 0446     	 mov r4,r0
+ 1380 0048 7868     	 ldr r0,[r7,#4]
+ 1381 004a FFF7FEFF 	 bl IO_Pin
+ 1382 004e 0346     	 mov r3,r0
+ 1383 0050 DAB2     	 uxtb r2,r3
+ 1384 0052 07F10C03 	 add r3,r7,#12
+ 1385 0056 2046     	 mov r0,r4
+ 1386 0058 1146     	 mov r1,r2
+ 1387 005a 1A46     	 mov r2,r3
+ 1388 005c FFF7FEFF 	 bl XMC_GPIO_Init
+ 1389              	.L63:
+ 452:../cleanflight/src/main/drivers/io.c **** }
+ 1390              	 .loc 2 452 0
+ 1391 0060 1C37     	 adds r7,r7,#28
+ 1392              	.LCFI135:
+ 1393              	 .cfi_def_cfa_offset 12
+ 1394 0062 BD46     	 mov sp,r7
+ 1395              	.LCFI136:
+ 1396              	 .cfi_def_cfa_register 13
+ 1397              	 
+ 1398 0064 90BD     	 pop {r4,r7,pc}
+ 1399              	 .cfi_endproc
+ 1400              	.LFE541:
+ 1402 0066 00BF     	 .section .rodata.ioDefUsedMask,"a",%progbits
+ 1403              	 .align 2
+ 1406              	ioDefUsedMask:
+ 1407 0000 FF1F     	 .short 8191
+ 1408 0002 FFFF     	 .short -1
+ 1409 0004 FFC7     	 .short -14337
+ 1410 0006 7F00     	 .short 127
+ 1411 0008 0300     	 .short 3
+ 1412 000a 8700     	 .short 135
+ 1413 000c 0000     	 .short 0
+ 1414 000e 0000     	 .short 0
+ 1415 0010 0000     	 .short 0
+ 1416 0012 0000     	 .short 0
+ 1417 0014 FFF3     	 .short -3073
+ 1418 0016 0C03     	 .short 780
+ 1419              	 .section .rodata.ioDefUsedOffset,"a",%progbits
+ 1420              	 .align 2
+ 1423              	ioDefUsedOffset:
+ 1424 0000 00       	 .byte 0
+ 1425 0001 0D       	 .byte 13
+ 1426 0002 1D       	 .byte 29
+ 1427 0003 2A       	 .byte 42
+ 1428 0004 31       	 .byte 49
+ 1429 0005 33       	 .byte 51
+ 1430 0006 37       	 .byte 55
+ 1431 0007 37       	 .byte 55
+ 1432 0008 37       	 .byte 55
+ 1433 0009 37       	 .byte 55
+ 1434 000a 37       	 .byte 55
+ 1435 000b 45       	 .byte 69
+ 1436              	 .comm ioRecs,584,4
+ 1437              	 .section .text.IOInitGlobal,"ax",%progbits
+ 1438              	 .align 2
+ 1439              	 .global IOInitGlobal
+ 1440              	 .thumb
+ 1441              	 .thumb_func
+ 1443              	IOInitGlobal:
+ 1444              	.LFB542:
+ 453:../cleanflight/src/main/drivers/io.c **** 
+ 454:../cleanflight/src/main/drivers/io.c **** #endif
+ 455:../cleanflight/src/main/drivers/io.c **** 
+ 456:../cleanflight/src/main/drivers/io.c **** #if DEFIO_PORT_USED_COUNT > 0
+ 457:../cleanflight/src/main/drivers/io.c **** static const uint16_t ioDefUsedMask[DEFIO_PORT_USED_COUNT] = { DEFIO_PORT_USED_LIST };
+ 458:../cleanflight/src/main/drivers/io.c **** static const uint8_t ioDefUsedOffset[DEFIO_PORT_USED_COUNT] = { DEFIO_PORT_OFFSET_LIST };
+ 459:../cleanflight/src/main/drivers/io.c **** #else
+ 460:../cleanflight/src/main/drivers/io.c **** // Avoid -Wpedantic warning
+ 461:../cleanflight/src/main/drivers/io.c **** static const uint16_t ioDefUsedMask[1] = {0};
+ 462:../cleanflight/src/main/drivers/io.c **** static const uint8_t ioDefUsedOffset[1] = {0};
+ 463:../cleanflight/src/main/drivers/io.c **** #endif
+ 464:../cleanflight/src/main/drivers/io.c **** #if DEFIO_IO_USED_COUNT
+ 465:../cleanflight/src/main/drivers/io.c **** ioRec_t ioRecs[DEFIO_IO_USED_COUNT];
+ 466:../cleanflight/src/main/drivers/io.c **** #else
+ 467:../cleanflight/src/main/drivers/io.c **** // Avoid -Wpedantic warning
+ 468:../cleanflight/src/main/drivers/io.c **** ioRec_t ioRecs[1];
+ 469:../cleanflight/src/main/drivers/io.c **** #endif
+ 470:../cleanflight/src/main/drivers/io.c **** 
+ 471:../cleanflight/src/main/drivers/io.c **** // initialize all ioRec_t structures from ROM
+ 472:../cleanflight/src/main/drivers/io.c **** // currently only bitmask is used, this may change in future
+ 473:../cleanflight/src/main/drivers/io.c **** void IOInitGlobal(void)
+ 474:../cleanflight/src/main/drivers/io.c **** {
+ 1445              	 .loc 2 474 0
+ 1446              	 .cfi_startproc
+ 1447              	 
+ 1448              	 
+ 1449              	 
+ 1450 0000 80B4     	 push {r7}
+ 1451              	.LCFI137:
+ 1452              	 .cfi_def_cfa_offset 4
+ 1453              	 .cfi_offset 7,-4
+ 1454 0002 85B0     	 sub sp,sp,#20
+ 1455              	.LCFI138:
+ 1456              	 .cfi_def_cfa_offset 24
+ 1457 0004 00AF     	 add r7,sp,#0
+ 1458              	.LCFI139:
+ 1459              	 .cfi_def_cfa_register 7
+ 475:../cleanflight/src/main/drivers/io.c ****     ioRec_t *ioRec = ioRecs;
+ 1460              	 .loc 2 475 0
+ 1461 0006 1A4B     	 ldr r3,.L74
+ 1462 0008 FB60     	 str r3,[r7,#12]
+ 1463              	.LBB2:
+ 476:../cleanflight/src/main/drivers/io.c **** 
+ 477:../cleanflight/src/main/drivers/io.c ****     for (unsigned port = 0; port < ARRAYLEN(ioDefUsedMask); port++) {
+ 1464              	 .loc 2 477 0
+ 1465 000a 0023     	 movs r3,#0
+ 1466 000c BB60     	 str r3,[r7,#8]
+ 1467 000e 27E0     	 b .L69
+ 1468              	.L73:
+ 1469              	.LBB3:
+ 478:../cleanflight/src/main/drivers/io.c ****         for (unsigned pin = 0; pin < sizeof(ioDefUsedMask[0]) * 8; pin++) {
+ 1470              	 .loc 2 478 0
+ 1471 0010 0023     	 movs r3,#0
+ 1472 0012 7B60     	 str r3,[r7,#4]
+ 1473 0014 1EE0     	 b .L70
+ 1474              	.L72:
+ 479:../cleanflight/src/main/drivers/io.c ****             if (ioDefUsedMask[port] & (1 << pin)) {
+ 1475              	 .loc 2 479 0
+ 1476 0016 174A     	 ldr r2,.L74+4
+ 1477 0018 BB68     	 ldr r3,[r7,#8]
+ 1478 001a 32F81330 	 ldrh r3,[r2,r3,lsl#1]
+ 1479 001e 1A46     	 mov r2,r3
+ 1480 0020 7B68     	 ldr r3,[r7,#4]
+ 1481 0022 42FA03F3 	 asr r3,r2,r3
+ 1482 0026 03F00103 	 and r3,r3,#1
+ 1483 002a 002B     	 cmp r3,#0
+ 1484 002c 0FD0     	 beq .L71
+ 480:../cleanflight/src/main/drivers/io.c **** #ifdef XMC4700_F100x2048
+ 481:../cleanflight/src/main/drivers/io.c ****             	ioRec->gpio = (GPIO_TypeDef *)(PORT0_BASE + (port << 8));    // ports are 0x100 apart
+ 1485              	 .loc 2 481 0
+ 1486 002e BB68     	 ldr r3,[r7,#8]
+ 1487 0030 1B02     	 lsls r3,r3,#8
+ 1488 0032 03F19043 	 add r3,r3,#1207959552
+ 1489 0036 03F52033 	 add r3,r3,#163840
+ 1490 003a 1A46     	 mov r2,r3
+ 1491 003c FB68     	 ldr r3,[r7,#12]
+ 1492 003e 1A60     	 str r2,[r3]
+ 482:../cleanflight/src/main/drivers/io.c ****             	ioRec->pin = pin;
+ 1493              	 .loc 2 482 0
+ 1494 0040 7B68     	 ldr r3,[r7,#4]
+ 1495 0042 9AB2     	 uxth r2,r3
+ 1496 0044 FB68     	 ldr r3,[r7,#12]
+ 1497 0046 9A80     	 strh r2,[r3,#4]
+ 483:../cleanflight/src/main/drivers/io.c **** #else
+ 484:../cleanflight/src/main/drivers/io.c ****                 ioRec->gpio = (GPIO_TypeDef *)(GPIOA_BASE + (port << 10));   // ports are 0x400 apa
+ 485:../cleanflight/src/main/drivers/io.c ****                 ioRec->pin = 1 << pin;
+ 486:../cleanflight/src/main/drivers/io.c **** #endif
+ 487:../cleanflight/src/main/drivers/io.c ****                 ioRec++;
+ 1498              	 .loc 2 487 0
+ 1499 0048 FB68     	 ldr r3,[r7,#12]
+ 1500 004a 0833     	 adds r3,r3,#8
+ 1501 004c FB60     	 str r3,[r7,#12]
+ 1502              	.L71:
+ 478:../cleanflight/src/main/drivers/io.c ****             if (ioDefUsedMask[port] & (1 << pin)) {
+ 1503              	 .loc 2 478 0 discriminator 2
+ 1504 004e 7B68     	 ldr r3,[r7,#4]
+ 1505 0050 0133     	 adds r3,r3,#1
+ 1506 0052 7B60     	 str r3,[r7,#4]
+ 1507              	.L70:
+ 478:../cleanflight/src/main/drivers/io.c ****             if (ioDefUsedMask[port] & (1 << pin)) {
+ 1508              	 .loc 2 478 0 is_stmt 0 discriminator 1
+ 1509 0054 7B68     	 ldr r3,[r7,#4]
+ 1510 0056 0F2B     	 cmp r3,#15
+ 1511 0058 DDD9     	 bls .L72
+ 1512              	.LBE3:
+ 477:../cleanflight/src/main/drivers/io.c ****         for (unsigned pin = 0; pin < sizeof(ioDefUsedMask[0]) * 8; pin++) {
+ 1513              	 .loc 2 477 0 is_stmt 1 discriminator 2
+ 1514 005a BB68     	 ldr r3,[r7,#8]
+ 1515 005c 0133     	 adds r3,r3,#1
+ 1516 005e BB60     	 str r3,[r7,#8]
+ 1517              	.L69:
+ 477:../cleanflight/src/main/drivers/io.c ****         for (unsigned pin = 0; pin < sizeof(ioDefUsedMask[0]) * 8; pin++) {
+ 1518              	 .loc 2 477 0 is_stmt 0 discriminator 1
+ 1519 0060 BB68     	 ldr r3,[r7,#8]
+ 1520 0062 0B2B     	 cmp r3,#11
+ 1521 0064 D4D9     	 bls .L73
+ 1522              	.LBE2:
+ 488:../cleanflight/src/main/drivers/io.c ****             }
+ 489:../cleanflight/src/main/drivers/io.c ****         }
+ 490:../cleanflight/src/main/drivers/io.c ****     }
+ 491:../cleanflight/src/main/drivers/io.c **** }
+ 1523              	 .loc 2 491 0 is_stmt 1
+ 1524 0066 1437     	 adds r7,r7,#20
+ 1525              	.LCFI140:
+ 1526              	 .cfi_def_cfa_offset 4
+ 1527 0068 BD46     	 mov sp,r7
+ 1528              	.LCFI141:
+ 1529              	 .cfi_def_cfa_register 13
+ 1530              	 
+ 1531 006a 5DF8047B 	 ldr r7,[sp],#4
+ 1532              	.LCFI142:
+ 1533              	 .cfi_restore 7
+ 1534              	 .cfi_def_cfa_offset 0
+ 1535 006e 7047     	 bx lr
+ 1536              	.L75:
+ 1537              	 .align 2
+ 1538              	.L74:
+ 1539 0070 00000000 	 .word ioRecs
+ 1540 0074 00000000 	 .word ioDefUsedMask
+ 1541              	 .cfi_endproc
+ 1542              	.LFE542:
+ 1544              	 .global __popcountsi2
+ 1545              	 .section .text.IOGetByTag,"ax",%progbits
+ 1546              	 .align 2
+ 1547              	 .global IOGetByTag
+ 1548              	 .thumb
+ 1549              	 .thumb_func
+ 1551              	IOGetByTag:
+ 1552              	.LFB543:
+ 492:../cleanflight/src/main/drivers/io.c **** 
+ 493:../cleanflight/src/main/drivers/io.c **** IO_t IOGetByTag(ioTag_t tag)
+ 494:../cleanflight/src/main/drivers/io.c **** {
+ 1553              	 .loc 2 494 0
+ 1554              	 .cfi_startproc
+ 1555              	 
+ 1556              	 
+ 1557 0000 80B5     	 push {r7,lr}
+ 1558              	.LCFI143:
+ 1559              	 .cfi_def_cfa_offset 8
+ 1560              	 .cfi_offset 7,-8
+ 1561              	 .cfi_offset 14,-4
+ 1562 0002 86B0     	 sub sp,sp,#24
+ 1563              	.LCFI144:
+ 1564              	 .cfi_def_cfa_offset 32
+ 1565 0004 00AF     	 add r7,sp,#0
+ 1566              	.LCFI145:
+ 1567              	 .cfi_def_cfa_register 7
+ 1568 0006 0346     	 mov r3,r0
+ 1569 0008 FB71     	 strb r3,[r7,#7]
+ 495:../cleanflight/src/main/drivers/io.c ****     const int portIdx = DEFIO_TAG_GPIOID(tag);
+ 1570              	 .loc 2 495 0
+ 1571 000a FB79     	 ldrb r3,[r7,#7]
+ 1572 000c 1B09     	 lsrs r3,r3,#4
+ 1573 000e DBB2     	 uxtb r3,r3
+ 1574 0010 013B     	 subs r3,r3,#1
+ 1575 0012 7B61     	 str r3,[r7,#20]
+ 496:../cleanflight/src/main/drivers/io.c ****     const int pinIdx = DEFIO_TAG_PIN(tag);
+ 1576              	 .loc 2 496 0
+ 1577 0014 FB79     	 ldrb r3,[r7,#7]
+ 1578 0016 03F00F03 	 and r3,r3,#15
+ 1579 001a 3B61     	 str r3,[r7,#16]
+ 497:../cleanflight/src/main/drivers/io.c **** 
+ 498:../cleanflight/src/main/drivers/io.c ****     if (portIdx < 0 || portIdx >= DEFIO_PORT_USED_COUNT) {
+ 1580              	 .loc 2 498 0
+ 1581 001c 7B69     	 ldr r3,[r7,#20]
+ 1582 001e 002B     	 cmp r3,#0
+ 1583 0020 02DB     	 blt .L77
+ 1584              	 .loc 2 498 0 is_stmt 0 discriminator 1
+ 1585 0022 7B69     	 ldr r3,[r7,#20]
+ 1586 0024 0B2B     	 cmp r3,#11
+ 1587 0026 01DD     	 ble .L78
+ 1588              	.L77:
+ 499:../cleanflight/src/main/drivers/io.c ****         return NULL;
+ 1589              	 .loc 2 499 0 is_stmt 1
+ 1590 0028 0023     	 movs r3,#0
+ 1591 002a 28E0     	 b .L79
+ 1592              	.L78:
+ 500:../cleanflight/src/main/drivers/io.c ****     }
+ 501:../cleanflight/src/main/drivers/io.c ****     // check if pin exists
+ 502:../cleanflight/src/main/drivers/io.c ****     if (!(ioDefUsedMask[portIdx] & (1 << pinIdx))) {
+ 1593              	 .loc 2 502 0
+ 1594 002c 164A     	 ldr r2,.L81
+ 1595 002e 7B69     	 ldr r3,[r7,#20]
+ 1596 0030 32F81330 	 ldrh r3,[r2,r3,lsl#1]
+ 1597 0034 1A46     	 mov r2,r3
+ 1598 0036 3B69     	 ldr r3,[r7,#16]
+ 1599 0038 42FA03F3 	 asr r3,r2,r3
+ 1600 003c 03F00103 	 and r3,r3,#1
+ 1601 0040 002B     	 cmp r3,#0
+ 1602 0042 01D1     	 bne .L80
+ 503:../cleanflight/src/main/drivers/io.c ****         return NULL;
+ 1603              	 .loc 2 503 0
+ 1604 0044 0023     	 movs r3,#0
+ 1605 0046 1AE0     	 b .L79
+ 1606              	.L80:
+ 504:../cleanflight/src/main/drivers/io.c ****     }
+ 505:../cleanflight/src/main/drivers/io.c ****     // count bits before this pin on single port
+ 506:../cleanflight/src/main/drivers/io.c ****     int offset = __builtin_popcount(((1 << pinIdx) - 1) & ioDefUsedMask[portIdx]);
+ 1607              	 .loc 2 506 0
+ 1608 0048 0122     	 movs r2,#1
+ 1609 004a 3B69     	 ldr r3,[r7,#16]
+ 1610 004c 02FA03F3 	 lsl r3,r2,r3
+ 1611 0050 013B     	 subs r3,r3,#1
+ 1612 0052 0D49     	 ldr r1,.L81
+ 1613 0054 7A69     	 ldr r2,[r7,#20]
+ 1614 0056 31F81220 	 ldrh r2,[r1,r2,lsl#1]
+ 1615 005a 1340     	 ands r3,r3,r2
+ 1616 005c 1846     	 mov r0,r3
+ 1617 005e FFF7FEFF 	 bl __popcountsi2
+ 1618 0062 0346     	 mov r3,r0
+ 1619 0064 FB60     	 str r3,[r7,#12]
+ 507:../cleanflight/src/main/drivers/io.c ****     // and add port offset
+ 508:../cleanflight/src/main/drivers/io.c ****     offset += ioDefUsedOffset[portIdx];
+ 1620              	 .loc 2 508 0
+ 1621 0066 094A     	 ldr r2,.L81+4
+ 1622 0068 7B69     	 ldr r3,[r7,#20]
+ 1623 006a 1344     	 add r3,r3,r2
+ 1624 006c 1B78     	 ldrb r3,[r3]
+ 1625 006e 1A46     	 mov r2,r3
+ 1626 0070 FB68     	 ldr r3,[r7,#12]
+ 1627 0072 1344     	 add r3,r3,r2
+ 1628 0074 FB60     	 str r3,[r7,#12]
+ 509:../cleanflight/src/main/drivers/io.c ****     return ioRecs + offset;
+ 1629              	 .loc 2 509 0
+ 1630 0076 FB68     	 ldr r3,[r7,#12]
+ 1631 0078 DB00     	 lsls r3,r3,#3
+ 1632 007a 054A     	 ldr r2,.L81+8
+ 1633 007c 1344     	 add r3,r3,r2
+ 1634              	.L79:
+ 510:../cleanflight/src/main/drivers/io.c **** }
+ 1635              	 .loc 2 510 0
+ 1636 007e 1846     	 mov r0,r3
+ 1637 0080 1837     	 adds r7,r7,#24
+ 1638              	.LCFI146:
+ 1639              	 .cfi_def_cfa_offset 8
+ 1640 0082 BD46     	 mov sp,r7
+ 1641              	.LCFI147:
+ 1642              	 .cfi_def_cfa_register 13
+ 1643              	 
+ 1644 0084 80BD     	 pop {r7,pc}
+ 1645              	.L82:
+ 1646 0086 00BF     	 .align 2
+ 1647              	.L81:
+ 1648 0088 00000000 	 .word ioDefUsedMask
+ 1649 008c 00000000 	 .word ioDefUsedOffset
+ 1650 0090 00000000 	 .word ioRecs
+ 1651              	 .cfi_endproc
+ 1652              	.LFE543:
+ 1654              	 .text
+ 1655              	.Letext0:
+ 1656              	 .file 3 "d:\\xmc\\dave-ide-4.4.2-64bit\\eclipse\\arm-gcc-49\\arm-none-eabi\\include\\machine\\_default_types.h"
+ 1657              	 .file 4 "d:\\xmc\\dave-ide-4.4.2-64bit\\eclipse\\arm-gcc-49\\arm-none-eabi\\include\\stdint.h"
+ 1658              	 .file 5 "d:\\xmc\\dave-ide-4.4.2-64bit\\eclipse\\arm-gcc-49\\lib\\gcc\\arm-none-eabi\\4.9.3\\include\\stddef.h"
+ 1659              	 .file 6 "D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/lib/main/XMC4000/XMCLib/inc/xmc4_gpio.h"
+ 1660              	 .file 7 "D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/lib/main/XMC4000/XMCLib/inc/xmc_usic.h"
+ 1661              	 .file 8 "D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/platform.h"
+ 1662              	 .file 9 "D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/drivers/resource.h"
+ 1663              	 .file 10 "D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/drivers/io_types.h"
+ 1664              	 .file 11 "D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/drivers/io_impl.h"
+ 1665              	 .file 12 "D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/lib/main/CMSIS/Core/Include/core_cm4.h"
+ 1666              	 .file 13 "D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/lib/main/XMC4000/system_XMC4700.h"
+DEFINED SYMBOLS
+                            *ABS*:00000000 io.c
+    {standard input}:20     .text.XMC_GPIO_SetOutputLevel:00000000 $t
+    {standard input}:24     .text.XMC_GPIO_SetOutputLevel:00000000 XMC_GPIO_SetOutputLevel
+    {standard input}:72     .text.XMC_GPIO_SetOutputHigh:00000000 $t
+    {standard input}:76     .text.XMC_GPIO_SetOutputHigh:00000000 XMC_GPIO_SetOutputHigh
+    {standard input}:122    .text.XMC_GPIO_SetOutputLow:00000000 $t
+    {standard input}:126    .text.XMC_GPIO_SetOutputLow:00000000 XMC_GPIO_SetOutputLow
+    {standard input}:172    .text.XMC_GPIO_ToggleOutput:00000000 $t
+    {standard input}:176    .text.XMC_GPIO_ToggleOutput:00000000 XMC_GPIO_ToggleOutput
+    {standard input}:222    .text.XMC_GPIO_GetInput:00000000 $t
+    {standard input}:226    .text.XMC_GPIO_GetInput:00000000 XMC_GPIO_GetInput
+    {standard input}:270    .text.IO_Rec:00000000 $t
+    {standard input}:275    .text.IO_Rec:00000000 IO_Rec
+    {standard input}:314    .text.IO_GPIO:00000000 $t
+    {standard input}:319    .text.IO_GPIO:00000000 IO_GPIO
+    {standard input}:358    .text.IO_Pin:00000000 $t
+    {standard input}:363    .text.IO_Pin:00000000 IO_Pin
+    {standard input}:403    .text.IO_GPIOPortIdx:00000000 $t
+    {standard input}:408    .text.IO_GPIOPortIdx:00000000 IO_GPIOPortIdx
+    {standard input}:456    .text.IO_EXTI_PortSourceGPIO:00000000 $t
+    {standard input}:461    .text.IO_EXTI_PortSourceGPIO:00000000 IO_EXTI_PortSourceGPIO
+    {standard input}:497    .text.IO_GPIO_PortSource:00000000 $t
+    {standard input}:502    .text.IO_GPIO_PortSource:00000000 IO_GPIO_PortSource
+    {standard input}:538    .text.IO_GPIOPinIdx:00000000 $t
+    {standard input}:543    .text.IO_GPIOPinIdx:00000000 IO_GPIOPinIdx
+    {standard input}:588    .text.IO_EXTI_PinSource:00000000 $t
+    {standard input}:593    .text.IO_EXTI_PinSource:00000000 IO_EXTI_PinSource
+    {standard input}:629    .text.IO_GPIO_PinSource:00000000 $t
+    {standard input}:634    .text.IO_GPIO_PinSource:00000000 IO_GPIO_PinSource
+    {standard input}:670    .text.IO_EXTI_Line:00000000 $t
+    {standard input}:675    .text.IO_EXTI_Line:00000000 IO_EXTI_Line
+    {standard input}:722    .text.IORead:00000000 $t
+    {standard input}:727    .text.IORead:00000000 IORead
+    {standard input}:786    .text.IOWrite:00000000 $t
+    {standard input}:791    .text.IOWrite:00000000 IOWrite
+    {standard input}:846    .text.IOHi:00000000 $t
+    {standard input}:851    .text.IOHi:00000000 IOHi
+    {standard input}:902    .text.IOLo:00000000 $t
+    {standard input}:907    .text.IOLo:00000000 IOLo
+    {standard input}:958    .text.IOToggle:00000000 $t
+    {standard input}:963    .text.IOToggle:00000000 IOToggle
+    {standard input}:1014   .text.IOInit:00000000 $t
+    {standard input}:1019   .text.IOInit:00000000 IOInit
+    {standard input}:1074   .text.IORelease:00000000 $t
+    {standard input}:1079   .text.IORelease:00000000 IORelease
+    {standard input}:1126   .text.IOGetOwner:00000000 $t
+    {standard input}:1131   .text.IOGetOwner:00000000 IOGetOwner
+    {standard input}:1179   .text.IOIsFreeOrPreinit:00000000 $t
+    {standard input}:1184   .text.IOIsFreeOrPreinit:00000000 IOIsFreeOrPreinit
+    {standard input}:1241   .text.IOConfigGPIO:00000000 $t
+    {standard input}:1246   .text.IOConfigGPIO:00000000 IOConfigGPIO
+    {standard input}:1321   .text.IOConfigGPIOAF:00000000 $t
+    {standard input}:1326   .text.IOConfigGPIOAF:00000000 IOConfigGPIOAF
+    {standard input}:1403   .rodata.ioDefUsedMask:00000000 $d
+    {standard input}:1406   .rodata.ioDefUsedMask:00000000 ioDefUsedMask
+    {standard input}:1420   .rodata.ioDefUsedOffset:00000000 $d
+    {standard input}:1423   .rodata.ioDefUsedOffset:00000000 ioDefUsedOffset
+                            *COM*:00000248 ioRecs
+    {standard input}:1438   .text.IOInitGlobal:00000000 $t
+    {standard input}:1443   .text.IOInitGlobal:00000000 IOInitGlobal
+    {standard input}:1539   .text.IOInitGlobal:00000070 $d
+    {standard input}:1546   .text.IOGetByTag:00000000 $t
+    {standard input}:1551   .text.IOGetByTag:00000000 IOGetByTag
+    {standard input}:1648   .text.IOGetByTag:00000088 $d
+                     .debug_frame:00000010 $d
+
+UNDEFINED SYMBOLS
+XMC_GPIO_Init
+__popcountsi2

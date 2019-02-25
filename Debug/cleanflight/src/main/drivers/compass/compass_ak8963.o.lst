@@ -1,0 +1,1436 @@
+   1              	 .syntax unified
+   2              	 .cpu cortex-m4
+   3              	 .eabi_attribute 27,3
+   4              	 .fpu fpv4-sp-d16
+   5              	 .eabi_attribute 20,1
+   6              	 .eabi_attribute 21,1
+   7              	 .eabi_attribute 23,3
+   8              	 .eabi_attribute 24,1
+   9              	 .eabi_attribute 25,1
+  10              	 .eabi_attribute 26,1
+  11              	 .eabi_attribute 30,6
+  12              	 .eabi_attribute 34,1
+  13              	 .eabi_attribute 18,4
+  14              	 .thumb
+  15              	 .file "compass_ak8963.c"
+  16              	 .text
+  17              	.Ltext0:
+  18              	 .cfi_sections .debug_frame
+  19              	 .section .text.constrain,"ax",%progbits
+  20              	 .align 2
+  21              	 .thumb
+  22              	 .thumb_func
+  24              	constrain:
+  25              	.LFB521:
+  26              	 .file 1 "D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/common/maths.h"
+   1:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/common\maths.h **** /*
+   2:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/common\maths.h ****  * This file is part of Cleanflight and Betaflight.
+   3:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/common\maths.h ****  *
+   4:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/common\maths.h ****  * Cleanflight and Betaflight are free software. You can redistribute
+   5:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/common\maths.h ****  * this software and/or modify this software under the terms of the
+   6:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/common\maths.h ****  * GNU General Public License as published by the Free Software
+   7:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/common\maths.h ****  * Foundation, either version 3 of the License, or (at your option)
+   8:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/common\maths.h ****  * any later version.
+   9:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/common\maths.h ****  *
+  10:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/common\maths.h ****  * Cleanflight and Betaflight are distributed in the hope that they
+  11:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/common\maths.h ****  * will be useful, but WITHOUT ANY WARRANTY; without even the implied
+  12:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/common\maths.h ****  * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+  13:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/common\maths.h ****  * See the GNU General Public License for more details.
+  14:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/common\maths.h ****  *
+  15:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/common\maths.h ****  * You should have received a copy of the GNU General Public License
+  16:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/common\maths.h ****  * along with this software.
+  17:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/common\maths.h ****  *
+  18:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/common\maths.h ****  * If not, see <http://www.gnu.org/licenses/>.
+  19:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/common\maths.h ****  */
+  20:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/common\maths.h **** 
+  21:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/common\maths.h **** #pragma once
+  22:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/common\maths.h **** 
+  23:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/common\maths.h **** #include <stdint.h>
+  24:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/common\maths.h **** 
+  25:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/common\maths.h **** #ifndef sq
+  26:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/common\maths.h **** #define sq(x) ((x)*(x))
+  27:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/common\maths.h **** #endif
+  28:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/common\maths.h **** #define power3(x) ((x)*(x)*(x))
+  29:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/common\maths.h **** 
+  30:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/common\maths.h **** // Undefine this for use libc sinf/cosf. Keep this defined to use fast sin/cos approximations
+  31:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/common\maths.h **** #define FAST_MATH             // order 9 approximation
+  32:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/common\maths.h **** #define VERY_FAST_MATH      // order 7 approximation
+  33:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/common\maths.h **** 
+  34:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/common\maths.h **** // Use floating point M_PI instead explicitly.
+  35:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/common\maths.h **** #define M_PIf       3.14159265358979323846f
+  36:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/common\maths.h **** 
+  37:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/common\maths.h **** #define RAD    (M_PIf / 180.0f)
+  38:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/common\maths.h **** #define DEGREES_TO_DECIDEGREES(angle) ((angle) * 10)
+  39:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/common\maths.h **** #define DECIDEGREES_TO_DEGREES(angle) ((angle) / 10)
+  40:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/common\maths.h **** #define DECIDEGREES_TO_RADIANS(angle) ((angle) / 10.0f * 0.0174532925f)
+  41:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/common\maths.h **** #define DEGREES_TO_RADIANS(angle) ((angle) * 0.0174532925f)
+  42:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/common\maths.h **** 
+  43:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/common\maths.h **** #define CM_S_TO_KM_H(centimetersPerSecond) ((centimetersPerSecond) * 36 / 1000)
+  44:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/common\maths.h **** #define CM_S_TO_MPH(centimetersPerSecond) ((centimetersPerSecond) * 10000 / 5080 / 88)
+  45:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/common\maths.h **** 
+  46:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/common\maths.h **** #define MIN(a,b) \
+  47:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/common\maths.h ****   __extension__ ({ __typeof__ (a) _a = (a); \
+  48:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/common\maths.h ****   __typeof__ (b) _b = (b); \
+  49:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/common\maths.h ****   _a < _b ? _a : _b; })
+  50:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/common\maths.h **** #define MAX(a,b) \
+  51:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/common\maths.h ****   __extension__ ({ __typeof__ (a) _a = (a); \
+  52:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/common\maths.h ****   __typeof__ (b) _b = (b); \
+  53:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/common\maths.h ****   _a > _b ? _a : _b; })
+  54:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/common\maths.h **** #define ABS(x) \
+  55:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/common\maths.h ****   __extension__ ({ __typeof__ (x) _x = (x); \
+  56:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/common\maths.h ****   _x > 0 ? _x : -_x; })
+  57:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/common\maths.h **** 
+  58:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/common\maths.h **** #define Q12 (1 << 12)
+  59:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/common\maths.h **** 
+  60:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/common\maths.h **** #define HZ_TO_INTERVAL_US(x) (1000000 / (x))
+  61:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/common\maths.h **** 
+  62:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/common\maths.h **** typedef int32_t fix12_t;
+  63:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/common\maths.h **** 
+  64:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/common\maths.h **** typedef struct stdev_s
+  65:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/common\maths.h **** {
+  66:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/common\maths.h ****     float m_oldM, m_newM, m_oldS, m_newS;
+  67:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/common\maths.h ****     int m_n;
+  68:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/common\maths.h **** } stdev_t;
+  69:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/common\maths.h **** 
+  70:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/common\maths.h **** // Floating point 3 vector.
+  71:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/common\maths.h **** typedef struct fp_vector {
+  72:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/common\maths.h ****     float X;
+  73:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/common\maths.h ****     float Y;
+  74:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/common\maths.h ****     float Z;
+  75:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/common\maths.h **** } t_fp_vector_def;
+  76:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/common\maths.h **** 
+  77:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/common\maths.h **** typedef union u_fp_vector {
+  78:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/common\maths.h ****     float A[3];
+  79:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/common\maths.h ****     t_fp_vector_def V;
+  80:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/common\maths.h **** } t_fp_vector;
+  81:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/common\maths.h **** 
+  82:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/common\maths.h **** // Floating point Euler angles.
+  83:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/common\maths.h **** // Be carefull, could be either of degrees or radians.
+  84:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/common\maths.h **** typedef struct fp_angles {
+  85:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/common\maths.h ****     float roll;
+  86:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/common\maths.h ****     float pitch;
+  87:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/common\maths.h ****     float yaw;
+  88:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/common\maths.h **** } fp_angles_def;
+  89:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/common\maths.h **** 
+  90:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/common\maths.h **** typedef union {
+  91:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/common\maths.h ****     float raw[3];
+  92:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/common\maths.h ****     fp_angles_def angles;
+  93:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/common\maths.h **** } fp_angles_t;
+  94:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/common\maths.h **** 
+  95:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/common\maths.h **** int gcd(int num, int denom);
+  96:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/common\maths.h **** float powerf(float base, int exp);
+  97:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/common\maths.h **** int32_t applyDeadband(int32_t value, int32_t deadband);
+  98:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/common\maths.h **** float fapplyDeadband(float value, float deadband);
+  99:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/common\maths.h **** 
+ 100:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/common\maths.h **** void devClear(stdev_t *dev);
+ 101:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/common\maths.h **** void devPush(stdev_t *dev, float x);
+ 102:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/common\maths.h **** float devVariance(stdev_t *dev);
+ 103:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/common\maths.h **** float devStandardDeviation(stdev_t *dev);
+ 104:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/common\maths.h **** float degreesToRadians(int16_t degrees);
+ 105:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/common\maths.h **** 
+ 106:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/common\maths.h **** int scaleRange(int x, int srcFrom, int srcTo, int destFrom, int destTo);
+ 107:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/common\maths.h **** float scaleRangef(float x, float srcFrom, float srcTo, float destFrom, float destTo);
+ 108:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/common\maths.h **** 
+ 109:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/common\maths.h **** void normalizeV(struct fp_vector *src, struct fp_vector *dest);
+ 110:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/common\maths.h **** 
+ 111:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/common\maths.h **** void rotateV(struct fp_vector *v, fp_angles_t *delta);
+ 112:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/common\maths.h **** void buildRotationMatrix(fp_angles_t *delta, float matrix[3][3]);
+ 113:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/common\maths.h **** 
+ 114:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/common\maths.h **** int32_t quickMedianFilter3(int32_t * v);
+ 115:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/common\maths.h **** int32_t quickMedianFilter5(int32_t * v);
+ 116:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/common\maths.h **** int32_t quickMedianFilter7(int32_t * v);
+ 117:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/common\maths.h **** int32_t quickMedianFilter9(int32_t * v);
+ 118:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/common\maths.h **** 
+ 119:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/common\maths.h **** float quickMedianFilter3f(float * v);
+ 120:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/common\maths.h **** float quickMedianFilter5f(float * v);
+ 121:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/common\maths.h **** float quickMedianFilter7f(float * v);
+ 122:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/common\maths.h **** float quickMedianFilter9f(float * v);
+ 123:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/common\maths.h **** 
+ 124:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/common\maths.h **** #if defined(FAST_MATH) || defined(VERY_FAST_MATH)
+ 125:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/common\maths.h **** float sin_approx(float x);
+ 126:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/common\maths.h **** float cos_approx(float x);
+ 127:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/common\maths.h **** float atan2_approx(float y, float x);
+ 128:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/common\maths.h **** float acos_approx(float x);
+ 129:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/common\maths.h **** #define tan_approx(x)       (sin_approx(x) / cos_approx(x))
+ 130:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/common\maths.h **** float exp_approx(float val);
+ 131:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/common\maths.h **** float log_approx(float val);
+ 132:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/common\maths.h **** float pow_approx(float a, float b);
+ 133:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/common\maths.h **** #else
+ 134:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/common\maths.h **** #define sin_approx(x)   sinf(x)
+ 135:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/common\maths.h **** #define cos_approx(x)   cosf(x)
+ 136:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/common\maths.h **** #define atan2_approx(y,x)   atan2f(y,x)
+ 137:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/common\maths.h **** #define acos_approx(x)      acosf(x)
+ 138:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/common\maths.h **** #define tan_approx(x)       tanf(x)
+ 139:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/common\maths.h **** #define exp_approx(x)       expf(x)
+ 140:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/common\maths.h **** #define log_approx(x)       logf(x)
+ 141:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/common\maths.h **** #define pow_approx(a, b)    powf(b, a)
+ 142:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/common\maths.h **** #endif
+ 143:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/common\maths.h **** 
+ 144:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/common\maths.h **** void arraySubInt32(int32_t *dest, int32_t *array1, int32_t *array2, int count);
+ 145:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/common\maths.h **** 
+ 146:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/common\maths.h **** int16_t qPercent(fix12_t q);
+ 147:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/common\maths.h **** int16_t qMultiply(fix12_t q, int16_t input);
+ 148:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/common\maths.h **** fix12_t qConstruct(int16_t num, int16_t den);
+ 149:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/common\maths.h **** 
+ 150:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/common\maths.h **** static inline int constrain(int amt, int low, int high)
+ 151:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/common\maths.h **** {
+  27              	 .loc 1 151 0
+  28              	 .cfi_startproc
+  29              	 
+  30              	 
+  31              	 
+  32 0000 80B4     	 push {r7}
+  33              	.LCFI0:
+  34              	 .cfi_def_cfa_offset 4
+  35              	 .cfi_offset 7,-4
+  36 0002 85B0     	 sub sp,sp,#20
+  37              	.LCFI1:
+  38              	 .cfi_def_cfa_offset 24
+  39 0004 00AF     	 add r7,sp,#0
+  40              	.LCFI2:
+  41              	 .cfi_def_cfa_register 7
+  42 0006 F860     	 str r0,[r7,#12]
+  43 0008 B960     	 str r1,[r7,#8]
+  44 000a 7A60     	 str r2,[r7,#4]
+ 152:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/common\maths.h ****     if (amt < low)
+  45              	 .loc 1 152 0
+  46 000c FA68     	 ldr r2,[r7,#12]
+  47 000e BB68     	 ldr r3,[r7,#8]
+  48 0010 9A42     	 cmp r2,r3
+  49 0012 01DA     	 bge .L2
+ 153:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/common\maths.h ****         return low;
+  50              	 .loc 1 153 0
+  51 0014 BB68     	 ldr r3,[r7,#8]
+  52 0016 06E0     	 b .L3
+  53              	.L2:
+ 154:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/common\maths.h ****     else if (amt > high)
+  54              	 .loc 1 154 0
+  55 0018 FA68     	 ldr r2,[r7,#12]
+  56 001a 7B68     	 ldr r3,[r7,#4]
+  57 001c 9A42     	 cmp r2,r3
+  58 001e 01DD     	 ble .L4
+ 155:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/common\maths.h ****         return high;
+  59              	 .loc 1 155 0
+  60 0020 7B68     	 ldr r3,[r7,#4]
+  61 0022 00E0     	 b .L3
+  62              	.L4:
+ 156:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/common\maths.h ****     else
+ 157:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/common\maths.h ****         return amt;
+  63              	 .loc 1 157 0
+  64 0024 FB68     	 ldr r3,[r7,#12]
+  65              	.L3:
+ 158:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/common\maths.h **** }
+  66              	 .loc 1 158 0
+  67 0026 1846     	 mov r0,r3
+  68 0028 1437     	 adds r7,r7,#20
+  69              	.LCFI3:
+  70              	 .cfi_def_cfa_offset 4
+  71 002a BD46     	 mov sp,r7
+  72              	.LCFI4:
+  73              	 .cfi_def_cfa_register 13
+  74              	 
+  75 002c 5DF8047B 	 ldr r7,[sp],#4
+  76              	.LCFI5:
+  77              	 .cfi_restore 7
+  78              	 .cfi_def_cfa_offset 0
+  79 0030 7047     	 bx lr
+  80              	 .cfi_endproc
+  81              	.LFE521:
+  83 0032 00BF     	 .section .text.ak8963ReadRegisterBuffer,"ax",%progbits
+  84              	 .align 2
+  85              	 .thumb
+  86              	 .thumb_func
+  88              	ak8963ReadRegisterBuffer:
+  89              	.LFB535:
+  90              	 .file 2 "../cleanflight/src/main/drivers/compass/compass_ak8963.c"
+   1:../cleanflight/src/main/drivers/compass/compass_ak8963.c **** /*
+   2:../cleanflight/src/main/drivers/compass/compass_ak8963.c ****  * This file is part of Cleanflight and Betaflight.
+   3:../cleanflight/src/main/drivers/compass/compass_ak8963.c ****  *
+   4:../cleanflight/src/main/drivers/compass/compass_ak8963.c ****  * Cleanflight and Betaflight are free software. You can redistribute
+   5:../cleanflight/src/main/drivers/compass/compass_ak8963.c ****  * this software and/or modify this software under the terms of the
+   6:../cleanflight/src/main/drivers/compass/compass_ak8963.c ****  * GNU General Public License as published by the Free Software
+   7:../cleanflight/src/main/drivers/compass/compass_ak8963.c ****  * Foundation, either version 3 of the License, or (at your option)
+   8:../cleanflight/src/main/drivers/compass/compass_ak8963.c ****  * any later version.
+   9:../cleanflight/src/main/drivers/compass/compass_ak8963.c ****  *
+  10:../cleanflight/src/main/drivers/compass/compass_ak8963.c ****  * Cleanflight and Betaflight are distributed in the hope that they
+  11:../cleanflight/src/main/drivers/compass/compass_ak8963.c ****  * will be useful, but WITHOUT ANY WARRANTY; without even the implied
+  12:../cleanflight/src/main/drivers/compass/compass_ak8963.c ****  * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+  13:../cleanflight/src/main/drivers/compass/compass_ak8963.c ****  * See the GNU General Public License for more details.
+  14:../cleanflight/src/main/drivers/compass/compass_ak8963.c ****  *
+  15:../cleanflight/src/main/drivers/compass/compass_ak8963.c ****  * You should have received a copy of the GNU General Public License
+  16:../cleanflight/src/main/drivers/compass/compass_ak8963.c ****  * along with this software.
+  17:../cleanflight/src/main/drivers/compass/compass_ak8963.c ****  *
+  18:../cleanflight/src/main/drivers/compass/compass_ak8963.c ****  * If not, see <http://www.gnu.org/licenses/>.
+  19:../cleanflight/src/main/drivers/compass/compass_ak8963.c ****  */
+  20:../cleanflight/src/main/drivers/compass/compass_ak8963.c **** 
+  21:../cleanflight/src/main/drivers/compass/compass_ak8963.c **** #include <stdbool.h>
+  22:../cleanflight/src/main/drivers/compass/compass_ak8963.c **** #include <stdint.h>
+  23:../cleanflight/src/main/drivers/compass/compass_ak8963.c **** 
+  24:../cleanflight/src/main/drivers/compass/compass_ak8963.c **** #include <math.h>
+  25:../cleanflight/src/main/drivers/compass/compass_ak8963.c **** 
+  26:../cleanflight/src/main/drivers/compass/compass_ak8963.c **** #include "platform.h"
+  27:../cleanflight/src/main/drivers/compass/compass_ak8963.c **** 
+  28:../cleanflight/src/main/drivers/compass/compass_ak8963.c **** #if defined(USE_MAG_AK8963) || defined(USE_MAG_SPI_AK8963)
+  29:../cleanflight/src/main/drivers/compass/compass_ak8963.c **** 
+  30:../cleanflight/src/main/drivers/compass/compass_ak8963.c **** #include "build/debug.h"
+  31:../cleanflight/src/main/drivers/compass/compass_ak8963.c **** 
+  32:../cleanflight/src/main/drivers/compass/compass_ak8963.c **** #include "common/axis.h"
+  33:../cleanflight/src/main/drivers/compass/compass_ak8963.c **** #include "common/maths.h"
+  34:../cleanflight/src/main/drivers/compass/compass_ak8963.c **** #include "common/utils.h"
+  35:../cleanflight/src/main/drivers/compass/compass_ak8963.c **** 
+  36:../cleanflight/src/main/drivers/compass/compass_ak8963.c **** #include "drivers/bus.h"
+  37:../cleanflight/src/main/drivers/compass/compass_ak8963.c **** #include "drivers/bus_i2c.h"
+  38:../cleanflight/src/main/drivers/compass/compass_ak8963.c **** #include "drivers/bus_i2c_busdev.h"
+  39:../cleanflight/src/main/drivers/compass/compass_ak8963.c **** #include "drivers/bus_spi.h"
+  40:../cleanflight/src/main/drivers/compass/compass_ak8963.c **** #include "drivers/io.h"
+  41:../cleanflight/src/main/drivers/compass/compass_ak8963.c **** #include "drivers/sensor.h"
+  42:../cleanflight/src/main/drivers/compass/compass_ak8963.c **** #include "drivers/time.h"
+  43:../cleanflight/src/main/drivers/compass/compass_ak8963.c **** 
+  44:../cleanflight/src/main/drivers/compass/compass_ak8963.c **** #include "drivers/compass/compass.h"
+  45:../cleanflight/src/main/drivers/compass/compass_ak8963.c **** 
+  46:../cleanflight/src/main/drivers/compass/compass_ak8963.c **** #include "drivers/accgyro/accgyro.h"
+  47:../cleanflight/src/main/drivers/compass/compass_ak8963.c **** #include "drivers/accgyro/accgyro_mpu.h"
+  48:../cleanflight/src/main/drivers/compass/compass_ak8963.c **** #include "drivers/accgyro/accgyro_mpu6500.h"
+  49:../cleanflight/src/main/drivers/compass/compass_ak8963.c **** #include "drivers/accgyro/accgyro_spi_mpu6500.h"
+  50:../cleanflight/src/main/drivers/compass/compass_ak8963.c **** #include "drivers/accgyro/accgyro_spi_mpu9250.h"
+  51:../cleanflight/src/main/drivers/compass/compass_ak8963.c **** #include "drivers/compass/compass_ak8963.h"
+  52:../cleanflight/src/main/drivers/compass/compass_ak8963.c **** 
+  53:../cleanflight/src/main/drivers/compass/compass_ak8963.c **** #include "scheduler/scheduler.h"
+  54:../cleanflight/src/main/drivers/compass/compass_ak8963.c **** 
+  55:../cleanflight/src/main/drivers/compass/compass_ak8963.c **** // This sensor is also available also part of the MPU-9250 connected to the secondary I2C bus.
+  56:../cleanflight/src/main/drivers/compass/compass_ak8963.c **** 
+  57:../cleanflight/src/main/drivers/compass/compass_ak8963.c **** // AK8963, mag sensor address
+  58:../cleanflight/src/main/drivers/compass/compass_ak8963.c **** #define AK8963_MAG_I2C_ADDRESS          0x0C
+  59:../cleanflight/src/main/drivers/compass/compass_ak8963.c **** #define AK8963_DEVICE_ID                0x48
+  60:../cleanflight/src/main/drivers/compass/compass_ak8963.c **** 
+  61:../cleanflight/src/main/drivers/compass/compass_ak8963.c **** // Registers
+  62:../cleanflight/src/main/drivers/compass/compass_ak8963.c **** #define AK8963_MAG_REG_WIA              0x00
+  63:../cleanflight/src/main/drivers/compass/compass_ak8963.c **** #define AK8963_MAG_REG_INFO             0x01
+  64:../cleanflight/src/main/drivers/compass/compass_ak8963.c **** #define AK8963_MAG_REG_ST1              0x02
+  65:../cleanflight/src/main/drivers/compass/compass_ak8963.c **** #define AK8963_MAG_REG_HXL              0x03
+  66:../cleanflight/src/main/drivers/compass/compass_ak8963.c **** #define AK8963_MAG_REG_HXH              0x04
+  67:../cleanflight/src/main/drivers/compass/compass_ak8963.c **** #define AK8963_MAG_REG_HYL              0x05
+  68:../cleanflight/src/main/drivers/compass/compass_ak8963.c **** #define AK8963_MAG_REG_HYH              0x06
+  69:../cleanflight/src/main/drivers/compass/compass_ak8963.c **** #define AK8963_MAG_REG_HZL              0x07
+  70:../cleanflight/src/main/drivers/compass/compass_ak8963.c **** #define AK8963_MAG_REG_HZH              0x08
+  71:../cleanflight/src/main/drivers/compass/compass_ak8963.c **** #define AK8963_MAG_REG_ST2              0x09
+  72:../cleanflight/src/main/drivers/compass/compass_ak8963.c **** #define AK8963_MAG_REG_CNTL1            0x0A
+  73:../cleanflight/src/main/drivers/compass/compass_ak8963.c **** #define AK8963_MAG_REG_CNTL2            0x0B
+  74:../cleanflight/src/main/drivers/compass/compass_ak8963.c **** #define AK8963_MAG_REG_ASCT             0x0C // self test
+  75:../cleanflight/src/main/drivers/compass/compass_ak8963.c **** #define AK8963_MAG_REG_I2CDIS           0x0F
+  76:../cleanflight/src/main/drivers/compass/compass_ak8963.c **** #define AK8963_MAG_REG_ASAX             0x10 // Fuse ROM x-axis sensitivity adjustment value
+  77:../cleanflight/src/main/drivers/compass/compass_ak8963.c **** #define AK8963_MAG_REG_ASAY             0x11 // Fuse ROM y-axis sensitivity adjustment value
+  78:../cleanflight/src/main/drivers/compass/compass_ak8963.c **** #define AK8963_MAG_REG_ASAZ             0x12 // Fuse ROM z-axis sensitivity adjustment value
+  79:../cleanflight/src/main/drivers/compass/compass_ak8963.c **** 
+  80:../cleanflight/src/main/drivers/compass/compass_ak8963.c **** #define READ_FLAG                       0x80
+  81:../cleanflight/src/main/drivers/compass/compass_ak8963.c **** #define I2C_SLV0_EN                     0x80
+  82:../cleanflight/src/main/drivers/compass/compass_ak8963.c **** 
+  83:../cleanflight/src/main/drivers/compass/compass_ak8963.c **** #define ST1_DATA_READY                  0x01
+  84:../cleanflight/src/main/drivers/compass/compass_ak8963.c **** #define ST1_DATA_OVERRUN                0x02
+  85:../cleanflight/src/main/drivers/compass/compass_ak8963.c **** 
+  86:../cleanflight/src/main/drivers/compass/compass_ak8963.c **** #define ST2_MAG_SENSOR_OVERFLOW         0x08
+  87:../cleanflight/src/main/drivers/compass/compass_ak8963.c **** 
+  88:../cleanflight/src/main/drivers/compass/compass_ak8963.c **** #define CNTL1_MODE_POWER_DOWN           0x00
+  89:../cleanflight/src/main/drivers/compass/compass_ak8963.c **** #define CNTL1_MODE_ONCE                 0x01
+  90:../cleanflight/src/main/drivers/compass/compass_ak8963.c **** #define CNTL1_MODE_CONT1                0x02
+  91:../cleanflight/src/main/drivers/compass/compass_ak8963.c **** #define CNTL1_MODE_CONT2                0x06
+  92:../cleanflight/src/main/drivers/compass/compass_ak8963.c **** #define CNTL1_MODE_SELF_TEST            0x08
+  93:../cleanflight/src/main/drivers/compass/compass_ak8963.c **** #define CNTL1_MODE_FUSE_ROM             0x0F
+  94:../cleanflight/src/main/drivers/compass/compass_ak8963.c **** #define CNTL1_BIT_14_BIT                0x00
+  95:../cleanflight/src/main/drivers/compass/compass_ak8963.c **** #define CNTL1_BIT_16_BIT                0x10
+  96:../cleanflight/src/main/drivers/compass/compass_ak8963.c **** 
+  97:../cleanflight/src/main/drivers/compass/compass_ak8963.c **** #define CNTL2_SOFT_RESET                0x01
+  98:../cleanflight/src/main/drivers/compass/compass_ak8963.c **** 
+  99:../cleanflight/src/main/drivers/compass/compass_ak8963.c **** #define I2CDIS_DISABLE_MASK             0x1D
+ 100:../cleanflight/src/main/drivers/compass/compass_ak8963.c **** 
+ 101:../cleanflight/src/main/drivers/compass/compass_ak8963.c **** #if defined(USE_MAG_AK8963) && (defined(USE_GYRO_SPI_MPU6500) || defined(USE_GYRO_SPI_MPU9250))
+ 102:../cleanflight/src/main/drivers/compass/compass_ak8963.c **** 
+ 103:../cleanflight/src/main/drivers/compass/compass_ak8963.c **** static bool ak8963SpiWriteRegisterDelay(const busDevice_t *bus, uint8_t reg, uint8_t data)
+ 104:../cleanflight/src/main/drivers/compass/compass_ak8963.c **** {
+ 105:../cleanflight/src/main/drivers/compass/compass_ak8963.c ****     spiBusWriteRegister(bus, reg, data);
+ 106:../cleanflight/src/main/drivers/compass/compass_ak8963.c ****     delayMicroseconds(10);
+ 107:../cleanflight/src/main/drivers/compass/compass_ak8963.c ****     return true;
+ 108:../cleanflight/src/main/drivers/compass/compass_ak8963.c **** }
+ 109:../cleanflight/src/main/drivers/compass/compass_ak8963.c **** 
+ 110:../cleanflight/src/main/drivers/compass/compass_ak8963.c **** static bool ak8963SlaveReadRegisterBuffer(const busDevice_t *slavedev, uint8_t reg, uint8_t *buf, u
+ 111:../cleanflight/src/main/drivers/compass/compass_ak8963.c **** {
+ 112:../cleanflight/src/main/drivers/compass/compass_ak8963.c ****     const busDevice_t *bus = slavedev->busdev_u.mpuSlave.master;
+ 113:../cleanflight/src/main/drivers/compass/compass_ak8963.c **** 
+ 114:../cleanflight/src/main/drivers/compass/compass_ak8963.c ****     ak8963SpiWriteRegisterDelay(bus, MPU_RA_I2C_SLV0_ADDR, slavedev->busdev_u.mpuSlave.address | RE
+ 115:../cleanflight/src/main/drivers/compass/compass_ak8963.c ****     ak8963SpiWriteRegisterDelay(bus, MPU_RA_I2C_SLV0_REG, reg);                             // set 
+ 116:../cleanflight/src/main/drivers/compass/compass_ak8963.c ****     ak8963SpiWriteRegisterDelay(bus, MPU_RA_I2C_SLV0_CTRL, (len & 0x0F) | I2C_SLV0_EN);     // read
+ 117:../cleanflight/src/main/drivers/compass/compass_ak8963.c ****     delay(4);
+ 118:../cleanflight/src/main/drivers/compass/compass_ak8963.c ****     __disable_irq();
+ 119:../cleanflight/src/main/drivers/compass/compass_ak8963.c ****     bool ack = spiBusReadRegisterBuffer(bus, MPU_RA_EXT_SENS_DATA_00, buf, len);            // read
+ 120:../cleanflight/src/main/drivers/compass/compass_ak8963.c ****     __enable_irq();
+ 121:../cleanflight/src/main/drivers/compass/compass_ak8963.c ****     return ack;
+ 122:../cleanflight/src/main/drivers/compass/compass_ak8963.c **** }
+ 123:../cleanflight/src/main/drivers/compass/compass_ak8963.c **** 
+ 124:../cleanflight/src/main/drivers/compass/compass_ak8963.c **** static bool ak8963SlaveWriteRegister(const busDevice_t *slavedev, uint8_t reg, uint8_t data)
+ 125:../cleanflight/src/main/drivers/compass/compass_ak8963.c **** {
+ 126:../cleanflight/src/main/drivers/compass/compass_ak8963.c ****     const busDevice_t *bus = slavedev->busdev_u.mpuSlave.master;
+ 127:../cleanflight/src/main/drivers/compass/compass_ak8963.c **** 
+ 128:../cleanflight/src/main/drivers/compass/compass_ak8963.c ****     ak8963SpiWriteRegisterDelay(bus, MPU_RA_I2C_SLV0_ADDR, slavedev->busdev_u.mpuSlave.address); //
+ 129:../cleanflight/src/main/drivers/compass/compass_ak8963.c ****     ak8963SpiWriteRegisterDelay(bus, MPU_RA_I2C_SLV0_REG, reg);                             // set 
+ 130:../cleanflight/src/main/drivers/compass/compass_ak8963.c ****     ak8963SpiWriteRegisterDelay(bus, MPU_RA_I2C_SLV0_DO, data);                             // set 
+ 131:../cleanflight/src/main/drivers/compass/compass_ak8963.c ****     ak8963SpiWriteRegisterDelay(bus, MPU_RA_I2C_SLV0_CTRL, (1 & 0x0F) | I2C_SLV0_EN);       // writ
+ 132:../cleanflight/src/main/drivers/compass/compass_ak8963.c ****     return true;
+ 133:../cleanflight/src/main/drivers/compass/compass_ak8963.c **** }
+ 134:../cleanflight/src/main/drivers/compass/compass_ak8963.c **** 
+ 135:../cleanflight/src/main/drivers/compass/compass_ak8963.c **** typedef struct queuedReadState_s {
+ 136:../cleanflight/src/main/drivers/compass/compass_ak8963.c ****     bool waiting;
+ 137:../cleanflight/src/main/drivers/compass/compass_ak8963.c ****     uint8_t len;
+ 138:../cleanflight/src/main/drivers/compass/compass_ak8963.c ****     uint32_t readStartedAt;                                                                 // time
+ 139:../cleanflight/src/main/drivers/compass/compass_ak8963.c **** } queuedReadState_t;
+ 140:../cleanflight/src/main/drivers/compass/compass_ak8963.c **** 
+ 141:../cleanflight/src/main/drivers/compass/compass_ak8963.c **** static queuedReadState_t queuedRead = { false, 0, 0};
+ 142:../cleanflight/src/main/drivers/compass/compass_ak8963.c **** 
+ 143:../cleanflight/src/main/drivers/compass/compass_ak8963.c **** static bool ak8963SlaveStartRead(const busDevice_t *slavedev, uint8_t reg, uint8_t len)
+ 144:../cleanflight/src/main/drivers/compass/compass_ak8963.c **** {
+ 145:../cleanflight/src/main/drivers/compass/compass_ak8963.c ****     if (queuedRead.waiting) {
+ 146:../cleanflight/src/main/drivers/compass/compass_ak8963.c ****         return false;
+ 147:../cleanflight/src/main/drivers/compass/compass_ak8963.c ****     }
+ 148:../cleanflight/src/main/drivers/compass/compass_ak8963.c **** 
+ 149:../cleanflight/src/main/drivers/compass/compass_ak8963.c ****     const busDevice_t *bus = slavedev->busdev_u.mpuSlave.master;
+ 150:../cleanflight/src/main/drivers/compass/compass_ak8963.c **** 
+ 151:../cleanflight/src/main/drivers/compass/compass_ak8963.c ****     queuedRead.len = len;
+ 152:../cleanflight/src/main/drivers/compass/compass_ak8963.c **** 
+ 153:../cleanflight/src/main/drivers/compass/compass_ak8963.c ****     ak8963SpiWriteRegisterDelay(bus, MPU_RA_I2C_SLV0_ADDR, slavedev->busdev_u.mpuSlave.address | RE
+ 154:../cleanflight/src/main/drivers/compass/compass_ak8963.c ****     ak8963SpiWriteRegisterDelay(bus, MPU_RA_I2C_SLV0_REG, reg);                             // set 
+ 155:../cleanflight/src/main/drivers/compass/compass_ak8963.c ****     ak8963SpiWriteRegisterDelay(bus, MPU_RA_I2C_SLV0_CTRL, (len & 0x0F) | I2C_SLV0_EN);    // read 
+ 156:../cleanflight/src/main/drivers/compass/compass_ak8963.c **** 
+ 157:../cleanflight/src/main/drivers/compass/compass_ak8963.c ****     queuedRead.readStartedAt = micros();
+ 158:../cleanflight/src/main/drivers/compass/compass_ak8963.c ****     queuedRead.waiting = true;
+ 159:../cleanflight/src/main/drivers/compass/compass_ak8963.c **** 
+ 160:../cleanflight/src/main/drivers/compass/compass_ak8963.c ****     return true;
+ 161:../cleanflight/src/main/drivers/compass/compass_ak8963.c **** }
+ 162:../cleanflight/src/main/drivers/compass/compass_ak8963.c **** 
+ 163:../cleanflight/src/main/drivers/compass/compass_ak8963.c **** static uint32_t ak8963SlaveQueuedReadTimeRemaining(void)
+ 164:../cleanflight/src/main/drivers/compass/compass_ak8963.c **** {
+ 165:../cleanflight/src/main/drivers/compass/compass_ak8963.c ****     if (!queuedRead.waiting) {
+ 166:../cleanflight/src/main/drivers/compass/compass_ak8963.c ****         return 0;
+ 167:../cleanflight/src/main/drivers/compass/compass_ak8963.c ****     }
+ 168:../cleanflight/src/main/drivers/compass/compass_ak8963.c **** 
+ 169:../cleanflight/src/main/drivers/compass/compass_ak8963.c ****     int32_t timeSinceStarted = micros() - queuedRead.readStartedAt;
+ 170:../cleanflight/src/main/drivers/compass/compass_ak8963.c **** 
+ 171:../cleanflight/src/main/drivers/compass/compass_ak8963.c ****     int32_t timeRemaining = 8000 - timeSinceStarted;
+ 172:../cleanflight/src/main/drivers/compass/compass_ak8963.c **** 
+ 173:../cleanflight/src/main/drivers/compass/compass_ak8963.c ****     if (timeRemaining < 0) {
+ 174:../cleanflight/src/main/drivers/compass/compass_ak8963.c ****         return 0;
+ 175:../cleanflight/src/main/drivers/compass/compass_ak8963.c ****     }
+ 176:../cleanflight/src/main/drivers/compass/compass_ak8963.c **** 
+ 177:../cleanflight/src/main/drivers/compass/compass_ak8963.c ****     return timeRemaining;
+ 178:../cleanflight/src/main/drivers/compass/compass_ak8963.c **** }
+ 179:../cleanflight/src/main/drivers/compass/compass_ak8963.c **** 
+ 180:../cleanflight/src/main/drivers/compass/compass_ak8963.c **** static bool ak8963SlaveCompleteRead(const busDevice_t *slavedev, uint8_t *buf)
+ 181:../cleanflight/src/main/drivers/compass/compass_ak8963.c **** {
+ 182:../cleanflight/src/main/drivers/compass/compass_ak8963.c ****     uint32_t timeRemaining = ak8963SlaveQueuedReadTimeRemaining();
+ 183:../cleanflight/src/main/drivers/compass/compass_ak8963.c **** 
+ 184:../cleanflight/src/main/drivers/compass/compass_ak8963.c ****     const busDevice_t *bus = slavedev->busdev_u.mpuSlave.master;
+ 185:../cleanflight/src/main/drivers/compass/compass_ak8963.c **** 
+ 186:../cleanflight/src/main/drivers/compass/compass_ak8963.c ****     if (timeRemaining > 0) {
+ 187:../cleanflight/src/main/drivers/compass/compass_ak8963.c ****         delayMicroseconds(timeRemaining);
+ 188:../cleanflight/src/main/drivers/compass/compass_ak8963.c ****     }
+ 189:../cleanflight/src/main/drivers/compass/compass_ak8963.c **** 
+ 190:../cleanflight/src/main/drivers/compass/compass_ak8963.c ****     queuedRead.waiting = false;
+ 191:../cleanflight/src/main/drivers/compass/compass_ak8963.c **** 
+ 192:../cleanflight/src/main/drivers/compass/compass_ak8963.c ****     spiBusReadRegisterBuffer(bus, MPU_RA_EXT_SENS_DATA_00, buf, queuedRead.len);            // read
+ 193:../cleanflight/src/main/drivers/compass/compass_ak8963.c ****     return true;
+ 194:../cleanflight/src/main/drivers/compass/compass_ak8963.c **** }
+ 195:../cleanflight/src/main/drivers/compass/compass_ak8963.c **** 
+ 196:../cleanflight/src/main/drivers/compass/compass_ak8963.c **** static bool ak8963SlaveReadData(const busDevice_t *busdev, uint8_t *buf)
+ 197:../cleanflight/src/main/drivers/compass/compass_ak8963.c **** {
+ 198:../cleanflight/src/main/drivers/compass/compass_ak8963.c ****     typedef enum {
+ 199:../cleanflight/src/main/drivers/compass/compass_ak8963.c ****         CHECK_STATUS = 0,
+ 200:../cleanflight/src/main/drivers/compass/compass_ak8963.c ****         WAITING_FOR_STATUS,
+ 201:../cleanflight/src/main/drivers/compass/compass_ak8963.c ****         WAITING_FOR_DATA
+ 202:../cleanflight/src/main/drivers/compass/compass_ak8963.c ****     } ak8963ReadState_e;
+ 203:../cleanflight/src/main/drivers/compass/compass_ak8963.c **** 
+ 204:../cleanflight/src/main/drivers/compass/compass_ak8963.c ****     static ak8963ReadState_e state = CHECK_STATUS;
+ 205:../cleanflight/src/main/drivers/compass/compass_ak8963.c **** 
+ 206:../cleanflight/src/main/drivers/compass/compass_ak8963.c ****     bool ack = false;
+ 207:../cleanflight/src/main/drivers/compass/compass_ak8963.c **** 
+ 208:../cleanflight/src/main/drivers/compass/compass_ak8963.c ****     // we currently need a different approach for the MPU9250 connected via SPI.
+ 209:../cleanflight/src/main/drivers/compass/compass_ak8963.c ****     // we cannot use the ak8963SlaveReadRegisterBuffer() method for SPI, it is to slow and blocks f
+ 210:../cleanflight/src/main/drivers/compass/compass_ak8963.c **** 
+ 211:../cleanflight/src/main/drivers/compass/compass_ak8963.c ****     bool retry = true;
+ 212:../cleanflight/src/main/drivers/compass/compass_ak8963.c **** 
+ 213:../cleanflight/src/main/drivers/compass/compass_ak8963.c **** restart:
+ 214:../cleanflight/src/main/drivers/compass/compass_ak8963.c ****     switch (state) {
+ 215:../cleanflight/src/main/drivers/compass/compass_ak8963.c ****         case CHECK_STATUS: {
+ 216:../cleanflight/src/main/drivers/compass/compass_ak8963.c ****             ak8963SlaveStartRead(busdev, AK8963_MAG_REG_ST1, 1);
+ 217:../cleanflight/src/main/drivers/compass/compass_ak8963.c ****             state = WAITING_FOR_STATUS;
+ 218:../cleanflight/src/main/drivers/compass/compass_ak8963.c ****             return false;
+ 219:../cleanflight/src/main/drivers/compass/compass_ak8963.c ****         }
+ 220:../cleanflight/src/main/drivers/compass/compass_ak8963.c **** 
+ 221:../cleanflight/src/main/drivers/compass/compass_ak8963.c ****         case WAITING_FOR_STATUS: {
+ 222:../cleanflight/src/main/drivers/compass/compass_ak8963.c ****             uint32_t timeRemaining = ak8963SlaveQueuedReadTimeRemaining();
+ 223:../cleanflight/src/main/drivers/compass/compass_ak8963.c ****             if (timeRemaining) {
+ 224:../cleanflight/src/main/drivers/compass/compass_ak8963.c ****                 return false;
+ 225:../cleanflight/src/main/drivers/compass/compass_ak8963.c ****             }
+ 226:../cleanflight/src/main/drivers/compass/compass_ak8963.c **** 
+ 227:../cleanflight/src/main/drivers/compass/compass_ak8963.c ****             ack = ak8963SlaveCompleteRead(busdev, &buf[0]);
+ 228:../cleanflight/src/main/drivers/compass/compass_ak8963.c **** 
+ 229:../cleanflight/src/main/drivers/compass/compass_ak8963.c ****             uint8_t status = buf[0];
+ 230:../cleanflight/src/main/drivers/compass/compass_ak8963.c **** 
+ 231:../cleanflight/src/main/drivers/compass/compass_ak8963.c ****             if (!ack || (status & ST1_DATA_READY) == 0) {
+ 232:../cleanflight/src/main/drivers/compass/compass_ak8963.c ****                 // too early. queue the status read again
+ 233:../cleanflight/src/main/drivers/compass/compass_ak8963.c ****                 state = CHECK_STATUS;
+ 234:../cleanflight/src/main/drivers/compass/compass_ak8963.c ****                 if (retry) {
+ 235:../cleanflight/src/main/drivers/compass/compass_ak8963.c ****                     retry = false;
+ 236:../cleanflight/src/main/drivers/compass/compass_ak8963.c ****                     goto restart;
+ 237:../cleanflight/src/main/drivers/compass/compass_ak8963.c ****                }
+ 238:../cleanflight/src/main/drivers/compass/compass_ak8963.c ****                return false;
+ 239:../cleanflight/src/main/drivers/compass/compass_ak8963.c ****             }
+ 240:../cleanflight/src/main/drivers/compass/compass_ak8963.c **** 
+ 241:../cleanflight/src/main/drivers/compass/compass_ak8963.c ****             // read the 6 bytes of data and the status2 register
+ 242:../cleanflight/src/main/drivers/compass/compass_ak8963.c ****             ak8963SlaveStartRead(busdev, AK8963_MAG_REG_HXL, 7);
+ 243:../cleanflight/src/main/drivers/compass/compass_ak8963.c **** 
+ 244:../cleanflight/src/main/drivers/compass/compass_ak8963.c ****             state = WAITING_FOR_DATA;
+ 245:../cleanflight/src/main/drivers/compass/compass_ak8963.c ****             return false;
+ 246:../cleanflight/src/main/drivers/compass/compass_ak8963.c ****         }
+ 247:../cleanflight/src/main/drivers/compass/compass_ak8963.c **** 
+ 248:../cleanflight/src/main/drivers/compass/compass_ak8963.c ****         case WAITING_FOR_DATA: {
+ 249:../cleanflight/src/main/drivers/compass/compass_ak8963.c ****             uint32_t timeRemaining = ak8963SlaveQueuedReadTimeRemaining();
+ 250:../cleanflight/src/main/drivers/compass/compass_ak8963.c ****             if (timeRemaining) {
+ 251:../cleanflight/src/main/drivers/compass/compass_ak8963.c ****                 return false;
+ 252:../cleanflight/src/main/drivers/compass/compass_ak8963.c ****             }
+ 253:../cleanflight/src/main/drivers/compass/compass_ak8963.c **** 
+ 254:../cleanflight/src/main/drivers/compass/compass_ak8963.c ****             ack = ak8963SlaveCompleteRead(busdev, &buf[0]);
+ 255:../cleanflight/src/main/drivers/compass/compass_ak8963.c ****             state = CHECK_STATUS;
+ 256:../cleanflight/src/main/drivers/compass/compass_ak8963.c ****         }
+ 257:../cleanflight/src/main/drivers/compass/compass_ak8963.c ****     }
+ 258:../cleanflight/src/main/drivers/compass/compass_ak8963.c **** 
+ 259:../cleanflight/src/main/drivers/compass/compass_ak8963.c ****     return ack;
+ 260:../cleanflight/src/main/drivers/compass/compass_ak8963.c **** }
+ 261:../cleanflight/src/main/drivers/compass/compass_ak8963.c **** #endif
+ 262:../cleanflight/src/main/drivers/compass/compass_ak8963.c **** 
+ 263:../cleanflight/src/main/drivers/compass/compass_ak8963.c **** static bool ak8963ReadRegisterBuffer(const busDevice_t *busdev, uint8_t reg, uint8_t *buf, uint8_t 
+ 264:../cleanflight/src/main/drivers/compass/compass_ak8963.c **** {
+  91              	 .loc 2 264 0
+  92              	 .cfi_startproc
+  93              	 
+  94              	 
+  95 0000 80B5     	 push {r7,lr}
+  96              	.LCFI6:
+  97              	 .cfi_def_cfa_offset 8
+  98              	 .cfi_offset 7,-8
+  99              	 .cfi_offset 14,-4
+ 100 0002 84B0     	 sub sp,sp,#16
+ 101              	.LCFI7:
+ 102              	 .cfi_def_cfa_offset 24
+ 103 0004 00AF     	 add r7,sp,#0
+ 104              	.LCFI8:
+ 105              	 .cfi_def_cfa_register 7
+ 106 0006 F860     	 str r0,[r7,#12]
+ 107 0008 7A60     	 str r2,[r7,#4]
+ 108 000a 1A46     	 mov r2,r3
+ 109 000c 0B46     	 mov r3,r1
+ 110 000e FB72     	 strb r3,[r7,#11]
+ 111 0010 1346     	 mov r3,r2
+ 112 0012 BB72     	 strb r3,[r7,#10]
+ 265:../cleanflight/src/main/drivers/compass/compass_ak8963.c **** #if defined(USE_MAG_AK8963) && (defined(USE_GYRO_SPI_MPU6500) || defined(USE_GYRO_SPI_MPU9250))
+ 266:../cleanflight/src/main/drivers/compass/compass_ak8963.c ****     if (busdev->bustype == BUSTYPE_MPU_SLAVE) {
+ 267:../cleanflight/src/main/drivers/compass/compass_ak8963.c ****         return ak8963SlaveReadRegisterBuffer(busdev, reg, buf, len);
+ 268:../cleanflight/src/main/drivers/compass/compass_ak8963.c ****     }
+ 269:../cleanflight/src/main/drivers/compass/compass_ak8963.c **** #endif
+ 270:../cleanflight/src/main/drivers/compass/compass_ak8963.c ****     return busReadRegisterBuffer(busdev, reg, buf, len);
+ 113              	 .loc 2 270 0
+ 114 0014 FA7A     	 ldrb r2,[r7,#11]
+ 115 0016 BB7A     	 ldrb r3,[r7,#10]
+ 116 0018 F868     	 ldr r0,[r7,#12]
+ 117 001a 1146     	 mov r1,r2
+ 118 001c 7A68     	 ldr r2,[r7,#4]
+ 119 001e FFF7FEFF 	 bl busReadRegisterBuffer
+ 120 0022 0346     	 mov r3,r0
+ 271:../cleanflight/src/main/drivers/compass/compass_ak8963.c **** }
+ 121              	 .loc 2 271 0
+ 122 0024 1846     	 mov r0,r3
+ 123 0026 1037     	 adds r7,r7,#16
+ 124              	.LCFI9:
+ 125              	 .cfi_def_cfa_offset 8
+ 126 0028 BD46     	 mov sp,r7
+ 127              	.LCFI10:
+ 128              	 .cfi_def_cfa_register 13
+ 129              	 
+ 130 002a 80BD     	 pop {r7,pc}
+ 131              	 .cfi_endproc
+ 132              	.LFE535:
+ 134              	 .section .text.ak8963WriteRegister,"ax",%progbits
+ 135              	 .align 2
+ 136              	 .thumb
+ 137              	 .thumb_func
+ 139              	ak8963WriteRegister:
+ 140              	.LFB536:
+ 272:../cleanflight/src/main/drivers/compass/compass_ak8963.c **** 
+ 273:../cleanflight/src/main/drivers/compass/compass_ak8963.c **** static bool ak8963WriteRegister(const busDevice_t *busdev, uint8_t reg, uint8_t data)
+ 274:../cleanflight/src/main/drivers/compass/compass_ak8963.c **** {
+ 141              	 .loc 2 274 0
+ 142              	 .cfi_startproc
+ 143              	 
+ 144              	 
+ 145 0000 80B5     	 push {r7,lr}
+ 146              	.LCFI11:
+ 147              	 .cfi_def_cfa_offset 8
+ 148              	 .cfi_offset 7,-8
+ 149              	 .cfi_offset 14,-4
+ 150 0002 82B0     	 sub sp,sp,#8
+ 151              	.LCFI12:
+ 152              	 .cfi_def_cfa_offset 16
+ 153 0004 00AF     	 add r7,sp,#0
+ 154              	.LCFI13:
+ 155              	 .cfi_def_cfa_register 7
+ 156 0006 7860     	 str r0,[r7,#4]
+ 157 0008 0B46     	 mov r3,r1
+ 158 000a FB70     	 strb r3,[r7,#3]
+ 159 000c 1346     	 mov r3,r2
+ 160 000e BB70     	 strb r3,[r7,#2]
+ 275:../cleanflight/src/main/drivers/compass/compass_ak8963.c **** #if defined(USE_MAG_AK8963) && (defined(USE_GYRO_SPI_MPU6500) || defined(USE_GYRO_SPI_MPU9250))
+ 276:../cleanflight/src/main/drivers/compass/compass_ak8963.c ****     if (busdev->bustype == BUSTYPE_MPU_SLAVE) {
+ 277:../cleanflight/src/main/drivers/compass/compass_ak8963.c ****         return ak8963SlaveWriteRegister(busdev, reg, data);
+ 278:../cleanflight/src/main/drivers/compass/compass_ak8963.c ****     }
+ 279:../cleanflight/src/main/drivers/compass/compass_ak8963.c **** #endif
+ 280:../cleanflight/src/main/drivers/compass/compass_ak8963.c ****     return busWriteRegister(busdev, reg, data);
+ 161              	 .loc 2 280 0
+ 162 0010 FA78     	 ldrb r2,[r7,#3]
+ 163 0012 BB78     	 ldrb r3,[r7,#2]
+ 164 0014 7868     	 ldr r0,[r7,#4]
+ 165 0016 1146     	 mov r1,r2
+ 166 0018 1A46     	 mov r2,r3
+ 167 001a FFF7FEFF 	 bl busWriteRegister
+ 168 001e 0346     	 mov r3,r0
+ 281:../cleanflight/src/main/drivers/compass/compass_ak8963.c **** }
+ 169              	 .loc 2 281 0
+ 170 0020 1846     	 mov r0,r3
+ 171 0022 0837     	 adds r7,r7,#8
+ 172              	.LCFI14:
+ 173              	 .cfi_def_cfa_offset 8
+ 174 0024 BD46     	 mov sp,r7
+ 175              	.LCFI15:
+ 176              	 .cfi_def_cfa_register 13
+ 177              	 
+ 178 0026 80BD     	 pop {r7,pc}
+ 179              	 .cfi_endproc
+ 180              	.LFE536:
+ 182              	 .section .text.ak8963DirectReadData,"ax",%progbits
+ 183              	 .align 2
+ 184              	 .thumb
+ 185              	 .thumb_func
+ 187              	ak8963DirectReadData:
+ 188              	.LFB537:
+ 282:../cleanflight/src/main/drivers/compass/compass_ak8963.c **** 
+ 283:../cleanflight/src/main/drivers/compass/compass_ak8963.c **** static bool ak8963DirectReadData(const busDevice_t *busdev, uint8_t *buf)
+ 284:../cleanflight/src/main/drivers/compass/compass_ak8963.c **** {
+ 189              	 .loc 2 284 0
+ 190              	 .cfi_startproc
+ 191              	 
+ 192              	 
+ 193 0000 80B5     	 push {r7,lr}
+ 194              	.LCFI16:
+ 195              	 .cfi_def_cfa_offset 8
+ 196              	 .cfi_offset 7,-8
+ 197              	 .cfi_offset 14,-4
+ 198 0002 84B0     	 sub sp,sp,#16
+ 199              	.LCFI17:
+ 200              	 .cfi_def_cfa_offset 24
+ 201 0004 00AF     	 add r7,sp,#0
+ 202              	.LCFI18:
+ 203              	 .cfi_def_cfa_register 7
+ 204 0006 7860     	 str r0,[r7,#4]
+ 205 0008 3960     	 str r1,[r7]
+ 285:../cleanflight/src/main/drivers/compass/compass_ak8963.c ****     uint8_t status;
+ 286:../cleanflight/src/main/drivers/compass/compass_ak8963.c **** 
+ 287:../cleanflight/src/main/drivers/compass/compass_ak8963.c ****     bool ack = ak8963ReadRegisterBuffer(busdev, AK8963_MAG_REG_ST1, &status, 1);
+ 206              	 .loc 2 287 0
+ 207 000a 07F10E03 	 add r3,r7,#14
+ 208 000e 7868     	 ldr r0,[r7,#4]
+ 209 0010 0221     	 movs r1,#2
+ 210 0012 1A46     	 mov r2,r3
+ 211 0014 0123     	 movs r3,#1
+ 212 0016 FFF7FEFF 	 bl ak8963ReadRegisterBuffer
+ 213 001a 0346     	 mov r3,r0
+ 214 001c FB73     	 strb r3,[r7,#15]
+ 288:../cleanflight/src/main/drivers/compass/compass_ak8963.c **** 
+ 289:../cleanflight/src/main/drivers/compass/compass_ak8963.c ****     if (!ack || (status & ST1_DATA_READY) == 0) {
+ 215              	 .loc 2 289 0
+ 216 001e FB7B     	 ldrb r3,[r7,#15]
+ 217 0020 83F00103 	 eor r3,r3,#1
+ 218 0024 DBB2     	 uxtb r3,r3
+ 219 0026 002B     	 cmp r3,#0
+ 220 0028 04D1     	 bne .L10
+ 221              	 .loc 2 289 0 is_stmt 0 discriminator 1
+ 222 002a BB7B     	 ldrb r3,[r7,#14]
+ 223 002c 03F00103 	 and r3,r3,#1
+ 224 0030 002B     	 cmp r3,#0
+ 225 0032 01D1     	 bne .L11
+ 226              	.L10:
+ 290:../cleanflight/src/main/drivers/compass/compass_ak8963.c ****         return false;
+ 227              	 .loc 2 290 0 is_stmt 1
+ 228 0034 0023     	 movs r3,#0
+ 229 0036 06E0     	 b .L13
+ 230              	.L11:
+ 291:../cleanflight/src/main/drivers/compass/compass_ak8963.c ****     }
+ 292:../cleanflight/src/main/drivers/compass/compass_ak8963.c **** 
+ 293:../cleanflight/src/main/drivers/compass/compass_ak8963.c ****     return ak8963ReadRegisterBuffer(busdev, AK8963_MAG_REG_HXL, buf, 7);
+ 231              	 .loc 2 293 0
+ 232 0038 7868     	 ldr r0,[r7,#4]
+ 233 003a 0321     	 movs r1,#3
+ 234 003c 3A68     	 ldr r2,[r7]
+ 235 003e 0723     	 movs r3,#7
+ 236 0040 FFF7FEFF 	 bl ak8963ReadRegisterBuffer
+ 237 0044 0346     	 mov r3,r0
+ 238              	.L13:
+ 294:../cleanflight/src/main/drivers/compass/compass_ak8963.c **** }
+ 239              	 .loc 2 294 0 discriminator 1
+ 240 0046 1846     	 mov r0,r3
+ 241 0048 1037     	 adds r7,r7,#16
+ 242              	.LCFI19:
+ 243              	 .cfi_def_cfa_offset 8
+ 244 004a BD46     	 mov sp,r7
+ 245              	.LCFI20:
+ 246              	 .cfi_def_cfa_register 13
+ 247              	 
+ 248 004c 80BD     	 pop {r7,pc}
+ 249              	 .cfi_endproc
+ 250              	.LFE537:
+ 252 004e 00BF     	 .section .text.parseMag,"ax",%progbits
+ 253              	 .align 2
+ 254              	 .thumb
+ 255              	 .thumb_func
+ 257              	parseMag:
+ 258              	.LFB538:
+ 295:../cleanflight/src/main/drivers/compass/compass_ak8963.c **** 
+ 296:../cleanflight/src/main/drivers/compass/compass_ak8963.c **** static int16_t parseMag(uint8_t *raw, int16_t gain) {
+ 259              	 .loc 2 296 0
+ 260              	 .cfi_startproc
+ 261              	 
+ 262              	 
+ 263 0000 80B5     	 push {r7,lr}
+ 264              	.LCFI21:
+ 265              	 .cfi_def_cfa_offset 8
+ 266              	 .cfi_offset 7,-8
+ 267              	 .cfi_offset 14,-4
+ 268 0002 84B0     	 sub sp,sp,#16
+ 269              	.LCFI22:
+ 270              	 .cfi_def_cfa_offset 24
+ 271 0004 00AF     	 add r7,sp,#0
+ 272              	.LCFI23:
+ 273              	 .cfi_def_cfa_register 7
+ 274 0006 7860     	 str r0,[r7,#4]
+ 275 0008 0B46     	 mov r3,r1
+ 276 000a 7B80     	 strh r3,[r7,#2]
+ 297:../cleanflight/src/main/drivers/compass/compass_ak8963.c ****   int ret = (int16_t)(raw[1] << 8 | raw[0]) * gain / 256;
+ 277              	 .loc 2 297 0
+ 278 000c 7B68     	 ldr r3,[r7,#4]
+ 279 000e 0133     	 adds r3,r3,#1
+ 280 0010 1B78     	 ldrb r3,[r3]
+ 281 0012 1B02     	 lsls r3,r3,#8
+ 282 0014 9AB2     	 uxth r2,r3
+ 283 0016 7B68     	 ldr r3,[r7,#4]
+ 284 0018 1B78     	 ldrb r3,[r3]
+ 285 001a 9BB2     	 uxth r3,r3
+ 286 001c 1343     	 orrs r3,r3,r2
+ 287 001e 9BB2     	 uxth r3,r3
+ 288 0020 1BB2     	 sxth r3,r3
+ 289 0022 B7F90220 	 ldrsh r2,[r7,#2]
+ 290 0026 02FB03F3 	 mul r3,r2,r3
+ 291 002a 002B     	 cmp r3,#0
+ 292 002c 00DA     	 bge .L15
+ 293 002e FF33     	 adds r3,r3,#255
+ 294              	.L15:
+ 295 0030 1B12     	 asrs r3,r3,#8
+ 296 0032 FB60     	 str r3,[r7,#12]
+ 298:../cleanflight/src/main/drivers/compass/compass_ak8963.c ****   return constrain(ret, INT16_MIN, INT16_MAX);
+ 297              	 .loc 2 298 0
+ 298 0034 F868     	 ldr r0,[r7,#12]
+ 299 0036 0649     	 ldr r1,.L17
+ 300 0038 47F6FF72 	 movw r2,#32767
+ 301 003c FFF7FEFF 	 bl constrain
+ 302 0040 0346     	 mov r3,r0
+ 303 0042 9BB2     	 uxth r3,r3
+ 304 0044 1BB2     	 sxth r3,r3
+ 299:../cleanflight/src/main/drivers/compass/compass_ak8963.c **** }
+ 305              	 .loc 2 299 0
+ 306 0046 1846     	 mov r0,r3
+ 307 0048 1037     	 adds r7,r7,#16
+ 308              	.LCFI24:
+ 309              	 .cfi_def_cfa_offset 8
+ 310 004a BD46     	 mov sp,r7
+ 311              	.LCFI25:
+ 312              	 .cfi_def_cfa_register 13
+ 313              	 
+ 314 004c 80BD     	 pop {r7,pc}
+ 315              	.L18:
+ 316 004e 00BF     	 .align 2
+ 317              	.L17:
+ 318 0050 0080FFFF 	 .word -32768
+ 319              	 .cfi_endproc
+ 320              	.LFE538:
+ 322              	 .section .text.ak8963Read,"ax",%progbits
+ 323              	 .align 2
+ 324              	 .thumb
+ 325              	 .thumb_func
+ 327              	ak8963Read:
+ 328              	.LFB539:
+ 300:../cleanflight/src/main/drivers/compass/compass_ak8963.c **** 
+ 301:../cleanflight/src/main/drivers/compass/compass_ak8963.c **** static bool ak8963Read(magDev_t *mag, int16_t *magData)
+ 302:../cleanflight/src/main/drivers/compass/compass_ak8963.c **** {
+ 329              	 .loc 2 302 0
+ 330              	 .cfi_startproc
+ 331              	 
+ 332              	 
+ 333 0000 90B5     	 push {r4,r7,lr}
+ 334              	.LCFI26:
+ 335              	 .cfi_def_cfa_offset 12
+ 336              	 .cfi_offset 4,-12
+ 337              	 .cfi_offset 7,-8
+ 338              	 .cfi_offset 14,-4
+ 339 0002 87B0     	 sub sp,sp,#28
+ 340              	.LCFI27:
+ 341              	 .cfi_def_cfa_offset 40
+ 342 0004 00AF     	 add r7,sp,#0
+ 343              	.LCFI28:
+ 344              	 .cfi_def_cfa_register 7
+ 345 0006 7860     	 str r0,[r7,#4]
+ 346 0008 3960     	 str r1,[r7]
+ 303:../cleanflight/src/main/drivers/compass/compass_ak8963.c ****     bool ack = false;
+ 347              	 .loc 2 303 0
+ 348 000a 0023     	 movs r3,#0
+ 349 000c FB75     	 strb r3,[r7,#23]
+ 304:../cleanflight/src/main/drivers/compass/compass_ak8963.c ****     uint8_t buf[7];
+ 305:../cleanflight/src/main/drivers/compass/compass_ak8963.c **** 
+ 306:../cleanflight/src/main/drivers/compass/compass_ak8963.c ****     const busDevice_t *busdev = &mag->busdev;
+ 350              	 .loc 2 306 0
+ 351 000e 7B68     	 ldr r3,[r7,#4]
+ 352 0010 0C33     	 adds r3,r3,#12
+ 353 0012 3B61     	 str r3,[r7,#16]
+ 307:../cleanflight/src/main/drivers/compass/compass_ak8963.c **** 
+ 308:../cleanflight/src/main/drivers/compass/compass_ak8963.c ****     switch (busdev->bustype) {
+ 354              	 .loc 2 308 0
+ 355 0014 3B69     	 ldr r3,[r7,#16]
+ 356 0016 1B78     	 ldrb r3,[r3]
+ 357 0018 013B     	 subs r3,r3,#1
+ 358 001a 012B     	 cmp r3,#1
+ 359 001c 08D8     	 bhi .L27
+ 309:../cleanflight/src/main/drivers/compass/compass_ak8963.c **** #if defined(USE_MAG_SPI_AK8963) || defined(USE_MAG_AK8963)
+ 310:../cleanflight/src/main/drivers/compass/compass_ak8963.c ****     case BUSTYPE_I2C:
+ 311:../cleanflight/src/main/drivers/compass/compass_ak8963.c ****     case BUSTYPE_SPI:
+ 312:../cleanflight/src/main/drivers/compass/compass_ak8963.c ****         ack = ak8963DirectReadData(busdev, buf);
+ 360              	 .loc 2 312 0
+ 361 001e 07F10803 	 add r3,r7,#8
+ 362 0022 3869     	 ldr r0,[r7,#16]
+ 363 0024 1946     	 mov r1,r3
+ 364 0026 FFF7FEFF 	 bl ak8963DirectReadData
+ 365 002a 0346     	 mov r3,r0
+ 366 002c FB75     	 strb r3,[r7,#23]
+ 313:../cleanflight/src/main/drivers/compass/compass_ak8963.c ****         break;
+ 367              	 .loc 2 313 0
+ 368 002e 00E0     	 b .L22
+ 369              	.L27:
+ 314:../cleanflight/src/main/drivers/compass/compass_ak8963.c **** #endif
+ 315:../cleanflight/src/main/drivers/compass/compass_ak8963.c **** 
+ 316:../cleanflight/src/main/drivers/compass/compass_ak8963.c **** #if defined(USE_MAG_AK8963) && (defined(USE_GYRO_SPI_MPU6500) || defined(USE_GYRO_SPI_MPU9250))
+ 317:../cleanflight/src/main/drivers/compass/compass_ak8963.c ****     case BUSTYPE_MPU_SLAVE:
+ 318:../cleanflight/src/main/drivers/compass/compass_ak8963.c ****         ack = ak8963SlaveReadData(busdev, buf);
+ 319:../cleanflight/src/main/drivers/compass/compass_ak8963.c ****         break;
+ 320:../cleanflight/src/main/drivers/compass/compass_ak8963.c **** #endif
+ 321:../cleanflight/src/main/drivers/compass/compass_ak8963.c ****     default:
+ 322:../cleanflight/src/main/drivers/compass/compass_ak8963.c ****         break;
+ 370              	 .loc 2 322 0
+ 371 0030 00BF     	 nop
+ 372              	.L22:
+ 323:../cleanflight/src/main/drivers/compass/compass_ak8963.c ****     }
+ 324:../cleanflight/src/main/drivers/compass/compass_ak8963.c **** 
+ 325:../cleanflight/src/main/drivers/compass/compass_ak8963.c ****     uint8_t status2 = buf[6];
+ 373              	 .loc 2 325 0
+ 374 0032 BB7B     	 ldrb r3,[r7,#14]
+ 375 0034 FB73     	 strb r3,[r7,#15]
+ 326:../cleanflight/src/main/drivers/compass/compass_ak8963.c ****     if (!ack) {
+ 376              	 .loc 2 326 0
+ 377 0036 FB7D     	 ldrb r3,[r7,#23]
+ 378 0038 83F00103 	 eor r3,r3,#1
+ 379 003c DBB2     	 uxtb r3,r3
+ 380 003e 002B     	 cmp r3,#0
+ 381 0040 01D0     	 beq .L23
+ 327:../cleanflight/src/main/drivers/compass/compass_ak8963.c ****         return false;
+ 382              	 .loc 2 327 0
+ 383 0042 0023     	 movs r3,#0
+ 384 0044 3BE0     	 b .L26
+ 385              	.L23:
+ 328:../cleanflight/src/main/drivers/compass/compass_ak8963.c ****     }
+ 329:../cleanflight/src/main/drivers/compass/compass_ak8963.c **** 
+ 330:../cleanflight/src/main/drivers/compass/compass_ak8963.c ****     ak8963WriteRegister(busdev, AK8963_MAG_REG_CNTL1, CNTL1_BIT_16_BIT | CNTL1_MODE_ONCE); // start
+ 386              	 .loc 2 330 0
+ 387 0046 3869     	 ldr r0,[r7,#16]
+ 388 0048 0A21     	 movs r1,#10
+ 389 004a 1122     	 movs r2,#17
+ 390 004c FFF7FEFF 	 bl ak8963WriteRegister
+ 331:../cleanflight/src/main/drivers/compass/compass_ak8963.c **** 
+ 332:../cleanflight/src/main/drivers/compass/compass_ak8963.c ****     if (status2 & ST2_MAG_SENSOR_OVERFLOW) {
+ 391              	 .loc 2 332 0
+ 392 0050 FB7B     	 ldrb r3,[r7,#15]
+ 393 0052 03F00803 	 and r3,r3,#8
+ 394 0056 002B     	 cmp r3,#0
+ 395 0058 01D0     	 beq .L25
+ 333:../cleanflight/src/main/drivers/compass/compass_ak8963.c ****         return false;
+ 396              	 .loc 2 333 0
+ 397 005a 0023     	 movs r3,#0
+ 398 005c 2FE0     	 b .L26
+ 399              	.L25:
+ 334:../cleanflight/src/main/drivers/compass/compass_ak8963.c ****     }
+ 335:../cleanflight/src/main/drivers/compass/compass_ak8963.c **** 
+ 336:../cleanflight/src/main/drivers/compass/compass_ak8963.c ****     magData[X] = parseMag(buf + 0, mag->magGain[X]);
+ 400              	 .loc 2 336 0
+ 401 005e 7B68     	 ldr r3,[r7,#4]
+ 402 0060 B3F91730 	 ldrsh r3,[r3,#23]
+ 403 0064 9BB2     	 uxth r3,r3
+ 404 0066 07F10802 	 add r2,r7,#8
+ 405 006a 1BB2     	 sxth r3,r3
+ 406 006c 1046     	 mov r0,r2
+ 407 006e 1946     	 mov r1,r3
+ 408 0070 FFF7FEFF 	 bl parseMag
+ 409 0074 0346     	 mov r3,r0
+ 410 0076 1A46     	 mov r2,r3
+ 411 0078 3B68     	 ldr r3,[r7]
+ 412 007a 1A80     	 strh r2,[r3]
+ 337:../cleanflight/src/main/drivers/compass/compass_ak8963.c ****     magData[Y] = parseMag(buf + 2, mag->magGain[Y]);
+ 413              	 .loc 2 337 0
+ 414 007c 3B68     	 ldr r3,[r7]
+ 415 007e 9C1C     	 adds r4,r3,#2
+ 416 0080 7B68     	 ldr r3,[r7,#4]
+ 417 0082 B3F91930 	 ldrsh r3,[r3,#25]
+ 418 0086 99B2     	 uxth r1,r3
+ 419 0088 07F10803 	 add r3,r7,#8
+ 420 008c 9A1C     	 adds r2,r3,#2
+ 421 008e 0BB2     	 sxth r3,r1
+ 422 0090 1046     	 mov r0,r2
+ 423 0092 1946     	 mov r1,r3
+ 424 0094 FFF7FEFF 	 bl parseMag
+ 425 0098 0346     	 mov r3,r0
+ 426 009a 2380     	 strh r3,[r4]
+ 338:../cleanflight/src/main/drivers/compass/compass_ak8963.c ****     magData[Z] = parseMag(buf + 4, mag->magGain[Z]);
+ 427              	 .loc 2 338 0
+ 428 009c 3B68     	 ldr r3,[r7]
+ 429 009e 1C1D     	 adds r4,r3,#4
+ 430 00a0 7B68     	 ldr r3,[r7,#4]
+ 431 00a2 B3F91B30 	 ldrsh r3,[r3,#27]
+ 432 00a6 99B2     	 uxth r1,r3
+ 433 00a8 07F10803 	 add r3,r7,#8
+ 434 00ac 1A1D     	 adds r2,r3,#4
+ 435 00ae 0BB2     	 sxth r3,r1
+ 436 00b0 1046     	 mov r0,r2
+ 437 00b2 1946     	 mov r1,r3
+ 438 00b4 FFF7FEFF 	 bl parseMag
+ 439 00b8 0346     	 mov r3,r0
+ 440 00ba 2380     	 strh r3,[r4]
+ 339:../cleanflight/src/main/drivers/compass/compass_ak8963.c **** 
+ 340:../cleanflight/src/main/drivers/compass/compass_ak8963.c ****     return true;
+ 441              	 .loc 2 340 0
+ 442 00bc 0123     	 movs r3,#1
+ 443              	.L26:
+ 341:../cleanflight/src/main/drivers/compass/compass_ak8963.c **** }
+ 444              	 .loc 2 341 0 discriminator 1
+ 445 00be 1846     	 mov r0,r3
+ 446 00c0 1C37     	 adds r7,r7,#28
+ 447              	.LCFI29:
+ 448              	 .cfi_def_cfa_offset 12
+ 449 00c2 BD46     	 mov sp,r7
+ 450              	.LCFI30:
+ 451              	 .cfi_def_cfa_register 13
+ 452              	 
+ 453 00c4 90BD     	 pop {r4,r7,pc}
+ 454              	 .cfi_endproc
+ 455              	.LFE539:
+ 457 00c6 00BF     	 .section .text.ak8963Init,"ax",%progbits
+ 458              	 .align 2
+ 459              	 .thumb
+ 460              	 .thumb_func
+ 462              	ak8963Init:
+ 463              	.LFB540:
+ 342:../cleanflight/src/main/drivers/compass/compass_ak8963.c **** 
+ 343:../cleanflight/src/main/drivers/compass/compass_ak8963.c **** static bool ak8963Init(magDev_t *mag)
+ 344:../cleanflight/src/main/drivers/compass/compass_ak8963.c **** {
+ 464              	 .loc 2 344 0
+ 465              	 .cfi_startproc
+ 466              	 
+ 467              	 
+ 468 0000 80B5     	 push {r7,lr}
+ 469              	.LCFI31:
+ 470              	 .cfi_def_cfa_offset 8
+ 471              	 .cfi_offset 7,-8
+ 472              	 .cfi_offset 14,-4
+ 473 0002 86B0     	 sub sp,sp,#24
+ 474              	.LCFI32:
+ 475              	 .cfi_def_cfa_offset 32
+ 476 0004 00AF     	 add r7,sp,#0
+ 477              	.LCFI33:
+ 478              	 .cfi_def_cfa_register 7
+ 479 0006 7860     	 str r0,[r7,#4]
+ 345:../cleanflight/src/main/drivers/compass/compass_ak8963.c ****     uint8_t asa[3];
+ 346:../cleanflight/src/main/drivers/compass/compass_ak8963.c ****     uint8_t status;
+ 347:../cleanflight/src/main/drivers/compass/compass_ak8963.c **** 
+ 348:../cleanflight/src/main/drivers/compass/compass_ak8963.c ****     const busDevice_t *busdev = &mag->busdev;
+ 480              	 .loc 2 348 0
+ 481 0008 7B68     	 ldr r3,[r7,#4]
+ 482 000a 0C33     	 adds r3,r3,#12
+ 483 000c 7B61     	 str r3,[r7,#20]
+ 349:../cleanflight/src/main/drivers/compass/compass_ak8963.c **** 
+ 350:../cleanflight/src/main/drivers/compass/compass_ak8963.c ****     ak8963WriteRegister(busdev, AK8963_MAG_REG_CNTL1, CNTL1_MODE_POWER_DOWN);               // powe
+ 484              	 .loc 2 350 0
+ 485 000e 7869     	 ldr r0,[r7,#20]
+ 486 0010 0A21     	 movs r1,#10
+ 487 0012 0022     	 movs r2,#0
+ 488 0014 FFF7FEFF 	 bl ak8963WriteRegister
+ 351:../cleanflight/src/main/drivers/compass/compass_ak8963.c ****     ak8963WriteRegister(busdev, AK8963_MAG_REG_CNTL1, CNTL1_MODE_FUSE_ROM);                 // Ente
+ 489              	 .loc 2 351 0
+ 490 0018 7869     	 ldr r0,[r7,#20]
+ 491 001a 0A21     	 movs r1,#10
+ 492 001c 0F22     	 movs r2,#15
+ 493 001e FFF7FEFF 	 bl ak8963WriteRegister
+ 352:../cleanflight/src/main/drivers/compass/compass_ak8963.c ****     ak8963ReadRegisterBuffer(busdev, AK8963_MAG_REG_ASAX, asa, sizeof(asa));                // Read
+ 494              	 .loc 2 352 0
+ 495 0022 07F11003 	 add r3,r7,#16
+ 496 0026 7869     	 ldr r0,[r7,#20]
+ 497 0028 1021     	 movs r1,#16
+ 498 002a 1A46     	 mov r2,r3
+ 499 002c 0323     	 movs r3,#3
+ 500 002e FFF7FEFF 	 bl ak8963ReadRegisterBuffer
+ 353:../cleanflight/src/main/drivers/compass/compass_ak8963.c **** 
+ 354:../cleanflight/src/main/drivers/compass/compass_ak8963.c ****     mag->magGain[X] = asa[X] + 128;
+ 501              	 .loc 2 354 0
+ 502 0032 3B7C     	 ldrb r3,[r7,#16]
+ 503 0034 9BB2     	 uxth r3,r3
+ 504 0036 8033     	 adds r3,r3,#128
+ 505 0038 9BB2     	 uxth r3,r3
+ 506 003a 9AB2     	 uxth r2,r3
+ 507 003c 7B68     	 ldr r3,[r7,#4]
+ 508 003e A3F81720 	 strh r2,[r3,#23]
+ 355:../cleanflight/src/main/drivers/compass/compass_ak8963.c ****     mag->magGain[Y] = asa[Y] + 128;
+ 509              	 .loc 2 355 0
+ 510 0042 7B7C     	 ldrb r3,[r7,#17]
+ 511 0044 9BB2     	 uxth r3,r3
+ 512 0046 8033     	 adds r3,r3,#128
+ 513 0048 9BB2     	 uxth r3,r3
+ 514 004a 9AB2     	 uxth r2,r3
+ 515 004c 7B68     	 ldr r3,[r7,#4]
+ 516 004e A3F81920 	 strh r2,[r3,#25]
+ 356:../cleanflight/src/main/drivers/compass/compass_ak8963.c ****     mag->magGain[Z] = asa[Z] + 128;
+ 517              	 .loc 2 356 0
+ 518 0052 BB7C     	 ldrb r3,[r7,#18]
+ 519 0054 9BB2     	 uxth r3,r3
+ 520 0056 8033     	 adds r3,r3,#128
+ 521 0058 9BB2     	 uxth r3,r3
+ 522 005a 9AB2     	 uxth r2,r3
+ 523 005c 7B68     	 ldr r3,[r7,#4]
+ 524 005e A3F81B20 	 strh r2,[r3,#27]
+ 357:../cleanflight/src/main/drivers/compass/compass_ak8963.c **** 
+ 358:../cleanflight/src/main/drivers/compass/compass_ak8963.c ****     ak8963WriteRegister(busdev, AK8963_MAG_REG_CNTL1, CNTL1_MODE_POWER_DOWN);               // powe
+ 525              	 .loc 2 358 0
+ 526 0062 7869     	 ldr r0,[r7,#20]
+ 527 0064 0A21     	 movs r1,#10
+ 528 0066 0022     	 movs r2,#0
+ 529 0068 FFF7FEFF 	 bl ak8963WriteRegister
+ 359:../cleanflight/src/main/drivers/compass/compass_ak8963.c **** 
+ 360:../cleanflight/src/main/drivers/compass/compass_ak8963.c ****     // Clear status registers
+ 361:../cleanflight/src/main/drivers/compass/compass_ak8963.c ****     ak8963ReadRegisterBuffer(busdev, AK8963_MAG_REG_ST1, &status, 1);
+ 530              	 .loc 2 361 0
+ 531 006c 07F10F03 	 add r3,r7,#15
+ 532 0070 7869     	 ldr r0,[r7,#20]
+ 533 0072 0221     	 movs r1,#2
+ 534 0074 1A46     	 mov r2,r3
+ 535 0076 0123     	 movs r3,#1
+ 536 0078 FFF7FEFF 	 bl ak8963ReadRegisterBuffer
+ 362:../cleanflight/src/main/drivers/compass/compass_ak8963.c ****     ak8963ReadRegisterBuffer(busdev, AK8963_MAG_REG_ST2, &status, 1);
+ 537              	 .loc 2 362 0
+ 538 007c 07F10F03 	 add r3,r7,#15
+ 539 0080 7869     	 ldr r0,[r7,#20]
+ 540 0082 0921     	 movs r1,#9
+ 541 0084 1A46     	 mov r2,r3
+ 542 0086 0123     	 movs r3,#1
+ 543 0088 FFF7FEFF 	 bl ak8963ReadRegisterBuffer
+ 363:../cleanflight/src/main/drivers/compass/compass_ak8963.c **** 
+ 364:../cleanflight/src/main/drivers/compass/compass_ak8963.c ****     // Trigger first measurement
+ 365:../cleanflight/src/main/drivers/compass/compass_ak8963.c ****     ak8963WriteRegister(busdev, AK8963_MAG_REG_CNTL1, CNTL1_BIT_16_BIT | CNTL1_MODE_ONCE);
+ 544              	 .loc 2 365 0
+ 545 008c 7869     	 ldr r0,[r7,#20]
+ 546 008e 0A21     	 movs r1,#10
+ 547 0090 1122     	 movs r2,#17
+ 548 0092 FFF7FEFF 	 bl ak8963WriteRegister
+ 366:../cleanflight/src/main/drivers/compass/compass_ak8963.c ****     return true;
+ 549              	 .loc 2 366 0
+ 550 0096 0123     	 movs r3,#1
+ 367:../cleanflight/src/main/drivers/compass/compass_ak8963.c **** }
+ 551              	 .loc 2 367 0
+ 552 0098 1846     	 mov r0,r3
+ 553 009a 1837     	 adds r7,r7,#24
+ 554              	.LCFI34:
+ 555              	 .cfi_def_cfa_offset 8
+ 556 009c BD46     	 mov sp,r7
+ 557              	.LCFI35:
+ 558              	 .cfi_def_cfa_register 13
+ 559              	 
+ 560 009e 80BD     	 pop {r7,pc}
+ 561              	 .cfi_endproc
+ 562              	.LFE540:
+ 564              	 .section .text.ak8963BusInit,"ax",%progbits
+ 565              	 .align 2
+ 566              	 .global ak8963BusInit
+ 567              	 .thumb
+ 568              	 .thumb_func
+ 570              	ak8963BusInit:
+ 571              	.LFB541:
+ 368:../cleanflight/src/main/drivers/compass/compass_ak8963.c **** 
+ 369:../cleanflight/src/main/drivers/compass/compass_ak8963.c **** void ak8963BusInit(const busDevice_t *busdev)
+ 370:../cleanflight/src/main/drivers/compass/compass_ak8963.c **** {
+ 572              	 .loc 2 370 0
+ 573              	 .cfi_startproc
+ 574              	 
+ 575              	 
+ 576              	 
+ 577 0000 80B4     	 push {r7}
+ 578              	.LCFI36:
+ 579              	 .cfi_def_cfa_offset 4
+ 580              	 .cfi_offset 7,-4
+ 581 0002 83B0     	 sub sp,sp,#12
+ 582              	.LCFI37:
+ 583              	 .cfi_def_cfa_offset 16
+ 584 0004 00AF     	 add r7,sp,#0
+ 585              	.LCFI38:
+ 586              	 .cfi_def_cfa_register 7
+ 587 0006 7860     	 str r0,[r7,#4]
+ 371:../cleanflight/src/main/drivers/compass/compass_ak8963.c ****     switch (busdev->bustype) {
+ 588              	 .loc 2 371 0
+ 589 0008 7B68     	 ldr r3,[r7,#4]
+ 590 000a 1B78     	 ldrb r3,[r3]
+ 591 000c 012B     	 cmp r3,#1
+ 592 000e 00D0     	 beq .L34
+ 372:../cleanflight/src/main/drivers/compass/compass_ak8963.c **** #ifdef USE_MAG_AK8963
+ 373:../cleanflight/src/main/drivers/compass/compass_ak8963.c ****     case BUSTYPE_I2C:
+ 374:../cleanflight/src/main/drivers/compass/compass_ak8963.c ****         UNUSED(busdev);
+ 375:../cleanflight/src/main/drivers/compass/compass_ak8963.c ****         break;
+ 376:../cleanflight/src/main/drivers/compass/compass_ak8963.c **** #endif
+ 377:../cleanflight/src/main/drivers/compass/compass_ak8963.c **** 
+ 378:../cleanflight/src/main/drivers/compass/compass_ak8963.c **** #ifdef USE_MAG_SPI_AK8963
+ 379:../cleanflight/src/main/drivers/compass/compass_ak8963.c ****     case BUSTYPE_SPI:
+ 380:../cleanflight/src/main/drivers/compass/compass_ak8963.c ****         IOHi(busdev->busdev_u.spi.csnPin);                                                  // Disa
+ 381:../cleanflight/src/main/drivers/compass/compass_ak8963.c ****         IOInit(busdev->busdev_u.spi.csnPin, OWNER_COMPASS_CS, 0);
+ 382:../cleanflight/src/main/drivers/compass/compass_ak8963.c ****         IOConfigGPIO(busdev->busdev_u.spi.csnPin, IOCFG_OUT_PP);
+ 383:../cleanflight/src/main/drivers/compass/compass_ak8963.c ****         spiSetDivisor(busdev->busdev_u.spi.instance, SPI_CLOCK_STANDARD);
+ 384:../cleanflight/src/main/drivers/compass/compass_ak8963.c ****         break;
+ 385:../cleanflight/src/main/drivers/compass/compass_ak8963.c **** #endif
+ 386:../cleanflight/src/main/drivers/compass/compass_ak8963.c **** 
+ 387:../cleanflight/src/main/drivers/compass/compass_ak8963.c **** #if defined(USE_MAG_AK8963) && (defined(USE_GYRO_SPI_MPU6500) || defined(USE_GYRO_SPI_MPU9250))
+ 388:../cleanflight/src/main/drivers/compass/compass_ak8963.c ****     case BUSTYPE_MPU_SLAVE:
+ 389:../cleanflight/src/main/drivers/compass/compass_ak8963.c ****         rescheduleTask(TASK_COMPASS, TASK_PERIOD_HZ(40));
+ 390:../cleanflight/src/main/drivers/compass/compass_ak8963.c **** 
+ 391:../cleanflight/src/main/drivers/compass/compass_ak8963.c ****         // initialze I2C master via SPI bus
+ 392:../cleanflight/src/main/drivers/compass/compass_ak8963.c ****         ak8963SpiWriteRegisterDelay(busdev->busdev_u.mpuSlave.master, MPU_RA_INT_PIN_CFG, MPU6500_B
+ 393:../cleanflight/src/main/drivers/compass/compass_ak8963.c ****         ak8963SpiWriteRegisterDelay(busdev->busdev_u.mpuSlave.master, MPU_RA_I2C_MST_CTRL, 0x0D); /
+ 394:../cleanflight/src/main/drivers/compass/compass_ak8963.c ****         ak8963SpiWriteRegisterDelay(busdev->busdev_u.mpuSlave.master, MPU_RA_USER_CTRL, 0x30);   //
+ 395:../cleanflight/src/main/drivers/compass/compass_ak8963.c ****         break;
+ 396:../cleanflight/src/main/drivers/compass/compass_ak8963.c **** #endif
+ 397:../cleanflight/src/main/drivers/compass/compass_ak8963.c ****     default:
+ 398:../cleanflight/src/main/drivers/compass/compass_ak8963.c ****         break;
+ 593              	 .loc 2 398 0
+ 594 0010 00E0     	 b .L30
+ 595              	.L34:
+ 375:../cleanflight/src/main/drivers/compass/compass_ak8963.c **** #endif
+ 596              	 .loc 2 375 0
+ 597 0012 00BF     	 nop
+ 598              	.L30:
+ 399:../cleanflight/src/main/drivers/compass/compass_ak8963.c ****     }
+ 400:../cleanflight/src/main/drivers/compass/compass_ak8963.c **** }
+ 599              	 .loc 2 400 0
+ 600 0014 0C37     	 adds r7,r7,#12
+ 601              	.LCFI39:
+ 602              	 .cfi_def_cfa_offset 4
+ 603 0016 BD46     	 mov sp,r7
+ 604              	.LCFI40:
+ 605              	 .cfi_def_cfa_register 13
+ 606              	 
+ 607 0018 5DF8047B 	 ldr r7,[sp],#4
+ 608              	.LCFI41:
+ 609              	 .cfi_restore 7
+ 610              	 .cfi_def_cfa_offset 0
+ 611 001c 7047     	 bx lr
+ 612              	 .cfi_endproc
+ 613              	.LFE541:
+ 615 001e 00BF     	 .section .text.ak8963BusDeInit,"ax",%progbits
+ 616              	 .align 2
+ 617              	 .global ak8963BusDeInit
+ 618              	 .thumb
+ 619              	 .thumb_func
+ 621              	ak8963BusDeInit:
+ 622              	.LFB542:
+ 401:../cleanflight/src/main/drivers/compass/compass_ak8963.c **** 
+ 402:../cleanflight/src/main/drivers/compass/compass_ak8963.c **** void ak8963BusDeInit(const busDevice_t *busdev)
+ 403:../cleanflight/src/main/drivers/compass/compass_ak8963.c **** {
+ 623              	 .loc 2 403 0
+ 624              	 .cfi_startproc
+ 625              	 
+ 626              	 
+ 627              	 
+ 628 0000 80B4     	 push {r7}
+ 629              	.LCFI42:
+ 630              	 .cfi_def_cfa_offset 4
+ 631              	 .cfi_offset 7,-4
+ 632 0002 83B0     	 sub sp,sp,#12
+ 633              	.LCFI43:
+ 634              	 .cfi_def_cfa_offset 16
+ 635 0004 00AF     	 add r7,sp,#0
+ 636              	.LCFI44:
+ 637              	 .cfi_def_cfa_register 7
+ 638 0006 7860     	 str r0,[r7,#4]
+ 404:../cleanflight/src/main/drivers/compass/compass_ak8963.c ****     switch (busdev->bustype) {
+ 639              	 .loc 2 404 0
+ 640 0008 7B68     	 ldr r3,[r7,#4]
+ 641 000a 1B78     	 ldrb r3,[r3]
+ 642 000c 012B     	 cmp r3,#1
+ 643 000e 00D0     	 beq .L39
+ 405:../cleanflight/src/main/drivers/compass/compass_ak8963.c **** #ifdef USE_MAG_AK8963
+ 406:../cleanflight/src/main/drivers/compass/compass_ak8963.c ****     case BUSTYPE_I2C:
+ 407:../cleanflight/src/main/drivers/compass/compass_ak8963.c ****         UNUSED(busdev);
+ 408:../cleanflight/src/main/drivers/compass/compass_ak8963.c ****         break;
+ 409:../cleanflight/src/main/drivers/compass/compass_ak8963.c **** #endif
+ 410:../cleanflight/src/main/drivers/compass/compass_ak8963.c **** 
+ 411:../cleanflight/src/main/drivers/compass/compass_ak8963.c **** #ifdef USE_MAG_SPI_AK8963
+ 412:../cleanflight/src/main/drivers/compass/compass_ak8963.c ****     case BUSTYPE_SPI:
+ 413:../cleanflight/src/main/drivers/compass/compass_ak8963.c ****         spiPreinitCsByIO(busdev->busdev_u.spi.csnPin);
+ 414:../cleanflight/src/main/drivers/compass/compass_ak8963.c ****         break;
+ 415:../cleanflight/src/main/drivers/compass/compass_ak8963.c **** #endif
+ 416:../cleanflight/src/main/drivers/compass/compass_ak8963.c **** 
+ 417:../cleanflight/src/main/drivers/compass/compass_ak8963.c **** #if defined(USE_MAG_AK8963) && (defined(USE_GYRO_SPI_MPU6500) || defined(USE_GYRO_SPI_MPU9250))
+ 418:../cleanflight/src/main/drivers/compass/compass_ak8963.c ****     case BUSTYPE_MPU_SLAVE:
+ 419:../cleanflight/src/main/drivers/compass/compass_ak8963.c ****         ak8963SpiWriteRegisterDelay(busdev->busdev_u.mpuSlave.master, MPU_RA_INT_PIN_CFG, MPU6500_B
+ 420:../cleanflight/src/main/drivers/compass/compass_ak8963.c ****         break;
+ 421:../cleanflight/src/main/drivers/compass/compass_ak8963.c **** #endif
+ 422:../cleanflight/src/main/drivers/compass/compass_ak8963.c ****     default:
+ 423:../cleanflight/src/main/drivers/compass/compass_ak8963.c ****         break;
+ 644              	 .loc 2 423 0
+ 645 0010 00E0     	 b .L35
+ 646              	.L39:
+ 408:../cleanflight/src/main/drivers/compass/compass_ak8963.c **** #endif
+ 647              	 .loc 2 408 0
+ 648 0012 00BF     	 nop
+ 649              	.L35:
+ 424:../cleanflight/src/main/drivers/compass/compass_ak8963.c ****     }
+ 425:../cleanflight/src/main/drivers/compass/compass_ak8963.c **** }
+ 650              	 .loc 2 425 0
+ 651 0014 0C37     	 adds r7,r7,#12
+ 652              	.LCFI45:
+ 653              	 .cfi_def_cfa_offset 4
+ 654 0016 BD46     	 mov sp,r7
+ 655              	.LCFI46:
+ 656              	 .cfi_def_cfa_register 13
+ 657              	 
+ 658 0018 5DF8047B 	 ldr r7,[sp],#4
+ 659              	.LCFI47:
+ 660              	 .cfi_restore 7
+ 661              	 .cfi_def_cfa_offset 0
+ 662 001c 7047     	 bx lr
+ 663              	 .cfi_endproc
+ 664              	.LFE542:
+ 666 001e 00BF     	 .section .text.ak8963Detect,"ax",%progbits
+ 667              	 .align 2
+ 668              	 .global ak8963Detect
+ 669              	 .thumb
+ 670              	 .thumb_func
+ 672              	ak8963Detect:
+ 673              	.LFB543:
+ 426:../cleanflight/src/main/drivers/compass/compass_ak8963.c **** 
+ 427:../cleanflight/src/main/drivers/compass/compass_ak8963.c **** bool ak8963Detect(magDev_t *mag)
+ 428:../cleanflight/src/main/drivers/compass/compass_ak8963.c **** {
+ 674              	 .loc 2 428 0
+ 675              	 .cfi_startproc
+ 676              	 
+ 677              	 
+ 678 0000 80B5     	 push {r7,lr}
+ 679              	.LCFI48:
+ 680              	 .cfi_def_cfa_offset 8
+ 681              	 .cfi_offset 7,-8
+ 682              	 .cfi_offset 14,-4
+ 683 0002 84B0     	 sub sp,sp,#16
+ 684              	.LCFI49:
+ 685              	 .cfi_def_cfa_offset 24
+ 686 0004 00AF     	 add r7,sp,#0
+ 687              	.LCFI50:
+ 688              	 .cfi_def_cfa_register 7
+ 689 0006 7860     	 str r0,[r7,#4]
+ 429:../cleanflight/src/main/drivers/compass/compass_ak8963.c ****     uint8_t sig = 0;
+ 690              	 .loc 2 429 0
+ 691 0008 0023     	 movs r3,#0
+ 692 000a BB72     	 strb r3,[r7,#10]
+ 430:../cleanflight/src/main/drivers/compass/compass_ak8963.c **** 
+ 431:../cleanflight/src/main/drivers/compass/compass_ak8963.c ****     busDevice_t *busdev = &mag->busdev;
+ 693              	 .loc 2 431 0
+ 694 000c 7B68     	 ldr r3,[r7,#4]
+ 695 000e 0C33     	 adds r3,r3,#12
+ 696 0010 FB60     	 str r3,[r7,#12]
+ 432:../cleanflight/src/main/drivers/compass/compass_ak8963.c **** 
+ 433:../cleanflight/src/main/drivers/compass/compass_ak8963.c ****     if (busdev->bustype == BUSTYPE_MPU_SLAVE && busdev->busdev_u.mpuSlave.address == 0) {
+ 697              	 .loc 2 433 0
+ 698 0012 FB68     	 ldr r3,[r7,#12]
+ 699 0014 1B78     	 ldrb r3,[r3]
+ 700 0016 032B     	 cmp r3,#3
+ 701 0018 06D1     	 bne .L41
+ 702              	 .loc 2 433 0 is_stmt 0 discriminator 1
+ 703 001a FB68     	 ldr r3,[r7,#12]
+ 704 001c 5B79     	 ldrb r3,[r3,#5]
+ 705 001e 002B     	 cmp r3,#0
+ 706 0020 02D1     	 bne .L41
+ 434:../cleanflight/src/main/drivers/compass/compass_ak8963.c ****         busdev->busdev_u.mpuSlave.address = AK8963_MAG_I2C_ADDRESS;
+ 707              	 .loc 2 434 0 is_stmt 1
+ 708 0022 FB68     	 ldr r3,[r7,#12]
+ 709 0024 0C22     	 movs r2,#12
+ 710 0026 5A71     	 strb r2,[r3,#5]
+ 711              	.L41:
+ 435:../cleanflight/src/main/drivers/compass/compass_ak8963.c ****     }
+ 436:../cleanflight/src/main/drivers/compass/compass_ak8963.c **** 
+ 437:../cleanflight/src/main/drivers/compass/compass_ak8963.c ****     if (busdev->bustype == BUSTYPE_I2C && busdev->busdev_u.i2c.address == 0) {
+ 712              	 .loc 2 437 0
+ 713 0028 FB68     	 ldr r3,[r7,#12]
+ 714 002a 1B78     	 ldrb r3,[r3]
+ 715 002c 012B     	 cmp r3,#1
+ 716 002e 06D1     	 bne .L42
+ 717              	 .loc 2 437 0 is_stmt 0 discriminator 1
+ 718 0030 FB68     	 ldr r3,[r7,#12]
+ 719 0032 9B78     	 ldrb r3,[r3,#2]
+ 720 0034 002B     	 cmp r3,#0
+ 721 0036 02D1     	 bne .L42
+ 438:../cleanflight/src/main/drivers/compass/compass_ak8963.c ****         busdev->busdev_u.i2c.address = AK8963_MAG_I2C_ADDRESS;
+ 722              	 .loc 2 438 0 is_stmt 1
+ 723 0038 FB68     	 ldr r3,[r7,#12]
+ 724 003a 0C22     	 movs r2,#12
+ 725 003c 9A70     	 strb r2,[r3,#2]
+ 726              	.L42:
+ 439:../cleanflight/src/main/drivers/compass/compass_ak8963.c ****     }
+ 440:../cleanflight/src/main/drivers/compass/compass_ak8963.c **** 
+ 441:../cleanflight/src/main/drivers/compass/compass_ak8963.c ****     ak8963BusInit(busdev);
+ 727              	 .loc 2 441 0
+ 728 003e F868     	 ldr r0,[r7,#12]
+ 729 0040 FFF7FEFF 	 bl ak8963BusInit
+ 442:../cleanflight/src/main/drivers/compass/compass_ak8963.c **** 
+ 443:../cleanflight/src/main/drivers/compass/compass_ak8963.c ****     ak8963WriteRegister(busdev, AK8963_MAG_REG_CNTL2, CNTL2_SOFT_RESET);                    // rese
+ 730              	 .loc 2 443 0
+ 731 0044 F868     	 ldr r0,[r7,#12]
+ 732 0046 0B21     	 movs r1,#11
+ 733 0048 0122     	 movs r2,#1
+ 734 004a FFF7FEFF 	 bl ak8963WriteRegister
+ 444:../cleanflight/src/main/drivers/compass/compass_ak8963.c ****     delay(4);
+ 735              	 .loc 2 444 0
+ 736 004e 0420     	 movs r0,#4
+ 737 0050 FFF7FEFF 	 bl delay
+ 445:../cleanflight/src/main/drivers/compass/compass_ak8963.c **** 
+ 446:../cleanflight/src/main/drivers/compass/compass_ak8963.c ****     bool ack = ak8963ReadRegisterBuffer(busdev, AK8963_MAG_REG_WIA, &sig, 1);               // chec
+ 738              	 .loc 2 446 0
+ 739 0054 07F10A03 	 add r3,r7,#10
+ 740 0058 F868     	 ldr r0,[r7,#12]
+ 741 005a 0021     	 movs r1,#0
+ 742 005c 1A46     	 mov r2,r3
+ 743 005e 0123     	 movs r3,#1
+ 744 0060 FFF7FEFF 	 bl ak8963ReadRegisterBuffer
+ 745 0064 0346     	 mov r3,r0
+ 746 0066 FB72     	 strb r3,[r7,#11]
+ 447:../cleanflight/src/main/drivers/compass/compass_ak8963.c **** 
+ 448:../cleanflight/src/main/drivers/compass/compass_ak8963.c ****     if (ack && sig == AK8963_DEVICE_ID) // 0x48 / 01001000 / 'H'
+ 747              	 .loc 2 448 0
+ 748 0068 FB7A     	 ldrb r3,[r7,#11]
+ 749 006a 002B     	 cmp r3,#0
+ 750 006c 0AD0     	 beq .L43
+ 751              	 .loc 2 448 0 is_stmt 0 discriminator 1
+ 752 006e BB7A     	 ldrb r3,[r7,#10]
+ 753 0070 482B     	 cmp r3,#72
+ 754 0072 07D1     	 bne .L43
+ 449:../cleanflight/src/main/drivers/compass/compass_ak8963.c ****     {
+ 450:../cleanflight/src/main/drivers/compass/compass_ak8963.c ****         mag->init = ak8963Init;
+ 755              	 .loc 2 450 0 is_stmt 1
+ 756 0074 7B68     	 ldr r3,[r7,#4]
+ 757 0076 074A     	 ldr r2,.L46
+ 758 0078 1A60     	 str r2,[r3]
+ 451:../cleanflight/src/main/drivers/compass/compass_ak8963.c ****         mag->read = ak8963Read;
+ 759              	 .loc 2 451 0
+ 760 007a 7B68     	 ldr r3,[r7,#4]
+ 761 007c 064A     	 ldr r2,.L46+4
+ 762 007e 5A60     	 str r2,[r3,#4]
+ 452:../cleanflight/src/main/drivers/compass/compass_ak8963.c **** 
+ 453:../cleanflight/src/main/drivers/compass/compass_ak8963.c ****         return true;
+ 763              	 .loc 2 453 0
+ 764 0080 0123     	 movs r3,#1
+ 765 0082 03E0     	 b .L45
+ 766              	.L43:
+ 454:../cleanflight/src/main/drivers/compass/compass_ak8963.c ****     }
+ 455:../cleanflight/src/main/drivers/compass/compass_ak8963.c **** 
+ 456:../cleanflight/src/main/drivers/compass/compass_ak8963.c ****     ak8963BusDeInit(busdev);
+ 767              	 .loc 2 456 0
+ 768 0084 F868     	 ldr r0,[r7,#12]
+ 769 0086 FFF7FEFF 	 bl ak8963BusDeInit
+ 457:../cleanflight/src/main/drivers/compass/compass_ak8963.c **** 
+ 458:../cleanflight/src/main/drivers/compass/compass_ak8963.c ****     return false;
+ 770              	 .loc 2 458 0
+ 771 008a 0023     	 movs r3,#0
+ 772              	.L45:
+ 459:../cleanflight/src/main/drivers/compass/compass_ak8963.c **** }
+ 773              	 .loc 2 459 0 discriminator 1
+ 774 008c 1846     	 mov r0,r3
+ 775 008e 1037     	 adds r7,r7,#16
+ 776              	.LCFI51:
+ 777              	 .cfi_def_cfa_offset 8
+ 778 0090 BD46     	 mov sp,r7
+ 779              	.LCFI52:
+ 780              	 .cfi_def_cfa_register 13
+ 781              	 
+ 782 0092 80BD     	 pop {r7,pc}
+ 783              	.L47:
+ 784              	 .align 2
+ 785              	.L46:
+ 786 0094 00000000 	 .word ak8963Init
+ 787 0098 00000000 	 .word ak8963Read
+ 788              	 .cfi_endproc
+ 789              	.LFE543:
+ 791              	 .text
+ 792              	.Letext0:
+ 793              	 .file 3 "d:\\xmc\\dave-ide-4.4.2-64bit\\eclipse\\arm-gcc-49\\arm-none-eabi\\include\\machine\\_default_types.h"
+ 794              	 .file 4 "d:\\xmc\\dave-ide-4.4.2-64bit\\eclipse\\arm-gcc-49\\arm-none-eabi\\include\\stdint.h"
+ 795              	 .file 5 "D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/lib/main/XMC4000/xmc4700.h"
+ 796              	 .file 6 "D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/platform.h"
+ 797              	 .file 7 "D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/drivers/io_types.h"
+ 798              	 .file 8 "D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/drivers/bus_i2c.h"
+ 799              	 .file 9 "D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/common/axis.h"
+ 800              	 .file 10 "D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/drivers/bus.h"
+ 801              	 .file 11 "D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/drivers/sensor.h"
+ 802              	 .file 12 "D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/drivers/compass/compass.h"
+ 803              	 .file 13 "D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/common/time.h"
+ 804              	 .file 14 "D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/drivers/exti.h"
+ 805              	 .file 15 "D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/sensors/gyro.h"
+ 806              	 .file 16 "D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/lib/main/CMSIS/Core/Include/core_cm4.h"
+ 807              	 .file 17 "D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/lib/main/XMC4000/system_XMC4700.h"
+DEFINED SYMBOLS
+                            *ABS*:00000000 compass_ak8963.c
+    {standard input}:20     .text.constrain:00000000 $t
+    {standard input}:24     .text.constrain:00000000 constrain
+    {standard input}:84     .text.ak8963ReadRegisterBuffer:00000000 $t
+    {standard input}:88     .text.ak8963ReadRegisterBuffer:00000000 ak8963ReadRegisterBuffer
+    {standard input}:135    .text.ak8963WriteRegister:00000000 $t
+    {standard input}:139    .text.ak8963WriteRegister:00000000 ak8963WriteRegister
+    {standard input}:183    .text.ak8963DirectReadData:00000000 $t
+    {standard input}:187    .text.ak8963DirectReadData:00000000 ak8963DirectReadData
+    {standard input}:253    .text.parseMag:00000000 $t
+    {standard input}:257    .text.parseMag:00000000 parseMag
+    {standard input}:318    .text.parseMag:00000050 $d
+    {standard input}:323    .text.ak8963Read:00000000 $t
+    {standard input}:327    .text.ak8963Read:00000000 ak8963Read
+    {standard input}:458    .text.ak8963Init:00000000 $t
+    {standard input}:462    .text.ak8963Init:00000000 ak8963Init
+    {standard input}:565    .text.ak8963BusInit:00000000 $t
+    {standard input}:570    .text.ak8963BusInit:00000000 ak8963BusInit
+    {standard input}:616    .text.ak8963BusDeInit:00000000 $t
+    {standard input}:621    .text.ak8963BusDeInit:00000000 ak8963BusDeInit
+    {standard input}:667    .text.ak8963Detect:00000000 $t
+    {standard input}:672    .text.ak8963Detect:00000000 ak8963Detect
+    {standard input}:786    .text.ak8963Detect:00000094 $d
+                     .debug_frame:00000010 $d
+
+UNDEFINED SYMBOLS
+busReadRegisterBuffer
+busWriteRegister
+delay

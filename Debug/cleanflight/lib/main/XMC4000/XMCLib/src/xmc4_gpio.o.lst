@@ -1,0 +1,449 @@
+   1              	 .syntax unified
+   2              	 .cpu cortex-m4
+   3              	 .eabi_attribute 27,3
+   4              	 .fpu fpv4-sp-d16
+   5              	 .eabi_attribute 20,1
+   6              	 .eabi_attribute 21,1
+   7              	 .eabi_attribute 23,3
+   8              	 .eabi_attribute 24,1
+   9              	 .eabi_attribute 25,1
+  10              	 .eabi_attribute 26,1
+  11              	 .eabi_attribute 30,6
+  12              	 .eabi_attribute 34,1
+  13              	 .eabi_attribute 18,4
+  14              	 .thumb
+  15              	 .file "xmc4_gpio.c"
+  16              	 .text
+  17              	.Ltext0:
+  18              	 .cfi_sections .debug_frame
+  19              	 .section .text.XMC_GPIO_Init,"ax",%progbits
+  20              	 .align 2
+  21              	 .global XMC_GPIO_Init
+  22              	 .thumb
+  23              	 .thumb_func
+  25              	XMC_GPIO_Init:
+  26              	.LFB145:
+  27              	 .file 1 "../cleanflight/lib/main/XMC4000/XMCLib/src/xmc4_gpio.c"
+   1:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc4_gpio.c **** /**
+   2:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc4_gpio.c ****  * @file xmc4_gpio.c
+   3:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc4_gpio.c ****  * @date 2017-09-15
+   4:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc4_gpio.c ****  *
+   5:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc4_gpio.c ****  * @cond
+   6:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc4_gpio.c ****  **************************************************************************************************
+   7:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc4_gpio.c ****  * XMClib v2.1.20 - XMC Peripheral Driver Library 
+   8:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc4_gpio.c ****  *
+   9:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc4_gpio.c ****  * Copyright (c) 2015-2018, Infineon Technologies AG
+  10:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc4_gpio.c ****  * All rights reserved.                        
+  11:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc4_gpio.c ****  *                                             
+  12:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc4_gpio.c ****  * Redistribution and use in source and binary forms, with or without modification,are permitted pr
+  13:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc4_gpio.c ****  * following conditions are met:   
+  14:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc4_gpio.c ****  *                                                                              
+  15:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc4_gpio.c ****  * Redistributions of source code must retain the above copyright notice, this list of conditions a
+  16:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc4_gpio.c ****  * disclaimer.                        
+  17:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc4_gpio.c ****  * 
+  18:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc4_gpio.c ****  * Redistributions in binary form must reproduce the above copyright notice, this list of condition
+  19:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc4_gpio.c ****  * disclaimer in the documentation and/or other materials provided with the distribution.          
+  20:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc4_gpio.c ****  * 
+  21:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc4_gpio.c ****  * Neither the name of the copyright holders nor the names of its contributors may be used to endor
+  22:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc4_gpio.c ****  * products derived from this software without specific prior written permission.                  
+  23:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc4_gpio.c ****  *                                                                              
+  24:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc4_gpio.c ****  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND ANY EXPRESS OR I
+  25:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc4_gpio.c ****  * INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTI
+  26:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc4_gpio.c ****  * DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE  FOR ANY DIRECT, IN
+  27:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc4_gpio.c ****  * SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBS
+  28:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc4_gpio.c ****  * SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THE
+  29:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc4_gpio.c ****  * WHETHER IN CONTRACT, STRICT LIABILITY,OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY
+  30:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc4_gpio.c ****  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.                            
+  31:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc4_gpio.c ****  *                                                                              
+  32:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc4_gpio.c ****  * To improve the quality of the software, users are encouraged to share modifications, enhancement
+  33:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc4_gpio.c ****  * Infineon Technologies AG dave@infineon.com).                                                    
+  34:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc4_gpio.c ****  **************************************************************************************************
+  35:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc4_gpio.c ****  *
+  36:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc4_gpio.c ****  * Change History
+  37:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc4_gpio.c ****  * --------------
+  38:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc4_gpio.c ****  *
+  39:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc4_gpio.c ****  * 2015-02-20:
+  40:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc4_gpio.c ****  *     - Initial draft <br>
+  41:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc4_gpio.c ****  *      
+  42:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc4_gpio.c ****  * 2015-06-20:
+  43:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc4_gpio.c ****  *     - Removed version macros and declaration of GetDriverVersion API
+  44:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc4_gpio.c ****  *
+  45:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc4_gpio.c ****  * 2017-09-15:
+  46:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc4_gpio.c ****  *     - Fix side effects on output level when programming a pin as input after the same pin in ano
+  47:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc4_gpio.c ****  *  
+  48:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc4_gpio.c ****  * @endcond
+  49:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc4_gpio.c ****  *
+  50:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc4_gpio.c ****  */
+  51:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc4_gpio.c **** 
+  52:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc4_gpio.c **** #include "xmc_gpio.h"
+  53:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc4_gpio.c **** 
+  54:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc4_gpio.c **** #if UC_FAMILY == XMC4
+  55:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc4_gpio.c **** 
+  56:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc4_gpio.c **** /*******************************************************************************
+  57:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc4_gpio.c ****  * MACROS
+  58:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc4_gpio.c ****  *******************************************************************************/
+  59:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc4_gpio.c **** 
+  60:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc4_gpio.c **** #define PORT_PDR_Msk              PORT0_PDR0_PD0_Msk
+  61:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc4_gpio.c **** #define PORT_PDR_Size             (4U)
+  62:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc4_gpio.c **** #define PORT_HWSEL_Msk            PORT0_HWSEL_HW0_Msk
+  63:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc4_gpio.c **** #define XMC_GPIO_MODE_OE          XMC_GPIO_MODE_OUTPUT_PUSH_PULL
+  64:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc4_gpio.c **** 
+  65:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc4_gpio.c **** /*******************************************************************************
+  66:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc4_gpio.c ****  * API IMPLEMENTATION
+  67:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc4_gpio.c ****  *******************************************************************************/
+  68:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc4_gpio.c **** 
+  69:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc4_gpio.c **** void XMC_GPIO_Init(XMC_GPIO_PORT_t *const port, const uint8_t pin, const XMC_GPIO_CONFIG_t *const c
+  70:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc4_gpio.c **** {
+  28              	 .loc 1 70 0
+  29              	 .cfi_startproc
+  30              	 
+  31              	 
+  32              	 
+  33 0000 80B4     	 push {r7}
+  34              	.LCFI0:
+  35              	 .cfi_def_cfa_offset 4
+  36              	 .cfi_offset 7,-4
+  37 0002 85B0     	 sub sp,sp,#20
+  38              	.LCFI1:
+  39              	 .cfi_def_cfa_offset 24
+  40 0004 00AF     	 add r7,sp,#0
+  41              	.LCFI2:
+  42              	 .cfi_def_cfa_register 7
+  43 0006 F860     	 str r0,[r7,#12]
+  44 0008 0B46     	 mov r3,r1
+  45 000a 7A60     	 str r2,[r7,#4]
+  46 000c FB72     	 strb r3,[r7,#11]
+  71:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc4_gpio.c ****   XMC_ASSERT("XMC_GPIO_Init: Invalid port", XMC_GPIO_CHECK_PORT(port));
+  72:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc4_gpio.c ****   XMC_ASSERT("XMC_GPIO_Init: Invalid mode", XMC_GPIO_IsModeValid(config->mode));
+  73:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc4_gpio.c ****  
+  74:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc4_gpio.c ****   /* Switch to input */
+  75:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc4_gpio.c ****   port->IOCR[pin >> 2U] &= (uint32_t)~(PORT_IOCR_PC_Msk << (PORT_IOCR_PC_Size * (pin & 0x3U)));
+  47              	 .loc 1 75 0
+  48 000e FB7A     	 ldrb r3,[r7,#11]
+  49 0010 9B08     	 lsrs r3,r3,#2
+  50 0012 DBB2     	 uxtb r3,r3
+  51 0014 1846     	 mov r0,r3
+  52 0016 FB7A     	 ldrb r3,[r7,#11]
+  53 0018 9B08     	 lsrs r3,r3,#2
+  54 001a DBB2     	 uxtb r3,r3
+  55 001c 1A46     	 mov r2,r3
+  56 001e FB68     	 ldr r3,[r7,#12]
+  57 0020 0432     	 adds r2,r2,#4
+  58 0022 53F82220 	 ldr r2,[r3,r2,lsl#2]
+  59 0026 FB7A     	 ldrb r3,[r7,#11]
+  60 0028 03F00303 	 and r3,r3,#3
+  61 002c DB00     	 lsls r3,r3,#3
+  62 002e 1946     	 mov r1,r3
+  63 0030 F823     	 movs r3,#248
+  64 0032 8B40     	 lsls r3,r3,r1
+  65 0034 DB43     	 mvns r3,r3
+  66 0036 02EA0301 	 and r1,r2,r3
+  67 003a FB68     	 ldr r3,[r7,#12]
+  68 003c 021D     	 adds r2,r0,#4
+  69 003e 53F82200 	 ldr r0,[r3,r2,lsl#2]
+  70 0042 0020     	 movs r0,#0
+  71 0044 0143     	 orrs r1,r1,r0
+  72 0046 43F82210 	 str r1,[r3,r2,lsl#2]
+  76:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc4_gpio.c **** 
+  77:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc4_gpio.c ****   /* HW port control is disabled */
+  78:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc4_gpio.c ****   port->HWSEL &= ~(uint32_t)((uint32_t)PORT_HWSEL_Msk << ((uint32_t)pin << 1U));
+  73              	 .loc 1 78 0
+  74 004a FB68     	 ldr r3,[r7,#12]
+  75 004c 5A6F     	 ldr r2,[r3,#116]
+  76 004e FB7A     	 ldrb r3,[r7,#11]
+  77 0050 5B00     	 lsls r3,r3,#1
+  78 0052 1946     	 mov r1,r3
+  79 0054 0323     	 movs r3,#3
+  80 0056 8B40     	 lsls r3,r3,r1
+  81 0058 DB43     	 mvns r3,r3
+  82 005a 1A40     	 ands r2,r2,r3
+  83 005c FB68     	 ldr r3,[r7,#12]
+  84 005e 596F     	 ldr r1,[r3,#116]
+  85 0060 0021     	 movs r1,#0
+  86 0062 0A43     	 orrs r2,r2,r1
+  87 0064 5A67     	 str r2,[r3,#116]
+  79:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc4_gpio.c **** 
+  80:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc4_gpio.c **** 
+  81:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc4_gpio.c ****   /* Enable digital input */
+  82:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc4_gpio.c ****   if (XMC_GPIO_CHECK_ANALOG_PORT(port))
+  88              	 .loc 1 82 0
+  89 0066 FB68     	 ldr r3,[r7,#12]
+  90 0068 434A     	 ldr r2,.L5
+  91 006a 9342     	 cmp r3,r2
+  92 006c 03D0     	 beq .L2
+  93              	 .loc 1 82 0 is_stmt 0 discriminator 1
+  94 006e FB68     	 ldr r3,[r7,#12]
+  95 0070 424A     	 ldr r2,.L5+4
+  96 0072 9342     	 cmp r3,r2
+  97 0074 0DD1     	 bne .L3
+  98              	.L2:
+  83:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc4_gpio.c ****   {
+  84:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc4_gpio.c ****     port->PDISC &= ~(uint32_t)((uint32_t)0x1U << pin);
+  99              	 .loc 1 84 0 is_stmt 1
+ 100 0076 FB68     	 ldr r3,[r7,#12]
+ 101 0078 1A6E     	 ldr r2,[r3,#96]
+ 102 007a FB7A     	 ldrb r3,[r7,#11]
+ 103 007c 0121     	 movs r1,#1
+ 104 007e 01FA03F3 	 lsl r3,r1,r3
+ 105 0082 DB43     	 mvns r3,r3
+ 106 0084 1A40     	 ands r2,r2,r3
+ 107 0086 FB68     	 ldr r3,[r7,#12]
+ 108 0088 196E     	 ldr r1,[r3,#96]
+ 109 008a 0021     	 movs r1,#0
+ 110 008c 0A43     	 orrs r2,r2,r1
+ 111 008e 1A66     	 str r2,[r3,#96]
+ 112 0090 4EE0     	 b .L4
+ 113              	.L3:
+  85:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc4_gpio.c ****   }
+  86:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc4_gpio.c ****   else
+  87:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc4_gpio.c ****   {
+  88:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc4_gpio.c ****     if ((config->mode & XMC_GPIO_MODE_OE) != 0)
+ 114              	 .loc 1 88 0
+ 115 0092 7B68     	 ldr r3,[r7,#4]
+ 116 0094 1B78     	 ldrb r3,[r3]
+ 117 0096 DBB2     	 uxtb r3,r3
+ 118 0098 5BB2     	 sxtb r3,r3
+ 119 009a 002B     	 cmp r3,#0
+ 120 009c 48DA     	 bge .L4
+  89:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc4_gpio.c ****     {
+  90:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc4_gpio.c ****       /* If output is enabled */
+  91:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc4_gpio.c **** 
+  92:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc4_gpio.c ****       /* Set output level */
+  93:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc4_gpio.c ****       port->OMR = (uint32_t)config->output_level << pin;
+ 121              	 .loc 1 93 0
+ 122 009e 7B68     	 ldr r3,[r7,#4]
+ 123 00a0 D3F80120 	 ldr r2,[r3,#1]
+ 124 00a4 FB7A     	 ldrb r3,[r7,#11]
+ 125 00a6 9A40     	 lsls r2,r2,r3
+ 126 00a8 FB68     	 ldr r3,[r7,#12]
+ 127 00aa 5968     	 ldr r1,[r3,#4]
+ 128 00ac 0021     	 movs r1,#0
+ 129 00ae 0A43     	 orrs r2,r2,r1
+ 130 00b0 5A60     	 str r2,[r3,#4]
+  94:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc4_gpio.c **** 
+  95:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc4_gpio.c ****       /* Set output driver strength */
+  96:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc4_gpio.c ****       port->PDR[pin >> 3U] &= (uint32_t)~(PORT_PDR_Msk << ((uint32_t)PORT_PDR_Size * ((uint32_t)pin
+ 131              	 .loc 1 96 0
+ 132 00b2 FB7A     	 ldrb r3,[r7,#11]
+ 133 00b4 DB08     	 lsrs r3,r3,#3
+ 134 00b6 DBB2     	 uxtb r3,r3
+ 135 00b8 1846     	 mov r0,r3
+ 136 00ba FB7A     	 ldrb r3,[r7,#11]
+ 137 00bc DB08     	 lsrs r3,r3,#3
+ 138 00be DBB2     	 uxtb r3,r3
+ 139 00c0 1A46     	 mov r2,r3
+ 140 00c2 FB68     	 ldr r3,[r7,#12]
+ 141 00c4 1032     	 adds r2,r2,#16
+ 142 00c6 53F82220 	 ldr r2,[r3,r2,lsl#2]
+ 143 00ca FB7A     	 ldrb r3,[r7,#11]
+ 144 00cc 03F00703 	 and r3,r3,#7
+ 145 00d0 9B00     	 lsls r3,r3,#2
+ 146 00d2 1946     	 mov r1,r3
+ 147 00d4 0723     	 movs r3,#7
+ 148 00d6 8B40     	 lsls r3,r3,r1
+ 149 00d8 DB43     	 mvns r3,r3
+ 150 00da 02EA0301 	 and r1,r2,r3
+ 151 00de FB68     	 ldr r3,[r7,#12]
+ 152 00e0 00F11002 	 add r2,r0,#16
+ 153 00e4 53F82200 	 ldr r0,[r3,r2,lsl#2]
+ 154 00e8 0020     	 movs r0,#0
+ 155 00ea 0143     	 orrs r1,r1,r0
+ 156 00ec 43F82210 	 str r1,[r3,r2,lsl#2]
+  97:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc4_gpio.c ****       port->PDR[pin >> 3U] |= (uint32_t)config->output_strength << ((uint32_t)PORT_PDR_Size * ((uin
+ 157              	 .loc 1 97 0
+ 158 00f0 FB7A     	 ldrb r3,[r7,#11]
+ 159 00f2 DB08     	 lsrs r3,r3,#3
+ 160 00f4 DBB2     	 uxtb r3,r3
+ 161 00f6 1846     	 mov r0,r3
+ 162 00f8 FB7A     	 ldrb r3,[r7,#11]
+ 163 00fa DB08     	 lsrs r3,r3,#3
+ 164 00fc DBB2     	 uxtb r3,r3
+ 165 00fe 1A46     	 mov r2,r3
+ 166 0100 FB68     	 ldr r3,[r7,#12]
+ 167 0102 1032     	 adds r2,r2,#16
+ 168 0104 53F82220 	 ldr r2,[r3,r2,lsl#2]
+ 169 0108 7B68     	 ldr r3,[r7,#4]
+ 170 010a 5B79     	 ldrb r3,[r3,#5]
+ 171 010c 1946     	 mov r1,r3
+ 172 010e FB7A     	 ldrb r3,[r7,#11]
+ 173 0110 03F00703 	 and r3,r3,#7
+ 174 0114 9B00     	 lsls r3,r3,#2
+ 175 0116 01FA03F3 	 lsl r3,r1,r3
+ 176 011a 42EA0301 	 orr r1,r2,r3
+ 177 011e FB68     	 ldr r3,[r7,#12]
+ 178 0120 00F11002 	 add r2,r0,#16
+ 179 0124 53F82200 	 ldr r0,[r3,r2,lsl#2]
+ 180 0128 0020     	 movs r0,#0
+ 181 012a 0143     	 orrs r1,r1,r0
+ 182 012c 43F82210 	 str r1,[r3,r2,lsl#2]
+ 183              	.L4:
+  98:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc4_gpio.c ****     }
+  99:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc4_gpio.c ****   }
+ 100:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc4_gpio.c **** 
+ 101:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc4_gpio.c ****   /* Set mode */
+ 102:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc4_gpio.c ****   port->IOCR[pin >> 2U] |= (uint32_t)config->mode << ((uint32_t)PORT_IOCR_PC_Size * ((uint32_t)pin 
+ 184              	 .loc 1 102 0
+ 185 0130 FB7A     	 ldrb r3,[r7,#11]
+ 186 0132 9B08     	 lsrs r3,r3,#2
+ 187 0134 DBB2     	 uxtb r3,r3
+ 188 0136 1846     	 mov r0,r3
+ 189 0138 FB7A     	 ldrb r3,[r7,#11]
+ 190 013a 9B08     	 lsrs r3,r3,#2
+ 191 013c DBB2     	 uxtb r3,r3
+ 192 013e 1A46     	 mov r2,r3
+ 193 0140 FB68     	 ldr r3,[r7,#12]
+ 194 0142 0432     	 adds r2,r2,#4
+ 195 0144 53F82220 	 ldr r2,[r3,r2,lsl#2]
+ 196 0148 7B68     	 ldr r3,[r7,#4]
+ 197 014a 1B78     	 ldrb r3,[r3]
+ 198 014c 1946     	 mov r1,r3
+ 199 014e FB7A     	 ldrb r3,[r7,#11]
+ 200 0150 03F00303 	 and r3,r3,#3
+ 201 0154 DB00     	 lsls r3,r3,#3
+ 202 0156 01FA03F3 	 lsl r3,r1,r3
+ 203 015a 42EA0301 	 orr r1,r2,r3
+ 204 015e FB68     	 ldr r3,[r7,#12]
+ 205 0160 021D     	 adds r2,r0,#4
+ 206 0162 53F82200 	 ldr r0,[r3,r2,lsl#2]
+ 207 0166 0020     	 movs r0,#0
+ 208 0168 0143     	 orrs r1,r1,r0
+ 209 016a 43F82210 	 str r1,[r3,r2,lsl#2]
+ 103:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc4_gpio.c **** }
+ 210              	 .loc 1 103 0
+ 211 016e 1437     	 adds r7,r7,#20
+ 212              	.LCFI3:
+ 213              	 .cfi_def_cfa_offset 4
+ 214 0170 BD46     	 mov sp,r7
+ 215              	.LCFI4:
+ 216              	 .cfi_def_cfa_register 13
+ 217              	 
+ 218 0172 5DF8047B 	 ldr r7,[sp],#4
+ 219              	.LCFI5:
+ 220              	 .cfi_restore 7
+ 221              	 .cfi_def_cfa_offset 0
+ 222 0176 7047     	 bx lr
+ 223              	.L6:
+ 224              	 .align 2
+ 225              	.L5:
+ 226 0178 008E0248 	 .word 1208126976
+ 227 017c 008F0248 	 .word 1208127232
+ 228              	 .cfi_endproc
+ 229              	.LFE145:
+ 231              	 .section .text.XMC_GPIO_SetOutputStrength,"ax",%progbits
+ 232              	 .align 2
+ 233              	 .global XMC_GPIO_SetOutputStrength
+ 234              	 .thumb
+ 235              	 .thumb_func
+ 237              	XMC_GPIO_SetOutputStrength:
+ 238              	.LFB146:
+ 104:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc4_gpio.c **** 
+ 105:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc4_gpio.c **** void XMC_GPIO_SetOutputStrength(XMC_GPIO_PORT_t *const port, const uint8_t pin, XMC_GPIO_OUTPUT_STR
+ 106:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc4_gpio.c **** {
+ 239              	 .loc 1 106 0
+ 240              	 .cfi_startproc
+ 241              	 
+ 242              	 
+ 243              	 
+ 244 0000 80B4     	 push {r7}
+ 245              	.LCFI6:
+ 246              	 .cfi_def_cfa_offset 4
+ 247              	 .cfi_offset 7,-4
+ 248 0002 83B0     	 sub sp,sp,#12
+ 249              	.LCFI7:
+ 250              	 .cfi_def_cfa_offset 16
+ 251 0004 00AF     	 add r7,sp,#0
+ 252              	.LCFI8:
+ 253              	 .cfi_def_cfa_register 7
+ 254 0006 7860     	 str r0,[r7,#4]
+ 255 0008 0B46     	 mov r3,r1
+ 256 000a FB70     	 strb r3,[r7,#3]
+ 257 000c 1346     	 mov r3,r2
+ 258 000e BB70     	 strb r3,[r7,#2]
+ 107:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc4_gpio.c ****   XMC_ASSERT("XMC_GPIO_Init: Invalid port", XMC_GPIO_CHECK_OUTPUT_PORT(port));
+ 108:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc4_gpio.c ****   XMC_ASSERT("XMC_GPIO_Init: Invalid output strength", XMC_GPIO_CHECK_OUTPUT_STRENGTH(strength));
+ 109:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc4_gpio.c **** 
+ 110:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc4_gpio.c ****   port->PDR[pin >> 3U] &= (uint32_t)~((uint32_t)PORT_PDR_Msk << ((uint32_t)PORT_PDR_Size * ((uint32
+ 259              	 .loc 1 110 0
+ 260 0010 FB78     	 ldrb r3,[r7,#3]
+ 261 0012 DB08     	 lsrs r3,r3,#3
+ 262 0014 DBB2     	 uxtb r3,r3
+ 263 0016 1846     	 mov r0,r3
+ 264 0018 FB78     	 ldrb r3,[r7,#3]
+ 265 001a DB08     	 lsrs r3,r3,#3
+ 266 001c DBB2     	 uxtb r3,r3
+ 267 001e 1A46     	 mov r2,r3
+ 268 0020 7B68     	 ldr r3,[r7,#4]
+ 269 0022 1032     	 adds r2,r2,#16
+ 270 0024 53F82220 	 ldr r2,[r3,r2,lsl#2]
+ 271 0028 FB78     	 ldrb r3,[r7,#3]
+ 272 002a 03F00703 	 and r3,r3,#7
+ 273 002e 9B00     	 lsls r3,r3,#2
+ 274 0030 1946     	 mov r1,r3
+ 275 0032 0723     	 movs r3,#7
+ 276 0034 8B40     	 lsls r3,r3,r1
+ 277 0036 DB43     	 mvns r3,r3
+ 278 0038 02EA0301 	 and r1,r2,r3
+ 279 003c 7B68     	 ldr r3,[r7,#4]
+ 280 003e 00F11002 	 add r2,r0,#16
+ 281 0042 53F82200 	 ldr r0,[r3,r2,lsl#2]
+ 282 0046 0020     	 movs r0,#0
+ 283 0048 0143     	 orrs r1,r1,r0
+ 284 004a 43F82210 	 str r1,[r3,r2,lsl#2]
+ 111:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc4_gpio.c ****   port->PDR[pin >> 3U] |= (uint32_t)strength << ((uint32_t)PORT_PDR_Size * ((uint32_t)pin & 0x7U));
+ 285              	 .loc 1 111 0
+ 286 004e FB78     	 ldrb r3,[r7,#3]
+ 287 0050 DB08     	 lsrs r3,r3,#3
+ 288 0052 DBB2     	 uxtb r3,r3
+ 289 0054 1846     	 mov r0,r3
+ 290 0056 FB78     	 ldrb r3,[r7,#3]
+ 291 0058 DB08     	 lsrs r3,r3,#3
+ 292 005a DBB2     	 uxtb r3,r3
+ 293 005c 1A46     	 mov r2,r3
+ 294 005e 7B68     	 ldr r3,[r7,#4]
+ 295 0060 1032     	 adds r2,r2,#16
+ 296 0062 53F82220 	 ldr r2,[r3,r2,lsl#2]
+ 297 0066 BB78     	 ldrb r3,[r7,#2]
+ 298 0068 F978     	 ldrb r1,[r7,#3]
+ 299 006a 01F00701 	 and r1,r1,#7
+ 300 006e 8900     	 lsls r1,r1,#2
+ 301 0070 8B40     	 lsls r3,r3,r1
+ 302 0072 42EA0301 	 orr r1,r2,r3
+ 303 0076 7B68     	 ldr r3,[r7,#4]
+ 304 0078 00F11002 	 add r2,r0,#16
+ 305 007c 53F82200 	 ldr r0,[r3,r2,lsl#2]
+ 306 0080 0020     	 movs r0,#0
+ 307 0082 0143     	 orrs r1,r1,r0
+ 308 0084 43F82210 	 str r1,[r3,r2,lsl#2]
+ 112:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc4_gpio.c **** }
+ 309              	 .loc 1 112 0
+ 310 0088 0C37     	 adds r7,r7,#12
+ 311              	.LCFI9:
+ 312              	 .cfi_def_cfa_offset 4
+ 313 008a BD46     	 mov sp,r7
+ 314              	.LCFI10:
+ 315              	 .cfi_def_cfa_register 13
+ 316              	 
+ 317 008c 5DF8047B 	 ldr r7,[sp],#4
+ 318              	.LCFI11:
+ 319              	 .cfi_restore 7
+ 320              	 .cfi_def_cfa_offset 0
+ 321 0090 7047     	 bx lr
+ 322              	 .cfi_endproc
+ 323              	.LFE146:
+ 325 0092 00BF     	 .text
+ 326              	.Letext0:
+ 327              	 .file 2 "d:\\xmc\\dave-ide-4.4.2-64bit\\eclipse\\arm-gcc-49\\arm-none-eabi\\include\\machine\\_default_types.h"
+ 328              	 .file 3 "d:\\xmc\\dave-ide-4.4.2-64bit\\eclipse\\arm-gcc-49\\arm-none-eabi\\include\\stdint.h"
+ 329              	 .file 4 "D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/lib/main/XMC4000/XMCLib/inc/xmc_gpio.h"
+ 330              	 .file 5 "D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/lib/main/XMC4000/XMCLib/inc/xmc4_gpio.h"
+ 331              	 .file 6 "D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/lib/main/CMSIS/Core/Include/core_cm4.h"
+DEFINED SYMBOLS
+                            *ABS*:00000000 xmc4_gpio.c
+    {standard input}:20     .text.XMC_GPIO_Init:00000000 $t
+    {standard input}:25     .text.XMC_GPIO_Init:00000000 XMC_GPIO_Init
+    {standard input}:226    .text.XMC_GPIO_Init:00000178 $d
+    {standard input}:232    .text.XMC_GPIO_SetOutputStrength:00000000 $t
+    {standard input}:237    .text.XMC_GPIO_SetOutputStrength:00000000 XMC_GPIO_SetOutputStrength
+                     .debug_frame:00000010 $d
+
+NO UNDEFINED SYMBOLS

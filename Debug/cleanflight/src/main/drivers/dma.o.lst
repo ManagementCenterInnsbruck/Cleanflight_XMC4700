@@ -1,0 +1,510 @@
+   1              	 .syntax unified
+   2              	 .cpu cortex-m4
+   3              	 .eabi_attribute 27,3
+   4              	 .fpu fpv4-sp-d16
+   5              	 .eabi_attribute 20,1
+   6              	 .eabi_attribute 21,1
+   7              	 .eabi_attribute 23,3
+   8              	 .eabi_attribute 24,1
+   9              	 .eabi_attribute 25,1
+  10              	 .eabi_attribute 26,1
+  11              	 .eabi_attribute 30,6
+  12              	 .eabi_attribute 34,1
+  13              	 .eabi_attribute 18,4
+  14              	 .thumb
+  15              	 .file "dma.c"
+  16              	 .text
+  17              	.Ltext0:
+  18              	 .cfi_sections .debug_frame
+  19              	 .section .bss.dmaDescriptors,"aw",%nobits
+  20              	 .align 2
+  23              	dmaDescriptors:
+  24 0000 00000000 	 .space 168
+  24      00000000 
+  24      00000000 
+  24      00000000 
+  24      00000000 
+  25              	 .section .text.dmaGetOwner,"ax",%progbits
+  26              	 .align 2
+  27              	 .global dmaGetOwner
+  28              	 .thumb
+  29              	 .thumb_func
+  31              	dmaGetOwner:
+  32              	.LFB521:
+  33              	 .file 1 "../cleanflight/src/main/drivers/dma.c"
+   1:../cleanflight/src/main/drivers/dma.c **** /*
+   2:../cleanflight/src/main/drivers/dma.c ****  * This file is part of Cleanflight and Betaflight.
+   3:../cleanflight/src/main/drivers/dma.c ****  *
+   4:../cleanflight/src/main/drivers/dma.c ****  * Cleanflight and Betaflight are free software. You can redistribute
+   5:../cleanflight/src/main/drivers/dma.c ****  * this software and/or modify this software under the terms of the
+   6:../cleanflight/src/main/drivers/dma.c ****  * GNU General Public License as published by the Free Software
+   7:../cleanflight/src/main/drivers/dma.c ****  * Foundation, either version 3 of the License, or (at your option)
+   8:../cleanflight/src/main/drivers/dma.c ****  * any later version.
+   9:../cleanflight/src/main/drivers/dma.c ****  *
+  10:../cleanflight/src/main/drivers/dma.c ****  * Cleanflight and Betaflight are distributed in the hope that they
+  11:../cleanflight/src/main/drivers/dma.c ****  * will be useful, but WITHOUT ANY WARRANTY; without even the implied
+  12:../cleanflight/src/main/drivers/dma.c ****  * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+  13:../cleanflight/src/main/drivers/dma.c ****  * See the GNU General Public License for more details.
+  14:../cleanflight/src/main/drivers/dma.c ****  *
+  15:../cleanflight/src/main/drivers/dma.c ****  * You should have received a copy of the GNU General Public License
+  16:../cleanflight/src/main/drivers/dma.c ****  * along with this software.
+  17:../cleanflight/src/main/drivers/dma.c ****  *
+  18:../cleanflight/src/main/drivers/dma.c ****  * If not, see <http://www.gnu.org/licenses/>.
+  19:../cleanflight/src/main/drivers/dma.c ****  */
+  20:../cleanflight/src/main/drivers/dma.c **** 
+  21:../cleanflight/src/main/drivers/dma.c **** #include <stdbool.h>
+  22:../cleanflight/src/main/drivers/dma.c **** #include <string.h>
+  23:../cleanflight/src/main/drivers/dma.c **** #include <stdint.h>
+  24:../cleanflight/src/main/drivers/dma.c **** 
+  25:../cleanflight/src/main/drivers/dma.c **** #include "platform.h"
+  26:../cleanflight/src/main/drivers/dma.c **** 
+  27:../cleanflight/src/main/drivers/dma.c **** #include "drivers/nvic.h"
+  28:../cleanflight/src/main/drivers/dma.c **** #include "dma.h"
+  29:../cleanflight/src/main/drivers/dma.c **** 
+  30:../cleanflight/src/main/drivers/dma.c **** /*
+  31:../cleanflight/src/main/drivers/dma.c ****  * DMA descriptors.
+  32:../cleanflight/src/main/drivers/dma.c ****  */
+  33:../cleanflight/src/main/drivers/dma.c **** static dmaChannelDescriptor_t dmaDescriptors[DMA_LAST_HANDLER] = {
+  34:../cleanflight/src/main/drivers/dma.c **** #ifndef XMC4700_F100x2048
+  35:../cleanflight/src/main/drivers/dma.c ****     DEFINE_DMA_CHANNEL(DMA1, 1,  0),
+  36:../cleanflight/src/main/drivers/dma.c ****     DEFINE_DMA_CHANNEL(DMA1, 2,  4),
+  37:../cleanflight/src/main/drivers/dma.c ****     DEFINE_DMA_CHANNEL(DMA1, 3,  8),
+  38:../cleanflight/src/main/drivers/dma.c ****     DEFINE_DMA_CHANNEL(DMA1, 4, 12),
+  39:../cleanflight/src/main/drivers/dma.c ****     DEFINE_DMA_CHANNEL(DMA1, 5, 16),
+  40:../cleanflight/src/main/drivers/dma.c ****     DEFINE_DMA_CHANNEL(DMA1, 6, 20),
+  41:../cleanflight/src/main/drivers/dma.c ****     DEFINE_DMA_CHANNEL(DMA1, 7, 24),
+  42:../cleanflight/src/main/drivers/dma.c **** #if defined(STM32F3) || defined(STM32F10X_CL)
+  43:../cleanflight/src/main/drivers/dma.c ****     DEFINE_DMA_CHANNEL(DMA2, 1,  0),
+  44:../cleanflight/src/main/drivers/dma.c ****     DEFINE_DMA_CHANNEL(DMA2, 2,  4),
+  45:../cleanflight/src/main/drivers/dma.c ****     DEFINE_DMA_CHANNEL(DMA2, 3,  8),
+  46:../cleanflight/src/main/drivers/dma.c ****     DEFINE_DMA_CHANNEL(DMA2, 4, 12),
+  47:../cleanflight/src/main/drivers/dma.c ****     DEFINE_DMA_CHANNEL(DMA2, 5, 16),
+  48:../cleanflight/src/main/drivers/dma.c **** #endif
+  49:../cleanflight/src/main/drivers/dma.c **** #endif
+  50:../cleanflight/src/main/drivers/dma.c **** };
+  51:../cleanflight/src/main/drivers/dma.c **** 
+  52:../cleanflight/src/main/drivers/dma.c **** #ifndef XMC4700_F100x2048
+  53:../cleanflight/src/main/drivers/dma.c **** 
+  54:../cleanflight/src/main/drivers/dma.c **** /*
+  55:../cleanflight/src/main/drivers/dma.c ****  * DMA IRQ Handlers
+  56:../cleanflight/src/main/drivers/dma.c ****  */
+  57:../cleanflight/src/main/drivers/dma.c **** DEFINE_DMA_IRQ_HANDLER(1, 1, DMA1_CH1_HANDLER)
+  58:../cleanflight/src/main/drivers/dma.c **** DEFINE_DMA_IRQ_HANDLER(1, 2, DMA1_CH2_HANDLER)
+  59:../cleanflight/src/main/drivers/dma.c **** DEFINE_DMA_IRQ_HANDLER(1, 3, DMA1_CH3_HANDLER)
+  60:../cleanflight/src/main/drivers/dma.c **** DEFINE_DMA_IRQ_HANDLER(1, 4, DMA1_CH4_HANDLER)
+  61:../cleanflight/src/main/drivers/dma.c **** DEFINE_DMA_IRQ_HANDLER(1, 5, DMA1_CH5_HANDLER)
+  62:../cleanflight/src/main/drivers/dma.c **** DEFINE_DMA_IRQ_HANDLER(1, 6, DMA1_CH6_HANDLER)
+  63:../cleanflight/src/main/drivers/dma.c **** DEFINE_DMA_IRQ_HANDLER(1, 7, DMA1_CH7_HANDLER)
+  64:../cleanflight/src/main/drivers/dma.c **** 
+  65:../cleanflight/src/main/drivers/dma.c **** #if defined(STM32F3) || defined(STM32F10X_CL)
+  66:../cleanflight/src/main/drivers/dma.c **** DEFINE_DMA_IRQ_HANDLER(2, 1, DMA2_CH1_HANDLER)
+  67:../cleanflight/src/main/drivers/dma.c **** DEFINE_DMA_IRQ_HANDLER(2, 2, DMA2_CH2_HANDLER)
+  68:../cleanflight/src/main/drivers/dma.c **** DEFINE_DMA_IRQ_HANDLER(2, 3, DMA2_CH3_HANDLER)
+  69:../cleanflight/src/main/drivers/dma.c **** DEFINE_DMA_IRQ_HANDLER(2, 4, DMA2_CH4_HANDLER)
+  70:../cleanflight/src/main/drivers/dma.c **** DEFINE_DMA_IRQ_HANDLER(2, 5, DMA2_CH5_HANDLER)
+  71:../cleanflight/src/main/drivers/dma.c **** #endif
+  72:../cleanflight/src/main/drivers/dma.c **** 
+  73:../cleanflight/src/main/drivers/dma.c **** #define RETURN_TCIF_FLAG(s, d, n) if (s == DMA ## d ## _Channel ## n) return DMA ## d ## _FLAG_TC #
+  74:../cleanflight/src/main/drivers/dma.c **** 
+  75:../cleanflight/src/main/drivers/dma.c **** uint32_t dmaFlag_IT_TCIF(const DMA_Channel_TypeDef *channel)
+  76:../cleanflight/src/main/drivers/dma.c **** {
+  77:../cleanflight/src/main/drivers/dma.c ****     RETURN_TCIF_FLAG(channel, 1, 1);
+  78:../cleanflight/src/main/drivers/dma.c ****     RETURN_TCIF_FLAG(channel, 1, 2);
+  79:../cleanflight/src/main/drivers/dma.c ****     RETURN_TCIF_FLAG(channel, 1, 3);
+  80:../cleanflight/src/main/drivers/dma.c ****     RETURN_TCIF_FLAG(channel, 1, 4);
+  81:../cleanflight/src/main/drivers/dma.c ****     RETURN_TCIF_FLAG(channel, 1, 5);
+  82:../cleanflight/src/main/drivers/dma.c ****     RETURN_TCIF_FLAG(channel, 1, 6);
+  83:../cleanflight/src/main/drivers/dma.c ****     RETURN_TCIF_FLAG(channel, 1, 7);
+  84:../cleanflight/src/main/drivers/dma.c ****     RETURN_TCIF_FLAG(channel, 2, 1);
+  85:../cleanflight/src/main/drivers/dma.c ****     RETURN_TCIF_FLAG(channel, 2, 2);
+  86:../cleanflight/src/main/drivers/dma.c ****     RETURN_TCIF_FLAG(channel, 2, 3);
+  87:../cleanflight/src/main/drivers/dma.c ****     RETURN_TCIF_FLAG(channel, 2, 4);
+  88:../cleanflight/src/main/drivers/dma.c ****     RETURN_TCIF_FLAG(channel, 2, 5);
+  89:../cleanflight/src/main/drivers/dma.c ****     return 0;
+  90:../cleanflight/src/main/drivers/dma.c **** }
+  91:../cleanflight/src/main/drivers/dma.c **** 
+  92:../cleanflight/src/main/drivers/dma.c **** #define DMA_RCC(x) ((x) == DMA1 ? RCC_AHBPeriph_DMA1 : RCC_AHBPeriph_DMA2)
+  93:../cleanflight/src/main/drivers/dma.c **** void dmaInit(dmaIdentifier_e identifier, resourceOwner_e owner, uint8_t resourceIndex)
+  94:../cleanflight/src/main/drivers/dma.c **** {
+  95:../cleanflight/src/main/drivers/dma.c ****     const int index = DMA_IDENTIFIER_TO_INDEX(identifier);
+  96:../cleanflight/src/main/drivers/dma.c **** 
+  97:../cleanflight/src/main/drivers/dma.c ****     RCC_AHBPeriphClockCmd(DMA_RCC(dmaDescriptors[index].dma), ENABLE);
+  98:../cleanflight/src/main/drivers/dma.c ****     dmaDescriptors[index].owner = owner;
+  99:../cleanflight/src/main/drivers/dma.c ****     dmaDescriptors[index].resourceIndex = resourceIndex;
+ 100:../cleanflight/src/main/drivers/dma.c **** }
+ 101:../cleanflight/src/main/drivers/dma.c **** 
+ 102:../cleanflight/src/main/drivers/dma.c **** void dmaSetHandler(dmaIdentifier_e identifier, dmaCallbackHandlerFuncPtr callback, uint32_t priorit
+ 103:../cleanflight/src/main/drivers/dma.c **** {
+ 104:../cleanflight/src/main/drivers/dma.c ****     NVIC_InitTypeDef NVIC_InitStructure;
+ 105:../cleanflight/src/main/drivers/dma.c **** 
+ 106:../cleanflight/src/main/drivers/dma.c ****     const int index = DMA_IDENTIFIER_TO_INDEX(identifier);
+ 107:../cleanflight/src/main/drivers/dma.c ****     /* TODO: remove this - enforce the init */
+ 108:../cleanflight/src/main/drivers/dma.c ****     RCC_AHBPeriphClockCmd(DMA_RCC(dmaDescriptors[index].dma), ENABLE);
+ 109:../cleanflight/src/main/drivers/dma.c ****     dmaDescriptors[index].irqHandlerCallback = callback;
+ 110:../cleanflight/src/main/drivers/dma.c ****     dmaDescriptors[index].userParam = userParam;
+ 111:../cleanflight/src/main/drivers/dma.c ****     dmaDescriptors[index].completeFlag = dmaFlag_IT_TCIF(dmaDescriptors[index].ref);
+ 112:../cleanflight/src/main/drivers/dma.c **** 
+ 113:../cleanflight/src/main/drivers/dma.c ****     NVIC_InitStructure.NVIC_IRQChannel = dmaDescriptors[index].irqN;
+ 114:../cleanflight/src/main/drivers/dma.c ****     NVIC_InitStructure.NVIC_IRQChannelPreemptionPriority = NVIC_PRIORITY_BASE(priority);
+ 115:../cleanflight/src/main/drivers/dma.c ****     NVIC_InitStructure.NVIC_IRQChannelSubPriority = NVIC_PRIORITY_SUB(priority);
+ 116:../cleanflight/src/main/drivers/dma.c ****     NVIC_InitStructure.NVIC_IRQChannelCmd = ENABLE;
+ 117:../cleanflight/src/main/drivers/dma.c ****     NVIC_Init(&NVIC_InitStructure);
+ 118:../cleanflight/src/main/drivers/dma.c **** }
+ 119:../cleanflight/src/main/drivers/dma.c **** 
+ 120:../cleanflight/src/main/drivers/dma.c **** #endif
+ 121:../cleanflight/src/main/drivers/dma.c **** 
+ 122:../cleanflight/src/main/drivers/dma.c **** resourceOwner_e dmaGetOwner(dmaIdentifier_e identifier)
+ 123:../cleanflight/src/main/drivers/dma.c **** {
+  34              	 .loc 1 123 0
+  35              	 .cfi_startproc
+  36              	 
+  37              	 
+  38              	 
+  39 0000 80B4     	 push {r7}
+  40              	.LCFI0:
+  41              	 .cfi_def_cfa_offset 4
+  42              	 .cfi_offset 7,-4
+  43 0002 83B0     	 sub sp,sp,#12
+  44              	.LCFI1:
+  45              	 .cfi_def_cfa_offset 16
+  46 0004 00AF     	 add r7,sp,#0
+  47              	.LCFI2:
+  48              	 .cfi_def_cfa_register 7
+  49 0006 0346     	 mov r3,r0
+  50 0008 FB71     	 strb r3,[r7,#7]
+ 124:../cleanflight/src/main/drivers/dma.c ****     return dmaDescriptors[DMA_IDENTIFIER_TO_INDEX(identifier)].owner;
+  51              	 .loc 1 124 0
+  52 000a FB79     	 ldrb r3,[r7,#7]
+  53 000c 5A1E     	 subs r2,r3,#1
+  54 000e 0749     	 ldr r1,.L3
+  55 0010 1346     	 mov r3,r2
+  56 0012 5B00     	 lsls r3,r3,#1
+  57 0014 1344     	 add r3,r3,r2
+  58 0016 DB00     	 lsls r3,r3,#3
+  59 0018 0B44     	 add r3,r3,r1
+  60 001a 1033     	 adds r3,r3,#16
+  61 001c 9B78     	 ldrb r3,[r3,#2]
+ 125:../cleanflight/src/main/drivers/dma.c **** }
+  62              	 .loc 1 125 0
+  63 001e 1846     	 mov r0,r3
+  64 0020 0C37     	 adds r7,r7,#12
+  65              	.LCFI3:
+  66              	 .cfi_def_cfa_offset 4
+  67 0022 BD46     	 mov sp,r7
+  68              	.LCFI4:
+  69              	 .cfi_def_cfa_register 13
+  70              	 
+  71 0024 5DF8047B 	 ldr r7,[sp],#4
+  72              	.LCFI5:
+  73              	 .cfi_restore 7
+  74              	 .cfi_def_cfa_offset 0
+  75 0028 7047     	 bx lr
+  76              	.L4:
+  77 002a 00BF     	 .align 2
+  78              	.L3:
+  79 002c 00000000 	 .word dmaDescriptors
+  80              	 .cfi_endproc
+  81              	.LFE521:
+  83              	 .section .text.dmaGetResourceIndex,"ax",%progbits
+  84              	 .align 2
+  85              	 .global dmaGetResourceIndex
+  86              	 .thumb
+  87              	 .thumb_func
+  89              	dmaGetResourceIndex:
+  90              	.LFB522:
+ 126:../cleanflight/src/main/drivers/dma.c **** 
+ 127:../cleanflight/src/main/drivers/dma.c **** uint8_t dmaGetResourceIndex(dmaIdentifier_e identifier)
+ 128:../cleanflight/src/main/drivers/dma.c **** {
+  91              	 .loc 1 128 0
+  92              	 .cfi_startproc
+  93              	 
+  94              	 
+  95              	 
+  96 0000 80B4     	 push {r7}
+  97              	.LCFI6:
+  98              	 .cfi_def_cfa_offset 4
+  99              	 .cfi_offset 7,-4
+ 100 0002 83B0     	 sub sp,sp,#12
+ 101              	.LCFI7:
+ 102              	 .cfi_def_cfa_offset 16
+ 103 0004 00AF     	 add r7,sp,#0
+ 104              	.LCFI8:
+ 105              	 .cfi_def_cfa_register 7
+ 106 0006 0346     	 mov r3,r0
+ 107 0008 FB71     	 strb r3,[r7,#7]
+ 129:../cleanflight/src/main/drivers/dma.c ****     return dmaDescriptors[DMA_IDENTIFIER_TO_INDEX(identifier)].resourceIndex;
+ 108              	 .loc 1 129 0
+ 109 000a FB79     	 ldrb r3,[r7,#7]
+ 110 000c 5A1E     	 subs r2,r3,#1
+ 111 000e 0749     	 ldr r1,.L7
+ 112 0010 1346     	 mov r3,r2
+ 113 0012 5B00     	 lsls r3,r3,#1
+ 114 0014 1344     	 add r3,r3,r2
+ 115 0016 DB00     	 lsls r3,r3,#3
+ 116 0018 0B44     	 add r3,r3,r1
+ 117 001a 1033     	 adds r3,r3,#16
+ 118 001c DB78     	 ldrb r3,[r3,#3]
+ 130:../cleanflight/src/main/drivers/dma.c **** }
+ 119              	 .loc 1 130 0
+ 120 001e 1846     	 mov r0,r3
+ 121 0020 0C37     	 adds r7,r7,#12
+ 122              	.LCFI9:
+ 123              	 .cfi_def_cfa_offset 4
+ 124 0022 BD46     	 mov sp,r7
+ 125              	.LCFI10:
+ 126              	 .cfi_def_cfa_register 13
+ 127              	 
+ 128 0024 5DF8047B 	 ldr r7,[sp],#4
+ 129              	.LCFI11:
+ 130              	 .cfi_restore 7
+ 131              	 .cfi_def_cfa_offset 0
+ 132 0028 7047     	 bx lr
+ 133              	.L8:
+ 134 002a 00BF     	 .align 2
+ 135              	.L7:
+ 136 002c 00000000 	 .word dmaDescriptors
+ 137              	 .cfi_endproc
+ 138              	.LFE522:
+ 140              	 .section .text.dmaGetIdentifier,"ax",%progbits
+ 141              	 .align 2
+ 142              	 .global dmaGetIdentifier
+ 143              	 .thumb
+ 144              	 .thumb_func
+ 146              	dmaGetIdentifier:
+ 147              	.LFB523:
+ 131:../cleanflight/src/main/drivers/dma.c **** 
+ 132:../cleanflight/src/main/drivers/dma.c **** dmaIdentifier_e dmaGetIdentifier(const DMA_Channel_TypeDef* channel)
+ 133:../cleanflight/src/main/drivers/dma.c **** {
+ 148              	 .loc 1 133 0
+ 149              	 .cfi_startproc
+ 150              	 
+ 151              	 
+ 152              	 
+ 153 0000 80B4     	 push {r7}
+ 154              	.LCFI12:
+ 155              	 .cfi_def_cfa_offset 4
+ 156              	 .cfi_offset 7,-4
+ 157 0002 85B0     	 sub sp,sp,#20
+ 158              	.LCFI13:
+ 159              	 .cfi_def_cfa_offset 24
+ 160 0004 00AF     	 add r7,sp,#0
+ 161              	.LCFI14:
+ 162              	 .cfi_def_cfa_register 7
+ 163 0006 7860     	 str r0,[r7,#4]
+ 164              	.LBB2:
+ 134:../cleanflight/src/main/drivers/dma.c ****     for (int i = 0; i < DMA_LAST_HANDLER; i++) {
+ 165              	 .loc 1 134 0
+ 166 0008 0023     	 movs r3,#0
+ 167 000a FB60     	 str r3,[r7,#12]
+ 168 000c 12E0     	 b .L10
+ 169              	.L13:
+ 135:../cleanflight/src/main/drivers/dma.c ****         if (dmaDescriptors[i].ref == channel) {
+ 170              	 .loc 1 135 0
+ 171 000e 0E49     	 ldr r1,.L14
+ 172 0010 FA68     	 ldr r2,[r7,#12]
+ 173 0012 1346     	 mov r3,r2
+ 174 0014 5B00     	 lsls r3,r3,#1
+ 175 0016 1344     	 add r3,r3,r2
+ 176 0018 DB00     	 lsls r3,r3,#3
+ 177 001a 0B44     	 add r3,r3,r1
+ 178 001c 5A68     	 ldr r2,[r3,#4]
+ 179 001e 7B68     	 ldr r3,[r7,#4]
+ 180 0020 9A42     	 cmp r2,r3
+ 181 0022 04D1     	 bne .L11
+ 136:../cleanflight/src/main/drivers/dma.c ****             return i + 1;
+ 182              	 .loc 1 136 0
+ 183 0024 FB68     	 ldr r3,[r7,#12]
+ 184 0026 DBB2     	 uxtb r3,r3
+ 185 0028 0133     	 adds r3,r3,#1
+ 186 002a DBB2     	 uxtb r3,r3
+ 187 002c 06E0     	 b .L12
+ 188              	.L11:
+ 134:../cleanflight/src/main/drivers/dma.c ****     for (int i = 0; i < DMA_LAST_HANDLER; i++) {
+ 189              	 .loc 1 134 0 discriminator 2
+ 190 002e FB68     	 ldr r3,[r7,#12]
+ 191 0030 0133     	 adds r3,r3,#1
+ 192 0032 FB60     	 str r3,[r7,#12]
+ 193              	.L10:
+ 134:../cleanflight/src/main/drivers/dma.c ****     for (int i = 0; i < DMA_LAST_HANDLER; i++) {
+ 194              	 .loc 1 134 0 is_stmt 0 discriminator 1
+ 195 0034 FB68     	 ldr r3,[r7,#12]
+ 196 0036 062B     	 cmp r3,#6
+ 197 0038 E9DD     	 ble .L13
+ 198              	.LBE2:
+ 137:../cleanflight/src/main/drivers/dma.c ****         }
+ 138:../cleanflight/src/main/drivers/dma.c ****     }
+ 139:../cleanflight/src/main/drivers/dma.c ****     return 0;
+ 199              	 .loc 1 139 0 is_stmt 1
+ 200 003a 0023     	 movs r3,#0
+ 201              	.L12:
+ 140:../cleanflight/src/main/drivers/dma.c **** }
+ 202              	 .loc 1 140 0
+ 203 003c 1846     	 mov r0,r3
+ 204 003e 1437     	 adds r7,r7,#20
+ 205              	.LCFI15:
+ 206              	 .cfi_def_cfa_offset 4
+ 207 0040 BD46     	 mov sp,r7
+ 208              	.LCFI16:
+ 209              	 .cfi_def_cfa_register 13
+ 210              	 
+ 211 0042 5DF8047B 	 ldr r7,[sp],#4
+ 212              	.LCFI17:
+ 213              	 .cfi_restore 7
+ 214              	 .cfi_def_cfa_offset 0
+ 215 0046 7047     	 bx lr
+ 216              	.L15:
+ 217              	 .align 2
+ 218              	.L14:
+ 219 0048 00000000 	 .word dmaDescriptors
+ 220              	 .cfi_endproc
+ 221              	.LFE523:
+ 223              	 .section .text.dmaGetRefByIdentifier,"ax",%progbits
+ 224              	 .align 2
+ 225              	 .global dmaGetRefByIdentifier
+ 226              	 .thumb
+ 227              	 .thumb_func
+ 229              	dmaGetRefByIdentifier:
+ 230              	.LFB524:
+ 141:../cleanflight/src/main/drivers/dma.c **** 
+ 142:../cleanflight/src/main/drivers/dma.c **** DMA_Channel_TypeDef* dmaGetRefByIdentifier(const dmaIdentifier_e identifier)
+ 143:../cleanflight/src/main/drivers/dma.c **** {
+ 231              	 .loc 1 143 0
+ 232              	 .cfi_startproc
+ 233              	 
+ 234              	 
+ 235              	 
+ 236 0000 80B4     	 push {r7}
+ 237              	.LCFI18:
+ 238              	 .cfi_def_cfa_offset 4
+ 239              	 .cfi_offset 7,-4
+ 240 0002 83B0     	 sub sp,sp,#12
+ 241              	.LCFI19:
+ 242              	 .cfi_def_cfa_offset 16
+ 243 0004 00AF     	 add r7,sp,#0
+ 244              	.LCFI20:
+ 245              	 .cfi_def_cfa_register 7
+ 246 0006 0346     	 mov r3,r0
+ 247 0008 FB71     	 strb r3,[r7,#7]
+ 144:../cleanflight/src/main/drivers/dma.c ****     return dmaDescriptors[DMA_IDENTIFIER_TO_INDEX(identifier)].ref;
+ 248              	 .loc 1 144 0
+ 249 000a FB79     	 ldrb r3,[r7,#7]
+ 250 000c 5A1E     	 subs r2,r3,#1
+ 251 000e 0649     	 ldr r1,.L18
+ 252 0010 1346     	 mov r3,r2
+ 253 0012 5B00     	 lsls r3,r3,#1
+ 254 0014 1344     	 add r3,r3,r2
+ 255 0016 DB00     	 lsls r3,r3,#3
+ 256 0018 0B44     	 add r3,r3,r1
+ 257 001a 5B68     	 ldr r3,[r3,#4]
+ 145:../cleanflight/src/main/drivers/dma.c **** }
+ 258              	 .loc 1 145 0
+ 259 001c 1846     	 mov r0,r3
+ 260 001e 0C37     	 adds r7,r7,#12
+ 261              	.LCFI21:
+ 262              	 .cfi_def_cfa_offset 4
+ 263 0020 BD46     	 mov sp,r7
+ 264              	.LCFI22:
+ 265              	 .cfi_def_cfa_register 13
+ 266              	 
+ 267 0022 5DF8047B 	 ldr r7,[sp],#4
+ 268              	.LCFI23:
+ 269              	 .cfi_restore 7
+ 270              	 .cfi_def_cfa_offset 0
+ 271 0026 7047     	 bx lr
+ 272              	.L19:
+ 273              	 .align 2
+ 274              	.L18:
+ 275 0028 00000000 	 .word dmaDescriptors
+ 276              	 .cfi_endproc
+ 277              	.LFE524:
+ 279              	 .section .text.dmaGetDescriptorByIdentifier,"ax",%progbits
+ 280              	 .align 2
+ 281              	 .global dmaGetDescriptorByIdentifier
+ 282              	 .thumb
+ 283              	 .thumb_func
+ 285              	dmaGetDescriptorByIdentifier:
+ 286              	.LFB525:
+ 146:../cleanflight/src/main/drivers/dma.c **** 
+ 147:../cleanflight/src/main/drivers/dma.c **** dmaChannelDescriptor_t* dmaGetDescriptorByIdentifier(const dmaIdentifier_e identifier)
+ 148:../cleanflight/src/main/drivers/dma.c **** {
+ 287              	 .loc 1 148 0
+ 288              	 .cfi_startproc
+ 289              	 
+ 290              	 
+ 291              	 
+ 292 0000 80B4     	 push {r7}
+ 293              	.LCFI24:
+ 294              	 .cfi_def_cfa_offset 4
+ 295              	 .cfi_offset 7,-4
+ 296 0002 83B0     	 sub sp,sp,#12
+ 297              	.LCFI25:
+ 298              	 .cfi_def_cfa_offset 16
+ 299 0004 00AF     	 add r7,sp,#0
+ 300              	.LCFI26:
+ 301              	 .cfi_def_cfa_register 7
+ 302 0006 0346     	 mov r3,r0
+ 303 0008 FB71     	 strb r3,[r7,#7]
+ 149:../cleanflight/src/main/drivers/dma.c ****     return &dmaDescriptors[DMA_IDENTIFIER_TO_INDEX(identifier)];
+ 304              	 .loc 1 149 0
+ 305 000a FB79     	 ldrb r3,[r7,#7]
+ 306 000c 5A1E     	 subs r2,r3,#1
+ 307 000e 1346     	 mov r3,r2
+ 308 0010 5B00     	 lsls r3,r3,#1
+ 309 0012 1344     	 add r3,r3,r2
+ 310 0014 DB00     	 lsls r3,r3,#3
+ 311 0016 044A     	 ldr r2,.L22
+ 312 0018 1344     	 add r3,r3,r2
+ 150:../cleanflight/src/main/drivers/dma.c **** }
+ 313              	 .loc 1 150 0
+ 314 001a 1846     	 mov r0,r3
+ 315 001c 0C37     	 adds r7,r7,#12
+ 316              	.LCFI27:
+ 317              	 .cfi_def_cfa_offset 4
+ 318 001e BD46     	 mov sp,r7
+ 319              	.LCFI28:
+ 320              	 .cfi_def_cfa_register 13
+ 321              	 
+ 322 0020 5DF8047B 	 ldr r7,[sp],#4
+ 323              	.LCFI29:
+ 324              	 .cfi_restore 7
+ 325              	 .cfi_def_cfa_offset 0
+ 326 0024 7047     	 bx lr
+ 327              	.L23:
+ 328 0026 00BF     	 .align 2
+ 329              	.L22:
+ 330 0028 00000000 	 .word dmaDescriptors
+ 331              	 .cfi_endproc
+ 332              	.LFE525:
+ 334              	 .text
+ 335              	.Letext0:
+ 336              	 .file 2 "d:\\xmc\\dave-ide-4.4.2-64bit\\eclipse\\arm-gcc-49\\arm-none-eabi\\include\\machine\\_default_types.h"
+ 337              	 .file 3 "d:\\xmc\\dave-ide-4.4.2-64bit\\eclipse\\arm-gcc-49\\arm-none-eabi\\include\\stdint.h"
+ 338              	 .file 4 "D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/lib/main/XMC4000/xmc4700.h"
+ 339              	 .file 5 "D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/lib/main/XMC4000/XMCLib/inc/xmc_usic.h"
+ 340              	 .file 6 "D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/platform.h"
+ 341              	 .file 7 "../cleanflight/src/main/drivers/resource.h"
+ 342              	 .file 8 "../cleanflight/src/main/drivers/dma.h"
+ 343              	 .file 9 "D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/lib/main/CMSIS/Core/Include/core_cm4.h"
+ 344              	 .file 10 "D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/lib/main/XMC4000/system_XMC4700.h"
+DEFINED SYMBOLS
+                            *ABS*:00000000 dma.c
+    {standard input}:20     .bss.dmaDescriptors:00000000 $d
+    {standard input}:23     .bss.dmaDescriptors:00000000 dmaDescriptors
+    {standard input}:26     .text.dmaGetOwner:00000000 $t
+    {standard input}:31     .text.dmaGetOwner:00000000 dmaGetOwner
+    {standard input}:79     .text.dmaGetOwner:0000002c $d
+    {standard input}:84     .text.dmaGetResourceIndex:00000000 $t
+    {standard input}:89     .text.dmaGetResourceIndex:00000000 dmaGetResourceIndex
+    {standard input}:136    .text.dmaGetResourceIndex:0000002c $d
+    {standard input}:141    .text.dmaGetIdentifier:00000000 $t
+    {standard input}:146    .text.dmaGetIdentifier:00000000 dmaGetIdentifier
+    {standard input}:219    .text.dmaGetIdentifier:00000048 $d
+    {standard input}:224    .text.dmaGetRefByIdentifier:00000000 $t
+    {standard input}:229    .text.dmaGetRefByIdentifier:00000000 dmaGetRefByIdentifier
+    {standard input}:275    .text.dmaGetRefByIdentifier:00000028 $d
+    {standard input}:280    .text.dmaGetDescriptorByIdentifier:00000000 $t
+    {standard input}:285    .text.dmaGetDescriptorByIdentifier:00000000 dmaGetDescriptorByIdentifier
+    {standard input}:330    .text.dmaGetDescriptorByIdentifier:00000028 $d
+                     .debug_frame:00000010 $d
+
+NO UNDEFINED SYMBOLS

@@ -1,0 +1,217 @@
+   1              	 .syntax unified
+   2              	 .cpu cortex-m4
+   3              	 .eabi_attribute 27,3
+   4              	 .fpu fpv4-sp-d16
+   5              	 .eabi_attribute 20,1
+   6              	 .eabi_attribute 21,1
+   7              	 .eabi_attribute 23,3
+   8              	 .eabi_attribute 24,1
+   9              	 .eabi_attribute 25,1
+  10              	 .eabi_attribute 26,1
+  11              	 .eabi_attribute 30,6
+  12              	 .eabi_attribute 34,1
+  13              	 .eabi_attribute 18,4
+  14              	 .thumb
+  15              	 .file "stack_check.c"
+  16              	 .text
+  17              	.Ltext0:
+  18              	 .cfi_sections .debug_frame
+  19              	 .section .text.stackTotalSize,"ax",%progbits
+  20              	 .align 2
+  21              	 .global stackTotalSize
+  22              	 .thumb
+  23              	 .thumb_func
+  25              	stackTotalSize:
+  26              	.LFB527:
+  27              	 .file 1 "../cleanflight/src/main/drivers/stack_check.c"
+   1:../cleanflight/src/main/drivers/stack_check.c **** /*
+   2:../cleanflight/src/main/drivers/stack_check.c ****  * This file is part of Cleanflight and Betaflight.
+   3:../cleanflight/src/main/drivers/stack_check.c ****  *
+   4:../cleanflight/src/main/drivers/stack_check.c ****  * Cleanflight and Betaflight are free software. You can redistribute
+   5:../cleanflight/src/main/drivers/stack_check.c ****  * this software and/or modify this software under the terms of the
+   6:../cleanflight/src/main/drivers/stack_check.c ****  * GNU General Public License as published by the Free Software
+   7:../cleanflight/src/main/drivers/stack_check.c ****  * Foundation, either version 3 of the License, or (at your option)
+   8:../cleanflight/src/main/drivers/stack_check.c ****  * any later version.
+   9:../cleanflight/src/main/drivers/stack_check.c ****  *
+  10:../cleanflight/src/main/drivers/stack_check.c ****  * Cleanflight and Betaflight are distributed in the hope that they
+  11:../cleanflight/src/main/drivers/stack_check.c ****  * will be useful, but WITHOUT ANY WARRANTY; without even the implied
+  12:../cleanflight/src/main/drivers/stack_check.c ****  * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+  13:../cleanflight/src/main/drivers/stack_check.c ****  * See the GNU General Public License for more details.
+  14:../cleanflight/src/main/drivers/stack_check.c ****  *
+  15:../cleanflight/src/main/drivers/stack_check.c ****  * You should have received a copy of the GNU General Public License
+  16:../cleanflight/src/main/drivers/stack_check.c ****  * along with this software.
+  17:../cleanflight/src/main/drivers/stack_check.c ****  *
+  18:../cleanflight/src/main/drivers/stack_check.c ****  * If not, see <http://www.gnu.org/licenses/>.
+  19:../cleanflight/src/main/drivers/stack_check.c ****  */
+  20:../cleanflight/src/main/drivers/stack_check.c **** 
+  21:../cleanflight/src/main/drivers/stack_check.c **** #include <stdbool.h>
+  22:../cleanflight/src/main/drivers/stack_check.c **** #include <stdint.h>
+  23:../cleanflight/src/main/drivers/stack_check.c **** #include <string.h>
+  24:../cleanflight/src/main/drivers/stack_check.c **** 
+  25:../cleanflight/src/main/drivers/stack_check.c **** #include "platform.h"
+  26:../cleanflight/src/main/drivers/stack_check.c **** 
+  27:../cleanflight/src/main/drivers/stack_check.c **** #include "build/debug.h"
+  28:../cleanflight/src/main/drivers/stack_check.c **** 
+  29:../cleanflight/src/main/drivers/stack_check.c **** #include "common/utils.h"
+  30:../cleanflight/src/main/drivers/stack_check.c **** 
+  31:../cleanflight/src/main/drivers/stack_check.c **** #include "drivers/stack_check.h"
+  32:../cleanflight/src/main/drivers/stack_check.c **** 
+  33:../cleanflight/src/main/drivers/stack_check.c **** #define STACK_FILL_CHAR 0xa5
+  34:../cleanflight/src/main/drivers/stack_check.c **** 
+  35:../cleanflight/src/main/drivers/stack_check.c **** extern char _estack; // end of stack, declared in .LD file
+  36:../cleanflight/src/main/drivers/stack_check.c **** extern char _Min_Stack_Size; // declared in .LD file
+  37:../cleanflight/src/main/drivers/stack_check.c **** 
+  38:../cleanflight/src/main/drivers/stack_check.c **** /*
+  39:../cleanflight/src/main/drivers/stack_check.c ****  * The ARM processor uses a full descending stack. This means the stack pointer holds the address
+  40:../cleanflight/src/main/drivers/stack_check.c ****  * of the last stacked item in memory. When the processor pushes a new item onto the stack,
+  41:../cleanflight/src/main/drivers/stack_check.c ****  * it decrements the stack pointer and then writes the item to the new memory location.
+  42:../cleanflight/src/main/drivers/stack_check.c ****  *
+  43:../cleanflight/src/main/drivers/stack_check.c ****  *
+  44:../cleanflight/src/main/drivers/stack_check.c ****  * RAM layout is generally as below, although some targets vary
+  45:../cleanflight/src/main/drivers/stack_check.c ****  *
+  46:../cleanflight/src/main/drivers/stack_check.c ****  * F1 Boards
+  47:../cleanflight/src/main/drivers/stack_check.c ****  * RAM is origin 0x20000000 length 20K that is:
+  48:../cleanflight/src/main/drivers/stack_check.c ****  * 0x20000000 to 0x20005000
+  49:../cleanflight/src/main/drivers/stack_check.c ****  *
+  50:../cleanflight/src/main/drivers/stack_check.c ****  * F3 Boards
+  51:../cleanflight/src/main/drivers/stack_check.c ****  * RAM is origin 0x20000000 length 40K that is:
+  52:../cleanflight/src/main/drivers/stack_check.c ****  * 0x20000000 to 0x2000a000
+  53:../cleanflight/src/main/drivers/stack_check.c ****  *
+  54:../cleanflight/src/main/drivers/stack_check.c ****  * F4 Boards
+  55:../cleanflight/src/main/drivers/stack_check.c ****  * RAM is origin 0x20000000 length 128K that is:
+  56:../cleanflight/src/main/drivers/stack_check.c ****  * 0x20000000 to 0x20020000
+  57:../cleanflight/src/main/drivers/stack_check.c ****  *
+  58:../cleanflight/src/main/drivers/stack_check.c ****  */
+  59:../cleanflight/src/main/drivers/stack_check.c **** 
+  60:../cleanflight/src/main/drivers/stack_check.c **** #ifdef STACK_CHECK
+  61:../cleanflight/src/main/drivers/stack_check.c **** 
+  62:../cleanflight/src/main/drivers/stack_check.c **** static uint32_t usedStackSize;
+  63:../cleanflight/src/main/drivers/stack_check.c **** 
+  64:../cleanflight/src/main/drivers/stack_check.c **** void taskStackCheck(timeUs_t currentTimeUs)
+  65:../cleanflight/src/main/drivers/stack_check.c **** {
+  66:../cleanflight/src/main/drivers/stack_check.c ****     UNUSED(currentTimeUs);
+  67:../cleanflight/src/main/drivers/stack_check.c **** 
+  68:../cleanflight/src/main/drivers/stack_check.c ****     char * const stackHighMem = &_estack;
+  69:../cleanflight/src/main/drivers/stack_check.c ****     const uint32_t stackSize = (uint32_t)&_Min_Stack_Size;
+  70:../cleanflight/src/main/drivers/stack_check.c ****     char * const stackLowMem = stackHighMem - stackSize;
+  71:../cleanflight/src/main/drivers/stack_check.c ****     const char * const stackCurrent = (char *)&stackLowMem;
+  72:../cleanflight/src/main/drivers/stack_check.c **** 
+  73:../cleanflight/src/main/drivers/stack_check.c ****     char *p;
+  74:../cleanflight/src/main/drivers/stack_check.c ****     for (p = stackLowMem; p < stackCurrent; ++p) {
+  75:../cleanflight/src/main/drivers/stack_check.c ****         if (*p != STACK_FILL_CHAR) {
+  76:../cleanflight/src/main/drivers/stack_check.c ****             break;
+  77:../cleanflight/src/main/drivers/stack_check.c ****         }
+  78:../cleanflight/src/main/drivers/stack_check.c ****     }
+  79:../cleanflight/src/main/drivers/stack_check.c **** 
+  80:../cleanflight/src/main/drivers/stack_check.c ****     usedStackSize = (uint32_t)stackHighMem - (uint32_t)p;
+  81:../cleanflight/src/main/drivers/stack_check.c **** 
+  82:../cleanflight/src/main/drivers/stack_check.c ****     DEBUG_SET(DEBUG_STACK, 0, (uint32_t)stackHighMem & 0xffff);
+  83:../cleanflight/src/main/drivers/stack_check.c ****     DEBUG_SET(DEBUG_STACK, 1, (uint32_t)stackLowMem & 0xffff);
+  84:../cleanflight/src/main/drivers/stack_check.c ****     DEBUG_SET(DEBUG_STACK, 2, (uint32_t)stackCurrent & 0xffff);
+  85:../cleanflight/src/main/drivers/stack_check.c ****     DEBUG_SET(DEBUG_STACK, 3, (uint32_t)p & 0xffff);
+  86:../cleanflight/src/main/drivers/stack_check.c **** }
+  87:../cleanflight/src/main/drivers/stack_check.c **** 
+  88:../cleanflight/src/main/drivers/stack_check.c **** uint32_t stackUsedSize(void)
+  89:../cleanflight/src/main/drivers/stack_check.c **** {
+  90:../cleanflight/src/main/drivers/stack_check.c ****     return usedStackSize;
+  91:../cleanflight/src/main/drivers/stack_check.c **** }
+  92:../cleanflight/src/main/drivers/stack_check.c **** #endif
+  93:../cleanflight/src/main/drivers/stack_check.c **** 
+  94:../cleanflight/src/main/drivers/stack_check.c **** uint32_t stackTotalSize(void)
+  95:../cleanflight/src/main/drivers/stack_check.c **** {
+  28              	 .loc 1 95 0
+  29              	 .cfi_startproc
+  30              	 
+  31              	 
+  32              	 
+  33 0000 80B4     	 push {r7}
+  34              	.LCFI0:
+  35              	 .cfi_def_cfa_offset 4
+  36              	 .cfi_offset 7,-4
+  37 0002 00AF     	 add r7,sp,#0
+  38              	.LCFI1:
+  39              	 .cfi_def_cfa_register 7
+  96:../cleanflight/src/main/drivers/stack_check.c ****     return (uint32_t)(intptr_t)&_Min_Stack_Size;
+  40              	 .loc 1 96 0
+  41 0004 024B     	 ldr r3,.L3
+  97:../cleanflight/src/main/drivers/stack_check.c **** }
+  42              	 .loc 1 97 0
+  43 0006 1846     	 mov r0,r3
+  44 0008 BD46     	 mov sp,r7
+  45              	.LCFI2:
+  46              	 .cfi_def_cfa_register 13
+  47              	 
+  48 000a 5DF8047B 	 ldr r7,[sp],#4
+  49              	.LCFI3:
+  50              	 .cfi_restore 7
+  51              	 .cfi_def_cfa_offset 0
+  52 000e 7047     	 bx lr
+  53              	.L4:
+  54              	 .align 2
+  55              	.L3:
+  56 0010 00000000 	 .word _Min_Stack_Size
+  57              	 .cfi_endproc
+  58              	.LFE527:
+  60              	 .section .text.stackHighMem,"ax",%progbits
+  61              	 .align 2
+  62              	 .global stackHighMem
+  63              	 .thumb
+  64              	 .thumb_func
+  66              	stackHighMem:
+  67              	.LFB528:
+  98:../cleanflight/src/main/drivers/stack_check.c **** 
+  99:../cleanflight/src/main/drivers/stack_check.c **** uint32_t stackHighMem(void)
+ 100:../cleanflight/src/main/drivers/stack_check.c **** {
+  68              	 .loc 1 100 0
+  69              	 .cfi_startproc
+  70              	 
+  71              	 
+  72              	 
+  73 0000 80B4     	 push {r7}
+  74              	.LCFI4:
+  75              	 .cfi_def_cfa_offset 4
+  76              	 .cfi_offset 7,-4
+  77 0002 00AF     	 add r7,sp,#0
+  78              	.LCFI5:
+  79              	 .cfi_def_cfa_register 7
+ 101:../cleanflight/src/main/drivers/stack_check.c ****     return (uint32_t)(intptr_t)&_estack;
+  80              	 .loc 1 101 0
+  81 0004 024B     	 ldr r3,.L7
+ 102:../cleanflight/src/main/drivers/stack_check.c **** }
+  82              	 .loc 1 102 0
+  83 0006 1846     	 mov r0,r3
+  84 0008 BD46     	 mov sp,r7
+  85              	.LCFI6:
+  86              	 .cfi_def_cfa_register 13
+  87              	 
+  88 000a 5DF8047B 	 ldr r7,[sp],#4
+  89              	.LCFI7:
+  90              	 .cfi_restore 7
+  91              	 .cfi_def_cfa_offset 0
+  92 000e 7047     	 bx lr
+  93              	.L8:
+  94              	 .align 2
+  95              	.L7:
+  96 0010 00000000 	 .word _estack
+  97              	 .cfi_endproc
+  98              	.LFE528:
+ 100              	 .text
+ 101              	.Letext0:
+ 102              	 .file 2 "d:\\xmc\\dave-ide-4.4.2-64bit\\eclipse\\arm-gcc-49\\arm-none-eabi\\include\\machine\\_default_types.h"
+ 103              	 .file 3 "d:\\xmc\\dave-ide-4.4.2-64bit\\eclipse\\arm-gcc-49\\arm-none-eabi\\include\\stdint.h"
+ 104              	 .file 4 "D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/common/time.h"
+ 105              	 .file 5 "D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/lib/main/CMSIS/Core/Include/core_cm4.h"
+ 106              	 .file 6 "D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/lib/main/XMC4000/system_XMC4700.h"
+DEFINED SYMBOLS
+                            *ABS*:00000000 stack_check.c
+    {standard input}:20     .text.stackTotalSize:00000000 $t
+    {standard input}:25     .text.stackTotalSize:00000000 stackTotalSize
+    {standard input}:56     .text.stackTotalSize:00000010 $d
+    {standard input}:61     .text.stackHighMem:00000000 $t
+    {standard input}:66     .text.stackHighMem:00000000 stackHighMem
+    {standard input}:96     .text.stackHighMem:00000010 $d
+                     .debug_frame:00000010 $d
+
+UNDEFINED SYMBOLS
+_Min_Stack_Size
+_estack

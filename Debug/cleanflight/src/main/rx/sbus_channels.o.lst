@@ -1,0 +1,608 @@
+   1              	 .syntax unified
+   2              	 .cpu cortex-m4
+   3              	 .eabi_attribute 27,3
+   4              	 .fpu fpv4-sp-d16
+   5              	 .eabi_attribute 20,1
+   6              	 .eabi_attribute 21,1
+   7              	 .eabi_attribute 23,3
+   8              	 .eabi_attribute 24,1
+   9              	 .eabi_attribute 25,1
+  10              	 .eabi_attribute 26,1
+  11              	 .eabi_attribute 30,6
+  12              	 .eabi_attribute 34,1
+  13              	 .eabi_attribute 18,4
+  14              	 .thumb
+  15              	 .file "sbus_channels.c"
+  16              	 .text
+  17              	.Ltext0:
+  18              	 .cfi_sections .debug_frame
+  19              	 .section .text.sbusChannelsDecode,"ax",%progbits
+  20              	 .align 2
+  21              	 .global sbusChannelsDecode
+  22              	 .thumb
+  23              	 .thumb_func
+  25              	sbusChannelsDecode:
+  26              	.LFB535:
+  27              	 .file 1 "../cleanflight/src/main/rx/sbus_channels.c"
+   1:../cleanflight/src/main/rx/sbus_channels.c **** /*
+   2:../cleanflight/src/main/rx/sbus_channels.c ****  * This file is part of Cleanflight and Betaflight.
+   3:../cleanflight/src/main/rx/sbus_channels.c ****  *
+   4:../cleanflight/src/main/rx/sbus_channels.c ****  * Cleanflight and Betaflight are free software. You can redistribute
+   5:../cleanflight/src/main/rx/sbus_channels.c ****  * this software and/or modify this software under the terms of the
+   6:../cleanflight/src/main/rx/sbus_channels.c ****  * GNU General Public License as published by the Free Software
+   7:../cleanflight/src/main/rx/sbus_channels.c ****  * Foundation, either version 3 of the License, or (at your option)
+   8:../cleanflight/src/main/rx/sbus_channels.c ****  * any later version.
+   9:../cleanflight/src/main/rx/sbus_channels.c ****  *
+  10:../cleanflight/src/main/rx/sbus_channels.c ****  * Cleanflight and Betaflight are distributed in the hope that they
+  11:../cleanflight/src/main/rx/sbus_channels.c ****  * will be useful, but WITHOUT ANY WARRANTY; without even the implied
+  12:../cleanflight/src/main/rx/sbus_channels.c ****  * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+  13:../cleanflight/src/main/rx/sbus_channels.c ****  * See the GNU General Public License for more details.
+  14:../cleanflight/src/main/rx/sbus_channels.c ****  *
+  15:../cleanflight/src/main/rx/sbus_channels.c ****  * You should have received a copy of the GNU General Public License
+  16:../cleanflight/src/main/rx/sbus_channels.c ****  * along with this software.
+  17:../cleanflight/src/main/rx/sbus_channels.c ****  *
+  18:../cleanflight/src/main/rx/sbus_channels.c ****  * If not, see <http://www.gnu.org/licenses/>.
+  19:../cleanflight/src/main/rx/sbus_channels.c ****  */
+  20:../cleanflight/src/main/rx/sbus_channels.c **** 
+  21:../cleanflight/src/main/rx/sbus_channels.c **** #include <stdbool.h>
+  22:../cleanflight/src/main/rx/sbus_channels.c **** #include <stdint.h>
+  23:../cleanflight/src/main/rx/sbus_channels.c **** #include <stdlib.h>
+  24:../cleanflight/src/main/rx/sbus_channels.c **** 
+  25:../cleanflight/src/main/rx/sbus_channels.c **** #include "platform.h"
+  26:../cleanflight/src/main/rx/sbus_channels.c **** 
+  27:../cleanflight/src/main/rx/sbus_channels.c **** #ifdef USE_SERIAL_RX
+  28:../cleanflight/src/main/rx/sbus_channels.c **** 
+  29:../cleanflight/src/main/rx/sbus_channels.c **** #include "common/utils.h"
+  30:../cleanflight/src/main/rx/sbus_channels.c **** 
+  31:../cleanflight/src/main/rx/sbus_channels.c **** #include "pg/rx.h"
+  32:../cleanflight/src/main/rx/sbus_channels.c **** 
+  33:../cleanflight/src/main/rx/sbus_channels.c **** #include "rx/rx.h"
+  34:../cleanflight/src/main/rx/sbus_channels.c **** #include "rx/sbus_channels.h"
+  35:../cleanflight/src/main/rx/sbus_channels.c **** 
+  36:../cleanflight/src/main/rx/sbus_channels.c **** #define DEBUG_SBUS_FRAME_INTERVAL 3
+  37:../cleanflight/src/main/rx/sbus_channels.c **** 
+  38:../cleanflight/src/main/rx/sbus_channels.c **** #define SBUS_FLAG_CHANNEL_17        (1 << 0)
+  39:../cleanflight/src/main/rx/sbus_channels.c **** #define SBUS_FLAG_CHANNEL_18        (1 << 1)
+  40:../cleanflight/src/main/rx/sbus_channels.c **** 
+  41:../cleanflight/src/main/rx/sbus_channels.c **** #define SBUS_DIGITAL_CHANNEL_MIN 173
+  42:../cleanflight/src/main/rx/sbus_channels.c **** #define SBUS_DIGITAL_CHANNEL_MAX 1812
+  43:../cleanflight/src/main/rx/sbus_channels.c **** 
+  44:../cleanflight/src/main/rx/sbus_channels.c **** uint8_t sbusChannelsDecode(rxRuntimeConfig_t *rxRuntimeConfig, const sbusChannels_t *channels)
+  45:../cleanflight/src/main/rx/sbus_channels.c **** {
+  28              	 .loc 1 45 0
+  29              	 .cfi_startproc
+  30              	 
+  31              	 
+  32              	 
+  33 0000 80B4     	 push {r7}
+  34              	.LCFI0:
+  35              	 .cfi_def_cfa_offset 4
+  36              	 .cfi_offset 7,-4
+  37 0002 85B0     	 sub sp,sp,#20
+  38              	.LCFI1:
+  39              	 .cfi_def_cfa_offset 24
+  40 0004 00AF     	 add r7,sp,#0
+  41              	.LCFI2:
+  42              	 .cfi_def_cfa_register 7
+  43 0006 7860     	 str r0,[r7,#4]
+  44 0008 3960     	 str r1,[r7]
+  46:../cleanflight/src/main/rx/sbus_channels.c ****     uint16_t *sbusChannelData = rxRuntimeConfig->channelData;
+  45              	 .loc 1 46 0
+  46 000a 7B68     	 ldr r3,[r7,#4]
+  47 000c D3F80F30 	 ldr r3,[r3,#15]
+  48 0010 FB60     	 str r3,[r7,#12]
+  47:../cleanflight/src/main/rx/sbus_channels.c ****     sbusChannelData[0] = channels->chan0;
+  49              	 .loc 1 47 0
+  50 0012 3B68     	 ldr r3,[r7]
+  51 0014 1A78     	 ldrb r2,[r3]
+  52 0016 5B78     	 ldrb r3,[r3,#1]
+  53 0018 03F00703 	 and r3,r3,#7
+  54 001c 1B02     	 lsls r3,r3,#8
+  55 001e 1343     	 orrs r3,r3,r2
+  56 0020 9BB2     	 uxth r3,r3
+  57 0022 1A46     	 mov r2,r3
+  58 0024 FB68     	 ldr r3,[r7,#12]
+  59 0026 1A80     	 strh r2,[r3]
+  48:../cleanflight/src/main/rx/sbus_channels.c ****     sbusChannelData[1] = channels->chan1;
+  60              	 .loc 1 48 0
+  61 0028 FB68     	 ldr r3,[r7,#12]
+  62 002a 9A1C     	 adds r2,r3,#2
+  63 002c 3B68     	 ldr r3,[r7]
+  64 002e 5978     	 ldrb r1,[r3,#1]
+  65 0030 C908     	 lsrs r1,r1,#3
+  66 0032 C9B2     	 uxtb r1,r1
+  67 0034 9B78     	 ldrb r3,[r3,#2]
+  68 0036 03F03F03 	 and r3,r3,#63
+  69 003a 5B01     	 lsls r3,r3,#5
+  70 003c 0B43     	 orrs r3,r3,r1
+  71 003e 9BB2     	 uxth r3,r3
+  72 0040 1380     	 strh r3,[r2]
+  49:../cleanflight/src/main/rx/sbus_channels.c ****     sbusChannelData[2] = channels->chan2;
+  73              	 .loc 1 49 0
+  74 0042 FB68     	 ldr r3,[r7,#12]
+  75 0044 1A1D     	 adds r2,r3,#4
+  76 0046 3B68     	 ldr r3,[r7]
+  77 0048 9978     	 ldrb r1,[r3,#2]
+  78 004a 8909     	 lsrs r1,r1,#6
+  79 004c C9B2     	 uxtb r1,r1
+  80 004e D878     	 ldrb r0,[r3,#3]
+  81 0050 8000     	 lsls r0,r0,#2
+  82 0052 0143     	 orrs r1,r1,r0
+  83 0054 1B79     	 ldrb r3,[r3,#4]
+  84 0056 03F00103 	 and r3,r3,#1
+  85 005a 9B02     	 lsls r3,r3,#10
+  86 005c 0B43     	 orrs r3,r3,r1
+  87 005e 9BB2     	 uxth r3,r3
+  88 0060 1380     	 strh r3,[r2]
+  50:../cleanflight/src/main/rx/sbus_channels.c ****     sbusChannelData[3] = channels->chan3;
+  89              	 .loc 1 50 0
+  90 0062 FB68     	 ldr r3,[r7,#12]
+  91 0064 9A1D     	 adds r2,r3,#6
+  92 0066 3B68     	 ldr r3,[r7]
+  93 0068 1979     	 ldrb r1,[r3,#4]
+  94 006a 4908     	 lsrs r1,r1,#1
+  95 006c C9B2     	 uxtb r1,r1
+  96 006e 5B79     	 ldrb r3,[r3,#5]
+  97 0070 03F00F03 	 and r3,r3,#15
+  98 0074 DB01     	 lsls r3,r3,#7
+  99 0076 0B43     	 orrs r3,r3,r1
+ 100 0078 9BB2     	 uxth r3,r3
+ 101 007a 1380     	 strh r3,[r2]
+  51:../cleanflight/src/main/rx/sbus_channels.c ****     sbusChannelData[4] = channels->chan4;
+ 102              	 .loc 1 51 0
+ 103 007c FB68     	 ldr r3,[r7,#12]
+ 104 007e 03F10802 	 add r2,r3,#8
+ 105 0082 3B68     	 ldr r3,[r7]
+ 106 0084 5979     	 ldrb r1,[r3,#5]
+ 107 0086 0909     	 lsrs r1,r1,#4
+ 108 0088 C9B2     	 uxtb r1,r1
+ 109 008a 9B79     	 ldrb r3,[r3,#6]
+ 110 008c 03F07F03 	 and r3,r3,#127
+ 111 0090 1B01     	 lsls r3,r3,#4
+ 112 0092 0B43     	 orrs r3,r3,r1
+ 113 0094 9BB2     	 uxth r3,r3
+ 114 0096 1380     	 strh r3,[r2]
+  52:../cleanflight/src/main/rx/sbus_channels.c ****     sbusChannelData[5] = channels->chan5;
+ 115              	 .loc 1 52 0
+ 116 0098 FB68     	 ldr r3,[r7,#12]
+ 117 009a 03F10A02 	 add r2,r3,#10
+ 118 009e 3B68     	 ldr r3,[r7]
+ 119 00a0 9979     	 ldrb r1,[r3,#6]
+ 120 00a2 C909     	 lsrs r1,r1,#7
+ 121 00a4 C9B2     	 uxtb r1,r1
+ 122 00a6 D879     	 ldrb r0,[r3,#7]
+ 123 00a8 4000     	 lsls r0,r0,#1
+ 124 00aa 0143     	 orrs r1,r1,r0
+ 125 00ac 1B7A     	 ldrb r3,[r3,#8]
+ 126 00ae 03F00303 	 and r3,r3,#3
+ 127 00b2 5B02     	 lsls r3,r3,#9
+ 128 00b4 0B43     	 orrs r3,r3,r1
+ 129 00b6 9BB2     	 uxth r3,r3
+ 130 00b8 1380     	 strh r3,[r2]
+  53:../cleanflight/src/main/rx/sbus_channels.c ****     sbusChannelData[6] = channels->chan6;
+ 131              	 .loc 1 53 0
+ 132 00ba FB68     	 ldr r3,[r7,#12]
+ 133 00bc 03F10C02 	 add r2,r3,#12
+ 134 00c0 3B68     	 ldr r3,[r7]
+ 135 00c2 197A     	 ldrb r1,[r3,#8]
+ 136 00c4 8908     	 lsrs r1,r1,#2
+ 137 00c6 C9B2     	 uxtb r1,r1
+ 138 00c8 5B7A     	 ldrb r3,[r3,#9]
+ 139 00ca 03F01F03 	 and r3,r3,#31
+ 140 00ce 9B01     	 lsls r3,r3,#6
+ 141 00d0 0B43     	 orrs r3,r3,r1
+ 142 00d2 9BB2     	 uxth r3,r3
+ 143 00d4 1380     	 strh r3,[r2]
+  54:../cleanflight/src/main/rx/sbus_channels.c ****     sbusChannelData[7] = channels->chan7;
+ 144              	 .loc 1 54 0
+ 145 00d6 FB68     	 ldr r3,[r7,#12]
+ 146 00d8 03F10E02 	 add r2,r3,#14
+ 147 00dc 3B68     	 ldr r3,[r7]
+ 148 00de 597A     	 ldrb r1,[r3,#9]
+ 149 00e0 4909     	 lsrs r1,r1,#5
+ 150 00e2 C9B2     	 uxtb r1,r1
+ 151 00e4 9B7A     	 ldrb r3,[r3,#10]
+ 152 00e6 DB00     	 lsls r3,r3,#3
+ 153 00e8 0B43     	 orrs r3,r3,r1
+ 154 00ea 9BB2     	 uxth r3,r3
+ 155 00ec 1380     	 strh r3,[r2]
+  55:../cleanflight/src/main/rx/sbus_channels.c ****     sbusChannelData[8] = channels->chan8;
+ 156              	 .loc 1 55 0
+ 157 00ee FB68     	 ldr r3,[r7,#12]
+ 158 00f0 03F11002 	 add r2,r3,#16
+ 159 00f4 3B68     	 ldr r3,[r7]
+ 160 00f6 D97A     	 ldrb r1,[r3,#11]
+ 161 00f8 1B7B     	 ldrb r3,[r3,#12]
+ 162 00fa 03F00703 	 and r3,r3,#7
+ 163 00fe 1B02     	 lsls r3,r3,#8
+ 164 0100 0B43     	 orrs r3,r3,r1
+ 165 0102 9BB2     	 uxth r3,r3
+ 166 0104 1380     	 strh r3,[r2]
+  56:../cleanflight/src/main/rx/sbus_channels.c ****     sbusChannelData[9] = channels->chan9;
+ 167              	 .loc 1 56 0
+ 168 0106 FB68     	 ldr r3,[r7,#12]
+ 169 0108 03F11202 	 add r2,r3,#18
+ 170 010c 3B68     	 ldr r3,[r7]
+ 171 010e 197B     	 ldrb r1,[r3,#12]
+ 172 0110 C908     	 lsrs r1,r1,#3
+ 173 0112 C9B2     	 uxtb r1,r1
+ 174 0114 5B7B     	 ldrb r3,[r3,#13]
+ 175 0116 03F03F03 	 and r3,r3,#63
+ 176 011a 5B01     	 lsls r3,r3,#5
+ 177 011c 0B43     	 orrs r3,r3,r1
+ 178 011e 9BB2     	 uxth r3,r3
+ 179 0120 1380     	 strh r3,[r2]
+  57:../cleanflight/src/main/rx/sbus_channels.c ****     sbusChannelData[10] = channels->chan10;
+ 180              	 .loc 1 57 0
+ 181 0122 FB68     	 ldr r3,[r7,#12]
+ 182 0124 03F11402 	 add r2,r3,#20
+ 183 0128 3B68     	 ldr r3,[r7]
+ 184 012a 597B     	 ldrb r1,[r3,#13]
+ 185 012c 8909     	 lsrs r1,r1,#6
+ 186 012e C9B2     	 uxtb r1,r1
+ 187 0130 987B     	 ldrb r0,[r3,#14]
+ 188 0132 8000     	 lsls r0,r0,#2
+ 189 0134 0143     	 orrs r1,r1,r0
+ 190 0136 DB7B     	 ldrb r3,[r3,#15]
+ 191 0138 03F00103 	 and r3,r3,#1
+ 192 013c 9B02     	 lsls r3,r3,#10
+ 193 013e 0B43     	 orrs r3,r3,r1
+ 194 0140 9BB2     	 uxth r3,r3
+ 195 0142 1380     	 strh r3,[r2]
+  58:../cleanflight/src/main/rx/sbus_channels.c ****     sbusChannelData[11] = channels->chan11;
+ 196              	 .loc 1 58 0
+ 197 0144 FB68     	 ldr r3,[r7,#12]
+ 198 0146 03F11602 	 add r2,r3,#22
+ 199 014a 3B68     	 ldr r3,[r7]
+ 200 014c D97B     	 ldrb r1,[r3,#15]
+ 201 014e 4908     	 lsrs r1,r1,#1
+ 202 0150 C9B2     	 uxtb r1,r1
+ 203 0152 1B7C     	 ldrb r3,[r3,#16]
+ 204 0154 03F00F03 	 and r3,r3,#15
+ 205 0158 DB01     	 lsls r3,r3,#7
+ 206 015a 0B43     	 orrs r3,r3,r1
+ 207 015c 9BB2     	 uxth r3,r3
+ 208 015e 1380     	 strh r3,[r2]
+  59:../cleanflight/src/main/rx/sbus_channels.c ****     sbusChannelData[12] = channels->chan12;
+ 209              	 .loc 1 59 0
+ 210 0160 FB68     	 ldr r3,[r7,#12]
+ 211 0162 03F11802 	 add r2,r3,#24
+ 212 0166 3B68     	 ldr r3,[r7]
+ 213 0168 197C     	 ldrb r1,[r3,#16]
+ 214 016a 0909     	 lsrs r1,r1,#4
+ 215 016c C9B2     	 uxtb r1,r1
+ 216 016e 5B7C     	 ldrb r3,[r3,#17]
+ 217 0170 03F07F03 	 and r3,r3,#127
+ 218 0174 1B01     	 lsls r3,r3,#4
+ 219 0176 0B43     	 orrs r3,r3,r1
+ 220 0178 9BB2     	 uxth r3,r3
+ 221 017a 1380     	 strh r3,[r2]
+  60:../cleanflight/src/main/rx/sbus_channels.c ****     sbusChannelData[13] = channels->chan13;
+ 222              	 .loc 1 60 0
+ 223 017c FB68     	 ldr r3,[r7,#12]
+ 224 017e 03F11A02 	 add r2,r3,#26
+ 225 0182 3B68     	 ldr r3,[r7]
+ 226 0184 597C     	 ldrb r1,[r3,#17]
+ 227 0186 C909     	 lsrs r1,r1,#7
+ 228 0188 C9B2     	 uxtb r1,r1
+ 229 018a 987C     	 ldrb r0,[r3,#18]
+ 230 018c 4000     	 lsls r0,r0,#1
+ 231 018e 0143     	 orrs r1,r1,r0
+ 232 0190 DB7C     	 ldrb r3,[r3,#19]
+ 233 0192 03F00303 	 and r3,r3,#3
+ 234 0196 5B02     	 lsls r3,r3,#9
+ 235 0198 0B43     	 orrs r3,r3,r1
+ 236 019a 9BB2     	 uxth r3,r3
+ 237 019c 1380     	 strh r3,[r2]
+  61:../cleanflight/src/main/rx/sbus_channels.c ****     sbusChannelData[14] = channels->chan14;
+ 238              	 .loc 1 61 0
+ 239 019e FB68     	 ldr r3,[r7,#12]
+ 240 01a0 03F11C02 	 add r2,r3,#28
+ 241 01a4 3B68     	 ldr r3,[r7]
+ 242 01a6 D97C     	 ldrb r1,[r3,#19]
+ 243 01a8 8908     	 lsrs r1,r1,#2
+ 244 01aa C9B2     	 uxtb r1,r1
+ 245 01ac 1B7D     	 ldrb r3,[r3,#20]
+ 246 01ae 03F01F03 	 and r3,r3,#31
+ 247 01b2 9B01     	 lsls r3,r3,#6
+ 248 01b4 0B43     	 orrs r3,r3,r1
+ 249 01b6 9BB2     	 uxth r3,r3
+ 250 01b8 1380     	 strh r3,[r2]
+  62:../cleanflight/src/main/rx/sbus_channels.c ****     sbusChannelData[15] = channels->chan15;
+ 251              	 .loc 1 62 0
+ 252 01ba FB68     	 ldr r3,[r7,#12]
+ 253 01bc 03F11E02 	 add r2,r3,#30
+ 254 01c0 3B68     	 ldr r3,[r7]
+ 255 01c2 197D     	 ldrb r1,[r3,#20]
+ 256 01c4 4909     	 lsrs r1,r1,#5
+ 257 01c6 C9B2     	 uxtb r1,r1
+ 258 01c8 5B7D     	 ldrb r3,[r3,#21]
+ 259 01ca DB00     	 lsls r3,r3,#3
+ 260 01cc 0B43     	 orrs r3,r3,r1
+ 261 01ce 9BB2     	 uxth r3,r3
+ 262 01d0 1380     	 strh r3,[r2]
+  63:../cleanflight/src/main/rx/sbus_channels.c **** 
+  64:../cleanflight/src/main/rx/sbus_channels.c ****     if (channels->flags & SBUS_FLAG_CHANNEL_17) {
+ 263              	 .loc 1 64 0
+ 264 01d2 3B68     	 ldr r3,[r7]
+ 265 01d4 9B7D     	 ldrb r3,[r3,#22]
+ 266 01d6 03F00103 	 and r3,r3,#1
+ 267 01da 002B     	 cmp r3,#0
+ 268 01dc 05D0     	 beq .L2
+  65:../cleanflight/src/main/rx/sbus_channels.c ****         sbusChannelData[16] = SBUS_DIGITAL_CHANNEL_MAX;
+ 269              	 .loc 1 65 0
+ 270 01de FB68     	 ldr r3,[r7,#12]
+ 271 01e0 2033     	 adds r3,r3,#32
+ 272 01e2 40F21472 	 movw r2,#1812
+ 273 01e6 1A80     	 strh r2,[r3]
+ 274 01e8 03E0     	 b .L3
+ 275              	.L2:
+  66:../cleanflight/src/main/rx/sbus_channels.c ****     } else {
+  67:../cleanflight/src/main/rx/sbus_channels.c ****         sbusChannelData[16] = SBUS_DIGITAL_CHANNEL_MIN;
+ 276              	 .loc 1 67 0
+ 277 01ea FB68     	 ldr r3,[r7,#12]
+ 278 01ec 2033     	 adds r3,r3,#32
+ 279 01ee AD22     	 movs r2,#173
+ 280 01f0 1A80     	 strh r2,[r3]
+ 281              	.L3:
+  68:../cleanflight/src/main/rx/sbus_channels.c ****     }
+  69:../cleanflight/src/main/rx/sbus_channels.c **** 
+  70:../cleanflight/src/main/rx/sbus_channels.c ****     if (channels->flags & SBUS_FLAG_CHANNEL_18) {
+ 282              	 .loc 1 70 0
+ 283 01f2 3B68     	 ldr r3,[r7]
+ 284 01f4 9B7D     	 ldrb r3,[r3,#22]
+ 285 01f6 03F00203 	 and r3,r3,#2
+ 286 01fa 002B     	 cmp r3,#0
+ 287 01fc 05D0     	 beq .L4
+  71:../cleanflight/src/main/rx/sbus_channels.c ****         sbusChannelData[17] = SBUS_DIGITAL_CHANNEL_MAX;
+ 288              	 .loc 1 71 0
+ 289 01fe FB68     	 ldr r3,[r7,#12]
+ 290 0200 2233     	 adds r3,r3,#34
+ 291 0202 40F21472 	 movw r2,#1812
+ 292 0206 1A80     	 strh r2,[r3]
+ 293 0208 03E0     	 b .L5
+ 294              	.L4:
+  72:../cleanflight/src/main/rx/sbus_channels.c ****     } else {
+  73:../cleanflight/src/main/rx/sbus_channels.c ****         sbusChannelData[17] = SBUS_DIGITAL_CHANNEL_MIN;
+ 295              	 .loc 1 73 0
+ 296 020a FB68     	 ldr r3,[r7,#12]
+ 297 020c 2233     	 adds r3,r3,#34
+ 298 020e AD22     	 movs r2,#173
+ 299 0210 1A80     	 strh r2,[r3]
+ 300              	.L5:
+  74:../cleanflight/src/main/rx/sbus_channels.c ****     }
+  75:../cleanflight/src/main/rx/sbus_channels.c **** 
+  76:../cleanflight/src/main/rx/sbus_channels.c ****     if (channels->flags & SBUS_FLAG_FAILSAFE_ACTIVE) {
+ 301              	 .loc 1 76 0
+ 302 0212 3B68     	 ldr r3,[r7]
+ 303 0214 9B7D     	 ldrb r3,[r3,#22]
+ 304 0216 03F00803 	 and r3,r3,#8
+ 305 021a 002B     	 cmp r3,#0
+ 306 021c 01D0     	 beq .L6
+  77:../cleanflight/src/main/rx/sbus_channels.c ****         // internal failsafe enabled and rx failsafe flag set
+  78:../cleanflight/src/main/rx/sbus_channels.c ****         // RX *should* still be sending valid channel data (repeated), so use it.
+  79:../cleanflight/src/main/rx/sbus_channels.c ****         return RX_FRAME_COMPLETE | RX_FRAME_FAILSAFE;
+ 307              	 .loc 1 79 0
+ 308 021e 0323     	 movs r3,#3
+ 309 0220 08E0     	 b .L7
+ 310              	.L6:
+  80:../cleanflight/src/main/rx/sbus_channels.c ****     }
+  81:../cleanflight/src/main/rx/sbus_channels.c **** 
+  82:../cleanflight/src/main/rx/sbus_channels.c ****     if (channels->flags & SBUS_FLAG_SIGNAL_LOSS) {
+ 311              	 .loc 1 82 0
+ 312 0222 3B68     	 ldr r3,[r7]
+ 313 0224 9B7D     	 ldrb r3,[r3,#22]
+ 314 0226 03F00403 	 and r3,r3,#4
+ 315 022a 002B     	 cmp r3,#0
+ 316 022c 01D0     	 beq .L8
+  83:../cleanflight/src/main/rx/sbus_channels.c ****         // The received data is a repeat of the last valid data so can be considered complete.
+  84:../cleanflight/src/main/rx/sbus_channels.c ****         return RX_FRAME_COMPLETE | RX_FRAME_DROPPED;
+ 317              	 .loc 1 84 0
+ 318 022e 0923     	 movs r3,#9
+ 319 0230 00E0     	 b .L7
+ 320              	.L8:
+  85:../cleanflight/src/main/rx/sbus_channels.c ****     }
+  86:../cleanflight/src/main/rx/sbus_channels.c **** 
+  87:../cleanflight/src/main/rx/sbus_channels.c ****     return RX_FRAME_COMPLETE;
+ 321              	 .loc 1 87 0
+ 322 0232 0123     	 movs r3,#1
+ 323              	.L7:
+  88:../cleanflight/src/main/rx/sbus_channels.c **** }
+ 324              	 .loc 1 88 0
+ 325 0234 1846     	 mov r0,r3
+ 326 0236 1437     	 adds r7,r7,#20
+ 327              	.LCFI3:
+ 328              	 .cfi_def_cfa_offset 4
+ 329 0238 BD46     	 mov sp,r7
+ 330              	.LCFI4:
+ 331              	 .cfi_def_cfa_register 13
+ 332              	 
+ 333 023a 5DF8047B 	 ldr r7,[sp],#4
+ 334              	.LCFI5:
+ 335              	 .cfi_restore 7
+ 336              	 .cfi_def_cfa_offset 0
+ 337 023e 7047     	 bx lr
+ 338              	 .cfi_endproc
+ 339              	.LFE535:
+ 341              	 .section .text.sbusChannelsReadRawRC,"ax",%progbits
+ 342              	 .align 2
+ 343              	 .thumb
+ 344              	 .thumb_func
+ 346              	sbusChannelsReadRawRC:
+ 347              	.LFB536:
+  89:../cleanflight/src/main/rx/sbus_channels.c **** 
+  90:../cleanflight/src/main/rx/sbus_channels.c **** static uint16_t sbusChannelsReadRawRC(const rxRuntimeConfig_t *rxRuntimeConfig, uint8_t chan)
+  91:../cleanflight/src/main/rx/sbus_channels.c **** {
+ 348              	 .loc 1 91 0
+ 349              	 .cfi_startproc
+ 350              	 
+ 351              	 
+ 352              	 
+ 353 0000 80B4     	 push {r7}
+ 354              	.LCFI6:
+ 355              	 .cfi_def_cfa_offset 4
+ 356              	 .cfi_offset 7,-4
+ 357 0002 83B0     	 sub sp,sp,#12
+ 358              	.LCFI7:
+ 359              	 .cfi_def_cfa_offset 16
+ 360 0004 00AF     	 add r7,sp,#0
+ 361              	.LCFI8:
+ 362              	 .cfi_def_cfa_register 7
+ 363 0006 7860     	 str r0,[r7,#4]
+ 364 0008 0B46     	 mov r3,r1
+ 365 000a FB70     	 strb r3,[r7,#3]
+  92:../cleanflight/src/main/rx/sbus_channels.c ****     // Linear fitting values read from OpenTX-ppmus and comparing with values received by X4R
+  93:../cleanflight/src/main/rx/sbus_channels.c ****     // http://www.wolframalpha.com/input/?i=linear+fit+%7B173%2C+988%7D%2C+%7B1812%2C+2012%7D%2C+%7
+  94:../cleanflight/src/main/rx/sbus_channels.c ****     return (5 * rxRuntimeConfig->channelData[chan] / 8) + 880;
+ 366              	 .loc 1 94 0
+ 367 000c 7B68     	 ldr r3,[r7,#4]
+ 368 000e D3F80F20 	 ldr r2,[r3,#15]
+ 369 0012 FB78     	 ldrb r3,[r7,#3]
+ 370 0014 5B00     	 lsls r3,r3,#1
+ 371 0016 1344     	 add r3,r3,r2
+ 372 0018 1B88     	 ldrh r3,[r3]
+ 373 001a 1A46     	 mov r2,r3
+ 374 001c 1346     	 mov r3,r2
+ 375 001e 9B00     	 lsls r3,r3,#2
+ 376 0020 1344     	 add r3,r3,r2
+ 377 0022 002B     	 cmp r3,#0
+ 378 0024 00DA     	 bge .L10
+ 379 0026 0733     	 adds r3,r3,#7
+ 380              	.L10:
+ 381 0028 DB10     	 asrs r3,r3,#3
+ 382 002a 9BB2     	 uxth r3,r3
+ 383 002c 03F55C73 	 add r3,r3,#880
+ 384 0030 9BB2     	 uxth r3,r3
+  95:../cleanflight/src/main/rx/sbus_channels.c **** }
+ 385              	 .loc 1 95 0
+ 386 0032 1846     	 mov r0,r3
+ 387 0034 0C37     	 adds r7,r7,#12
+ 388              	.LCFI9:
+ 389              	 .cfi_def_cfa_offset 4
+ 390 0036 BD46     	 mov sp,r7
+ 391              	.LCFI10:
+ 392              	 .cfi_def_cfa_register 13
+ 393              	 
+ 394 0038 5DF8047B 	 ldr r7,[sp],#4
+ 395              	.LCFI11:
+ 396              	 .cfi_restore 7
+ 397              	 .cfi_def_cfa_offset 0
+ 398 003c 7047     	 bx lr
+ 399              	 .cfi_endproc
+ 400              	.LFE536:
+ 402 003e 00BF     	 .section .text.sbusChannelsInit,"ax",%progbits
+ 403              	 .align 2
+ 404              	 .global sbusChannelsInit
+ 405              	 .thumb
+ 406              	 .thumb_func
+ 408              	sbusChannelsInit:
+ 409              	.LFB537:
+  96:../cleanflight/src/main/rx/sbus_channels.c **** 
+  97:../cleanflight/src/main/rx/sbus_channels.c **** void sbusChannelsInit(const rxConfig_t *rxConfig, rxRuntimeConfig_t *rxRuntimeConfig)
+  98:../cleanflight/src/main/rx/sbus_channels.c **** {
+ 410              	 .loc 1 98 0
+ 411              	 .cfi_startproc
+ 412              	 
+ 413              	 
+ 414              	 
+ 415 0000 80B4     	 push {r7}
+ 416              	.LCFI12:
+ 417              	 .cfi_def_cfa_offset 4
+ 418              	 .cfi_offset 7,-4
+ 419 0002 85B0     	 sub sp,sp,#20
+ 420              	.LCFI13:
+ 421              	 .cfi_def_cfa_offset 24
+ 422 0004 00AF     	 add r7,sp,#0
+ 423              	.LCFI14:
+ 424              	 .cfi_def_cfa_register 7
+ 425 0006 7860     	 str r0,[r7,#4]
+ 426 0008 3960     	 str r1,[r7]
+  99:../cleanflight/src/main/rx/sbus_channels.c ****     rxRuntimeConfig->rcReadRawFn = sbusChannelsReadRawRC;
+ 427              	 .loc 1 99 0
+ 428 000a 3B68     	 ldr r3,[r7]
+ 429 000c 124A     	 ldr r2,.L15
+ 430 000e C3F80320 	 str r2,[r3,#3]
+ 431              	.LBB2:
+ 100:../cleanflight/src/main/rx/sbus_channels.c ****     for (int b = 0; b < SBUS_MAX_CHANNEL; b++) {
+ 432              	 .loc 1 100 0
+ 433 0012 0023     	 movs r3,#0
+ 434 0014 FB60     	 str r3,[r7,#12]
+ 435 0016 17E0     	 b .L13
+ 436              	.L14:
+ 101:../cleanflight/src/main/rx/sbus_channels.c ****         rxRuntimeConfig->channelData[b] = (16 * rxConfig->midrc) / 10 - 1408;
+ 437              	 .loc 1 101 0 discriminator 3
+ 438 0018 3B68     	 ldr r3,[r7]
+ 439 001a D3F80F20 	 ldr r2,[r3,#15]
+ 440 001e FB68     	 ldr r3,[r7,#12]
+ 441 0020 5B00     	 lsls r3,r3,#1
+ 442 0022 1A44     	 add r2,r2,r3
+ 443 0024 7B68     	 ldr r3,[r7,#4]
+ 444 0026 5B8A     	 ldrh r3,[r3,#18]
+ 445 0028 9BB2     	 uxth r3,r3
+ 446 002a 1B01     	 lsls r3,r3,#4
+ 447 002c 0B49     	 ldr r1,.L15+4
+ 448 002e 81FB0301 	 smull r0,r1,r1,r3
+ 449 0032 8910     	 asrs r1,r1,#2
+ 450 0034 DB17     	 asrs r3,r3,#31
+ 451 0036 CB1A     	 subs r3,r1,r3
+ 452 0038 9BB2     	 uxth r3,r3
+ 453 003a A3F5B063 	 sub r3,r3,#1408
+ 454 003e 9BB2     	 uxth r3,r3
+ 455 0040 1380     	 strh r3,[r2]
+ 100:../cleanflight/src/main/rx/sbus_channels.c ****     for (int b = 0; b < SBUS_MAX_CHANNEL; b++) {
+ 456              	 .loc 1 100 0 discriminator 3
+ 457 0042 FB68     	 ldr r3,[r7,#12]
+ 458 0044 0133     	 adds r3,r3,#1
+ 459 0046 FB60     	 str r3,[r7,#12]
+ 460              	.L13:
+ 100:../cleanflight/src/main/rx/sbus_channels.c ****     for (int b = 0; b < SBUS_MAX_CHANNEL; b++) {
+ 461              	 .loc 1 100 0 is_stmt 0 discriminator 1
+ 462 0048 FB68     	 ldr r3,[r7,#12]
+ 463 004a 112B     	 cmp r3,#17
+ 464 004c E4DD     	 ble .L14
+ 465              	.LBE2:
+ 102:../cleanflight/src/main/rx/sbus_channels.c ****     }
+ 103:../cleanflight/src/main/rx/sbus_channels.c **** }
+ 466              	 .loc 1 103 0 is_stmt 1
+ 467 004e 1437     	 adds r7,r7,#20
+ 468              	.LCFI15:
+ 469              	 .cfi_def_cfa_offset 4
+ 470 0050 BD46     	 mov sp,r7
+ 471              	.LCFI16:
+ 472              	 .cfi_def_cfa_register 13
+ 473              	 
+ 474 0052 5DF8047B 	 ldr r7,[sp],#4
+ 475              	.LCFI17:
+ 476              	 .cfi_restore 7
+ 477              	 .cfi_def_cfa_offset 0
+ 478 0056 7047     	 bx lr
+ 479              	.L16:
+ 480              	 .align 2
+ 481              	.L15:
+ 482 0058 00000000 	 .word sbusChannelsReadRawRC
+ 483 005c 67666666 	 .word 1717986919
+ 484              	 .cfi_endproc
+ 485              	.LFE537:
+ 487              	 .text
+ 488              	.Letext0:
+ 489              	 .file 2 "d:\\xmc\\dave-ide-4.4.2-64bit\\eclipse\\arm-gcc-49\\arm-none-eabi\\include\\machine\\_default_types.h"
+ 490              	 .file 3 "d:\\xmc\\dave-ide-4.4.2-64bit\\eclipse\\arm-gcc-49\\arm-none-eabi\\include\\stdint.h"
+ 491              	 .file 4 "D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/drivers/io_types.h"
+ 492              	 .file 5 "D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/pg/rx.h"
+ 493              	 .file 6 "D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/common/time.h"
+ 494              	 .file 7 "D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/rx/rx.h"
+ 495              	 .file 8 "D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/rx/sbus_channels.h"
+ 496              	 .file 9 "D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/lib/main/CMSIS/Core/Include/core_cm4.h"
+ 497              	 .file 10 "D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/lib/main/XMC4000/system_XMC4700.h"
+DEFINED SYMBOLS
+                            *ABS*:00000000 sbus_channels.c
+    {standard input}:20     .text.sbusChannelsDecode:00000000 $t
+    {standard input}:25     .text.sbusChannelsDecode:00000000 sbusChannelsDecode
+    {standard input}:342    .text.sbusChannelsReadRawRC:00000000 $t
+    {standard input}:346    .text.sbusChannelsReadRawRC:00000000 sbusChannelsReadRawRC
+    {standard input}:403    .text.sbusChannelsInit:00000000 $t
+    {standard input}:408    .text.sbusChannelsInit:00000000 sbusChannelsInit
+    {standard input}:482    .text.sbusChannelsInit:00000058 $d
+                     .debug_frame:00000010 $d
+
+NO UNDEFINED SYMBOLS

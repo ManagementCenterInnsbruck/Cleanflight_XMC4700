@@ -1,0 +1,907 @@
+   1              	 .syntax unified
+   2              	 .cpu cortex-m4
+   3              	 .eabi_attribute 27,3
+   4              	 .fpu fpv4-sp-d16
+   5              	 .eabi_attribute 20,1
+   6              	 .eabi_attribute 21,1
+   7              	 .eabi_attribute 23,3
+   8              	 .eabi_attribute 24,1
+   9              	 .eabi_attribute 25,1
+  10              	 .eabi_attribute 26,1
+  11              	 .eabi_attribute 30,6
+  12              	 .eabi_attribute 34,1
+  13              	 .eabi_attribute 18,4
+  14              	 .thumb
+  15              	 .file "serial.c"
+  16              	 .text
+  17              	.Ltext0:
+  18              	 .cfi_sections .debug_frame
+  19              	 .section .text.serialPrint,"ax",%progbits
+  20              	 .align 2
+  21              	 .global serialPrint
+  22              	 .thumb
+  23              	 .thumb_func
+  25              	serialPrint:
+  26              	.LFB526:
+  27              	 .file 1 "../cleanflight/src/main/drivers/serial.c"
+   1:../cleanflight/src/main/drivers/serial.c **** /*
+   2:../cleanflight/src/main/drivers/serial.c ****  * This file is part of Cleanflight and Betaflight.
+   3:../cleanflight/src/main/drivers/serial.c ****  *
+   4:../cleanflight/src/main/drivers/serial.c ****  * Cleanflight and Betaflight are free software. You can redistribute
+   5:../cleanflight/src/main/drivers/serial.c ****  * this software and/or modify this software under the terms of the
+   6:../cleanflight/src/main/drivers/serial.c ****  * GNU General Public License as published by the Free Software
+   7:../cleanflight/src/main/drivers/serial.c ****  * Foundation, either version 3 of the License, or (at your option)
+   8:../cleanflight/src/main/drivers/serial.c ****  * any later version.
+   9:../cleanflight/src/main/drivers/serial.c ****  *
+  10:../cleanflight/src/main/drivers/serial.c ****  * Cleanflight and Betaflight are distributed in the hope that they
+  11:../cleanflight/src/main/drivers/serial.c ****  * will be useful, but WITHOUT ANY WARRANTY; without even the implied
+  12:../cleanflight/src/main/drivers/serial.c ****  * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+  13:../cleanflight/src/main/drivers/serial.c ****  * See the GNU General Public License for more details.
+  14:../cleanflight/src/main/drivers/serial.c ****  *
+  15:../cleanflight/src/main/drivers/serial.c ****  * You should have received a copy of the GNU General Public License
+  16:../cleanflight/src/main/drivers/serial.c ****  * along with this software.
+  17:../cleanflight/src/main/drivers/serial.c ****  *
+  18:../cleanflight/src/main/drivers/serial.c ****  * If not, see <http://www.gnu.org/licenses/>.
+  19:../cleanflight/src/main/drivers/serial.c ****  */
+  20:../cleanflight/src/main/drivers/serial.c **** 
+  21:../cleanflight/src/main/drivers/serial.c **** #include <stdbool.h>
+  22:../cleanflight/src/main/drivers/serial.c **** #include <stdint.h>
+  23:../cleanflight/src/main/drivers/serial.c **** 
+  24:../cleanflight/src/main/drivers/serial.c **** #include "platform.h"
+  25:../cleanflight/src/main/drivers/serial.c **** 
+  26:../cleanflight/src/main/drivers/serial.c **** #include "serial.h"
+  27:../cleanflight/src/main/drivers/serial.c **** 
+  28:../cleanflight/src/main/drivers/serial.c **** void serialPrint(serialPort_t *instance, const char *str)
+  29:../cleanflight/src/main/drivers/serial.c **** {
+  28              	 .loc 1 29 0
+  29              	 .cfi_startproc
+  30              	 
+  31              	 
+  32 0000 80B5     	 push {r7,lr}
+  33              	.LCFI0:
+  34              	 .cfi_def_cfa_offset 8
+  35              	 .cfi_offset 7,-8
+  36              	 .cfi_offset 14,-4
+  37 0002 84B0     	 sub sp,sp,#16
+  38              	.LCFI1:
+  39              	 .cfi_def_cfa_offset 24
+  40 0004 00AF     	 add r7,sp,#0
+  41              	.LCFI2:
+  42              	 .cfi_def_cfa_register 7
+  43 0006 7860     	 str r0,[r7,#4]
+  44 0008 3960     	 str r1,[r7]
+  30:../cleanflight/src/main/drivers/serial.c ****     uint8_t ch;
+  31:../cleanflight/src/main/drivers/serial.c ****     while ((ch = *(str++)) != 0) {
+  45              	 .loc 1 31 0
+  46 000a 04E0     	 b .L2
+  47              	.L3:
+  32:../cleanflight/src/main/drivers/serial.c ****         serialWrite(instance, ch);
+  48              	 .loc 1 32 0
+  49 000c FB7B     	 ldrb r3,[r7,#15]
+  50 000e 7868     	 ldr r0,[r7,#4]
+  51 0010 1946     	 mov r1,r3
+  52 0012 FFF7FEFF 	 bl serialWrite
+  53              	.L2:
+  31:../cleanflight/src/main/drivers/serial.c ****         serialWrite(instance, ch);
+  54              	 .loc 1 31 0
+  55 0016 3B68     	 ldr r3,[r7]
+  56 0018 5A1C     	 adds r2,r3,#1
+  57 001a 3A60     	 str r2,[r7]
+  58 001c 1B78     	 ldrb r3,[r3]
+  59 001e FB73     	 strb r3,[r7,#15]
+  60 0020 FB7B     	 ldrb r3,[r7,#15]
+  61 0022 002B     	 cmp r3,#0
+  62 0024 F2D1     	 bne .L3
+  33:../cleanflight/src/main/drivers/serial.c ****     }
+  34:../cleanflight/src/main/drivers/serial.c **** }
+  63              	 .loc 1 34 0
+  64 0026 1037     	 adds r7,r7,#16
+  65              	.LCFI3:
+  66              	 .cfi_def_cfa_offset 8
+  67 0028 BD46     	 mov sp,r7
+  68              	.LCFI4:
+  69              	 .cfi_def_cfa_register 13
+  70              	 
+  71 002a 80BD     	 pop {r7,pc}
+  72              	 .cfi_endproc
+  73              	.LFE526:
+  75              	 .section .text.serialGetBaudRate,"ax",%progbits
+  76              	 .align 2
+  77              	 .global serialGetBaudRate
+  78              	 .thumb
+  79              	 .thumb_func
+  81              	serialGetBaudRate:
+  82              	.LFB527:
+  35:../cleanflight/src/main/drivers/serial.c **** 
+  36:../cleanflight/src/main/drivers/serial.c **** uint32_t serialGetBaudRate(serialPort_t *instance)
+  37:../cleanflight/src/main/drivers/serial.c **** {
+  83              	 .loc 1 37 0
+  84              	 .cfi_startproc
+  85              	 
+  86              	 
+  87              	 
+  88 0000 80B4     	 push {r7}
+  89              	.LCFI5:
+  90              	 .cfi_def_cfa_offset 4
+  91              	 .cfi_offset 7,-4
+  92 0002 83B0     	 sub sp,sp,#12
+  93              	.LCFI6:
+  94              	 .cfi_def_cfa_offset 16
+  95 0004 00AF     	 add r7,sp,#0
+  96              	.LCFI7:
+  97              	 .cfi_def_cfa_register 7
+  98 0006 7860     	 str r0,[r7,#4]
+  38:../cleanflight/src/main/drivers/serial.c ****     return instance->baudRate;
+  99              	 .loc 1 38 0
+ 100 0008 7B68     	 ldr r3,[r7,#4]
+ 101 000a D3F80630 	 ldr r3,[r3,#6]
+  39:../cleanflight/src/main/drivers/serial.c **** }
+ 102              	 .loc 1 39 0
+ 103 000e 1846     	 mov r0,r3
+ 104 0010 0C37     	 adds r7,r7,#12
+ 105              	.LCFI8:
+ 106              	 .cfi_def_cfa_offset 4
+ 107 0012 BD46     	 mov sp,r7
+ 108              	.LCFI9:
+ 109              	 .cfi_def_cfa_register 13
+ 110              	 
+ 111 0014 5DF8047B 	 ldr r7,[sp],#4
+ 112              	.LCFI10:
+ 113              	 .cfi_restore 7
+ 114              	 .cfi_def_cfa_offset 0
+ 115 0018 7047     	 bx lr
+ 116              	 .cfi_endproc
+ 117              	.LFE527:
+ 119 001a 00BF     	 .section .text.serialWrite,"ax",%progbits
+ 120              	 .align 2
+ 121              	 .global serialWrite
+ 122              	 .thumb
+ 123              	 .thumb_func
+ 125              	serialWrite:
+ 126              	.LFB528:
+  40:../cleanflight/src/main/drivers/serial.c **** 
+  41:../cleanflight/src/main/drivers/serial.c **** void serialWrite(serialPort_t *instance, uint8_t ch)
+  42:../cleanflight/src/main/drivers/serial.c **** {
+ 127              	 .loc 1 42 0
+ 128              	 .cfi_startproc
+ 129              	 
+ 130              	 
+ 131 0000 80B5     	 push {r7,lr}
+ 132              	.LCFI11:
+ 133              	 .cfi_def_cfa_offset 8
+ 134              	 .cfi_offset 7,-8
+ 135              	 .cfi_offset 14,-4
+ 136 0002 82B0     	 sub sp,sp,#8
+ 137              	.LCFI12:
+ 138              	 .cfi_def_cfa_offset 16
+ 139 0004 00AF     	 add r7,sp,#0
+ 140              	.LCFI13:
+ 141              	 .cfi_def_cfa_register 7
+ 142 0006 7860     	 str r0,[r7,#4]
+ 143 0008 0B46     	 mov r3,r1
+ 144 000a FB70     	 strb r3,[r7,#3]
+  43:../cleanflight/src/main/drivers/serial.c ****     instance->vTable->serialWrite(instance, ch);
+ 145              	 .loc 1 43 0
+ 146 000c 7B68     	 ldr r3,[r7,#4]
+ 147 000e 1B68     	 ldr r3,[r3]
+ 148 0010 1B68     	 ldr r3,[r3]
+ 149 0012 FA78     	 ldrb r2,[r7,#3]
+ 150 0014 7868     	 ldr r0,[r7,#4]
+ 151 0016 1146     	 mov r1,r2
+ 152 0018 9847     	 blx r3
+  44:../cleanflight/src/main/drivers/serial.c **** }
+ 153              	 .loc 1 44 0
+ 154 001a 0837     	 adds r7,r7,#8
+ 155              	.LCFI14:
+ 156              	 .cfi_def_cfa_offset 8
+ 157 001c BD46     	 mov sp,r7
+ 158              	.LCFI15:
+ 159              	 .cfi_def_cfa_register 13
+ 160              	 
+ 161 001e 80BD     	 pop {r7,pc}
+ 162              	 .cfi_endproc
+ 163              	.LFE528:
+ 165              	 .section .text.serialWriteBuf,"ax",%progbits
+ 166              	 .align 2
+ 167              	 .global serialWriteBuf
+ 168              	 .thumb
+ 169              	 .thumb_func
+ 171              	serialWriteBuf:
+ 172              	.LFB529:
+  45:../cleanflight/src/main/drivers/serial.c **** 
+  46:../cleanflight/src/main/drivers/serial.c **** 
+  47:../cleanflight/src/main/drivers/serial.c **** void serialWriteBuf(serialPort_t *instance, const uint8_t *data, int count)
+  48:../cleanflight/src/main/drivers/serial.c **** {
+ 173              	 .loc 1 48 0
+ 174              	 .cfi_startproc
+ 175              	 
+ 176              	 
+ 177 0000 80B5     	 push {r7,lr}
+ 178              	.LCFI16:
+ 179              	 .cfi_def_cfa_offset 8
+ 180              	 .cfi_offset 7,-8
+ 181              	 .cfi_offset 14,-4
+ 182 0002 86B0     	 sub sp,sp,#24
+ 183              	.LCFI17:
+ 184              	 .cfi_def_cfa_offset 32
+ 185 0004 00AF     	 add r7,sp,#0
+ 186              	.LCFI18:
+ 187              	 .cfi_def_cfa_register 7
+ 188 0006 F860     	 str r0,[r7,#12]
+ 189 0008 B960     	 str r1,[r7,#8]
+ 190 000a 7A60     	 str r2,[r7,#4]
+  49:../cleanflight/src/main/drivers/serial.c ****     if (instance->vTable->writeBuf) {
+ 191              	 .loc 1 49 0
+ 192 000c FB68     	 ldr r3,[r7,#12]
+ 193 000e 1B68     	 ldr r3,[r3]
+ 194 0010 5B6A     	 ldr r3,[r3,#36]
+ 195 0012 002B     	 cmp r3,#0
+ 196 0014 07D0     	 beq .L8
+  50:../cleanflight/src/main/drivers/serial.c ****         instance->vTable->writeBuf(instance, data, count);
+ 197              	 .loc 1 50 0
+ 198 0016 FB68     	 ldr r3,[r7,#12]
+ 199 0018 1B68     	 ldr r3,[r3]
+ 200 001a 5B6A     	 ldr r3,[r3,#36]
+ 201 001c F868     	 ldr r0,[r7,#12]
+ 202 001e B968     	 ldr r1,[r7,#8]
+ 203 0020 7A68     	 ldr r2,[r7,#4]
+ 204 0022 9847     	 blx r3
+ 205 0024 18E0     	 b .L7
+ 206              	.L8:
+ 207              	.LBB2:
+  51:../cleanflight/src/main/drivers/serial.c ****     } else {
+  52:../cleanflight/src/main/drivers/serial.c ****         for (const uint8_t *p = data; count > 0; count--, p++) {
+ 208              	 .loc 1 52 0
+ 209 0026 BB68     	 ldr r3,[r7,#8]
+ 210 0028 7B61     	 str r3,[r7,#20]
+ 211 002a 12E0     	 b .L10
+ 212              	.L12:
+  53:../cleanflight/src/main/drivers/serial.c **** 
+  54:../cleanflight/src/main/drivers/serial.c ****             while (!serialTxBytesFree(instance)) {
+ 213              	 .loc 1 54 0
+ 214 002c 00BF     	 nop
+ 215              	.L11:
+ 216              	 .loc 1 54 0 is_stmt 0 discriminator 1
+ 217 002e F868     	 ldr r0,[r7,#12]
+ 218 0030 FFF7FEFF 	 bl serialTxBytesFree
+ 219 0034 0346     	 mov r3,r0
+ 220 0036 002B     	 cmp r3,#0
+ 221 0038 F9D0     	 beq .L11
+  55:../cleanflight/src/main/drivers/serial.c ****             };
+  56:../cleanflight/src/main/drivers/serial.c **** 
+  57:../cleanflight/src/main/drivers/serial.c ****             serialWrite(instance, *p);
+ 222              	 .loc 1 57 0 is_stmt 1 discriminator 2
+ 223 003a 7B69     	 ldr r3,[r7,#20]
+ 224 003c 1B78     	 ldrb r3,[r3]
+ 225 003e F868     	 ldr r0,[r7,#12]
+ 226 0040 1946     	 mov r1,r3
+ 227 0042 FFF7FEFF 	 bl serialWrite
+  52:../cleanflight/src/main/drivers/serial.c **** 
+ 228              	 .loc 1 52 0 discriminator 2
+ 229 0046 7B68     	 ldr r3,[r7,#4]
+ 230 0048 013B     	 subs r3,r3,#1
+ 231 004a 7B60     	 str r3,[r7,#4]
+ 232 004c 7B69     	 ldr r3,[r7,#20]
+ 233 004e 0133     	 adds r3,r3,#1
+ 234 0050 7B61     	 str r3,[r7,#20]
+ 235              	.L10:
+  52:../cleanflight/src/main/drivers/serial.c **** 
+ 236              	 .loc 1 52 0 is_stmt 0 discriminator 1
+ 237 0052 7B68     	 ldr r3,[r7,#4]
+ 238 0054 002B     	 cmp r3,#0
+ 239 0056 E9DC     	 bgt .L12
+ 240              	.L7:
+ 241              	.LBE2:
+  58:../cleanflight/src/main/drivers/serial.c ****         }
+  59:../cleanflight/src/main/drivers/serial.c ****     }
+  60:../cleanflight/src/main/drivers/serial.c **** }
+ 242              	 .loc 1 60 0 is_stmt 1
+ 243 0058 1837     	 adds r7,r7,#24
+ 244              	.LCFI19:
+ 245              	 .cfi_def_cfa_offset 8
+ 246 005a BD46     	 mov sp,r7
+ 247              	.LCFI20:
+ 248              	 .cfi_def_cfa_register 13
+ 249              	 
+ 250 005c 80BD     	 pop {r7,pc}
+ 251              	 .cfi_endproc
+ 252              	.LFE529:
+ 254 005e 00BF     	 .section .text.serialRxBytesWaiting,"ax",%progbits
+ 255              	 .align 2
+ 256              	 .global serialRxBytesWaiting
+ 257              	 .thumb
+ 258              	 .thumb_func
+ 260              	serialRxBytesWaiting:
+ 261              	.LFB530:
+  61:../cleanflight/src/main/drivers/serial.c **** 
+  62:../cleanflight/src/main/drivers/serial.c **** uint32_t serialRxBytesWaiting(const serialPort_t *instance)
+  63:../cleanflight/src/main/drivers/serial.c **** {
+ 262              	 .loc 1 63 0
+ 263              	 .cfi_startproc
+ 264              	 
+ 265              	 
+ 266 0000 80B5     	 push {r7,lr}
+ 267              	.LCFI21:
+ 268              	 .cfi_def_cfa_offset 8
+ 269              	 .cfi_offset 7,-8
+ 270              	 .cfi_offset 14,-4
+ 271 0002 82B0     	 sub sp,sp,#8
+ 272              	.LCFI22:
+ 273              	 .cfi_def_cfa_offset 16
+ 274 0004 00AF     	 add r7,sp,#0
+ 275              	.LCFI23:
+ 276              	 .cfi_def_cfa_register 7
+ 277 0006 7860     	 str r0,[r7,#4]
+  64:../cleanflight/src/main/drivers/serial.c ****     return instance->vTable->serialTotalRxWaiting(instance);
+ 278              	 .loc 1 64 0
+ 279 0008 7B68     	 ldr r3,[r7,#4]
+ 280 000a 1B68     	 ldr r3,[r3]
+ 281 000c 5B68     	 ldr r3,[r3,#4]
+ 282 000e 7868     	 ldr r0,[r7,#4]
+ 283 0010 9847     	 blx r3
+ 284 0012 0346     	 mov r3,r0
+  65:../cleanflight/src/main/drivers/serial.c **** }
+ 285              	 .loc 1 65 0
+ 286 0014 1846     	 mov r0,r3
+ 287 0016 0837     	 adds r7,r7,#8
+ 288              	.LCFI24:
+ 289              	 .cfi_def_cfa_offset 8
+ 290 0018 BD46     	 mov sp,r7
+ 291              	.LCFI25:
+ 292              	 .cfi_def_cfa_register 13
+ 293              	 
+ 294 001a 80BD     	 pop {r7,pc}
+ 295              	 .cfi_endproc
+ 296              	.LFE530:
+ 298              	 .section .text.serialTxBytesFree,"ax",%progbits
+ 299              	 .align 2
+ 300              	 .global serialTxBytesFree
+ 301              	 .thumb
+ 302              	 .thumb_func
+ 304              	serialTxBytesFree:
+ 305              	.LFB531:
+  66:../cleanflight/src/main/drivers/serial.c **** 
+  67:../cleanflight/src/main/drivers/serial.c **** uint32_t serialTxBytesFree(const serialPort_t *instance)
+  68:../cleanflight/src/main/drivers/serial.c **** {
+ 306              	 .loc 1 68 0
+ 307              	 .cfi_startproc
+ 308              	 
+ 309              	 
+ 310 0000 80B5     	 push {r7,lr}
+ 311              	.LCFI26:
+ 312              	 .cfi_def_cfa_offset 8
+ 313              	 .cfi_offset 7,-8
+ 314              	 .cfi_offset 14,-4
+ 315 0002 82B0     	 sub sp,sp,#8
+ 316              	.LCFI27:
+ 317              	 .cfi_def_cfa_offset 16
+ 318 0004 00AF     	 add r7,sp,#0
+ 319              	.LCFI28:
+ 320              	 .cfi_def_cfa_register 7
+ 321 0006 7860     	 str r0,[r7,#4]
+  69:../cleanflight/src/main/drivers/serial.c ****     return instance->vTable->serialTotalTxFree(instance);
+ 322              	 .loc 1 69 0
+ 323 0008 7B68     	 ldr r3,[r7,#4]
+ 324 000a 1B68     	 ldr r3,[r3]
+ 325 000c 9B68     	 ldr r3,[r3,#8]
+ 326 000e 7868     	 ldr r0,[r7,#4]
+ 327 0010 9847     	 blx r3
+ 328 0012 0346     	 mov r3,r0
+  70:../cleanflight/src/main/drivers/serial.c **** }
+ 329              	 .loc 1 70 0
+ 330 0014 1846     	 mov r0,r3
+ 331 0016 0837     	 adds r7,r7,#8
+ 332              	.LCFI29:
+ 333              	 .cfi_def_cfa_offset 8
+ 334 0018 BD46     	 mov sp,r7
+ 335              	.LCFI30:
+ 336              	 .cfi_def_cfa_register 13
+ 337              	 
+ 338 001a 80BD     	 pop {r7,pc}
+ 339              	 .cfi_endproc
+ 340              	.LFE531:
+ 342              	 .section .text.serialRead,"ax",%progbits
+ 343              	 .align 2
+ 344              	 .global serialRead
+ 345              	 .thumb
+ 346              	 .thumb_func
+ 348              	serialRead:
+ 349              	.LFB532:
+  71:../cleanflight/src/main/drivers/serial.c **** 
+  72:../cleanflight/src/main/drivers/serial.c **** uint8_t serialRead(serialPort_t *instance)
+  73:../cleanflight/src/main/drivers/serial.c **** {
+ 350              	 .loc 1 73 0
+ 351              	 .cfi_startproc
+ 352              	 
+ 353              	 
+ 354 0000 80B5     	 push {r7,lr}
+ 355              	.LCFI31:
+ 356              	 .cfi_def_cfa_offset 8
+ 357              	 .cfi_offset 7,-8
+ 358              	 .cfi_offset 14,-4
+ 359 0002 82B0     	 sub sp,sp,#8
+ 360              	.LCFI32:
+ 361              	 .cfi_def_cfa_offset 16
+ 362 0004 00AF     	 add r7,sp,#0
+ 363              	.LCFI33:
+ 364              	 .cfi_def_cfa_register 7
+ 365 0006 7860     	 str r0,[r7,#4]
+  74:../cleanflight/src/main/drivers/serial.c ****     return instance->vTable->serialRead(instance);
+ 366              	 .loc 1 74 0
+ 367 0008 7B68     	 ldr r3,[r7,#4]
+ 368 000a 1B68     	 ldr r3,[r3]
+ 369 000c DB68     	 ldr r3,[r3,#12]
+ 370 000e 7868     	 ldr r0,[r7,#4]
+ 371 0010 9847     	 blx r3
+ 372 0012 0346     	 mov r3,r0
+  75:../cleanflight/src/main/drivers/serial.c **** }
+ 373              	 .loc 1 75 0
+ 374 0014 1846     	 mov r0,r3
+ 375 0016 0837     	 adds r7,r7,#8
+ 376              	.LCFI34:
+ 377              	 .cfi_def_cfa_offset 8
+ 378 0018 BD46     	 mov sp,r7
+ 379              	.LCFI35:
+ 380              	 .cfi_def_cfa_register 13
+ 381              	 
+ 382 001a 80BD     	 pop {r7,pc}
+ 383              	 .cfi_endproc
+ 384              	.LFE532:
+ 386              	 .section .text.serialSetBaudRate,"ax",%progbits
+ 387              	 .align 2
+ 388              	 .global serialSetBaudRate
+ 389              	 .thumb
+ 390              	 .thumb_func
+ 392              	serialSetBaudRate:
+ 393              	.LFB533:
+  76:../cleanflight/src/main/drivers/serial.c **** 
+  77:../cleanflight/src/main/drivers/serial.c **** void serialSetBaudRate(serialPort_t *instance, uint32_t baudRate)
+  78:../cleanflight/src/main/drivers/serial.c **** {
+ 394              	 .loc 1 78 0
+ 395              	 .cfi_startproc
+ 396              	 
+ 397              	 
+ 398 0000 80B5     	 push {r7,lr}
+ 399              	.LCFI36:
+ 400              	 .cfi_def_cfa_offset 8
+ 401              	 .cfi_offset 7,-8
+ 402              	 .cfi_offset 14,-4
+ 403 0002 82B0     	 sub sp,sp,#8
+ 404              	.LCFI37:
+ 405              	 .cfi_def_cfa_offset 16
+ 406 0004 00AF     	 add r7,sp,#0
+ 407              	.LCFI38:
+ 408              	 .cfi_def_cfa_register 7
+ 409 0006 7860     	 str r0,[r7,#4]
+ 410 0008 3960     	 str r1,[r7]
+  79:../cleanflight/src/main/drivers/serial.c ****     instance->vTable->serialSetBaudRate(instance, baudRate);
+ 411              	 .loc 1 79 0
+ 412 000a 7B68     	 ldr r3,[r7,#4]
+ 413 000c 1B68     	 ldr r3,[r3]
+ 414 000e 1B69     	 ldr r3,[r3,#16]
+ 415 0010 7868     	 ldr r0,[r7,#4]
+ 416 0012 3968     	 ldr r1,[r7]
+ 417 0014 9847     	 blx r3
+  80:../cleanflight/src/main/drivers/serial.c **** }
+ 418              	 .loc 1 80 0
+ 419 0016 0837     	 adds r7,r7,#8
+ 420              	.LCFI39:
+ 421              	 .cfi_def_cfa_offset 8
+ 422 0018 BD46     	 mov sp,r7
+ 423              	.LCFI40:
+ 424              	 .cfi_def_cfa_register 13
+ 425              	 
+ 426 001a 80BD     	 pop {r7,pc}
+ 427              	 .cfi_endproc
+ 428              	.LFE533:
+ 430              	 .section .text.isSerialTransmitBufferEmpty,"ax",%progbits
+ 431              	 .align 2
+ 432              	 .global isSerialTransmitBufferEmpty
+ 433              	 .thumb
+ 434              	 .thumb_func
+ 436              	isSerialTransmitBufferEmpty:
+ 437              	.LFB534:
+  81:../cleanflight/src/main/drivers/serial.c **** 
+  82:../cleanflight/src/main/drivers/serial.c **** bool isSerialTransmitBufferEmpty(const serialPort_t *instance)
+  83:../cleanflight/src/main/drivers/serial.c **** {
+ 438              	 .loc 1 83 0
+ 439              	 .cfi_startproc
+ 440              	 
+ 441              	 
+ 442 0000 80B5     	 push {r7,lr}
+ 443              	.LCFI41:
+ 444              	 .cfi_def_cfa_offset 8
+ 445              	 .cfi_offset 7,-8
+ 446              	 .cfi_offset 14,-4
+ 447 0002 82B0     	 sub sp,sp,#8
+ 448              	.LCFI42:
+ 449              	 .cfi_def_cfa_offset 16
+ 450 0004 00AF     	 add r7,sp,#0
+ 451              	.LCFI43:
+ 452              	 .cfi_def_cfa_register 7
+ 453 0006 7860     	 str r0,[r7,#4]
+  84:../cleanflight/src/main/drivers/serial.c ****     return instance->vTable->isSerialTransmitBufferEmpty(instance);
+ 454              	 .loc 1 84 0
+ 455 0008 7B68     	 ldr r3,[r7,#4]
+ 456 000a 1B68     	 ldr r3,[r3]
+ 457 000c 5B69     	 ldr r3,[r3,#20]
+ 458 000e 7868     	 ldr r0,[r7,#4]
+ 459 0010 9847     	 blx r3
+ 460 0012 0346     	 mov r3,r0
+  85:../cleanflight/src/main/drivers/serial.c **** }
+ 461              	 .loc 1 85 0
+ 462 0014 1846     	 mov r0,r3
+ 463 0016 0837     	 adds r7,r7,#8
+ 464              	.LCFI44:
+ 465              	 .cfi_def_cfa_offset 8
+ 466 0018 BD46     	 mov sp,r7
+ 467              	.LCFI45:
+ 468              	 .cfi_def_cfa_register 13
+ 469              	 
+ 470 001a 80BD     	 pop {r7,pc}
+ 471              	 .cfi_endproc
+ 472              	.LFE534:
+ 474              	 .section .text.serialSetMode,"ax",%progbits
+ 475              	 .align 2
+ 476              	 .global serialSetMode
+ 477              	 .thumb
+ 478              	 .thumb_func
+ 480              	serialSetMode:
+ 481              	.LFB535:
+  86:../cleanflight/src/main/drivers/serial.c **** 
+  87:../cleanflight/src/main/drivers/serial.c **** void serialSetMode(serialPort_t *instance, portMode_e mode)
+  88:../cleanflight/src/main/drivers/serial.c **** {
+ 482              	 .loc 1 88 0
+ 483              	 .cfi_startproc
+ 484              	 
+ 485              	 
+ 486 0000 80B5     	 push {r7,lr}
+ 487              	.LCFI46:
+ 488              	 .cfi_def_cfa_offset 8
+ 489              	 .cfi_offset 7,-8
+ 490              	 .cfi_offset 14,-4
+ 491 0002 82B0     	 sub sp,sp,#8
+ 492              	.LCFI47:
+ 493              	 .cfi_def_cfa_offset 16
+ 494 0004 00AF     	 add r7,sp,#0
+ 495              	.LCFI48:
+ 496              	 .cfi_def_cfa_register 7
+ 497 0006 7860     	 str r0,[r7,#4]
+ 498 0008 0B46     	 mov r3,r1
+ 499 000a FB70     	 strb r3,[r7,#3]
+  89:../cleanflight/src/main/drivers/serial.c ****     instance->vTable->setMode(instance, mode);
+ 500              	 .loc 1 89 0
+ 501 000c 7B68     	 ldr r3,[r7,#4]
+ 502 000e 1B68     	 ldr r3,[r3]
+ 503 0010 9B69     	 ldr r3,[r3,#24]
+ 504 0012 FA78     	 ldrb r2,[r7,#3]
+ 505 0014 7868     	 ldr r0,[r7,#4]
+ 506 0016 1146     	 mov r1,r2
+ 507 0018 9847     	 blx r3
+  90:../cleanflight/src/main/drivers/serial.c **** }
+ 508              	 .loc 1 90 0
+ 509 001a 0837     	 adds r7,r7,#8
+ 510              	.LCFI49:
+ 511              	 .cfi_def_cfa_offset 8
+ 512 001c BD46     	 mov sp,r7
+ 513              	.LCFI50:
+ 514              	 .cfi_def_cfa_register 13
+ 515              	 
+ 516 001e 80BD     	 pop {r7,pc}
+ 517              	 .cfi_endproc
+ 518              	.LFE535:
+ 520              	 .section .text.serialSetCtrlLineStateCb,"ax",%progbits
+ 521              	 .align 2
+ 522              	 .global serialSetCtrlLineStateCb
+ 523              	 .thumb
+ 524              	 .thumb_func
+ 526              	serialSetCtrlLineStateCb:
+ 527              	.LFB536:
+  91:../cleanflight/src/main/drivers/serial.c **** 
+  92:../cleanflight/src/main/drivers/serial.c **** void serialSetCtrlLineStateCb(serialPort_t *serialPort, void (*cb)(void *context, uint16_t ctrlLine
+  93:../cleanflight/src/main/drivers/serial.c **** {
+ 528              	 .loc 1 93 0
+ 529              	 .cfi_startproc
+ 530              	 
+ 531              	 
+ 532 0000 80B5     	 push {r7,lr}
+ 533              	.LCFI51:
+ 534              	 .cfi_def_cfa_offset 8
+ 535              	 .cfi_offset 7,-8
+ 536              	 .cfi_offset 14,-4
+ 537 0002 84B0     	 sub sp,sp,#16
+ 538              	.LCFI52:
+ 539              	 .cfi_def_cfa_offset 24
+ 540 0004 00AF     	 add r7,sp,#0
+ 541              	.LCFI53:
+ 542              	 .cfi_def_cfa_register 7
+ 543 0006 F860     	 str r0,[r7,#12]
+ 544 0008 B960     	 str r1,[r7,#8]
+ 545 000a 7A60     	 str r2,[r7,#4]
+  94:../cleanflight/src/main/drivers/serial.c ****     // If a callback routine for changes to control line state is supported by the underlying
+  95:../cleanflight/src/main/drivers/serial.c ****     // driver, then set the callback.
+  96:../cleanflight/src/main/drivers/serial.c ****     if (serialPort->vTable->setCtrlLineStateCb) {
+ 546              	 .loc 1 96 0
+ 547 000c FB68     	 ldr r3,[r7,#12]
+ 548 000e 1B68     	 ldr r3,[r3]
+ 549 0010 DB69     	 ldr r3,[r3,#28]
+ 550 0012 002B     	 cmp r3,#0
+ 551 0014 06D0     	 beq .L23
+  97:../cleanflight/src/main/drivers/serial.c ****         serialPort->vTable->setCtrlLineStateCb(serialPort, cb, context);
+ 552              	 .loc 1 97 0
+ 553 0016 FB68     	 ldr r3,[r7,#12]
+ 554 0018 1B68     	 ldr r3,[r3]
+ 555 001a DB69     	 ldr r3,[r3,#28]
+ 556 001c F868     	 ldr r0,[r7,#12]
+ 557 001e B968     	 ldr r1,[r7,#8]
+ 558 0020 7A68     	 ldr r2,[r7,#4]
+ 559 0022 9847     	 blx r3
+ 560              	.L23:
+  98:../cleanflight/src/main/drivers/serial.c ****     }
+  99:../cleanflight/src/main/drivers/serial.c **** }
+ 561              	 .loc 1 99 0
+ 562 0024 1037     	 adds r7,r7,#16
+ 563              	.LCFI54:
+ 564              	 .cfi_def_cfa_offset 8
+ 565 0026 BD46     	 mov sp,r7
+ 566              	.LCFI55:
+ 567              	 .cfi_def_cfa_register 13
+ 568              	 
+ 569 0028 80BD     	 pop {r7,pc}
+ 570              	 .cfi_endproc
+ 571              	.LFE536:
+ 573 002a 00BF     	 .section .text.serialSetBaudRateCb,"ax",%progbits
+ 574              	 .align 2
+ 575              	 .global serialSetBaudRateCb
+ 576              	 .thumb
+ 577              	 .thumb_func
+ 579              	serialSetBaudRateCb:
+ 580              	.LFB537:
+ 100:../cleanflight/src/main/drivers/serial.c **** 
+ 101:../cleanflight/src/main/drivers/serial.c **** void serialSetBaudRateCb(serialPort_t *serialPort, void (*cb)(serialPort_t *context, uint32_t baud)
+ 102:../cleanflight/src/main/drivers/serial.c **** {
+ 581              	 .loc 1 102 0
+ 582              	 .cfi_startproc
+ 583              	 
+ 584              	 
+ 585 0000 80B5     	 push {r7,lr}
+ 586              	.LCFI56:
+ 587              	 .cfi_def_cfa_offset 8
+ 588              	 .cfi_offset 7,-8
+ 589              	 .cfi_offset 14,-4
+ 590 0002 84B0     	 sub sp,sp,#16
+ 591              	.LCFI57:
+ 592              	 .cfi_def_cfa_offset 24
+ 593 0004 00AF     	 add r7,sp,#0
+ 594              	.LCFI58:
+ 595              	 .cfi_def_cfa_register 7
+ 596 0006 F860     	 str r0,[r7,#12]
+ 597 0008 B960     	 str r1,[r7,#8]
+ 598 000a 7A60     	 str r2,[r7,#4]
+ 103:../cleanflight/src/main/drivers/serial.c ****     // If a callback routine for changes to baud rate is supported by the underlying
+ 104:../cleanflight/src/main/drivers/serial.c ****     // driver, then set the callback.
+ 105:../cleanflight/src/main/drivers/serial.c ****     if (serialPort->vTable->setBaudRateCb) {
+ 599              	 .loc 1 105 0
+ 600 000c FB68     	 ldr r3,[r7,#12]
+ 601 000e 1B68     	 ldr r3,[r3]
+ 602 0010 1B6A     	 ldr r3,[r3,#32]
+ 603 0012 002B     	 cmp r3,#0
+ 604 0014 06D0     	 beq .L25
+ 106:../cleanflight/src/main/drivers/serial.c ****         serialPort->vTable->setBaudRateCb(serialPort, cb, context);
+ 605              	 .loc 1 106 0
+ 606 0016 FB68     	 ldr r3,[r7,#12]
+ 607 0018 1B68     	 ldr r3,[r3]
+ 608 001a 1B6A     	 ldr r3,[r3,#32]
+ 609 001c F868     	 ldr r0,[r7,#12]
+ 610 001e B968     	 ldr r1,[r7,#8]
+ 611 0020 7A68     	 ldr r2,[r7,#4]
+ 612 0022 9847     	 blx r3
+ 613              	.L25:
+ 107:../cleanflight/src/main/drivers/serial.c ****     }
+ 108:../cleanflight/src/main/drivers/serial.c **** }
+ 614              	 .loc 1 108 0
+ 615 0024 1037     	 adds r7,r7,#16
+ 616              	.LCFI59:
+ 617              	 .cfi_def_cfa_offset 8
+ 618 0026 BD46     	 mov sp,r7
+ 619              	.LCFI60:
+ 620              	 .cfi_def_cfa_register 13
+ 621              	 
+ 622 0028 80BD     	 pop {r7,pc}
+ 623              	 .cfi_endproc
+ 624              	.LFE537:
+ 626 002a 00BF     	 .section .text.serialWriteBufShim,"ax",%progbits
+ 627              	 .align 2
+ 628              	 .global serialWriteBufShim
+ 629              	 .thumb
+ 630              	 .thumb_func
+ 632              	serialWriteBufShim:
+ 633              	.LFB538:
+ 109:../cleanflight/src/main/drivers/serial.c **** 
+ 110:../cleanflight/src/main/drivers/serial.c **** void serialWriteBufShim(void *instance, const uint8_t *data, int count)
+ 111:../cleanflight/src/main/drivers/serial.c **** {
+ 634              	 .loc 1 111 0
+ 635              	 .cfi_startproc
+ 636              	 
+ 637              	 
+ 638 0000 80B5     	 push {r7,lr}
+ 639              	.LCFI61:
+ 640              	 .cfi_def_cfa_offset 8
+ 641              	 .cfi_offset 7,-8
+ 642              	 .cfi_offset 14,-4
+ 643 0002 84B0     	 sub sp,sp,#16
+ 644              	.LCFI62:
+ 645              	 .cfi_def_cfa_offset 24
+ 646 0004 00AF     	 add r7,sp,#0
+ 647              	.LCFI63:
+ 648              	 .cfi_def_cfa_register 7
+ 649 0006 F860     	 str r0,[r7,#12]
+ 650 0008 B960     	 str r1,[r7,#8]
+ 651 000a 7A60     	 str r2,[r7,#4]
+ 112:../cleanflight/src/main/drivers/serial.c ****     serialWriteBuf((serialPort_t *)instance, data, count);
+ 652              	 .loc 1 112 0
+ 653 000c F868     	 ldr r0,[r7,#12]
+ 654 000e B968     	 ldr r1,[r7,#8]
+ 655 0010 7A68     	 ldr r2,[r7,#4]
+ 656 0012 FFF7FEFF 	 bl serialWriteBuf
+ 113:../cleanflight/src/main/drivers/serial.c **** }
+ 657              	 .loc 1 113 0
+ 658 0016 1037     	 adds r7,r7,#16
+ 659              	.LCFI64:
+ 660              	 .cfi_def_cfa_offset 8
+ 661 0018 BD46     	 mov sp,r7
+ 662              	.LCFI65:
+ 663              	 .cfi_def_cfa_register 13
+ 664              	 
+ 665 001a 80BD     	 pop {r7,pc}
+ 666              	 .cfi_endproc
+ 667              	.LFE538:
+ 669              	 .section .text.serialBeginWrite,"ax",%progbits
+ 670              	 .align 2
+ 671              	 .global serialBeginWrite
+ 672              	 .thumb
+ 673              	 .thumb_func
+ 675              	serialBeginWrite:
+ 676              	.LFB539:
+ 114:../cleanflight/src/main/drivers/serial.c **** 
+ 115:../cleanflight/src/main/drivers/serial.c **** void serialBeginWrite(serialPort_t *instance)
+ 116:../cleanflight/src/main/drivers/serial.c **** {
+ 677              	 .loc 1 116 0
+ 678              	 .cfi_startproc
+ 679              	 
+ 680              	 
+ 681 0000 80B5     	 push {r7,lr}
+ 682              	.LCFI66:
+ 683              	 .cfi_def_cfa_offset 8
+ 684              	 .cfi_offset 7,-8
+ 685              	 .cfi_offset 14,-4
+ 686 0002 82B0     	 sub sp,sp,#8
+ 687              	.LCFI67:
+ 688              	 .cfi_def_cfa_offset 16
+ 689 0004 00AF     	 add r7,sp,#0
+ 690              	.LCFI68:
+ 691              	 .cfi_def_cfa_register 7
+ 692 0006 7860     	 str r0,[r7,#4]
+ 117:../cleanflight/src/main/drivers/serial.c ****     if (instance->vTable->beginWrite)
+ 693              	 .loc 1 117 0
+ 694 0008 7B68     	 ldr r3,[r7,#4]
+ 695 000a 1B68     	 ldr r3,[r3]
+ 696 000c 9B6A     	 ldr r3,[r3,#40]
+ 697 000e 002B     	 cmp r3,#0
+ 698 0010 04D0     	 beq .L28
+ 118:../cleanflight/src/main/drivers/serial.c ****         instance->vTable->beginWrite(instance);
+ 699              	 .loc 1 118 0
+ 700 0012 7B68     	 ldr r3,[r7,#4]
+ 701 0014 1B68     	 ldr r3,[r3]
+ 702 0016 9B6A     	 ldr r3,[r3,#40]
+ 703 0018 7868     	 ldr r0,[r7,#4]
+ 704 001a 9847     	 blx r3
+ 705              	.L28:
+ 119:../cleanflight/src/main/drivers/serial.c **** }
+ 706              	 .loc 1 119 0
+ 707 001c 0837     	 adds r7,r7,#8
+ 708              	.LCFI69:
+ 709              	 .cfi_def_cfa_offset 8
+ 710 001e BD46     	 mov sp,r7
+ 711              	.LCFI70:
+ 712              	 .cfi_def_cfa_register 13
+ 713              	 
+ 714 0020 80BD     	 pop {r7,pc}
+ 715              	 .cfi_endproc
+ 716              	.LFE539:
+ 718 0022 00BF     	 .section .text.serialEndWrite,"ax",%progbits
+ 719              	 .align 2
+ 720              	 .global serialEndWrite
+ 721              	 .thumb
+ 722              	 .thumb_func
+ 724              	serialEndWrite:
+ 725              	.LFB540:
+ 120:../cleanflight/src/main/drivers/serial.c **** 
+ 121:../cleanflight/src/main/drivers/serial.c **** void serialEndWrite(serialPort_t *instance)
+ 122:../cleanflight/src/main/drivers/serial.c **** {
+ 726              	 .loc 1 122 0
+ 727              	 .cfi_startproc
+ 728              	 
+ 729              	 
+ 730 0000 80B5     	 push {r7,lr}
+ 731              	.LCFI71:
+ 732              	 .cfi_def_cfa_offset 8
+ 733              	 .cfi_offset 7,-8
+ 734              	 .cfi_offset 14,-4
+ 735 0002 82B0     	 sub sp,sp,#8
+ 736              	.LCFI72:
+ 737              	 .cfi_def_cfa_offset 16
+ 738 0004 00AF     	 add r7,sp,#0
+ 739              	.LCFI73:
+ 740              	 .cfi_def_cfa_register 7
+ 741 0006 7860     	 str r0,[r7,#4]
+ 123:../cleanflight/src/main/drivers/serial.c ****     if (instance->vTable->endWrite)
+ 742              	 .loc 1 123 0
+ 743 0008 7B68     	 ldr r3,[r7,#4]
+ 744 000a 1B68     	 ldr r3,[r3]
+ 745 000c DB6A     	 ldr r3,[r3,#44]
+ 746 000e 002B     	 cmp r3,#0
+ 747 0010 04D0     	 beq .L30
+ 124:../cleanflight/src/main/drivers/serial.c ****         instance->vTable->endWrite(instance);
+ 748              	 .loc 1 124 0
+ 749 0012 7B68     	 ldr r3,[r7,#4]
+ 750 0014 1B68     	 ldr r3,[r3]
+ 751 0016 DB6A     	 ldr r3,[r3,#44]
+ 752 0018 7868     	 ldr r0,[r7,#4]
+ 753 001a 9847     	 blx r3
+ 754              	.L30:
+ 125:../cleanflight/src/main/drivers/serial.c **** }
+ 755              	 .loc 1 125 0
+ 756 001c 0837     	 adds r7,r7,#8
+ 757              	.LCFI74:
+ 758              	 .cfi_def_cfa_offset 8
+ 759 001e BD46     	 mov sp,r7
+ 760              	.LCFI75:
+ 761              	 .cfi_def_cfa_register 13
+ 762              	 
+ 763 0020 80BD     	 pop {r7,pc}
+ 764              	 .cfi_endproc
+ 765              	.LFE540:
+ 767 0022 00BF     	 .text
+ 768              	.Letext0:
+ 769              	 .file 2 "d:\\xmc\\dave-ide-4.4.2-64bit\\eclipse\\arm-gcc-49\\arm-none-eabi\\include\\machine\\_default_types.h"
+ 770              	 .file 3 "d:\\xmc\\dave-ide-4.4.2-64bit\\eclipse\\arm-gcc-49\\arm-none-eabi\\include\\stdint.h"
+ 771              	 .file 4 "D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/drivers/io_types.h"
+ 772              	 .file 5 "../cleanflight/src/main/drivers/serial.h"
+ 773              	 .file 6 "D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/lib/main/CMSIS/Core/Include/core_cm4.h"
+ 774              	 .file 7 "D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/lib/main/XMC4000/system_XMC4700.h"
+DEFINED SYMBOLS
+                            *ABS*:00000000 serial.c
+    {standard input}:20     .text.serialPrint:00000000 $t
+    {standard input}:25     .text.serialPrint:00000000 serialPrint
+    {standard input}:125    .text.serialWrite:00000000 serialWrite
+    {standard input}:76     .text.serialGetBaudRate:00000000 $t
+    {standard input}:81     .text.serialGetBaudRate:00000000 serialGetBaudRate
+    {standard input}:120    .text.serialWrite:00000000 $t
+    {standard input}:166    .text.serialWriteBuf:00000000 $t
+    {standard input}:171    .text.serialWriteBuf:00000000 serialWriteBuf
+    {standard input}:304    .text.serialTxBytesFree:00000000 serialTxBytesFree
+    {standard input}:255    .text.serialRxBytesWaiting:00000000 $t
+    {standard input}:260    .text.serialRxBytesWaiting:00000000 serialRxBytesWaiting
+    {standard input}:299    .text.serialTxBytesFree:00000000 $t
+    {standard input}:343    .text.serialRead:00000000 $t
+    {standard input}:348    .text.serialRead:00000000 serialRead
+    {standard input}:387    .text.serialSetBaudRate:00000000 $t
+    {standard input}:392    .text.serialSetBaudRate:00000000 serialSetBaudRate
+    {standard input}:431    .text.isSerialTransmitBufferEmpty:00000000 $t
+    {standard input}:436    .text.isSerialTransmitBufferEmpty:00000000 isSerialTransmitBufferEmpty
+    {standard input}:475    .text.serialSetMode:00000000 $t
+    {standard input}:480    .text.serialSetMode:00000000 serialSetMode
+    {standard input}:521    .text.serialSetCtrlLineStateCb:00000000 $t
+    {standard input}:526    .text.serialSetCtrlLineStateCb:00000000 serialSetCtrlLineStateCb
+    {standard input}:574    .text.serialSetBaudRateCb:00000000 $t
+    {standard input}:579    .text.serialSetBaudRateCb:00000000 serialSetBaudRateCb
+    {standard input}:627    .text.serialWriteBufShim:00000000 $t
+    {standard input}:632    .text.serialWriteBufShim:00000000 serialWriteBufShim
+    {standard input}:670    .text.serialBeginWrite:00000000 $t
+    {standard input}:675    .text.serialBeginWrite:00000000 serialBeginWrite
+    {standard input}:719    .text.serialEndWrite:00000000 $t
+    {standard input}:724    .text.serialEndWrite:00000000 serialEndWrite
+                     .debug_frame:00000010 $d
+
+NO UNDEFINED SYMBOLS

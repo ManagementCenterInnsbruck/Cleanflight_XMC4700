@@ -1,0 +1,1450 @@
+   1              	 .syntax unified
+   2              	 .cpu cortex-m4
+   3              	 .eabi_attribute 27,3
+   4              	 .fpu fpv4-sp-d16
+   5              	 .eabi_attribute 20,1
+   6              	 .eabi_attribute 21,1
+   7              	 .eabi_attribute 23,3
+   8              	 .eabi_attribute 24,1
+   9              	 .eabi_attribute 25,1
+  10              	 .eabi_attribute 26,1
+  11              	 .eabi_attribute 30,6
+  12              	 .eabi_attribute 34,1
+  13              	 .eabi_attribute 18,4
+  14              	 .thumb
+  15              	 .file "xmc_dsd.c"
+  16              	 .text
+  17              	.Ltext0:
+  18              	 .cfi_sections .debug_frame
+  19              	 .section .text.XMC_DSD_Enable,"ax",%progbits
+  20              	 .align 2
+  21              	 .global XMC_DSD_Enable
+  22              	 .thumb
+  23              	 .thumb_func
+  25              	XMC_DSD_Enable:
+  26              	.LFB187:
+  27              	 .file 1 "../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_dsd.c"
+   1:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_dsd.c **** /**
+   2:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_dsd.c ****  * @file xmc_dsd.c
+   3:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_dsd.c ****  * @date 2015-09-18
+   4:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_dsd.c ****  *
+   5:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_dsd.c ****  * @cond
+   6:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_dsd.c ****  **********************************************************************************
+   7:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_dsd.c ****  * XMClib v2.1.20 - XMC Peripheral Driver Library 
+   8:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_dsd.c ****  *
+   9:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_dsd.c ****  * Copyright (c) 2015-2018, Infineon Technologies AG
+  10:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_dsd.c ****  * All rights reserved.                        
+  11:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_dsd.c ****  *                                             
+  12:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_dsd.c ****  * Redistribution and use in source and binary forms, with or without           
+  13:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_dsd.c ****  * modification,are permitted provided that the following conditions are met:   
+  14:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_dsd.c ****  *                                                                              
+  15:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_dsd.c ****  *   Redistributions of source code must retain the above copyright notice,      
+  16:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_dsd.c ****  *   this list of conditions and the following disclaimer.                        
+  17:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_dsd.c ****  * 
+  18:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_dsd.c ****  *   Redistributions in binary form must reproduce the above copyright notice,   
+  19:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_dsd.c ****  *   this list of conditions and the following disclaimer in the documentation    
+  20:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_dsd.c ****  *   and/or other materials provided with the distribution.                       
+  21:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_dsd.c ****  * 
+  22:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_dsd.c ****  *   Neither the name of the copyright holders nor the names of its contributors 
+  23:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_dsd.c ****  *   may be used to endorse or promote products derived from this software without
+  24:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_dsd.c ****  *   specific prior written permission.                                           
+  25:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_dsd.c ****  *                                                                              
+  26:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_dsd.c ****  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"  
+  27:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_dsd.c ****  * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE    
+  28:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_dsd.c ****  * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE   
+  29:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_dsd.c ****  * ARE  DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE   
+  30:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_dsd.c ****  * LIABLE  FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR         
+  31:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_dsd.c ****  * CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF         
+  32:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_dsd.c ****  * SUBSTITUTE GOODS OR  SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS    
+  33:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_dsd.c ****  * INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN      
+  34:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_dsd.c ****  * CONTRACT, STRICT LIABILITY,OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)       
+  35:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_dsd.c ****  * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE   
+  36:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_dsd.c ****  * POSSIBILITY OF SUCH DAMAGE.                                                  
+  37:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_dsd.c ****  *                                                                              
+  38:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_dsd.c ****  * To improve the quality of the software, users are encouraged to share        
+  39:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_dsd.c ****  * modifications, enhancements or bug fixes with Infineon Technologies AG       
+  40:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_dsd.c ****  * dave@infineon.com).                                                          
+  41:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_dsd.c ****  **********************************************************************************
+  42:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_dsd.c ****  *
+  43:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_dsd.c ****  * Change History
+  44:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_dsd.c ****  * --------------
+  45:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_dsd.c ****  *
+  46:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_dsd.c ****  * 2015-03-30:
+  47:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_dsd.c ****  *     - Initial version
+  48:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_dsd.c ****  *      
+  49:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_dsd.c ****  * 2015-06-19:
+  50:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_dsd.c ****  *     - Removed GetDriverVersion API <BR>
+  51:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_dsd.c ****  * 
+  52:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_dsd.c ****  * 2015-09-18:
+  53:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_dsd.c ****  *     - Support added for XMC4800 microcontroller family <BR>
+  54:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_dsd.c ****  * @endcond 
+  55:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_dsd.c ****  *
+  56:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_dsd.c ****  */
+  57:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_dsd.c **** 
+  58:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_dsd.c **** /**************************************************************************************************
+  59:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_dsd.c ****  * HEADER FILES
+  60:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_dsd.c ****  **************************************************************************************************
+  61:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_dsd.c **** #include "xmc_dsd.h"
+  62:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_dsd.c **** 
+  63:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_dsd.c **** #if defined(DSD)
+  64:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_dsd.c **** 
+  65:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_dsd.c **** /**************************************************************************************************
+  66:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_dsd.c ****  * MACROS
+  67:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_dsd.c ****  **************************************************************************************************
+  68:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_dsd.c **** 
+  69:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_dsd.c **** #define XMC_DSD_MIN_FILTER_START  (4U)
+  70:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_dsd.c **** #define XMC_DSD_MIN_DECIMATION_FACTOR (4U)
+  71:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_dsd.c **** #define XMC_DSD_MAX_DECIMATION_FACTOR (256U)
+  72:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_dsd.c **** #define XMC_DSD_MAX_DECIMATION_FACTOR_AUX (32U)
+  73:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_dsd.c **** 
+  74:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_dsd.c **** /**************************************************************************************************
+  75:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_dsd.c ****  * API IMPLEMENTATION
+  76:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_dsd.c ****  **************************************************************************************************
+  77:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_dsd.c **** 
+  78:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_dsd.c **** /*Enable the DSD Module*/
+  79:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_dsd.c **** void XMC_DSD_Enable(XMC_DSD_t *const dsd)
+  80:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_dsd.c **** {
+  28              	 .loc 1 80 0
+  29              	 .cfi_startproc
+  30              	 
+  31              	 
+  32 0000 80B5     	 push {r7,lr}
+  33              	.LCFI0:
+  34              	 .cfi_def_cfa_offset 8
+  35              	 .cfi_offset 7,-8
+  36              	 .cfi_offset 14,-4
+  37 0002 82B0     	 sub sp,sp,#8
+  38              	.LCFI1:
+  39              	 .cfi_def_cfa_offset 16
+  40 0004 00AF     	 add r7,sp,#0
+  41              	.LCFI2:
+  42              	 .cfi_def_cfa_register 7
+  43 0006 7860     	 str r0,[r7,#4]
+  81:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_dsd.c ****   XMC_ASSERT("XMC_DSD_Enable:Invalid module pointer", XMC_DSD_CHECK_MODULE_PTR(dsd));
+  82:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_dsd.c ****   XMC_UNUSED_ARG(dsd);
+  83:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_dsd.c **** 
+  84:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_dsd.c **** #if defined(CLOCK_GATING_SUPPORTED)
+  85:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_dsd.c ****   XMC_SCU_CLOCK_UngatePeripheralClock(XMC_SCU_PERIPHERAL_CLOCK_DSD);
+  44              	 .loc 1 85 0
+  45 0008 0220     	 movs r0,#2
+  46 000a FFF7FEFF 	 bl XMC_SCU_CLOCK_UngatePeripheralClock
+  86:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_dsd.c **** #endif
+  87:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_dsd.c ****   XMC_SCU_RESET_DeassertPeripheralReset(XMC_SCU_PERIPHERAL_RESET_DSD);
+  47              	 .loc 1 87 0
+  48 000e 0220     	 movs r0,#2
+  49 0010 FFF7FEFF 	 bl XMC_SCU_RESET_DeassertPeripheralReset
+  88:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_dsd.c **** }
+  50              	 .loc 1 88 0
+  51 0014 0837     	 adds r7,r7,#8
+  52              	.LCFI3:
+  53              	 .cfi_def_cfa_offset 8
+  54 0016 BD46     	 mov sp,r7
+  55              	.LCFI4:
+  56              	 .cfi_def_cfa_register 13
+  57              	 
+  58 0018 80BD     	 pop {r7,pc}
+  59              	 .cfi_endproc
+  60              	.LFE187:
+  62 001a 00BF     	 .section .text.XMC_DSD_Disable,"ax",%progbits
+  63              	 .align 2
+  64              	 .global XMC_DSD_Disable
+  65              	 .thumb
+  66              	 .thumb_func
+  68              	XMC_DSD_Disable:
+  69              	.LFB188:
+  89:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_dsd.c **** 
+  90:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_dsd.c **** /*Disable the DSD Module*/
+  91:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_dsd.c **** void XMC_DSD_Disable(XMC_DSD_t *const dsd)
+  92:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_dsd.c **** {
+  70              	 .loc 1 92 0
+  71              	 .cfi_startproc
+  72              	 
+  73              	 
+  74 0000 80B5     	 push {r7,lr}
+  75              	.LCFI5:
+  76              	 .cfi_def_cfa_offset 8
+  77              	 .cfi_offset 7,-8
+  78              	 .cfi_offset 14,-4
+  79 0002 82B0     	 sub sp,sp,#8
+  80              	.LCFI6:
+  81              	 .cfi_def_cfa_offset 16
+  82 0004 00AF     	 add r7,sp,#0
+  83              	.LCFI7:
+  84              	 .cfi_def_cfa_register 7
+  85 0006 7860     	 str r0,[r7,#4]
+  93:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_dsd.c ****   XMC_ASSERT("XMC_DSD_Disable:Invalid module pointer", XMC_DSD_CHECK_MODULE_PTR(dsd));
+  94:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_dsd.c ****   XMC_UNUSED_ARG(dsd);
+  95:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_dsd.c **** 
+  96:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_dsd.c ****   XMC_SCU_RESET_AssertPeripheralReset(XMC_SCU_PERIPHERAL_RESET_DSD);
+  86              	 .loc 1 96 0
+  87 0008 0220     	 movs r0,#2
+  88 000a FFF7FEFF 	 bl XMC_SCU_RESET_AssertPeripheralReset
+  97:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_dsd.c **** #if defined(CLOCK_GATING_SUPPORTED)
+  98:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_dsd.c ****   XMC_SCU_CLOCK_GatePeripheralClock(XMC_SCU_PERIPHERAL_CLOCK_DSD);
+  89              	 .loc 1 98 0
+  90 000e 0220     	 movs r0,#2
+  91 0010 FFF7FEFF 	 bl XMC_SCU_CLOCK_GatePeripheralClock
+  99:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_dsd.c **** #endif
+ 100:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_dsd.c **** }
+  92              	 .loc 1 100 0
+  93 0014 0837     	 adds r7,r7,#8
+  94              	.LCFI8:
+  95              	 .cfi_def_cfa_offset 8
+  96 0016 BD46     	 mov sp,r7
+  97              	.LCFI9:
+  98              	 .cfi_def_cfa_register 13
+  99              	 
+ 100 0018 80BD     	 pop {r7,pc}
+ 101              	 .cfi_endproc
+ 102              	.LFE188:
+ 104 001a 00BF     	 .section .text.XMC_DSD_EnableClock,"ax",%progbits
+ 105              	 .align 2
+ 106              	 .global XMC_DSD_EnableClock
+ 107              	 .thumb
+ 108              	 .thumb_func
+ 110              	XMC_DSD_EnableClock:
+ 111              	.LFB189:
+ 101:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_dsd.c **** 
+ 102:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_dsd.c **** /* Enable the module clock*/
+ 103:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_dsd.c **** void XMC_DSD_EnableClock(XMC_DSD_t *const dsd)
+ 104:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_dsd.c **** {
+ 112              	 .loc 1 104 0
+ 113              	 .cfi_startproc
+ 114              	 
+ 115              	 
+ 116              	 
+ 117 0000 80B4     	 push {r7}
+ 118              	.LCFI10:
+ 119              	 .cfi_def_cfa_offset 4
+ 120              	 .cfi_offset 7,-4
+ 121 0002 83B0     	 sub sp,sp,#12
+ 122              	.LCFI11:
+ 123              	 .cfi_def_cfa_offset 16
+ 124 0004 00AF     	 add r7,sp,#0
+ 125              	.LCFI12:
+ 126              	 .cfi_def_cfa_register 7
+ 127 0006 7860     	 str r0,[r7,#4]
+ 105:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_dsd.c ****   XMC_ASSERT("XMC_DSD_EnableClock:Invalid module pointer", XMC_DSD_CHECK_MODULE_PTR(dsd));
+ 106:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_dsd.c ****   /* Enable the module clock */
+ 107:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_dsd.c ****   dsd->CLC &= ~(uint32_t)DSD_CLC_DISR_Msk;
+ 128              	 .loc 1 107 0
+ 129 0008 7B68     	 ldr r3,[r7,#4]
+ 130 000a 1B68     	 ldr r3,[r3]
+ 131 000c 23F00102 	 bic r2,r3,#1
+ 132 0010 7B68     	 ldr r3,[r7,#4]
+ 133 0012 1968     	 ldr r1,[r3]
+ 134 0014 0021     	 movs r1,#0
+ 135 0016 0A43     	 orrs r2,r2,r1
+ 136 0018 1A60     	 str r2,[r3]
+ 108:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_dsd.c ****   /* enable internal module clock */
+ 109:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_dsd.c ****   dsd ->GLOBCFG |= (uint32_t)0x01;
+ 137              	 .loc 1 109 0
+ 138 001a 7B68     	 ldr r3,[r7,#4]
+ 139 001c D3F88030 	 ldr r3,[r3,#128]
+ 140 0020 43F00102 	 orr r2,r3,#1
+ 141 0024 7B68     	 ldr r3,[r7,#4]
+ 142 0026 D3F88010 	 ldr r1,[r3,#128]
+ 143 002a 0021     	 movs r1,#0
+ 144 002c 0A43     	 orrs r2,r2,r1
+ 145 002e C3F88020 	 str r2,[r3,#128]
+ 110:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_dsd.c **** }
+ 146              	 .loc 1 110 0
+ 147 0032 0C37     	 adds r7,r7,#12
+ 148              	.LCFI13:
+ 149              	 .cfi_def_cfa_offset 4
+ 150 0034 BD46     	 mov sp,r7
+ 151              	.LCFI14:
+ 152              	 .cfi_def_cfa_register 13
+ 153              	 
+ 154 0036 5DF8047B 	 ldr r7,[sp],#4
+ 155              	.LCFI15:
+ 156              	 .cfi_restore 7
+ 157              	 .cfi_def_cfa_offset 0
+ 158 003a 7047     	 bx lr
+ 159              	 .cfi_endproc
+ 160              	.LFE189:
+ 162              	 .section .text.XMC_DSD_DisableClock,"ax",%progbits
+ 163              	 .align 2
+ 164              	 .global XMC_DSD_DisableClock
+ 165              	 .thumb
+ 166              	 .thumb_func
+ 168              	XMC_DSD_DisableClock:
+ 169              	.LFB190:
+ 111:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_dsd.c **** 
+ 112:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_dsd.c **** void XMC_DSD_DisableClock(XMC_DSD_t *const dsd)
+ 113:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_dsd.c **** {
+ 170              	 .loc 1 113 0
+ 171              	 .cfi_startproc
+ 172              	 
+ 173              	 
+ 174              	 
+ 175 0000 80B4     	 push {r7}
+ 176              	.LCFI16:
+ 177              	 .cfi_def_cfa_offset 4
+ 178              	 .cfi_offset 7,-4
+ 179 0002 83B0     	 sub sp,sp,#12
+ 180              	.LCFI17:
+ 181              	 .cfi_def_cfa_offset 16
+ 182 0004 00AF     	 add r7,sp,#0
+ 183              	.LCFI18:
+ 184              	 .cfi_def_cfa_register 7
+ 185 0006 7860     	 str r0,[r7,#4]
+ 114:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_dsd.c ****   XMC_ASSERT("XMC_DSD_DisableClock:Invalid module pointer", XMC_DSD_CHECK_MODULE_PTR(dsd));
+ 115:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_dsd.c **** 
+ 116:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_dsd.c ****   /* disable internal module clock */
+ 117:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_dsd.c ****   dsd->GLOBCFG &= ~(uint32_t)DSD_GLOBCFG_MCSEL_Msk;
+ 186              	 .loc 1 117 0
+ 187 0008 7B68     	 ldr r3,[r7,#4]
+ 188 000a D3F88030 	 ldr r3,[r3,#128]
+ 189 000e 23F00702 	 bic r2,r3,#7
+ 190 0012 7B68     	 ldr r3,[r7,#4]
+ 191 0014 D3F88010 	 ldr r1,[r3,#128]
+ 192 0018 0021     	 movs r1,#0
+ 193 001a 0A43     	 orrs r2,r2,r1
+ 194 001c C3F88020 	 str r2,[r3,#128]
+ 118:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_dsd.c **** 
+ 119:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_dsd.c ****   /* stop the module clock */
+ 120:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_dsd.c ****   dsd->CLC |= (uint32_t)DSD_CLC_DISR_Msk;
+ 195              	 .loc 1 120 0
+ 196 0020 7B68     	 ldr r3,[r7,#4]
+ 197 0022 1B68     	 ldr r3,[r3]
+ 198 0024 43F00102 	 orr r2,r3,#1
+ 199 0028 7B68     	 ldr r3,[r7,#4]
+ 200 002a 1968     	 ldr r1,[r3]
+ 201 002c 0021     	 movs r1,#0
+ 202 002e 0A43     	 orrs r2,r2,r1
+ 203 0030 1A60     	 str r2,[r3]
+ 121:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_dsd.c **** 
+ 122:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_dsd.c **** }
+ 204              	 .loc 1 122 0
+ 205 0032 0C37     	 adds r7,r7,#12
+ 206              	.LCFI19:
+ 207              	 .cfi_def_cfa_offset 4
+ 208 0034 BD46     	 mov sp,r7
+ 209              	.LCFI20:
+ 210              	 .cfi_def_cfa_register 13
+ 211              	 
+ 212 0036 5DF8047B 	 ldr r7,[sp],#4
+ 213              	.LCFI21:
+ 214              	 .cfi_restore 7
+ 215              	 .cfi_def_cfa_offset 0
+ 216 003a 7047     	 bx lr
+ 217              	 .cfi_endproc
+ 218              	.LFE190:
+ 220              	 .section .text.XMC_DSD_Init,"ax",%progbits
+ 221              	 .align 2
+ 222              	 .global XMC_DSD_Init
+ 223              	 .thumb
+ 224              	 .thumb_func
+ 226              	XMC_DSD_Init:
+ 227              	.LFB191:
+ 123:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_dsd.c **** 
+ 124:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_dsd.c **** /* Enable the DSD module and clock */
+ 125:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_dsd.c **** void XMC_DSD_Init(XMC_DSD_t *const dsd)
+ 126:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_dsd.c **** {
+ 228              	 .loc 1 126 0
+ 229              	 .cfi_startproc
+ 230              	 
+ 231              	 
+ 232 0000 80B5     	 push {r7,lr}
+ 233              	.LCFI22:
+ 234              	 .cfi_def_cfa_offset 8
+ 235              	 .cfi_offset 7,-8
+ 236              	 .cfi_offset 14,-4
+ 237 0002 82B0     	 sub sp,sp,#8
+ 238              	.LCFI23:
+ 239              	 .cfi_def_cfa_offset 16
+ 240 0004 00AF     	 add r7,sp,#0
+ 241              	.LCFI24:
+ 242              	 .cfi_def_cfa_register 7
+ 243 0006 7860     	 str r0,[r7,#4]
+ 127:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_dsd.c ****   XMC_ASSERT("XMC_DSD_Init:Invalid module pointer", XMC_DSD_CHECK_MODULE_PTR(dsd));
+ 128:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_dsd.c ****   XMC_DSD_Enable(dsd);
+ 244              	 .loc 1 128 0
+ 245 0008 7868     	 ldr r0,[r7,#4]
+ 246 000a FFF7FEFF 	 bl XMC_DSD_Enable
+ 129:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_dsd.c ****   XMC_DSD_EnableClock(dsd);
+ 247              	 .loc 1 129 0
+ 248 000e 7868     	 ldr r0,[r7,#4]
+ 249 0010 FFF7FEFF 	 bl XMC_DSD_EnableClock
+ 130:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_dsd.c **** }
+ 250              	 .loc 1 130 0
+ 251 0014 0837     	 adds r7,r7,#8
+ 252              	.LCFI25:
+ 253              	 .cfi_def_cfa_offset 8
+ 254 0016 BD46     	 mov sp,r7
+ 255              	.LCFI26:
+ 256              	 .cfi_def_cfa_register 13
+ 257              	 
+ 258 0018 80BD     	 pop {r7,pc}
+ 259              	 .cfi_endproc
+ 260              	.LFE191:
+ 262 001a 00BF     	 .section .text.XMC_DSD_IsEnabled,"ax",%progbits
+ 263              	 .align 2
+ 264              	 .global XMC_DSD_IsEnabled
+ 265              	 .thumb
+ 266              	 .thumb_func
+ 268              	XMC_DSD_IsEnabled:
+ 269              	.LFB192:
+ 131:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_dsd.c **** 
+ 132:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_dsd.c **** bool XMC_DSD_IsEnabled(XMC_DSD_t *const dsd)
+ 133:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_dsd.c **** {
+ 270              	 .loc 1 133 0
+ 271              	 .cfi_startproc
+ 272              	 
+ 273              	 
+ 274 0000 80B5     	 push {r7,lr}
+ 275              	.LCFI27:
+ 276              	 .cfi_def_cfa_offset 8
+ 277              	 .cfi_offset 7,-8
+ 278              	 .cfi_offset 14,-4
+ 279 0002 84B0     	 sub sp,sp,#16
+ 280              	.LCFI28:
+ 281              	 .cfi_def_cfa_offset 24
+ 282 0004 00AF     	 add r7,sp,#0
+ 283              	.LCFI29:
+ 284              	 .cfi_def_cfa_register 7
+ 285 0006 7860     	 str r0,[r7,#4]
+ 134:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_dsd.c ****   bool status;
+ 135:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_dsd.c ****   XMC_ASSERT("XMC_DSD_Disable:Invalid module pointer", XMC_DSD_CHECK_MODULE_PTR(dsd));
+ 136:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_dsd.c ****   XMC_UNUSED_ARG(dsd);
+ 137:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_dsd.c ****   
+ 138:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_dsd.c ****   #if ((UC_SERIES == XMC44) || (UC_SERIES == XMC48)||(UC_SERIES == XMC47))
+ 139:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_dsd.c ****   if(XMC_SCU_RESET_IsPeripheralResetAsserted(XMC_SCU_PERIPHERAL_RESET_DSD) == false) 
+ 286              	 .loc 1 139 0
+ 287 0008 0220     	 movs r0,#2
+ 288 000a FFF7FEFF 	 bl XMC_SCU_RESET_IsPeripheralResetAsserted
+ 289 000e 0346     	 mov r3,r0
+ 290 0010 83F00103 	 eor r3,r3,#1
+ 291 0014 DBB2     	 uxtb r3,r3
+ 292 0016 002B     	 cmp r3,#0
+ 293 0018 0ED0     	 beq .L7
+ 140:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_dsd.c ****   {
+ 141:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_dsd.c ****     if(XMC_SCU_CLOCK_IsPeripheralClockGated(XMC_SCU_PERIPHERAL_CLOCK_DSD) == false)
+ 294              	 .loc 1 141 0
+ 295 001a 0220     	 movs r0,#2
+ 296 001c FFF7FEFF 	 bl XMC_SCU_CLOCK_IsPeripheralClockGated
+ 297 0020 0346     	 mov r3,r0
+ 298 0022 83F00103 	 eor r3,r3,#1
+ 299 0026 DBB2     	 uxtb r3,r3
+ 300 0028 002B     	 cmp r3,#0
+ 301 002a 02D0     	 beq .L8
+ 142:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_dsd.c ****     {
+ 143:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_dsd.c ****       status = true;
+ 302              	 .loc 1 143 0
+ 303 002c 0123     	 movs r3,#1
+ 304 002e FB73     	 strb r3,[r7,#15]
+ 305 0030 04E0     	 b .L10
+ 306              	.L8:
+ 144:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_dsd.c ****     }
+ 145:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_dsd.c **** 	else
+ 146:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_dsd.c **** 	{
+ 147:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_dsd.c ****       status = false;
+ 307              	 .loc 1 147 0
+ 308 0032 0023     	 movs r3,#0
+ 309 0034 FB73     	 strb r3,[r7,#15]
+ 310 0036 01E0     	 b .L10
+ 311              	.L7:
+ 148:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_dsd.c **** 	}
+ 149:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_dsd.c ****   }
+ 150:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_dsd.c ****   else
+ 151:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_dsd.c ****   {
+ 152:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_dsd.c ****     status = false;
+ 312              	 .loc 1 152 0
+ 313 0038 0023     	 movs r3,#0
+ 314 003a FB73     	 strb r3,[r7,#15]
+ 315              	.L10:
+ 153:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_dsd.c ****   }
+ 154:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_dsd.c ****   #else
+ 155:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_dsd.c ****   if(XMC_SCU_RESET_IsPeripheralResetAsserted(XMC_SCU_PERIPHERAL_RESET_DSD) == false)
+ 156:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_dsd.c ****   {
+ 157:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_dsd.c ****     status = true;
+ 158:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_dsd.c ****   }
+ 159:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_dsd.c ****   else
+ 160:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_dsd.c ****   {
+ 161:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_dsd.c ****     status = false;
+ 162:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_dsd.c ****   }
+ 163:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_dsd.c ****   #endif
+ 164:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_dsd.c ****   
+ 165:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_dsd.c ****   return (status);
+ 316              	 .loc 1 165 0
+ 317 003c FB7B     	 ldrb r3,[r7,#15]
+ 166:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_dsd.c **** }
+ 318              	 .loc 1 166 0
+ 319 003e 1846     	 mov r0,r3
+ 320 0040 1037     	 adds r7,r7,#16
+ 321              	.LCFI30:
+ 322              	 .cfi_def_cfa_offset 8
+ 323 0042 BD46     	 mov sp,r7
+ 324              	.LCFI31:
+ 325              	 .cfi_def_cfa_register 13
+ 326              	 
+ 327 0044 80BD     	 pop {r7,pc}
+ 328              	 .cfi_endproc
+ 329              	.LFE192:
+ 331              	 .section .text.XMC_DSD_Generator_Init,"ax",%progbits
+ 332              	 .align 2
+ 333              	 .global XMC_DSD_Generator_Init
+ 334              	 .thumb
+ 335              	 .thumb_func
+ 337              	XMC_DSD_Generator_Init:
+ 338              	.LFB193:
+ 167:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_dsd.c **** 
+ 168:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_dsd.c **** /*Initializes the Waveform Generator*/
+ 169:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_dsd.c **** void XMC_DSD_Generator_Init(XMC_DSD_t *const dsd, const XMC_DSD_GENERATOR_CONFIG_t *const config)
+ 170:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_dsd.c **** {
+ 339              	 .loc 1 170 0
+ 340              	 .cfi_startproc
+ 341              	 
+ 342              	 
+ 343              	 
+ 344 0000 80B4     	 push {r7}
+ 345              	.LCFI32:
+ 346              	 .cfi_def_cfa_offset 4
+ 347              	 .cfi_offset 7,-4
+ 348 0002 83B0     	 sub sp,sp,#12
+ 349              	.LCFI33:
+ 350              	 .cfi_def_cfa_offset 16
+ 351 0004 00AF     	 add r7,sp,#0
+ 352              	.LCFI34:
+ 353              	 .cfi_def_cfa_register 7
+ 354 0006 7860     	 str r0,[r7,#4]
+ 355 0008 3960     	 str r1,[r7]
+ 171:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_dsd.c ****   XMC_ASSERT("XMC_DSD_GENERATOR_Init:Invalid module pointer", XMC_DSD_CHECK_MODULE_PTR(dsd));
+ 172:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_dsd.c ****   XMC_ASSERT("XMC_DSD_GENERATOR_Init:NULL Pointer", (config != (XMC_DSD_GENERATOR_CONFIG_t *)NULL) 
+ 173:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_dsd.c ****   /* Reset Generator */
+ 174:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_dsd.c ****   dsd ->CGCFG &= ~((uint32_t)DSD_CGCFG_CGMOD_Msk | (uint32_t)DSD_CGCFG_BREV_Msk | (uint32_t)DSD_CGC
+ 356              	 .loc 1 174 0
+ 357 000a 7B68     	 ldr r3,[r7,#4]
+ 358 000c D3F8A030 	 ldr r3,[r3,#160]
+ 359 0010 23F0FF02 	 bic r2,r3,#255
+ 360 0014 7B68     	 ldr r3,[r7,#4]
+ 361 0016 D3F8A010 	 ldr r1,[r3,#160]
+ 362 001a 0021     	 movs r1,#0
+ 363 001c 0A43     	 orrs r2,r2,r1
+ 364 001e C3F8A020 	 str r2,[r3,#160]
+ 175:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_dsd.c **** 
+ 176:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_dsd.c ****   /* Generator configuration */
+ 177:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_dsd.c ****   dsd ->CGCFG = config->generator_conf;
+ 365              	 .loc 1 177 0
+ 366 0022 3B68     	 ldr r3,[r7]
+ 367 0024 1A68     	 ldr r2,[r3]
+ 368 0026 7B68     	 ldr r3,[r7,#4]
+ 369 0028 D3F8A010 	 ldr r1,[r3,#160]
+ 370 002c 0021     	 movs r1,#0
+ 371 002e 0A43     	 orrs r2,r2,r1
+ 372 0030 C3F8A020 	 str r2,[r3,#160]
+ 178:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_dsd.c **** }
+ 373              	 .loc 1 178 0
+ 374 0034 0C37     	 adds r7,r7,#12
+ 375              	.LCFI35:
+ 376              	 .cfi_def_cfa_offset 4
+ 377 0036 BD46     	 mov sp,r7
+ 378              	.LCFI36:
+ 379              	 .cfi_def_cfa_register 13
+ 380              	 
+ 381 0038 5DF8047B 	 ldr r7,[sp],#4
+ 382              	.LCFI37:
+ 383              	 .cfi_restore 7
+ 384              	 .cfi_def_cfa_offset 0
+ 385 003c 7047     	 bx lr
+ 386              	 .cfi_endproc
+ 387              	.LFE193:
+ 389 003e 00BF     	 .section .text.XMC_DSD_CH_Init,"ax",%progbits
+ 390              	 .align 2
+ 391              	 .global XMC_DSD_CH_Init
+ 392              	 .thumb
+ 393              	 .thumb_func
+ 395              	XMC_DSD_CH_Init:
+ 396              	.LFB194:
+ 179:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_dsd.c **** 
+ 180:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_dsd.c **** /* Initialize main filter,auxiliary filter,integrator, rectifier and timestamp of DSD*/
+ 181:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_dsd.c **** XMC_DSD_STATUS_t XMC_DSD_CH_Init( XMC_DSD_CH_t *const channel, const XMC_DSD_CH_CONFIG_t *const con
+ 182:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_dsd.c **** {
+ 397              	 .loc 1 182 0
+ 398              	 .cfi_startproc
+ 399              	 
+ 400              	 
+ 401 0000 80B5     	 push {r7,lr}
+ 402              	.LCFI38:
+ 403              	 .cfi_def_cfa_offset 8
+ 404              	 .cfi_offset 7,-8
+ 405              	 .cfi_offset 14,-4
+ 406 0002 84B0     	 sub sp,sp,#16
+ 407              	.LCFI39:
+ 408              	 .cfi_def_cfa_offset 24
+ 409 0004 00AF     	 add r7,sp,#0
+ 410              	.LCFI40:
+ 411              	 .cfi_def_cfa_register 7
+ 412 0006 7860     	 str r0,[r7,#4]
+ 413 0008 3960     	 str r1,[r7]
+ 183:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_dsd.c ****   XMC_DSD_STATUS_t status;
+ 184:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_dsd.c **** 
+ 185:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_dsd.c ****   XMC_ASSERT("XMC_DSD_CH_Init:Invalid module pointer", XMC_DSD_CHECK_CHANNEL_PTR(channel));
+ 186:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_dsd.c ****   XMC_ASSERT("XMC_DSD_CH_Init:NULL Pointer", (config != (XMC_DSD_CH_CONFIG_t *)NULL) );
+ 187:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_dsd.c **** 
+ 188:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_dsd.c ****   if (config->filter != (XMC_DSD_CH_FILTER_CONFIG_t*)NULL)
+ 414              	 .loc 1 188 0
+ 415 000a 3B68     	 ldr r3,[r7]
+ 416 000c 1B68     	 ldr r3,[r3]
+ 417 000e 002B     	 cmp r3,#0
+ 418 0010 30D0     	 beq .L14
+ 189:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_dsd.c ****   {
+ 190:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_dsd.c ****     XMC_DSD_CH_MainFilter_Init(channel, config->filter);
+ 419              	 .loc 1 190 0
+ 420 0012 3B68     	 ldr r3,[r7]
+ 421 0014 1B68     	 ldr r3,[r3]
+ 422 0016 7868     	 ldr r0,[r7,#4]
+ 423 0018 1946     	 mov r1,r3
+ 424 001a FFF7FEFF 	 bl XMC_DSD_CH_MainFilter_Init
+ 191:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_dsd.c **** 
+ 192:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_dsd.c ****     if (config->aux != (XMC_DSD_CH_AUX_FILTER_CONFIG_t*)NULL)
+ 425              	 .loc 1 192 0
+ 426 001e 3B68     	 ldr r3,[r7]
+ 427 0020 DB68     	 ldr r3,[r3,#12]
+ 428 0022 002B     	 cmp r3,#0
+ 429 0024 05D0     	 beq .L15
+ 193:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_dsd.c ****     {
+ 194:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_dsd.c ****       XMC_DSD_CH_AuxFilter_Init(channel, config->aux);
+ 430              	 .loc 1 194 0
+ 431 0026 3B68     	 ldr r3,[r7]
+ 432 0028 DB68     	 ldr r3,[r3,#12]
+ 433 002a 7868     	 ldr r0,[r7,#4]
+ 434 002c 1946     	 mov r1,r3
+ 435 002e FFF7FEFF 	 bl XMC_DSD_CH_AuxFilter_Init
+ 436              	.L15:
+ 195:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_dsd.c ****     }
+ 196:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_dsd.c ****     if (config->integrator != (XMC_DSD_CH_INTEGRATOR_CONFIG_t*)NULL)
+ 437              	 .loc 1 196 0
+ 438 0032 3B68     	 ldr r3,[r7]
+ 439 0034 5B68     	 ldr r3,[r3,#4]
+ 440 0036 002B     	 cmp r3,#0
+ 441 0038 05D0     	 beq .L16
+ 197:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_dsd.c ****     {
+ 198:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_dsd.c ****       XMC_DSD_CH_Integrator_Init(channel, config->integrator);
+ 442              	 .loc 1 198 0
+ 443 003a 3B68     	 ldr r3,[r7]
+ 444 003c 5B68     	 ldr r3,[r3,#4]
+ 445 003e 7868     	 ldr r0,[r7,#4]
+ 446 0040 1946     	 mov r1,r3
+ 447 0042 FFF7FEFF 	 bl XMC_DSD_CH_Integrator_Init
+ 448              	.L16:
+ 199:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_dsd.c ****     }
+ 200:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_dsd.c ****     if (config->rectify != (XMC_DSD_CH_RECTIFY_CONFIG_t*)NULL)
+ 449              	 .loc 1 200 0
+ 450 0046 3B68     	 ldr r3,[r7]
+ 451 0048 1B69     	 ldr r3,[r3,#16]
+ 452 004a 002B     	 cmp r3,#0
+ 453 004c 05D0     	 beq .L17
+ 201:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_dsd.c ****     {
+ 202:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_dsd.c ****       XMC_DSD_CH_Rectify_Init(channel, config->rectify);
+ 454              	 .loc 1 202 0
+ 455 004e 3B68     	 ldr r3,[r7]
+ 456 0050 1B69     	 ldr r3,[r3,#16]
+ 457 0052 7868     	 ldr r0,[r7,#4]
+ 458 0054 1946     	 mov r1,r3
+ 459 0056 FFF7FEFF 	 bl XMC_DSD_CH_Rectify_Init
+ 460              	.L17:
+ 203:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_dsd.c ****     }
+ 204:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_dsd.c ****     if (config->timestamp != (XMC_DSD_CH_TIMESTAMP_CONFIG_t*)NULL)
+ 461              	 .loc 1 204 0
+ 462 005a 3B68     	 ldr r3,[r7]
+ 463 005c 9B68     	 ldr r3,[r3,#8]
+ 464 005e 002B     	 cmp r3,#0
+ 465 0060 05D0     	 beq .L18
+ 205:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_dsd.c ****     {
+ 206:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_dsd.c ****       XMC_DSD_CH_Timestamp_Init(channel, config->timestamp);
+ 466              	 .loc 1 206 0
+ 467 0062 3B68     	 ldr r3,[r7]
+ 468 0064 9B68     	 ldr r3,[r3,#8]
+ 469 0066 7868     	 ldr r0,[r7,#4]
+ 470 0068 1946     	 mov r1,r3
+ 471 006a FFF7FEFF 	 bl XMC_DSD_CH_Timestamp_Init
+ 472              	.L18:
+ 207:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_dsd.c ****     }
+ 208:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_dsd.c ****     status =  XMC_DSD_STATUS_OK;
+ 473              	 .loc 1 208 0
+ 474 006e 0023     	 movs r3,#0
+ 475 0070 FB73     	 strb r3,[r7,#15]
+ 476 0072 01E0     	 b .L19
+ 477              	.L14:
+ 209:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_dsd.c ****   }
+ 210:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_dsd.c ****   else
+ 211:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_dsd.c ****   {
+ 212:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_dsd.c ****     status =  XMC_DSD_STATUS_ERROR;
+ 478              	 .loc 1 212 0
+ 479 0074 0123     	 movs r3,#1
+ 480 0076 FB73     	 strb r3,[r7,#15]
+ 481              	.L19:
+ 213:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_dsd.c ****   }
+ 214:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_dsd.c ****   return (status);
+ 482              	 .loc 1 214 0
+ 483 0078 FB7B     	 ldrb r3,[r7,#15]
+ 215:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_dsd.c **** 
+ 216:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_dsd.c **** }
+ 484              	 .loc 1 216 0
+ 485 007a 1846     	 mov r0,r3
+ 486 007c 1037     	 adds r7,r7,#16
+ 487              	.LCFI41:
+ 488              	 .cfi_def_cfa_offset 8
+ 489 007e BD46     	 mov sp,r7
+ 490              	.LCFI42:
+ 491              	 .cfi_def_cfa_register 13
+ 492              	 
+ 493 0080 80BD     	 pop {r7,pc}
+ 494              	 .cfi_endproc
+ 495              	.LFE194:
+ 497 0082 00BF     	 .section .text.XMC_DSD_CH_MainFilter_Init,"ax",%progbits
+ 498              	 .align 2
+ 499              	 .global XMC_DSD_CH_MainFilter_Init
+ 500              	 .thumb
+ 501              	 .thumb_func
+ 503              	XMC_DSD_CH_MainFilter_Init:
+ 504              	.LFB195:
+ 217:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_dsd.c **** 
+ 218:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_dsd.c **** /* Initialize main filter of DSD */
+ 219:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_dsd.c **** void XMC_DSD_CH_MainFilter_Init(XMC_DSD_CH_t *const channel, const XMC_DSD_CH_FILTER_CONFIG_t *cons
+ 220:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_dsd.c **** {
+ 505              	 .loc 1 220 0
+ 506              	 .cfi_startproc
+ 507              	 
+ 508              	 
+ 509              	 
+ 510 0000 80B4     	 push {r7}
+ 511              	.LCFI43:
+ 512              	 .cfi_def_cfa_offset 4
+ 513              	 .cfi_offset 7,-4
+ 514 0002 85B0     	 sub sp,sp,#20
+ 515              	.LCFI44:
+ 516              	 .cfi_def_cfa_offset 24
+ 517 0004 00AF     	 add r7,sp,#0
+ 518              	.LCFI45:
+ 519              	 .cfi_def_cfa_register 7
+ 520 0006 7860     	 str r0,[r7,#4]
+ 521 0008 3960     	 str r1,[r7]
+ 221:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_dsd.c ****   uint32_t decimation_factor_temp;
+ 222:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_dsd.c ****   uint32_t filter_start_value_temp;
+ 223:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_dsd.c **** 
+ 224:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_dsd.c ****   XMC_ASSERT("XMC_DSD_MAIN_FILTER_Init:Invalid module pointer", XMC_DSD_CHECK_CHANNEL_PTR(channel))
+ 225:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_dsd.c ****   XMC_ASSERT("XMC_DSD_MAIN_FILTER_Init:NULL Pointer", (config != (XMC_DSD_CH_FILTER_CONFIG_t *)NULL
+ 226:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_dsd.c ****   XMC_ASSERT("XMC_DSD_MAIN_FILTER_Init:Invalid Filter Start Value", (config->filter_start_value >= 
+ 227:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_dsd.c ****   XMC_ASSERT("XMC_DSD_MAIN_FILTER_Init:Invalid Filter Start Value", (config->filter_start_value <= 
+ 228:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_dsd.c ****   XMC_ASSERT("XMC_DSD_MAIN_FILTER_Init:Invalid Decimation Factor",
+ 229:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_dsd.c ****       ((config->decimation_factor >= XMC_DSD_MIN_DECIMATION_FACTOR) && (config->decimation_factor <
+ 230:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_dsd.c ****   XMC_ASSERT("XMC_DSD_MAIN_FILTER_Init:Invalid divider",(((uint32_t)config->clock_divider <= XMC_DS
+ 231:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_dsd.c **** 
+ 232:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_dsd.c ****   /*Set Channel frequency*/
+ 233:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_dsd.c ****   channel->MODCFG = ((uint32_t)config->clock_divider << DSD_CH_MODCFG_DIVM_Pos) | (uint32_t)DSD_CH_
+ 522              	 .loc 1 233 0
+ 523 000a 3B68     	 ldr r3,[r7]
+ 524 000c 1B78     	 ldrb r3,[r3]
+ 525 000e C3F30303 	 ubfx r3,r3,#0,#4
+ 526 0012 DBB2     	 uxtb r3,r3
+ 527 0014 1B04     	 lsls r3,r3,#16
+ 528 0016 43F40002 	 orr r2,r3,#8388608
+ 529 001a 7B68     	 ldr r3,[r7,#4]
+ 530 001c 1968     	 ldr r1,[r3]
+ 531 001e 0021     	 movs r1,#0
+ 532 0020 0A43     	 orrs r2,r2,r1
+ 533 0022 1A60     	 str r2,[r3]
+ 234:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_dsd.c **** 
+ 235:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_dsd.c ****   /* Input Data/Clk */
+ 236:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_dsd.c ****   channel->DICFG = config->demodulator_conf | (uint32_t)DSD_CH_DICFG_DSWC_Msk | (uint32_t)DSD_CH_DI
+ 534              	 .loc 1 236 0
+ 535 0024 3B68     	 ldr r3,[r7]
+ 536 0026 D3F80330 	 ldr r3,[r3,#3]
+ 537 002a 43F00043 	 orr r3,r3,#-2147483648
+ 538 002e 43F08003 	 orr r3,r3,#128
+ 539 0032 7A68     	 ldr r2,[r7,#4]
+ 540 0034 9168     	 ldr r1,[r2,#8]
+ 541 0036 0021     	 movs r1,#0
+ 542 0038 0B43     	 orrs r3,r3,r1
+ 543 003a 9360     	 str r3,[r2,#8]
+ 237:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_dsd.c **** 
+ 238:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_dsd.c ****   /*The decimation factor of the Main CIC filter is CFMDF + 1.*/
+ 239:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_dsd.c ****   decimation_factor_temp = config->decimation_factor-1U;
+ 544              	 .loc 1 239 0
+ 545 003c 3B68     	 ldr r3,[r7]
+ 546 003e D3F80B30 	 ldr r3,[r3,#11]
+ 547 0042 013B     	 subs r3,r3,#1
+ 548 0044 FB60     	 str r3,[r7,#12]
+ 240:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_dsd.c ****   filter_start_value_temp = config->filter_start_value-1U;
+ 549              	 .loc 1 240 0
+ 550 0046 3B68     	 ldr r3,[r7]
+ 551 0048 D3F80F30 	 ldr r3,[r3,#15]
+ 552 004c 013B     	 subs r3,r3,#1
+ 553 004e BB60     	 str r3,[r7,#8]
+ 241:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_dsd.c **** 
+ 242:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_dsd.c ****   /* Filter setup*/
+ 243:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_dsd.c ****   channel->FCFGC = (decimation_factor_temp |
+ 244:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_dsd.c **** 		  (filter_start_value_temp << (uint32_t)DSD_CH_FCFGC_CFMSV_Pos)|
+ 554              	 .loc 1 244 0
+ 555 0050 BB68     	 ldr r3,[r7,#8]
+ 556 0052 1A04     	 lsls r2,r3,#16
+ 243:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_dsd.c **** 		  (filter_start_value_temp << (uint32_t)DSD_CH_FCFGC_CFMSV_Pos)|
+ 557              	 .loc 1 243 0
+ 558 0054 FB68     	 ldr r3,[r7,#12]
+ 559 0056 1A43     	 orrs r2,r2,r3
+ 245:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_dsd.c **** 		  config->main_filter_conf|
+ 560              	 .loc 1 245 0
+ 561 0058 3B68     	 ldr r3,[r7]
+ 562 005a D3F80730 	 ldr r3,[r3,#7]
+ 244:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_dsd.c **** 		  config->main_filter_conf|
+ 563              	 .loc 1 244 0
+ 564 005e 1343     	 orrs r3,r3,r2
+ 565              	 .loc 1 245 0
+ 566 0060 43F48062 	 orr r2,r3,#1024
+ 243:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_dsd.c **** 		  (filter_start_value_temp << (uint32_t)DSD_CH_FCFGC_CFMSV_Pos)|
+ 567              	 .loc 1 243 0
+ 568 0064 7B68     	 ldr r3,[r7,#4]
+ 569 0066 5969     	 ldr r1,[r3,#20]
+ 570 0068 0021     	 movs r1,#0
+ 571 006a 0A43     	 orrs r2,r2,r1
+ 572 006c 5A61     	 str r2,[r3,#20]
+ 246:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_dsd.c **** 		  (uint32_t)DSD_CH_FCFGC_CFEN_Msk);
+ 247:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_dsd.c **** 
+ 248:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_dsd.c ****   /* Offset */
+ 249:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_dsd.c ****   channel->OFFM = (uint16_t)config->offset;
+ 573              	 .loc 1 249 0
+ 574 006e 3B68     	 ldr r3,[r7]
+ 575 0070 B3F90130 	 ldrsh r3,[r3,#1]
+ 576 0074 9BB2     	 uxth r3,r3
+ 577 0076 9BB2     	 uxth r3,r3
+ 578 0078 1946     	 mov r1,r3
+ 579 007a 7B68     	 ldr r3,[r7,#4]
+ 580 007c 9A6B     	 ldr r2,[r3,#56]
+ 581 007e 0022     	 movs r2,#0
+ 582 0080 0A43     	 orrs r2,r2,r1
+ 583 0082 9A63     	 str r2,[r3,#56]
+ 250:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_dsd.c **** }
+ 584              	 .loc 1 250 0
+ 585 0084 1437     	 adds r7,r7,#20
+ 586              	.LCFI46:
+ 587              	 .cfi_def_cfa_offset 4
+ 588 0086 BD46     	 mov sp,r7
+ 589              	.LCFI47:
+ 590              	 .cfi_def_cfa_register 13
+ 591              	 
+ 592 0088 5DF8047B 	 ldr r7,[sp],#4
+ 593              	.LCFI48:
+ 594              	 .cfi_restore 7
+ 595              	 .cfi_def_cfa_offset 0
+ 596 008c 7047     	 bx lr
+ 597              	 .cfi_endproc
+ 598              	.LFE195:
+ 600 008e 00BF     	 .section .text.XMC_DSD_CH_Timestamp_Init,"ax",%progbits
+ 601              	 .align 2
+ 602              	 .global XMC_DSD_CH_Timestamp_Init
+ 603              	 .thumb
+ 604              	 .thumb_func
+ 606              	XMC_DSD_CH_Timestamp_Init:
+ 607              	.LFB196:
+ 251:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_dsd.c **** 
+ 252:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_dsd.c **** /* Initialize timestamp mode of DSD */
+ 253:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_dsd.c **** void XMC_DSD_CH_Timestamp_Init(XMC_DSD_CH_t *const channel, const XMC_DSD_CH_TIMESTAMP_CONFIG_t *co
+ 254:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_dsd.c **** {
+ 608              	 .loc 1 254 0
+ 609              	 .cfi_startproc
+ 610              	 
+ 611              	 
+ 612              	 
+ 613 0000 80B4     	 push {r7}
+ 614              	.LCFI49:
+ 615              	 .cfi_def_cfa_offset 4
+ 616              	 .cfi_offset 7,-4
+ 617 0002 85B0     	 sub sp,sp,#20
+ 618              	.LCFI50:
+ 619              	 .cfi_def_cfa_offset 24
+ 620 0004 00AF     	 add r7,sp,#0
+ 621              	.LCFI51:
+ 622              	 .cfi_def_cfa_register 7
+ 623 0006 7860     	 str r0,[r7,#4]
+ 624 0008 3960     	 str r1,[r7]
+ 255:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_dsd.c ****   uint32_t temp;
+ 256:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_dsd.c ****   XMC_ASSERT("XMC_DSD_MAIN_FILTER_Init:Invalid module pointer", XMC_DSD_CHECK_CHANNEL_PTR(channel))
+ 257:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_dsd.c ****   XMC_ASSERT("XMC_DSD_MAIN_FILTER_Init:NULL Pointer", (config != (XMC_DSD_CH_TIMESTAMP_CONFIG_t *)N
+ 258:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_dsd.c **** 
+ 259:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_dsd.c ****   temp = (channel->DICFG | (uint32_t)DSD_CH_DICFG_TRWC_Msk);
+ 625              	 .loc 1 259 0
+ 626 000a 7B68     	 ldr r3,[r7,#4]
+ 627 000c 9B68     	 ldr r3,[r3,#8]
+ 628 000e 43F40043 	 orr r3,r3,#32768
+ 629 0012 FB60     	 str r3,[r7,#12]
+ 260:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_dsd.c ****   temp &= ~((uint32_t)DSD_CH_DICFG_TSTRMODE_Msk|(uint32_t)DSD_CH_DICFG_TRSEL_Msk);
+ 630              	 .loc 1 260 0
+ 631 0014 FB68     	 ldr r3,[r7,#12]
+ 632 0016 23F4F843 	 bic r3,r3,#31744
+ 633 001a FB60     	 str r3,[r7,#12]
+ 261:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_dsd.c ****   temp |= config->timestamp_conf;
+ 634              	 .loc 1 261 0
+ 635 001c 3B68     	 ldr r3,[r7]
+ 636 001e 1B68     	 ldr r3,[r3]
+ 637 0020 FA68     	 ldr r2,[r7,#12]
+ 638 0022 1343     	 orrs r3,r3,r2
+ 639 0024 FB60     	 str r3,[r7,#12]
+ 262:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_dsd.c ****   channel->DICFG = temp;
+ 640              	 .loc 1 262 0
+ 641 0026 7B68     	 ldr r3,[r7,#4]
+ 642 0028 9A68     	 ldr r2,[r3,#8]
+ 643 002a 0021     	 movs r1,#0
+ 644 002c FA68     	 ldr r2,[r7,#12]
+ 645 002e 0A43     	 orrs r2,r2,r1
+ 646 0030 9A60     	 str r2,[r3,#8]
+ 263:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_dsd.c **** }
+ 647              	 .loc 1 263 0
+ 648 0032 1437     	 adds r7,r7,#20
+ 649              	.LCFI52:
+ 650              	 .cfi_def_cfa_offset 4
+ 651 0034 BD46     	 mov sp,r7
+ 652              	.LCFI53:
+ 653              	 .cfi_def_cfa_register 13
+ 654              	 
+ 655 0036 5DF8047B 	 ldr r7,[sp],#4
+ 656              	.LCFI54:
+ 657              	 .cfi_restore 7
+ 658              	 .cfi_def_cfa_offset 0
+ 659 003a 7047     	 bx lr
+ 660              	 .cfi_endproc
+ 661              	.LFE196:
+ 663              	 .section .text.XMC_DSD_CH_AuxFilter_Init,"ax",%progbits
+ 664              	 .align 2
+ 665              	 .global XMC_DSD_CH_AuxFilter_Init
+ 666              	 .thumb
+ 667              	 .thumb_func
+ 669              	XMC_DSD_CH_AuxFilter_Init:
+ 670              	.LFB197:
+ 264:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_dsd.c **** 
+ 265:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_dsd.c **** /* Initialize auxiliary filter of DSD */
+ 266:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_dsd.c **** void XMC_DSD_CH_AuxFilter_Init(XMC_DSD_CH_t *const channel, const XMC_DSD_CH_AUX_FILTER_CONFIG_t *c
+ 267:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_dsd.c **** {
+ 671              	 .loc 1 267 0
+ 672              	 .cfi_startproc
+ 673              	 
+ 674              	 
+ 675              	 
+ 676 0000 80B4     	 push {r7}
+ 677              	.LCFI55:
+ 678              	 .cfi_def_cfa_offset 4
+ 679              	 .cfi_offset 7,-4
+ 680 0002 85B0     	 sub sp,sp,#20
+ 681              	.LCFI56:
+ 682              	 .cfi_def_cfa_offset 24
+ 683 0004 00AF     	 add r7,sp,#0
+ 684              	.LCFI57:
+ 685              	 .cfi_def_cfa_register 7
+ 686 0006 7860     	 str r0,[r7,#4]
+ 687 0008 3960     	 str r1,[r7]
+ 268:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_dsd.c ****   uint32_t decimation_factor_temp;
+ 269:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_dsd.c **** 
+ 270:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_dsd.c ****   XMC_ASSERT("XMC_DSD_AUX_FILTER_Init:Invalid module pointer", XMC_DSD_CHECK_CHANNEL_PTR(channel));
+ 271:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_dsd.c ****   XMC_ASSERT("XMC_DSD_AUX_FILTER_Init:NULL Pointer", (config != (XMC_DSD_CH_AUX_FILTER_CONFIG_t *)N
+ 272:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_dsd.c ****   XMC_ASSERT("XMC_DSD_AUX_FILTER_Init:Invalid Decimation Factor",
+ 273:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_dsd.c ****       ((config->decimation_factor >= XMC_DSD_MIN_DECIMATION_FACTOR) && (config->decimation_factor <
+ 274:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_dsd.c **** 
+ 275:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_dsd.c ****   channel->BOUNDSEL = config->boundary_conf;
+ 688              	 .loc 1 275 0
+ 689 000a 3B68     	 ldr r3,[r7]
+ 690 000c 5A68     	 ldr r2,[r3,#4]
+ 691 000e 7B68     	 ldr r3,[r7,#4]
+ 692 0010 996A     	 ldr r1,[r3,#40]
+ 693 0012 0021     	 movs r1,#0
+ 694 0014 0A43     	 orrs r2,r2,r1
+ 695 0016 9A62     	 str r2,[r3,#40]
+ 276:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_dsd.c ****   /*The decimation factor of the Aux CIC filter is CFMDF + 1.*/
+ 277:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_dsd.c ****   decimation_factor_temp = config->decimation_factor-1U;
+ 696              	 .loc 1 277 0
+ 697 0018 3B68     	 ldr r3,[r7]
+ 698 001a 9B68     	 ldr r3,[r3,#8]
+ 699 001c 013B     	 subs r3,r3,#1
+ 700 001e FB60     	 str r3,[r7,#12]
+ 278:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_dsd.c ****   channel->FCFGA = (decimation_factor_temp | config->aux_filter_conf);
+ 701              	 .loc 1 278 0
+ 702 0020 3B68     	 ldr r3,[r7]
+ 703 0022 1A68     	 ldr r2,[r3]
+ 704 0024 FB68     	 ldr r3,[r7,#12]
+ 705 0026 1A43     	 orrs r2,r2,r3
+ 706 0028 7B68     	 ldr r3,[r7,#4]
+ 707 002a 9969     	 ldr r1,[r3,#24]
+ 708 002c 0021     	 movs r1,#0
+ 709 002e 0A43     	 orrs r2,r2,r1
+ 710 0030 9A61     	 str r2,[r3,#24]
+ 279:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_dsd.c **** }
+ 711              	 .loc 1 279 0
+ 712 0032 1437     	 adds r7,r7,#20
+ 713              	.LCFI58:
+ 714              	 .cfi_def_cfa_offset 4
+ 715 0034 BD46     	 mov sp,r7
+ 716              	.LCFI59:
+ 717              	 .cfi_def_cfa_register 13
+ 718              	 
+ 719 0036 5DF8047B 	 ldr r7,[sp],#4
+ 720              	.LCFI60:
+ 721              	 .cfi_restore 7
+ 722              	 .cfi_def_cfa_offset 0
+ 723 003a 7047     	 bx lr
+ 724              	 .cfi_endproc
+ 725              	.LFE197:
+ 727              	 .section .text.XMC_DSD_CH_Integrator_Init,"ax",%progbits
+ 728              	 .align 2
+ 729              	 .global XMC_DSD_CH_Integrator_Init
+ 730              	 .thumb
+ 731              	 .thumb_func
+ 733              	XMC_DSD_CH_Integrator_Init:
+ 734              	.LFB198:
+ 280:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_dsd.c **** 
+ 281:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_dsd.c **** /* Integrator initialization of DSD */
+ 282:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_dsd.c **** void XMC_DSD_CH_Integrator_Init(XMC_DSD_CH_t *const channel, const XMC_DSD_CH_INTEGRATOR_CONFIG_t *
+ 283:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_dsd.c **** {
+ 735              	 .loc 1 283 0
+ 736              	 .cfi_startproc
+ 737              	 
+ 738              	 
+ 739              	 
+ 740 0000 80B4     	 push {r7}
+ 741              	.LCFI61:
+ 742              	 .cfi_def_cfa_offset 4
+ 743              	 .cfi_offset 7,-4
+ 744 0002 85B0     	 sub sp,sp,#20
+ 745              	.LCFI62:
+ 746              	 .cfi_def_cfa_offset 24
+ 747 0004 00AF     	 add r7,sp,#0
+ 748              	.LCFI63:
+ 749              	 .cfi_def_cfa_register 7
+ 750 0006 7860     	 str r0,[r7,#4]
+ 751 0008 3960     	 str r1,[r7]
+ 284:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_dsd.c ****   uint32_t temp;
+ 285:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_dsd.c ****   XMC_ASSERT("XMC_DSD_INTEGRATOR_Init:Invalid module pointer", XMC_DSD_CHECK_CHANNEL_PTR(channel));
+ 286:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_dsd.c ****   XMC_ASSERT("XMC_DSD_INTEGRATOR_Init:NULL Pointer", (config != (XMC_DSD_CH_INTEGRATOR_CONFIG_t *)N
+ 287:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_dsd.c ****   XMC_ASSERT("XMC_DSD_INTEGRATOR_Init:Invalid integration_loop", (config->integration_loop > 0U ));
+ 288:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_dsd.c ****   XMC_ASSERT("XMC_DSD_INTEGRATOR_Init:Invalid counted_values", (config->counted_values > 0U ));
+ 289:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_dsd.c **** 
+ 290:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_dsd.c ****   channel->IWCTR = ((config->integration_loop - 1U) << DSD_CH_IWCTR_REPVAL_Pos)
+ 752              	 .loc 1 290 0
+ 753 000a 3B68     	 ldr r3,[r7]
+ 754 000c 5B68     	 ldr r3,[r3,#4]
+ 755 000e 013B     	 subs r3,r3,#1
+ 756 0010 1A03     	 lsls r2,r3,#12
+ 291:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_dsd.c ****                    | (config->discarded_values << DSD_CH_IWCTR_NVALDIS_Pos)
+ 757              	 .loc 1 291 0
+ 758 0012 3B68     	 ldr r3,[r7]
+ 759 0014 9B68     	 ldr r3,[r3,#8]
+ 760 0016 1B04     	 lsls r3,r3,#16
+ 761 0018 1A43     	 orrs r2,r2,r3
+ 292:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_dsd.c ****                    | (config->stop_condition << DSD_CH_IWCTR_IWS_Pos)
+ 762              	 .loc 1 292 0
+ 763 001a 3B68     	 ldr r3,[r7]
+ 764 001c DB68     	 ldr r3,[r3,#12]
+ 765 001e DB05     	 lsls r3,r3,#23
+ 766 0020 1A43     	 orrs r2,r2,r3
+ 293:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_dsd.c ****                    | ((config->counted_values - 1U) << DSD_CH_IWCTR_NVALINT_Pos);
+ 767              	 .loc 1 293 0
+ 768 0022 3B68     	 ldr r3,[r7]
+ 769 0024 1B69     	 ldr r3,[r3,#16]
+ 770 0026 013B     	 subs r3,r3,#1
+ 771 0028 1B06     	 lsls r3,r3,#24
+ 772 002a 1A43     	 orrs r2,r2,r3
+ 290:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_dsd.c ****                    | (config->discarded_values << DSD_CH_IWCTR_NVALDIS_Pos)
+ 773              	 .loc 1 290 0
+ 774 002c 7B68     	 ldr r3,[r7,#4]
+ 775 002e 196A     	 ldr r1,[r3,#32]
+ 776 0030 0021     	 movs r1,#0
+ 777 0032 0A43     	 orrs r2,r2,r1
+ 778 0034 1A62     	 str r2,[r3,#32]
+ 294:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_dsd.c **** 
+ 295:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_dsd.c ****   /*To ensure proper operation, ensure that bit field ITRMODE is zero before selecting any other tr
+ 296:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_dsd.c ****   temp = (channel->DICFG & ~((uint32_t)DSD_CH_DICFG_ITRMODE_Msk|(uint32_t)DSD_CH_DICFG_TRSEL_Msk)) 
+ 779              	 .loc 1 296 0
+ 780 0036 7B68     	 ldr r3,[r7,#4]
+ 781 0038 9B68     	 ldr r3,[r3,#8]
+ 782 003a 23F47343 	 bic r3,r3,#62208
+ 783 003e 43F40043 	 orr r3,r3,#32768
+ 784 0042 FB60     	 str r3,[r7,#12]
+ 297:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_dsd.c **** 
+ 298:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_dsd.c ****   channel->DICFG = temp;
+ 785              	 .loc 1 298 0
+ 786 0044 7B68     	 ldr r3,[r7,#4]
+ 787 0046 9A68     	 ldr r2,[r3,#8]
+ 788 0048 0021     	 movs r1,#0
+ 789 004a FA68     	 ldr r2,[r7,#12]
+ 790 004c 0A43     	 orrs r2,r2,r1
+ 791 004e 9A60     	 str r2,[r3,#8]
+ 299:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_dsd.c **** 
+ 300:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_dsd.c ****   temp |=  config->integrator_trigger;
+ 792              	 .loc 1 300 0
+ 793 0050 3B68     	 ldr r3,[r7]
+ 794 0052 1B68     	 ldr r3,[r3]
+ 795 0054 FA68     	 ldr r2,[r7,#12]
+ 796 0056 1343     	 orrs r3,r3,r2
+ 797 0058 FB60     	 str r3,[r7,#12]
+ 301:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_dsd.c ****   channel->DICFG = temp;
+ 798              	 .loc 1 301 0
+ 799 005a 7B68     	 ldr r3,[r7,#4]
+ 800 005c 9A68     	 ldr r2,[r3,#8]
+ 801 005e 0021     	 movs r1,#0
+ 802 0060 FA68     	 ldr r2,[r7,#12]
+ 803 0062 0A43     	 orrs r2,r2,r1
+ 804 0064 9A60     	 str r2,[r3,#8]
+ 302:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_dsd.c **** }
+ 805              	 .loc 1 302 0
+ 806 0066 1437     	 adds r7,r7,#20
+ 807              	.LCFI64:
+ 808              	 .cfi_def_cfa_offset 4
+ 809 0068 BD46     	 mov sp,r7
+ 810              	.LCFI65:
+ 811              	 .cfi_def_cfa_register 13
+ 812              	 
+ 813 006a 5DF8047B 	 ldr r7,[sp],#4
+ 814              	.LCFI66:
+ 815              	 .cfi_restore 7
+ 816              	 .cfi_def_cfa_offset 0
+ 817 006e 7047     	 bx lr
+ 818              	 .cfi_endproc
+ 819              	.LFE198:
+ 821              	 .section .text.XMC_DSD_CH_Rectify_Init,"ax",%progbits
+ 822              	 .align 2
+ 823              	 .global XMC_DSD_CH_Rectify_Init
+ 824              	 .thumb
+ 825              	 .thumb_func
+ 827              	XMC_DSD_CH_Rectify_Init:
+ 828              	.LFB199:
+ 303:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_dsd.c **** 
+ 304:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_dsd.c **** /* Rectifier initialization of DSD */
+ 305:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_dsd.c **** void XMC_DSD_CH_Rectify_Init(XMC_DSD_CH_t *const channel, const XMC_DSD_CH_RECTIFY_CONFIG_t *const 
+ 306:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_dsd.c **** {
+ 829              	 .loc 1 306 0
+ 830              	 .cfi_startproc
+ 831              	 
+ 832              	 
+ 833              	 
+ 834 0000 80B4     	 push {r7}
+ 835              	.LCFI67:
+ 836              	 .cfi_def_cfa_offset 4
+ 837              	 .cfi_offset 7,-4
+ 838 0002 83B0     	 sub sp,sp,#12
+ 839              	.LCFI68:
+ 840              	 .cfi_def_cfa_offset 16
+ 841 0004 00AF     	 add r7,sp,#0
+ 842              	.LCFI69:
+ 843              	 .cfi_def_cfa_register 7
+ 844 0006 7860     	 str r0,[r7,#4]
+ 845 0008 3960     	 str r1,[r7]
+ 307:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_dsd.c ****   XMC_ASSERT("XMC_DSD_RECTIFY_Init:Invalid module pointer", XMC_DSD_CHECK_CHANNEL_PTR(channel));
+ 308:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_dsd.c ****   XMC_ASSERT("XMC_DSD_RECTIFY_Init:NULL Pointer", (config != (XMC_DSD_CH_RECTIFY_CONFIG_t *)NULL));
+ 309:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_dsd.c ****   XMC_ASSERT("XMC_DSD_RECTIFY_Init:NULL Pointer", (((uint16_t)config->delay + (uint16_t)config->hal
+ 310:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_dsd.c **** 
+ 311:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_dsd.c ****   channel->RECTCFG = config->rectify_config | (uint32_t)DSD_CH_RECTCFG_RFEN_Msk;
+ 846              	 .loc 1 311 0
+ 847 000a 3B68     	 ldr r3,[r7]
+ 848 000c 1B68     	 ldr r3,[r3]
+ 849 000e 43F00102 	 orr r2,r3,#1
+ 850 0012 7B68     	 ldr r3,[r7,#4]
+ 851 0014 D3F8A810 	 ldr r1,[r3,#168]
+ 852 0018 0021     	 movs r1,#0
+ 853 001a 0A43     	 orrs r2,r2,r1
+ 854 001c C3F8A820 	 str r2,[r3,#168]
+ 312:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_dsd.c ****   channel->CGSYNC = (((uint32_t) config->delay << (uint32_t)DSD_CH_CGSYNC_SDPOS_Pos)
+ 855              	 .loc 1 312 0
+ 856 0020 3B68     	 ldr r3,[r7]
+ 857 0022 1B79     	 ldrb r3,[r3,#4]
+ 858 0024 1A04     	 lsls r2,r3,#16
+ 313:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_dsd.c ****                       | (((uint32_t)config->delay + (uint32_t)config->half_cycle) << (uint32_t)DSD_
+ 859              	 .loc 1 313 0
+ 860 0026 3B68     	 ldr r3,[r7]
+ 861 0028 1B79     	 ldrb r3,[r3,#4]
+ 862 002a 1946     	 mov r1,r3
+ 863 002c 3B68     	 ldr r3,[r7]
+ 864 002e 5B79     	 ldrb r3,[r3,#5]
+ 865 0030 0B44     	 add r3,r3,r1
+ 866 0032 1B06     	 lsls r3,r3,#24
+ 867 0034 1A43     	 orrs r2,r2,r3
+ 312:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_dsd.c ****   channel->CGSYNC = (((uint32_t) config->delay << (uint32_t)DSD_CH_CGSYNC_SDPOS_Pos)
+ 868              	 .loc 1 312 0
+ 869 0036 7B68     	 ldr r3,[r7,#4]
+ 870 0038 D3F8A010 	 ldr r1,[r3,#160]
+ 871 003c 0021     	 movs r1,#0
+ 872 003e 0A43     	 orrs r2,r2,r1
+ 873 0040 C3F8A020 	 str r2,[r3,#160]
+ 314:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_dsd.c **** }
+ 874              	 .loc 1 314 0
+ 875 0044 0C37     	 adds r7,r7,#12
+ 876              	.LCFI70:
+ 877              	 .cfi_def_cfa_offset 4
+ 878 0046 BD46     	 mov sp,r7
+ 879              	.LCFI71:
+ 880              	 .cfi_def_cfa_register 13
+ 881              	 
+ 882 0048 5DF8047B 	 ldr r7,[sp],#4
+ 883              	.LCFI72:
+ 884              	 .cfi_restore 7
+ 885              	 .cfi_def_cfa_offset 0
+ 886 004c 7047     	 bx lr
+ 887              	 .cfi_endproc
+ 888              	.LFE199:
+ 890 004e 00BF     	 .section .text.XMC_DSD_CH_GetResult_TS,"ax",%progbits
+ 891              	 .align 2
+ 892              	 .global XMC_DSD_CH_GetResult_TS
+ 893              	 .thumb
+ 894              	 .thumb_func
+ 896              	XMC_DSD_CH_GetResult_TS:
+ 897              	.LFB200:
+ 315:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_dsd.c **** 
+ 316:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_dsd.c **** /* API to get the result of the last conversion */
+ 317:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_dsd.c **** void XMC_DSD_CH_GetResult_TS(XMC_DSD_CH_t* const channel,
+ 318:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_dsd.c ****                              int16_t* dsd_result,
+ 319:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_dsd.c ****                              uint8_t* dsd_filter_count,
+ 320:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_dsd.c ****                              uint8_t* dsd_integration_count)
+ 321:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_dsd.c **** {
+ 898              	 .loc 1 321 0
+ 899              	 .cfi_startproc
+ 900              	 
+ 901              	 
+ 902              	 
+ 903 0000 80B4     	 push {r7}
+ 904              	.LCFI73:
+ 905              	 .cfi_def_cfa_offset 4
+ 906              	 .cfi_offset 7,-4
+ 907 0002 87B0     	 sub sp,sp,#28
+ 908              	.LCFI74:
+ 909              	 .cfi_def_cfa_offset 32
+ 910 0004 00AF     	 add r7,sp,#0
+ 911              	.LCFI75:
+ 912              	 .cfi_def_cfa_register 7
+ 913 0006 F860     	 str r0,[r7,#12]
+ 914 0008 B960     	 str r1,[r7,#8]
+ 915 000a 7A60     	 str r2,[r7,#4]
+ 916 000c 3B60     	 str r3,[r7]
+ 322:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_dsd.c ****   uint32_t timestamp;
+ 323:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_dsd.c ****   uint16_t result;
+ 324:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_dsd.c **** 
+ 325:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_dsd.c ****   timestamp = channel->TSTMP;
+ 917              	 .loc 1 325 0
+ 918 000e FB68     	 ldr r3,[r7,#12]
+ 919 0010 1B6D     	 ldr r3,[r3,#80]
+ 920 0012 7B61     	 str r3,[r7,#20]
+ 326:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_dsd.c ****   result = (uint16_t)((uint32_t)timestamp & DSD_CH_TSTMP_RESULT_Msk);
+ 921              	 .loc 1 326 0
+ 922 0014 7B69     	 ldr r3,[r7,#20]
+ 923 0016 7B82     	 strh r3,[r7,#18]
+ 327:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_dsd.c ****   *dsd_result = (int16_t)(result);
+ 924              	 .loc 1 327 0
+ 925 0018 7A8A     	 ldrh r2,[r7,#18]
+ 926 001a BB68     	 ldr r3,[r7,#8]
+ 927 001c 1A80     	 strh r2,[r3]
+ 328:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_dsd.c ****   *dsd_filter_count = (uint8_t) ((timestamp & (uint32_t)DSD_CH_TSTMP_CFMDCNT_Msk)>>(uint32_t)DSD_CH
+ 928              	 .loc 1 328 0
+ 929 001e 7B69     	 ldr r3,[r7,#20]
+ 930 0020 03F47F03 	 and r3,r3,#16711680
+ 931 0024 1B0C     	 lsrs r3,r3,#16
+ 932 0026 DAB2     	 uxtb r2,r3
+ 933 0028 7B68     	 ldr r3,[r7,#4]
+ 934 002a 1A70     	 strb r2,[r3]
+ 329:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_dsd.c ****   *dsd_integration_count = (uint8_t) ((timestamp & (uint32_t)DSD_CH_TSTMP_NVALCNT_Msk)>>(uint32_t)D
+ 935              	 .loc 1 329 0
+ 936 002c 7B69     	 ldr r3,[r7,#20]
+ 937 002e 03F07C53 	 and r3,r3,#1056964608
+ 938 0032 1B0E     	 lsrs r3,r3,#24
+ 939 0034 DAB2     	 uxtb r2,r3
+ 940 0036 3B68     	 ldr r3,[r7]
+ 941 0038 1A70     	 strb r2,[r3]
+ 330:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_dsd.c **** }
+ 942              	 .loc 1 330 0
+ 943 003a 1C37     	 adds r7,r7,#28
+ 944              	.LCFI76:
+ 945              	 .cfi_def_cfa_offset 4
+ 946 003c BD46     	 mov sp,r7
+ 947              	.LCFI77:
+ 948              	 .cfi_def_cfa_register 13
+ 949              	 
+ 950 003e 5DF8047B 	 ldr r7,[sp],#4
+ 951              	.LCFI78:
+ 952              	 .cfi_restore 7
+ 953              	 .cfi_def_cfa_offset 0
+ 954 0042 7047     	 bx lr
+ 955              	 .cfi_endproc
+ 956              	.LFE200:
+ 958              	 .section .text.XMC_DSD_CH_GetResult_TS_Time,"ax",%progbits
+ 959              	 .align 2
+ 960              	 .global XMC_DSD_CH_GetResult_TS_Time
+ 961              	 .thumb
+ 962              	 .thumb_func
+ 964              	XMC_DSD_CH_GetResult_TS_Time:
+ 965              	.LFB201:
+ 331:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_dsd.c **** 
+ 332:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_dsd.c **** /* API to get the result of the last conversion with the time */
+ 333:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_dsd.c **** void XMC_DSD_CH_GetResult_TS_Time(XMC_DSD_CH_t* const channel, int16_t* dsd_Result, uint32_t* time)
+ 334:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_dsd.c **** {
+ 966              	 .loc 1 334 0
+ 967              	 .cfi_startproc
+ 968              	 
+ 969              	 
+ 970              	 
+ 971 0000 80B4     	 push {r7}
+ 972              	.LCFI79:
+ 973              	 .cfi_def_cfa_offset 4
+ 974              	 .cfi_offset 7,-4
+ 975 0002 89B0     	 sub sp,sp,#36
+ 976              	.LCFI80:
+ 977              	 .cfi_def_cfa_offset 40
+ 978 0004 00AF     	 add r7,sp,#0
+ 979              	.LCFI81:
+ 980              	 .cfi_def_cfa_register 7
+ 981 0006 F860     	 str r0,[r7,#12]
+ 982 0008 B960     	 str r1,[r7,#8]
+ 983 000a 7A60     	 str r2,[r7,#4]
+ 335:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_dsd.c ****   uint32_t timestamp;
+ 336:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_dsd.c ****   uint16_t filter_count;
+ 337:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_dsd.c ****   uint16_t integrator_count;
+ 338:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_dsd.c ****   uint16_t decimation;
+ 339:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_dsd.c ****   uint16_t result;
+ 340:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_dsd.c **** 
+ 341:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_dsd.c ****   timestamp = channel->TSTMP;
+ 984              	 .loc 1 341 0
+ 985 000c FB68     	 ldr r3,[r7,#12]
+ 986 000e 1B6D     	 ldr r3,[r3,#80]
+ 987 0010 BB61     	 str r3,[r7,#24]
+ 342:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_dsd.c ****   decimation = (uint16_t)(channel->FCFGC & DSD_CH_FCFGC_CFMDF_Msk);
+ 988              	 .loc 1 342 0
+ 989 0012 FB68     	 ldr r3,[r7,#12]
+ 990 0014 5B69     	 ldr r3,[r3,#20]
+ 991 0016 9BB2     	 uxth r3,r3
+ 992 0018 DBB2     	 uxtb r3,r3
+ 993 001a FB82     	 strh r3,[r7,#22]
+ 343:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_dsd.c ****   filter_count = (uint16_t)((timestamp & DSD_CH_TSTMP_CFMDCNT_Msk)>>DSD_CH_TSTMP_CFMDCNT_Pos);
+ 994              	 .loc 1 343 0
+ 995 001c BB69     	 ldr r3,[r7,#24]
+ 996 001e 03F47F03 	 and r3,r3,#16711680
+ 997 0022 1B0C     	 lsrs r3,r3,#16
+ 998 0024 BB82     	 strh r3,[r7,#20]
+ 344:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_dsd.c **** 
+ 345:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_dsd.c ****   /* Integration enabled? */
+ 346:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_dsd.c ****   if ((channel->IWCTR & DSD_CH_IWCTR_INTEN_Msk))
+ 999              	 .loc 1 346 0
+ 1000 0026 FB68     	 ldr r3,[r7,#12]
+ 1001 0028 1B6A     	 ldr r3,[r3,#32]
+ 1002 002a 03F08003 	 and r3,r3,#128
+ 1003 002e 002B     	 cmp r3,#0
+ 1004 0030 17D0     	 beq .L28
+ 347:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_dsd.c ****   {
+ 348:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_dsd.c ****     integrator_count = (uint16_t) ((timestamp & DSD_CH_TSTMP_NVALCNT_Msk)>>DSD_CH_TSTMP_NVALCNT_Pos
+ 1005              	 .loc 1 348 0
+ 1006 0032 BB69     	 ldr r3,[r7,#24]
+ 1007 0034 03F07C53 	 and r3,r3,#1056964608
+ 1008 0038 1B0E     	 lsrs r3,r3,#24
+ 1009 003a FB83     	 strh r3,[r7,#30]
+ 349:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_dsd.c **** 
+ 350:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_dsd.c ****     /*See Errata number: xxyy */
+ 351:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_dsd.c ****     if (filter_count == decimation)
+ 1010              	 .loc 1 351 0
+ 1011 003c BA8A     	 ldrh r2,[r7,#20]
+ 1012 003e FB8A     	 ldrh r3,[r7,#22]
+ 1013 0040 9A42     	 cmp r2,r3
+ 1014 0042 02D1     	 bne .L29
+ 352:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_dsd.c ****     {
+ 353:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_dsd.c ****       integrator_count++;
+ 1015              	 .loc 1 353 0
+ 1016 0044 FB8B     	 ldrh r3,[r7,#30]
+ 1017 0046 0133     	 adds r3,r3,#1
+ 1018 0048 FB83     	 strh r3,[r7,#30]
+ 1019              	.L29:
+ 354:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_dsd.c ****     }
+ 355:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_dsd.c ****     *time = (uint32_t)(((uint32_t) integrator_count * ((uint32_t) decimation + 1U)) + (uint32_t) ((
+ 1020              	 .loc 1 355 0
+ 1021 004a FB8B     	 ldrh r3,[r7,#30]
+ 1022 004c FA8A     	 ldrh r2,[r7,#22]
+ 1023 004e 0132     	 adds r2,r2,#1
+ 1024 0050 02FB03F2 	 mul r2,r2,r3
+ 1025 0054 F98A     	 ldrh r1,[r7,#22]
+ 1026 0056 BB8A     	 ldrh r3,[r7,#20]
+ 1027 0058 CB1A     	 subs r3,r1,r3
+ 1028 005a 1A44     	 add r2,r2,r3
+ 1029 005c 7B68     	 ldr r3,[r7,#4]
+ 1030 005e 1A60     	 str r2,[r3]
+ 1031 0060 04E0     	 b .L30
+ 1032              	.L28:
+ 356:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_dsd.c ****   }
+ 357:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_dsd.c ****   else
+ 358:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_dsd.c ****   {
+ 359:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_dsd.c ****     *time = (uint32_t) ((uint32_t)decimation - filter_count);
+ 1033              	 .loc 1 359 0
+ 1034 0062 FA8A     	 ldrh r2,[r7,#22]
+ 1035 0064 BB8A     	 ldrh r3,[r7,#20]
+ 1036 0066 D21A     	 subs r2,r2,r3
+ 1037 0068 7B68     	 ldr r3,[r7,#4]
+ 1038 006a 1A60     	 str r2,[r3]
+ 1039              	.L30:
+ 360:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_dsd.c ****   }
+ 361:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_dsd.c ****   result = (uint16_t)((uint32_t)timestamp & DSD_CH_TSTMP_RESULT_Msk);
+ 1040              	 .loc 1 361 0
+ 1041 006c BB69     	 ldr r3,[r7,#24]
+ 1042 006e 7B82     	 strh r3,[r7,#18]
+ 362:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_dsd.c ****   *dsd_Result = (int16_t)(result);
+ 1043              	 .loc 1 362 0
+ 1044 0070 7A8A     	 ldrh r2,[r7,#18]
+ 1045 0072 BB68     	 ldr r3,[r7,#8]
+ 1046 0074 1A80     	 strh r2,[r3]
+ 363:../cleanflight/lib/main/XMC4000/XMCLib/src/xmc_dsd.c **** }
+ 1047              	 .loc 1 363 0
+ 1048 0076 2437     	 adds r7,r7,#36
+ 1049              	.LCFI82:
+ 1050              	 .cfi_def_cfa_offset 4
+ 1051 0078 BD46     	 mov sp,r7
+ 1052              	.LCFI83:
+ 1053              	 .cfi_def_cfa_register 13
+ 1054              	 
+ 1055 007a 5DF8047B 	 ldr r7,[sp],#4
+ 1056              	.LCFI84:
+ 1057              	 .cfi_restore 7
+ 1058              	 .cfi_def_cfa_offset 0
+ 1059 007e 7047     	 bx lr
+ 1060              	 .cfi_endproc
+ 1061              	.LFE201:
+ 1063              	 .text
+ 1064              	.Letext0:
+ 1065              	 .file 2 "d:\\xmc\\dave-ide-4.4.2-64bit\\eclipse\\arm-gcc-49\\arm-none-eabi\\include\\machine\\_default_types.h"
+ 1066              	 .file 3 "d:\\xmc\\dave-ide-4.4.2-64bit\\eclipse\\arm-gcc-49\\arm-none-eabi\\include\\stdint.h"
+ 1067              	 .file 4 "D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/lib/main/XMC4000/XMC4700.h"
+ 1068              	 .file 5 "D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/lib/main/XMC4000/XMCLib/inc/xmc4_scu.h"
+ 1069              	 .file 6 "D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/lib/main/XMC4000/XMCLib/inc/xmc_dsd.h"
+ 1070              	 .file 7 "D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/lib/main/CMSIS/Core/Include/core_cm4.h"
+ 1071              	 .file 8 "D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/lib/main/XMC4000/system_XMC4700.h"
+DEFINED SYMBOLS
+                            *ABS*:00000000 xmc_dsd.c
+    {standard input}:20     .text.XMC_DSD_Enable:00000000 $t
+    {standard input}:25     .text.XMC_DSD_Enable:00000000 XMC_DSD_Enable
+    {standard input}:63     .text.XMC_DSD_Disable:00000000 $t
+    {standard input}:68     .text.XMC_DSD_Disable:00000000 XMC_DSD_Disable
+    {standard input}:105    .text.XMC_DSD_EnableClock:00000000 $t
+    {standard input}:110    .text.XMC_DSD_EnableClock:00000000 XMC_DSD_EnableClock
+    {standard input}:163    .text.XMC_DSD_DisableClock:00000000 $t
+    {standard input}:168    .text.XMC_DSD_DisableClock:00000000 XMC_DSD_DisableClock
+    {standard input}:221    .text.XMC_DSD_Init:00000000 $t
+    {standard input}:226    .text.XMC_DSD_Init:00000000 XMC_DSD_Init
+    {standard input}:263    .text.XMC_DSD_IsEnabled:00000000 $t
+    {standard input}:268    .text.XMC_DSD_IsEnabled:00000000 XMC_DSD_IsEnabled
+    {standard input}:332    .text.XMC_DSD_Generator_Init:00000000 $t
+    {standard input}:337    .text.XMC_DSD_Generator_Init:00000000 XMC_DSD_Generator_Init
+    {standard input}:390    .text.XMC_DSD_CH_Init:00000000 $t
+    {standard input}:395    .text.XMC_DSD_CH_Init:00000000 XMC_DSD_CH_Init
+    {standard input}:503    .text.XMC_DSD_CH_MainFilter_Init:00000000 XMC_DSD_CH_MainFilter_Init
+    {standard input}:669    .text.XMC_DSD_CH_AuxFilter_Init:00000000 XMC_DSD_CH_AuxFilter_Init
+    {standard input}:733    .text.XMC_DSD_CH_Integrator_Init:00000000 XMC_DSD_CH_Integrator_Init
+    {standard input}:827    .text.XMC_DSD_CH_Rectify_Init:00000000 XMC_DSD_CH_Rectify_Init
+    {standard input}:606    .text.XMC_DSD_CH_Timestamp_Init:00000000 XMC_DSD_CH_Timestamp_Init
+    {standard input}:498    .text.XMC_DSD_CH_MainFilter_Init:00000000 $t
+    {standard input}:601    .text.XMC_DSD_CH_Timestamp_Init:00000000 $t
+    {standard input}:664    .text.XMC_DSD_CH_AuxFilter_Init:00000000 $t
+    {standard input}:728    .text.XMC_DSD_CH_Integrator_Init:00000000 $t
+    {standard input}:822    .text.XMC_DSD_CH_Rectify_Init:00000000 $t
+    {standard input}:891    .text.XMC_DSD_CH_GetResult_TS:00000000 $t
+    {standard input}:896    .text.XMC_DSD_CH_GetResult_TS:00000000 XMC_DSD_CH_GetResult_TS
+    {standard input}:959    .text.XMC_DSD_CH_GetResult_TS_Time:00000000 $t
+    {standard input}:964    .text.XMC_DSD_CH_GetResult_TS_Time:00000000 XMC_DSD_CH_GetResult_TS_Time
+                     .debug_frame:00000010 $d
+
+UNDEFINED SYMBOLS
+XMC_SCU_CLOCK_UngatePeripheralClock
+XMC_SCU_RESET_DeassertPeripheralReset
+XMC_SCU_RESET_AssertPeripheralReset
+XMC_SCU_CLOCK_GatePeripheralClock
+XMC_SCU_RESET_IsPeripheralResetAsserted
+XMC_SCU_CLOCK_IsPeripheralClockGated

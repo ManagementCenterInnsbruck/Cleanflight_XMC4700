@@ -1,0 +1,893 @@
+   1              	 .syntax unified
+   2              	 .cpu cortex-m4
+   3              	 .eabi_attribute 27,3
+   4              	 .fpu fpv4-sp-d16
+   5              	 .eabi_attribute 20,1
+   6              	 .eabi_attribute 21,1
+   7              	 .eabi_attribute 23,3
+   8              	 .eabi_attribute 24,1
+   9              	 .eabi_attribute 25,1
+  10              	 .eabi_attribute 26,1
+  11              	 .eabi_attribute 30,6
+  12              	 .eabi_attribute 34,1
+  13              	 .eabi_attribute 18,4
+  14              	 .thumb
+  15              	 .file "bus_spi_pinconfig.c"
+  16              	 .text
+  17              	.Ltext0:
+  18              	 .cfi_sections .debug_frame
+  19              	 .global spiHardware
+  20              	 .section .rodata.spiHardware,"a",%progbits
+  21              	 .align 2
+  24              	spiHardware:
+  25 0000 01       	 .byte 1
+  26 0001 00020340 	 .4byte 1073938944
+  27 0005 34       	 .byte 52
+  28 0006 90       	 .byte -112
+  29 0007 00       	 .byte 0
+  30 0008 40       	 .byte 64
+  31 0009 90       	 .byte -112
+  32 000a 00       	 .byte 0
+  33 000b 46       	 .byte 70
+  34 000c A0       	 .byte -96
+  35 000d 00       	 .byte 0
+  36 000e 00000000 	 .space 9
+  36      00000000 
+  36      00
+  37 0017 32       	 .byte 50
+  38 0018 00       	 .byte 0
+  39 0019 00       	 .byte 0
+  40 001a 35       	 .byte 53
+  41 001b 00       	 .byte 0
+  42 001c 01       	 .byte 1
+  43 001d 50       	 .byte 80
+  44 001e 00       	 .byte 0
+  45 001f 04       	 .byte 4
+  46 0020 00000000 	 .space 9
+  46      00000000 
+  46      00
+  47 0029 35       	 .byte 53
+  48 002a 90       	 .byte -112
+  49 002b 00       	 .byte 0
+  50 002c 45       	 .byte 69
+  51 002d A0       	 .byte -96
+  52 002e 00       	 .byte 0
+  53 002f 00000000 	 .space 12
+  53      00000000 
+  53      00000000 
+  54 003b 00000000 	 .space 23
+  54      00000000 
+  54      00000000 
+  54      00000000 
+  54      00000000 
+  55 0052 02       	 .byte 2
+  56 0053 00000248 	 .4byte 1208090624
+  57 0057 1B       	 .byte 27
+  58 0058 00       	 .byte 0
+  59 0059 00       	 .byte 0
+  60 005a 00       	 .byte 0
+  61 005b 00       	 .byte 0
+  62 005c 01       	 .byte 1
+  63 005d 00000000 	 .space 12
+  63      00000000 
+  63      00000000 
+  64 0069 15       	 .byte 21
+  65 006a 90       	 .byte -112
+  66 006b 00       	 .byte 0
+  67 006c 2F       	 .byte 47
+  68 006d A0       	 .byte -96
+  69 006e 00       	 .byte 0
+  70 006f 3E       	 .byte 62
+  71 0070 90       	 .byte -112
+  72 0071 00       	 .byte 0
+  73 0072 00000000 	 .space 9
+  73      00000000 
+  73      00
+  74 007b 14       	 .byte 20
+  75 007c 00       	 .byte 0
+  76 007d 00       	 .byte 0
+  77 007e 15       	 .byte 21
+  78 007f 00       	 .byte 0
+  79 0080 01       	 .byte 1
+  80 0081 3F       	 .byte 63
+  81 0082 00       	 .byte 0
+  82 0083 02       	 .byte 2
+  83 0084 3E       	 .byte 62
+  84 0085 00       	 .byte 0
+  85 0086 03       	 .byte 3
+  86 0087 2E       	 .byte 46
+  87 0088 00       	 .byte 0
+  88 0089 04       	 .byte 4
+  89 008a 000000   	 .space 3
+  90 008d 16       	 .byte 22
+  91 008e 00       	 .byte 0
+  92 008f 00       	 .byte 0
+  93 0090 00       	 .byte 0
+  94 0091 00       	 .byte 0
+  95 0092 01       	 .byte 1
+  96 0093 00000000 	 .space 12
+  96      00000000 
+  96      00000000 
+  97 009f 5B       	 .byte 91
+  98 00a0 5A       	 .byte 90
+  99 00a1 40       	 .byte 64
+ 100 00a2 40       	 .byte 64
+ 101 00a3 00       	 .space 1
+ 102              	 .section .text.spiPinConfigure,"ax",%progbits
+ 103              	 .align 2
+ 104              	 .global spiPinConfigure
+ 105              	 .thumb
+ 106              	 .thumb_func
+ 108              	spiPinConfigure:
+ 109              	.LFB535:
+ 110              	 .file 1 "../cleanflight/src/main/drivers/bus_spi_pinconfig.c"
+   1:../cleanflight/src/main/drivers/bus_spi_pinconfig.c **** /*
+   2:../cleanflight/src/main/drivers/bus_spi_pinconfig.c ****  * This file is part of Cleanflight and Betaflight.
+   3:../cleanflight/src/main/drivers/bus_spi_pinconfig.c ****  *
+   4:../cleanflight/src/main/drivers/bus_spi_pinconfig.c ****  * Cleanflight and Betaflight are free software. You can redistribute
+   5:../cleanflight/src/main/drivers/bus_spi_pinconfig.c ****  * this software and/or modify this software under the terms of the
+   6:../cleanflight/src/main/drivers/bus_spi_pinconfig.c ****  * GNU General Public License as published by the Free Software
+   7:../cleanflight/src/main/drivers/bus_spi_pinconfig.c ****  * Foundation, either version 3 of the License, or (at your option)
+   8:../cleanflight/src/main/drivers/bus_spi_pinconfig.c ****  * any later version.
+   9:../cleanflight/src/main/drivers/bus_spi_pinconfig.c ****  *
+  10:../cleanflight/src/main/drivers/bus_spi_pinconfig.c ****  * Cleanflight and Betaflight are distributed in the hope that they
+  11:../cleanflight/src/main/drivers/bus_spi_pinconfig.c ****  * will be useful, but WITHOUT ANY WARRANTY; without even the implied
+  12:../cleanflight/src/main/drivers/bus_spi_pinconfig.c ****  * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+  13:../cleanflight/src/main/drivers/bus_spi_pinconfig.c ****  * See the GNU General Public License for more details.
+  14:../cleanflight/src/main/drivers/bus_spi_pinconfig.c ****  *
+  15:../cleanflight/src/main/drivers/bus_spi_pinconfig.c ****  * You should have received a copy of the GNU General Public License
+  16:../cleanflight/src/main/drivers/bus_spi_pinconfig.c ****  * along with this software.
+  17:../cleanflight/src/main/drivers/bus_spi_pinconfig.c ****  *
+  18:../cleanflight/src/main/drivers/bus_spi_pinconfig.c ****  * If not, see <http://www.gnu.org/licenses/>.
+  19:../cleanflight/src/main/drivers/bus_spi_pinconfig.c ****  */
+  20:../cleanflight/src/main/drivers/bus_spi_pinconfig.c **** 
+  21:../cleanflight/src/main/drivers/bus_spi_pinconfig.c **** #include <stdbool.h>
+  22:../cleanflight/src/main/drivers/bus_spi_pinconfig.c **** #include <stdint.h>
+  23:../cleanflight/src/main/drivers/bus_spi_pinconfig.c **** #include <string.h>
+  24:../cleanflight/src/main/drivers/bus_spi_pinconfig.c **** 
+  25:../cleanflight/src/main/drivers/bus_spi_pinconfig.c **** #include "platform.h"
+  26:../cleanflight/src/main/drivers/bus_spi_pinconfig.c **** 
+  27:../cleanflight/src/main/drivers/bus_spi_pinconfig.c **** #ifdef USE_SPI
+  28:../cleanflight/src/main/drivers/bus_spi_pinconfig.c **** 
+  29:../cleanflight/src/main/drivers/bus_spi_pinconfig.c **** #include "build/debug.h"
+  30:../cleanflight/src/main/drivers/bus_spi_pinconfig.c **** 
+  31:../cleanflight/src/main/drivers/bus_spi_pinconfig.c **** #include "drivers/bus_spi.h"
+  32:../cleanflight/src/main/drivers/bus_spi_pinconfig.c **** #include "drivers/bus_spi_impl.h"
+  33:../cleanflight/src/main/drivers/bus_spi_pinconfig.c **** #include "drivers/dma.h"
+  34:../cleanflight/src/main/drivers/bus_spi_pinconfig.c **** #include "drivers/exti.h"
+  35:../cleanflight/src/main/drivers/bus_spi_pinconfig.c **** #include "drivers/io.h"
+  36:../cleanflight/src/main/drivers/bus_spi_pinconfig.c **** #include "drivers/rcc.h"
+  37:../cleanflight/src/main/drivers/bus_spi_pinconfig.c **** #include "drivers/nvic.h"
+  38:../cleanflight/src/main/drivers/bus_spi_pinconfig.c **** 
+  39:../cleanflight/src/main/drivers/bus_spi_pinconfig.c **** #include "pg/bus_spi.h"
+  40:../cleanflight/src/main/drivers/bus_spi_pinconfig.c **** 
+  41:../cleanflight/src/main/drivers/bus_spi_pinconfig.c **** const spiHardware_t spiHardware[] = {
+  42:../cleanflight/src/main/drivers/bus_spi_pinconfig.c **** #ifdef STM32F1
+  43:../cleanflight/src/main/drivers/bus_spi_pinconfig.c ****     // Remapping is not supported and corresponding lines are commented out.
+  44:../cleanflight/src/main/drivers/bus_spi_pinconfig.c ****     // There also is some errata that may prevent these assignments from working:
+  45:../cleanflight/src/main/drivers/bus_spi_pinconfig.c ****     // http://www.st.com/content/ccc/resource/technical/document/errata_sheet/7d/02/75/64/17/fc/4d/
+  46:../cleanflight/src/main/drivers/bus_spi_pinconfig.c ****     {
+  47:../cleanflight/src/main/drivers/bus_spi_pinconfig.c ****         .device = SPIDEV_1,
+  48:../cleanflight/src/main/drivers/bus_spi_pinconfig.c ****         .reg = SPI1,
+  49:../cleanflight/src/main/drivers/bus_spi_pinconfig.c ****         .sckPins = {
+  50:../cleanflight/src/main/drivers/bus_spi_pinconfig.c ****             { DEFIO_TAG_E(PA5) },
+  51:../cleanflight/src/main/drivers/bus_spi_pinconfig.c ****             // { DEFIO_TAG_E(PB3) },
+  52:../cleanflight/src/main/drivers/bus_spi_pinconfig.c ****         },
+  53:../cleanflight/src/main/drivers/bus_spi_pinconfig.c ****         .misoPins = {
+  54:../cleanflight/src/main/drivers/bus_spi_pinconfig.c ****             { DEFIO_TAG_E(PA6) },
+  55:../cleanflight/src/main/drivers/bus_spi_pinconfig.c ****             // { DEFIO_TAG_E(PB4) },
+  56:../cleanflight/src/main/drivers/bus_spi_pinconfig.c ****         },
+  57:../cleanflight/src/main/drivers/bus_spi_pinconfig.c ****         .mosiPins = {
+  58:../cleanflight/src/main/drivers/bus_spi_pinconfig.c ****             { DEFIO_TAG_E(PA7) },
+  59:../cleanflight/src/main/drivers/bus_spi_pinconfig.c ****             // { DEFIO_TAG_E(PB5) },
+  60:../cleanflight/src/main/drivers/bus_spi_pinconfig.c ****         },
+  61:../cleanflight/src/main/drivers/bus_spi_pinconfig.c ****         .rcc = RCC_APB2(SPI1),
+  62:../cleanflight/src/main/drivers/bus_spi_pinconfig.c ****     },
+  63:../cleanflight/src/main/drivers/bus_spi_pinconfig.c ****     {
+  64:../cleanflight/src/main/drivers/bus_spi_pinconfig.c ****         .device = SPIDEV_2,
+  65:../cleanflight/src/main/drivers/bus_spi_pinconfig.c ****         .reg = SPI2,
+  66:../cleanflight/src/main/drivers/bus_spi_pinconfig.c ****         .sckPins = {
+  67:../cleanflight/src/main/drivers/bus_spi_pinconfig.c ****             { DEFIO_TAG_E(PB13) },
+  68:../cleanflight/src/main/drivers/bus_spi_pinconfig.c ****             // { DEFIO_TAG_E(PB3) },
+  69:../cleanflight/src/main/drivers/bus_spi_pinconfig.c ****         },
+  70:../cleanflight/src/main/drivers/bus_spi_pinconfig.c ****         .misoPins = {
+  71:../cleanflight/src/main/drivers/bus_spi_pinconfig.c ****             { DEFIO_TAG_E(PB14) },
+  72:../cleanflight/src/main/drivers/bus_spi_pinconfig.c ****             // { DEFIO_TAG_E(PB4) },
+  73:../cleanflight/src/main/drivers/bus_spi_pinconfig.c ****         },
+  74:../cleanflight/src/main/drivers/bus_spi_pinconfig.c ****         .mosiPins = {
+  75:../cleanflight/src/main/drivers/bus_spi_pinconfig.c ****             { DEFIO_TAG_E(PB15) },
+  76:../cleanflight/src/main/drivers/bus_spi_pinconfig.c ****             // { DEFIO_TAG_E(PB5) },
+  77:../cleanflight/src/main/drivers/bus_spi_pinconfig.c ****         },
+  78:../cleanflight/src/main/drivers/bus_spi_pinconfig.c ****         .rcc = RCC_APB1(SPI2),
+  79:../cleanflight/src/main/drivers/bus_spi_pinconfig.c ****     },
+  80:../cleanflight/src/main/drivers/bus_spi_pinconfig.c **** #endif
+  81:../cleanflight/src/main/drivers/bus_spi_pinconfig.c **** #ifdef STM32F3
+  82:../cleanflight/src/main/drivers/bus_spi_pinconfig.c **** 
+  83:../cleanflight/src/main/drivers/bus_spi_pinconfig.c **** #ifndef GPIO_AF_SPI1
+  84:../cleanflight/src/main/drivers/bus_spi_pinconfig.c **** #define GPIO_AF_SPI1    GPIO_AF_5
+  85:../cleanflight/src/main/drivers/bus_spi_pinconfig.c **** #endif
+  86:../cleanflight/src/main/drivers/bus_spi_pinconfig.c **** #ifndef GPIO_AF_SPI2
+  87:../cleanflight/src/main/drivers/bus_spi_pinconfig.c **** #define GPIO_AF_SPI2    GPIO_AF_5
+  88:../cleanflight/src/main/drivers/bus_spi_pinconfig.c **** #endif
+  89:../cleanflight/src/main/drivers/bus_spi_pinconfig.c **** #ifndef GPIO_AF_SPI3
+  90:../cleanflight/src/main/drivers/bus_spi_pinconfig.c **** #define GPIO_AF_SPI3    GPIO_AF_6
+  91:../cleanflight/src/main/drivers/bus_spi_pinconfig.c **** #endif
+  92:../cleanflight/src/main/drivers/bus_spi_pinconfig.c **** 
+  93:../cleanflight/src/main/drivers/bus_spi_pinconfig.c ****     {
+  94:../cleanflight/src/main/drivers/bus_spi_pinconfig.c ****         .device = SPIDEV_1,
+  95:../cleanflight/src/main/drivers/bus_spi_pinconfig.c ****         .reg = SPI1,
+  96:../cleanflight/src/main/drivers/bus_spi_pinconfig.c ****         .sckPins = {
+  97:../cleanflight/src/main/drivers/bus_spi_pinconfig.c ****             { DEFIO_TAG_E(PA5) },
+  98:../cleanflight/src/main/drivers/bus_spi_pinconfig.c ****             { DEFIO_TAG_E(PB3) },
+  99:../cleanflight/src/main/drivers/bus_spi_pinconfig.c ****         },
+ 100:../cleanflight/src/main/drivers/bus_spi_pinconfig.c ****         .misoPins = {
+ 101:../cleanflight/src/main/drivers/bus_spi_pinconfig.c ****             { DEFIO_TAG_E(PA6) },
+ 102:../cleanflight/src/main/drivers/bus_spi_pinconfig.c ****             { DEFIO_TAG_E(PB4) },
+ 103:../cleanflight/src/main/drivers/bus_spi_pinconfig.c ****         },
+ 104:../cleanflight/src/main/drivers/bus_spi_pinconfig.c ****         .mosiPins = {
+ 105:../cleanflight/src/main/drivers/bus_spi_pinconfig.c ****             { DEFIO_TAG_E(PA7) },
+ 106:../cleanflight/src/main/drivers/bus_spi_pinconfig.c ****             { DEFIO_TAG_E(PB5) },
+ 107:../cleanflight/src/main/drivers/bus_spi_pinconfig.c ****         },
+ 108:../cleanflight/src/main/drivers/bus_spi_pinconfig.c ****         .af = GPIO_AF_SPI1,
+ 109:../cleanflight/src/main/drivers/bus_spi_pinconfig.c ****         .rcc = RCC_APB2(SPI1),
+ 110:../cleanflight/src/main/drivers/bus_spi_pinconfig.c ****     },
+ 111:../cleanflight/src/main/drivers/bus_spi_pinconfig.c ****     {
+ 112:../cleanflight/src/main/drivers/bus_spi_pinconfig.c ****         .device = SPIDEV_2,
+ 113:../cleanflight/src/main/drivers/bus_spi_pinconfig.c ****         .reg = SPI2,
+ 114:../cleanflight/src/main/drivers/bus_spi_pinconfig.c ****         .sckPins = {
+ 115:../cleanflight/src/main/drivers/bus_spi_pinconfig.c ****             { DEFIO_TAG_E(PB13) },
+ 116:../cleanflight/src/main/drivers/bus_spi_pinconfig.c ****             { DEFIO_TAG_E(PB3) },
+ 117:../cleanflight/src/main/drivers/bus_spi_pinconfig.c ****         },
+ 118:../cleanflight/src/main/drivers/bus_spi_pinconfig.c ****         .misoPins = {
+ 119:../cleanflight/src/main/drivers/bus_spi_pinconfig.c ****             { DEFIO_TAG_E(PB14) },
+ 120:../cleanflight/src/main/drivers/bus_spi_pinconfig.c ****             { DEFIO_TAG_E(PB4) },
+ 121:../cleanflight/src/main/drivers/bus_spi_pinconfig.c ****         },
+ 122:../cleanflight/src/main/drivers/bus_spi_pinconfig.c ****         .mosiPins = {
+ 123:../cleanflight/src/main/drivers/bus_spi_pinconfig.c ****             { DEFIO_TAG_E(PB15) },
+ 124:../cleanflight/src/main/drivers/bus_spi_pinconfig.c ****             { DEFIO_TAG_E(PB5) },
+ 125:../cleanflight/src/main/drivers/bus_spi_pinconfig.c ****         },
+ 126:../cleanflight/src/main/drivers/bus_spi_pinconfig.c ****         .af = GPIO_AF_SPI2,
+ 127:../cleanflight/src/main/drivers/bus_spi_pinconfig.c ****         .rcc = RCC_APB1(SPI2),
+ 128:../cleanflight/src/main/drivers/bus_spi_pinconfig.c ****     },
+ 129:../cleanflight/src/main/drivers/bus_spi_pinconfig.c ****     {
+ 130:../cleanflight/src/main/drivers/bus_spi_pinconfig.c ****         .device = SPIDEV_3,
+ 131:../cleanflight/src/main/drivers/bus_spi_pinconfig.c ****         .reg = SPI3,
+ 132:../cleanflight/src/main/drivers/bus_spi_pinconfig.c ****         .sckPins = {
+ 133:../cleanflight/src/main/drivers/bus_spi_pinconfig.c ****             { DEFIO_TAG_E(PB3) },
+ 134:../cleanflight/src/main/drivers/bus_spi_pinconfig.c ****             { DEFIO_TAG_E(PC10) },
+ 135:../cleanflight/src/main/drivers/bus_spi_pinconfig.c ****         },
+ 136:../cleanflight/src/main/drivers/bus_spi_pinconfig.c ****         .misoPins = {
+ 137:../cleanflight/src/main/drivers/bus_spi_pinconfig.c ****             { DEFIO_TAG_E(PB4) },
+ 138:../cleanflight/src/main/drivers/bus_spi_pinconfig.c ****             { DEFIO_TAG_E(PC11) },
+ 139:../cleanflight/src/main/drivers/bus_spi_pinconfig.c ****         },
+ 140:../cleanflight/src/main/drivers/bus_spi_pinconfig.c ****         .mosiPins = {
+ 141:../cleanflight/src/main/drivers/bus_spi_pinconfig.c ****             { DEFIO_TAG_E(PB5) },
+ 142:../cleanflight/src/main/drivers/bus_spi_pinconfig.c ****             { DEFIO_TAG_E(PC12) },
+ 143:../cleanflight/src/main/drivers/bus_spi_pinconfig.c ****         },
+ 144:../cleanflight/src/main/drivers/bus_spi_pinconfig.c ****         .af = GPIO_AF_SPI3,
+ 145:../cleanflight/src/main/drivers/bus_spi_pinconfig.c ****         .rcc = RCC_APB1(SPI3),
+ 146:../cleanflight/src/main/drivers/bus_spi_pinconfig.c ****     },
+ 147:../cleanflight/src/main/drivers/bus_spi_pinconfig.c **** #endif
+ 148:../cleanflight/src/main/drivers/bus_spi_pinconfig.c **** #ifdef STM32F4
+ 149:../cleanflight/src/main/drivers/bus_spi_pinconfig.c ****     {
+ 150:../cleanflight/src/main/drivers/bus_spi_pinconfig.c ****         .device = SPIDEV_1,
+ 151:../cleanflight/src/main/drivers/bus_spi_pinconfig.c ****         .reg = SPI1,
+ 152:../cleanflight/src/main/drivers/bus_spi_pinconfig.c ****         .sckPins = {
+ 153:../cleanflight/src/main/drivers/bus_spi_pinconfig.c ****             { DEFIO_TAG_E(PA5) },
+ 154:../cleanflight/src/main/drivers/bus_spi_pinconfig.c ****             { DEFIO_TAG_E(PB3) },
+ 155:../cleanflight/src/main/drivers/bus_spi_pinconfig.c ****         },
+ 156:../cleanflight/src/main/drivers/bus_spi_pinconfig.c ****         .misoPins = {
+ 157:../cleanflight/src/main/drivers/bus_spi_pinconfig.c ****             { DEFIO_TAG_E(PA6) },
+ 158:../cleanflight/src/main/drivers/bus_spi_pinconfig.c ****             { DEFIO_TAG_E(PB4) },
+ 159:../cleanflight/src/main/drivers/bus_spi_pinconfig.c ****         },
+ 160:../cleanflight/src/main/drivers/bus_spi_pinconfig.c ****         .mosiPins = {
+ 161:../cleanflight/src/main/drivers/bus_spi_pinconfig.c ****             { DEFIO_TAG_E(PA7) },
+ 162:../cleanflight/src/main/drivers/bus_spi_pinconfig.c ****             { DEFIO_TAG_E(PB5) },
+ 163:../cleanflight/src/main/drivers/bus_spi_pinconfig.c ****         },
+ 164:../cleanflight/src/main/drivers/bus_spi_pinconfig.c ****         .af = GPIO_AF_SPI1,
+ 165:../cleanflight/src/main/drivers/bus_spi_pinconfig.c ****         .rcc = RCC_APB2(SPI1),
+ 166:../cleanflight/src/main/drivers/bus_spi_pinconfig.c ****     },
+ 167:../cleanflight/src/main/drivers/bus_spi_pinconfig.c ****     {
+ 168:../cleanflight/src/main/drivers/bus_spi_pinconfig.c ****         .device = SPIDEV_2,
+ 169:../cleanflight/src/main/drivers/bus_spi_pinconfig.c ****         .reg = SPI2,
+ 170:../cleanflight/src/main/drivers/bus_spi_pinconfig.c ****         .sckPins = {
+ 171:../cleanflight/src/main/drivers/bus_spi_pinconfig.c ****             { DEFIO_TAG_E(PB10) },
+ 172:../cleanflight/src/main/drivers/bus_spi_pinconfig.c ****             { DEFIO_TAG_E(PB13) },
+ 173:../cleanflight/src/main/drivers/bus_spi_pinconfig.c ****         },
+ 174:../cleanflight/src/main/drivers/bus_spi_pinconfig.c ****         .misoPins = {
+ 175:../cleanflight/src/main/drivers/bus_spi_pinconfig.c ****             { DEFIO_TAG_E(PB14) },
+ 176:../cleanflight/src/main/drivers/bus_spi_pinconfig.c ****             { DEFIO_TAG_E(PC2) },
+ 177:../cleanflight/src/main/drivers/bus_spi_pinconfig.c ****         },
+ 178:../cleanflight/src/main/drivers/bus_spi_pinconfig.c ****         .mosiPins = {
+ 179:../cleanflight/src/main/drivers/bus_spi_pinconfig.c ****             { DEFIO_TAG_E(PB15) },
+ 180:../cleanflight/src/main/drivers/bus_spi_pinconfig.c ****             { DEFIO_TAG_E(PC3) },
+ 181:../cleanflight/src/main/drivers/bus_spi_pinconfig.c ****         },
+ 182:../cleanflight/src/main/drivers/bus_spi_pinconfig.c ****         .af = GPIO_AF_SPI2,
+ 183:../cleanflight/src/main/drivers/bus_spi_pinconfig.c ****         .rcc = RCC_APB1(SPI2),
+ 184:../cleanflight/src/main/drivers/bus_spi_pinconfig.c ****     },
+ 185:../cleanflight/src/main/drivers/bus_spi_pinconfig.c ****     {
+ 186:../cleanflight/src/main/drivers/bus_spi_pinconfig.c ****         .device = SPIDEV_3,
+ 187:../cleanflight/src/main/drivers/bus_spi_pinconfig.c ****         .reg = SPI3,
+ 188:../cleanflight/src/main/drivers/bus_spi_pinconfig.c ****         .sckPins = {
+ 189:../cleanflight/src/main/drivers/bus_spi_pinconfig.c ****             { DEFIO_TAG_E(PB3) },
+ 190:../cleanflight/src/main/drivers/bus_spi_pinconfig.c ****             { DEFIO_TAG_E(PC10) },
+ 191:../cleanflight/src/main/drivers/bus_spi_pinconfig.c ****         },
+ 192:../cleanflight/src/main/drivers/bus_spi_pinconfig.c ****         .misoPins = {
+ 193:../cleanflight/src/main/drivers/bus_spi_pinconfig.c ****             { DEFIO_TAG_E(PB4) },
+ 194:../cleanflight/src/main/drivers/bus_spi_pinconfig.c ****             { DEFIO_TAG_E(PC11) },
+ 195:../cleanflight/src/main/drivers/bus_spi_pinconfig.c ****         },
+ 196:../cleanflight/src/main/drivers/bus_spi_pinconfig.c ****         .mosiPins = {
+ 197:../cleanflight/src/main/drivers/bus_spi_pinconfig.c ****             { DEFIO_TAG_E(PB5) },
+ 198:../cleanflight/src/main/drivers/bus_spi_pinconfig.c ****             { DEFIO_TAG_E(PC12) },
+ 199:../cleanflight/src/main/drivers/bus_spi_pinconfig.c ****         },
+ 200:../cleanflight/src/main/drivers/bus_spi_pinconfig.c ****         .af = GPIO_AF_SPI3,
+ 201:../cleanflight/src/main/drivers/bus_spi_pinconfig.c ****         .rcc = RCC_APB1(SPI3),
+ 202:../cleanflight/src/main/drivers/bus_spi_pinconfig.c ****     },
+ 203:../cleanflight/src/main/drivers/bus_spi_pinconfig.c **** #endif
+ 204:../cleanflight/src/main/drivers/bus_spi_pinconfig.c **** #ifdef STM32F7
+ 205:../cleanflight/src/main/drivers/bus_spi_pinconfig.c ****     {
+ 206:../cleanflight/src/main/drivers/bus_spi_pinconfig.c ****         .device = SPIDEV_1,
+ 207:../cleanflight/src/main/drivers/bus_spi_pinconfig.c ****         .reg = SPI1,
+ 208:../cleanflight/src/main/drivers/bus_spi_pinconfig.c ****         .sckPins = {
+ 209:../cleanflight/src/main/drivers/bus_spi_pinconfig.c ****             { DEFIO_TAG_E(PA5), GPIO_AF5_SPI1 },
+ 210:../cleanflight/src/main/drivers/bus_spi_pinconfig.c ****             { DEFIO_TAG_E(PB3), GPIO_AF5_SPI1 },
+ 211:../cleanflight/src/main/drivers/bus_spi_pinconfig.c ****         },
+ 212:../cleanflight/src/main/drivers/bus_spi_pinconfig.c ****         .misoPins = {
+ 213:../cleanflight/src/main/drivers/bus_spi_pinconfig.c ****             { DEFIO_TAG_E(PA6), GPIO_AF5_SPI1 },
+ 214:../cleanflight/src/main/drivers/bus_spi_pinconfig.c ****             { DEFIO_TAG_E(PB4), GPIO_AF5_SPI1 },
+ 215:../cleanflight/src/main/drivers/bus_spi_pinconfig.c ****         },
+ 216:../cleanflight/src/main/drivers/bus_spi_pinconfig.c ****         .mosiPins = {
+ 217:../cleanflight/src/main/drivers/bus_spi_pinconfig.c ****             { DEFIO_TAG_E(PA7), GPIO_AF5_SPI1 },
+ 218:../cleanflight/src/main/drivers/bus_spi_pinconfig.c ****             { DEFIO_TAG_E(PB5), GPIO_AF5_SPI1 },
+ 219:../cleanflight/src/main/drivers/bus_spi_pinconfig.c ****         },
+ 220:../cleanflight/src/main/drivers/bus_spi_pinconfig.c ****         .rcc = RCC_APB2(SPI1),
+ 221:../cleanflight/src/main/drivers/bus_spi_pinconfig.c ****         .dmaIrqHandler = DMA2_ST3_HANDLER,
+ 222:../cleanflight/src/main/drivers/bus_spi_pinconfig.c ****     },
+ 223:../cleanflight/src/main/drivers/bus_spi_pinconfig.c ****     {
+ 224:../cleanflight/src/main/drivers/bus_spi_pinconfig.c ****         .device = SPIDEV_2,
+ 225:../cleanflight/src/main/drivers/bus_spi_pinconfig.c ****         .reg = SPI2,
+ 226:../cleanflight/src/main/drivers/bus_spi_pinconfig.c ****         .sckPins = {
+ 227:../cleanflight/src/main/drivers/bus_spi_pinconfig.c ****             { DEFIO_TAG_E(PA9), GPIO_AF5_SPI2 },
+ 228:../cleanflight/src/main/drivers/bus_spi_pinconfig.c ****             { DEFIO_TAG_E(PB10), GPIO_AF5_SPI2 },
+ 229:../cleanflight/src/main/drivers/bus_spi_pinconfig.c ****             { DEFIO_TAG_E(PB13), GPIO_AF5_SPI2 },
+ 230:../cleanflight/src/main/drivers/bus_spi_pinconfig.c ****             { DEFIO_TAG_E(PD3), GPIO_AF5_SPI2 },
+ 231:../cleanflight/src/main/drivers/bus_spi_pinconfig.c ****         },
+ 232:../cleanflight/src/main/drivers/bus_spi_pinconfig.c ****         .misoPins = {
+ 233:../cleanflight/src/main/drivers/bus_spi_pinconfig.c ****             { DEFIO_TAG_E(PB14), GPIO_AF5_SPI2 },
+ 234:../cleanflight/src/main/drivers/bus_spi_pinconfig.c ****             { DEFIO_TAG_E(PC2), GPIO_AF5_SPI2 },
+ 235:../cleanflight/src/main/drivers/bus_spi_pinconfig.c ****         },
+ 236:../cleanflight/src/main/drivers/bus_spi_pinconfig.c ****         .mosiPins = {
+ 237:../cleanflight/src/main/drivers/bus_spi_pinconfig.c ****             { DEFIO_TAG_E(PB15), GPIO_AF5_SPI2 },
+ 238:../cleanflight/src/main/drivers/bus_spi_pinconfig.c ****             { DEFIO_TAG_E(PC1), GPIO_AF5_SPI2 },
+ 239:../cleanflight/src/main/drivers/bus_spi_pinconfig.c ****             { DEFIO_TAG_E(PC3), GPIO_AF5_SPI2 },
+ 240:../cleanflight/src/main/drivers/bus_spi_pinconfig.c ****         },
+ 241:../cleanflight/src/main/drivers/bus_spi_pinconfig.c ****         .rcc = RCC_APB1(SPI2),
+ 242:../cleanflight/src/main/drivers/bus_spi_pinconfig.c ****         .dmaIrqHandler = DMA1_ST4_HANDLER,
+ 243:../cleanflight/src/main/drivers/bus_spi_pinconfig.c ****     },
+ 244:../cleanflight/src/main/drivers/bus_spi_pinconfig.c ****     {
+ 245:../cleanflight/src/main/drivers/bus_spi_pinconfig.c ****         .device = SPIDEV_3,
+ 246:../cleanflight/src/main/drivers/bus_spi_pinconfig.c ****         .reg = SPI3,
+ 247:../cleanflight/src/main/drivers/bus_spi_pinconfig.c ****         .sckPins = {
+ 248:../cleanflight/src/main/drivers/bus_spi_pinconfig.c ****             { DEFIO_TAG_E(PB3), GPIO_AF6_SPI3 },
+ 249:../cleanflight/src/main/drivers/bus_spi_pinconfig.c ****             { DEFIO_TAG_E(PC10), GPIO_AF6_SPI3 },
+ 250:../cleanflight/src/main/drivers/bus_spi_pinconfig.c ****         },
+ 251:../cleanflight/src/main/drivers/bus_spi_pinconfig.c ****         .misoPins = {
+ 252:../cleanflight/src/main/drivers/bus_spi_pinconfig.c ****             { DEFIO_TAG_E(PB4), GPIO_AF6_SPI3 },
+ 253:../cleanflight/src/main/drivers/bus_spi_pinconfig.c ****             { DEFIO_TAG_E(PC11), GPIO_AF6_SPI3 },
+ 254:../cleanflight/src/main/drivers/bus_spi_pinconfig.c ****         },
+ 255:../cleanflight/src/main/drivers/bus_spi_pinconfig.c ****         .mosiPins = {
+ 256:../cleanflight/src/main/drivers/bus_spi_pinconfig.c ****             { DEFIO_TAG_E(PB2), GPIO_AF7_SPI3 },
+ 257:../cleanflight/src/main/drivers/bus_spi_pinconfig.c ****             { DEFIO_TAG_E(PB5), GPIO_AF6_SPI3 },
+ 258:../cleanflight/src/main/drivers/bus_spi_pinconfig.c ****             { DEFIO_TAG_E(PC12), GPIO_AF6_SPI3 },
+ 259:../cleanflight/src/main/drivers/bus_spi_pinconfig.c ****             { DEFIO_TAG_E(PD6), GPIO_AF5_SPI3 },
+ 260:../cleanflight/src/main/drivers/bus_spi_pinconfig.c ****         },
+ 261:../cleanflight/src/main/drivers/bus_spi_pinconfig.c ****         .rcc = RCC_APB1(SPI3),
+ 262:../cleanflight/src/main/drivers/bus_spi_pinconfig.c ****         .dmaIrqHandler = DMA1_ST7_HANDLER,
+ 263:../cleanflight/src/main/drivers/bus_spi_pinconfig.c ****     },
+ 264:../cleanflight/src/main/drivers/bus_spi_pinconfig.c ****     {
+ 265:../cleanflight/src/main/drivers/bus_spi_pinconfig.c ****         .device = SPIDEV_4,
+ 266:../cleanflight/src/main/drivers/bus_spi_pinconfig.c ****         .reg = SPI4,
+ 267:../cleanflight/src/main/drivers/bus_spi_pinconfig.c ****         .sckPins = {
+ 268:../cleanflight/src/main/drivers/bus_spi_pinconfig.c ****             { DEFIO_TAG_E(PE2), GPIO_AF5_SPI4 },
+ 269:../cleanflight/src/main/drivers/bus_spi_pinconfig.c ****             { DEFIO_TAG_E(PE12), GPIO_AF5_SPI4 },
+ 270:../cleanflight/src/main/drivers/bus_spi_pinconfig.c ****         },
+ 271:../cleanflight/src/main/drivers/bus_spi_pinconfig.c ****         .misoPins = {
+ 272:../cleanflight/src/main/drivers/bus_spi_pinconfig.c ****             { DEFIO_TAG_E(PE5), GPIO_AF5_SPI4 },
+ 273:../cleanflight/src/main/drivers/bus_spi_pinconfig.c ****             { DEFIO_TAG_E(PE13), GPIO_AF5_SPI4 },
+ 274:../cleanflight/src/main/drivers/bus_spi_pinconfig.c ****         },
+ 275:../cleanflight/src/main/drivers/bus_spi_pinconfig.c ****         .mosiPins = {
+ 276:../cleanflight/src/main/drivers/bus_spi_pinconfig.c ****             { DEFIO_TAG_E(PE6), GPIO_AF5_SPI4 },
+ 277:../cleanflight/src/main/drivers/bus_spi_pinconfig.c ****             { DEFIO_TAG_E(PE14), GPIO_AF5_SPI4 },
+ 278:../cleanflight/src/main/drivers/bus_spi_pinconfig.c ****         },
+ 279:../cleanflight/src/main/drivers/bus_spi_pinconfig.c ****         .rcc = RCC_APB2(SPI4),
+ 280:../cleanflight/src/main/drivers/bus_spi_pinconfig.c ****         .dmaIrqHandler = DMA2_ST1_HANDLER,
+ 281:../cleanflight/src/main/drivers/bus_spi_pinconfig.c ****     },
+ 282:../cleanflight/src/main/drivers/bus_spi_pinconfig.c **** #endif
+ 283:../cleanflight/src/main/drivers/bus_spi_pinconfig.c **** #ifdef XMC4700_F100x2048
+ 284:../cleanflight/src/main/drivers/bus_spi_pinconfig.c ****     {
+ 285:../cleanflight/src/main/drivers/bus_spi_pinconfig.c ****     	//MASTER
+ 286:../cleanflight/src/main/drivers/bus_spi_pinconfig.c ****         .device = SPIDEV_2,
+ 287:../cleanflight/src/main/drivers/bus_spi_pinconfig.c ****         .reg = SPI2,
+ 288:../cleanflight/src/main/drivers/bus_spi_pinconfig.c ****         .sckPins = {
+ 289:../cleanflight/src/main/drivers/bus_spi_pinconfig.c ****             { DEFIO_TAG_E(P24), XMC_GPIO_MODE_OUTPUT_PUSH_PULL_ALT2, 0 },
+ 290:../cleanflight/src/main/drivers/bus_spi_pinconfig.c ****             { DEFIO_TAG_E(P30), XMC_GPIO_MODE_OUTPUT_PUSH_PULL_ALT2, 0 },
+ 291:../cleanflight/src/main/drivers/bus_spi_pinconfig.c **** 			{ DEFIO_TAG_E(P36), XMC_GPIO_MODE_OUTPUT_PUSH_PULL_ALT4, 0 },
+ 292:../cleanflight/src/main/drivers/bus_spi_pinconfig.c ****         },
+ 293:../cleanflight/src/main/drivers/bus_spi_pinconfig.c ****         .misoPins = {
+ 294:../cleanflight/src/main/drivers/bus_spi_pinconfig.c ****             { DEFIO_TAG_E(P22), XMC_GPIO_MODE_INPUT_TRISTATE, 0 },
+ 295:../cleanflight/src/main/drivers/bus_spi_pinconfig.c ****             { DEFIO_TAG_E(P25), XMC_GPIO_MODE_INPUT_TRISTATE, 1 },
+ 296:../cleanflight/src/main/drivers/bus_spi_pinconfig.c **** 			{ DEFIO_TAG_E(P40), XMC_GPIO_MODE_INPUT_TRISTATE, 4 },
+ 297:../cleanflight/src/main/drivers/bus_spi_pinconfig.c ****         },
+ 298:../cleanflight/src/main/drivers/bus_spi_pinconfig.c ****         .mosiPins = {
+ 299:../cleanflight/src/main/drivers/bus_spi_pinconfig.c ****             { DEFIO_TAG_E(P25), XMC_GPIO_MODE_OUTPUT_PUSH_PULL_ALT2, 0 },
+ 300:../cleanflight/src/main/drivers/bus_spi_pinconfig.c ****             { DEFIO_TAG_E(P35), XMC_GPIO_MODE_OUTPUT_PUSH_PULL_ALT4, 0 },
+ 301:../cleanflight/src/main/drivers/bus_spi_pinconfig.c ****         },
+ 302:../cleanflight/src/main/drivers/bus_spi_pinconfig.c ****     },
+ 303:../cleanflight/src/main/drivers/bus_spi_pinconfig.c ****     {
+ 304:../cleanflight/src/main/drivers/bus_spi_pinconfig.c ****     	//SLAVE
+ 305:../cleanflight/src/main/drivers/bus_spi_pinconfig.c ****         .device = SPIDEV_3,
+ 306:../cleanflight/src/main/drivers/bus_spi_pinconfig.c ****         .reg = SPI3,
+ 307:../cleanflight/src/main/drivers/bus_spi_pinconfig.c **** 		.rxIrq = USIC1_0_IRQn,
+ 308:../cleanflight/src/main/drivers/bus_spi_pinconfig.c **** 		.txIrq = USIC1_1_IRQn,
+ 309:../cleanflight/src/main/drivers/bus_spi_pinconfig.c **** 		.rxPriority = NVIC_PRIO_SERIALSPIS3,
+ 310:../cleanflight/src/main/drivers/bus_spi_pinconfig.c **** 		.txPriority = NVIC_PRIO_SERIALSPIS3,
+ 311:../cleanflight/src/main/drivers/bus_spi_pinconfig.c ****         .sckPins = {
+ 312:../cleanflight/src/main/drivers/bus_spi_pinconfig.c ****             { DEFIO_TAG_E(P011), XMC_GPIO_MODE_INPUT_TRISTATE, 0 },
+ 313:../cleanflight/src/main/drivers/bus_spi_pinconfig.c ****             { DEFIO_TAG_E(P58), XMC_GPIO_MODE_INPUT_TRISTATE, 1 },
+ 314:../cleanflight/src/main/drivers/bus_spi_pinconfig.c ****         },
+ 315:../cleanflight/src/main/drivers/bus_spi_pinconfig.c ****         .misoPins = {
+ 316:../cleanflight/src/main/drivers/bus_spi_pinconfig.c ****             { DEFIO_TAG_E(P05), XMC_GPIO_MODE_OUTPUT_PUSH_PULL_ALT2, 0 },
+ 317:../cleanflight/src/main/drivers/bus_spi_pinconfig.c ****             { DEFIO_TAG_E(P115), XMC_GPIO_MODE_OUTPUT_PUSH_PULL_ALT4, 0 },
+ 318:../cleanflight/src/main/drivers/bus_spi_pinconfig.c **** 			{ DEFIO_TAG_E(P214), XMC_GPIO_MODE_OUTPUT_PUSH_PULL_ALT2, 0 },
+ 319:../cleanflight/src/main/drivers/bus_spi_pinconfig.c ****         },
+ 320:../cleanflight/src/main/drivers/bus_spi_pinconfig.c ****         .mosiPins = {
+ 321:../cleanflight/src/main/drivers/bus_spi_pinconfig.c ****             { DEFIO_TAG_E(P04), XMC_GPIO_MODE_INPUT_TRISTATE, 0 },
+ 322:../cleanflight/src/main/drivers/bus_spi_pinconfig.c ****             { DEFIO_TAG_E(P05), XMC_GPIO_MODE_INPUT_TRISTATE, 1 },
+ 323:../cleanflight/src/main/drivers/bus_spi_pinconfig.c **** 			{ DEFIO_TAG_E(P215), XMC_GPIO_MODE_INPUT_TRISTATE, 2 },
+ 324:../cleanflight/src/main/drivers/bus_spi_pinconfig.c **** 			{ DEFIO_TAG_E(P214), XMC_GPIO_MODE_INPUT_TRISTATE, 3 },
+ 325:../cleanflight/src/main/drivers/bus_spi_pinconfig.c **** 			{ DEFIO_TAG_E(P114), XMC_GPIO_MODE_INPUT_TRISTATE, 4 },
+ 326:../cleanflight/src/main/drivers/bus_spi_pinconfig.c ****         },
+ 327:../cleanflight/src/main/drivers/bus_spi_pinconfig.c ****         .csPins = {
+ 328:../cleanflight/src/main/drivers/bus_spi_pinconfig.c ****             { DEFIO_TAG_E(P06), XMC_GPIO_MODE_INPUT_TRISTATE, 0 },
+ 329:../cleanflight/src/main/drivers/bus_spi_pinconfig.c ****             { DEFIO_TAG_E(P59), XMC_GPIO_MODE_INPUT_TRISTATE, 1 },
+ 330:../cleanflight/src/main/drivers/bus_spi_pinconfig.c ****         },
+ 331:../cleanflight/src/main/drivers/bus_spi_pinconfig.c ****     },
+ 332:../cleanflight/src/main/drivers/bus_spi_pinconfig.c **** #endif
+ 333:../cleanflight/src/main/drivers/bus_spi_pinconfig.c **** };
+ 334:../cleanflight/src/main/drivers/bus_spi_pinconfig.c **** 
+ 335:../cleanflight/src/main/drivers/bus_spi_pinconfig.c **** void spiPinConfigure(const spiPinConfig_t *pConfig)
+ 336:../cleanflight/src/main/drivers/bus_spi_pinconfig.c **** {
+ 111              	 .loc 1 336 0
+ 112              	 .cfi_startproc
+ 113              	 
+ 114              	 
+ 115              	 
+ 116 0000 80B4     	 push {r7}
+ 117              	.LCFI0:
+ 118              	 .cfi_def_cfa_offset 4
+ 119              	 .cfi_offset 7,-4
+ 120 0002 89B0     	 sub sp,sp,#36
+ 121              	.LCFI1:
+ 122              	 .cfi_def_cfa_offset 40
+ 123 0004 00AF     	 add r7,sp,#0
+ 124              	.LCFI2:
+ 125              	 .cfi_def_cfa_register 7
+ 126 0006 7860     	 str r0,[r7,#4]
+ 127              	.LBB2:
+ 337:../cleanflight/src/main/drivers/bus_spi_pinconfig.c ****     for (size_t hwindex = 0 ; hwindex < ARRAYLEN(spiHardware) ; hwindex++) {
+ 128              	 .loc 1 337 0
+ 129 0008 0023     	 movs r3,#0
+ 130 000a FB61     	 str r3,[r7,#28]
+ 131 000c 11E1     	 b .L2
+ 132              	.L11:
+ 133              	.LBB3:
+ 338:../cleanflight/src/main/drivers/bus_spi_pinconfig.c ****         const spiHardware_t *hw = &spiHardware[hwindex];
+ 134              	 .loc 1 338 0
+ 135 000e FB69     	 ldr r3,[r7,#28]
+ 136 0010 5222     	 movs r2,#82
+ 137 0012 02FB03F3 	 mul r3,r2,r3
+ 138 0016 8B4A     	 ldr r2,.L12
+ 139 0018 1344     	 add r3,r3,r2
+ 140 001a 7B61     	 str r3,[r7,#20]
+ 339:../cleanflight/src/main/drivers/bus_spi_pinconfig.c **** 
+ 340:../cleanflight/src/main/drivers/bus_spi_pinconfig.c ****         if (!hw->reg) {
+ 141              	 .loc 1 340 0
+ 142 001c 7B69     	 ldr r3,[r7,#20]
+ 143 001e D3F80130 	 ldr r3,[r3,#1]
+ 144 0022 002B     	 cmp r3,#0
+ 145 0024 00D1     	 bne .L3
+ 341:../cleanflight/src/main/drivers/bus_spi_pinconfig.c ****             continue;
+ 146              	 .loc 1 341 0
+ 147 0026 01E1     	 b .L4
+ 148              	.L3:
+ 342:../cleanflight/src/main/drivers/bus_spi_pinconfig.c ****         }
+ 343:../cleanflight/src/main/drivers/bus_spi_pinconfig.c **** 
+ 344:../cleanflight/src/main/drivers/bus_spi_pinconfig.c ****         SPIDevice device = hw->device;
+ 149              	 .loc 1 344 0
+ 150 0028 7B69     	 ldr r3,[r7,#20]
+ 151 002a 1B78     	 ldrb r3,[r3]
+ 152 002c FB74     	 strb r3,[r7,#19]
+ 345:../cleanflight/src/main/drivers/bus_spi_pinconfig.c ****         spiDevice_t *pDev = &spiDevice[device];
+ 153              	 .loc 1 345 0
+ 154 002e 97F91330 	 ldrsb r3,[r7,#19]
+ 155 0032 40F24B42 	 movw r2,#1099
+ 156 0036 02FB03F3 	 mul r3,r2,r3
+ 157 003a 834A     	 ldr r2,.L12+4
+ 158 003c 1344     	 add r3,r3,r2
+ 159 003e FB60     	 str r3,[r7,#12]
+ 160              	.LBB4:
+ 346:../cleanflight/src/main/drivers/bus_spi_pinconfig.c **** 
+ 347:../cleanflight/src/main/drivers/bus_spi_pinconfig.c ****         for (int pindex = 0 ; pindex < MAX_SPI_PIN_SEL ; pindex++) {
+ 161              	 .loc 1 347 0
+ 162 0040 0023     	 movs r3,#0
+ 163 0042 BB61     	 str r3,[r7,#24]
+ 164 0044 B7E0     	 b .L5
+ 165              	.L10:
+ 348:../cleanflight/src/main/drivers/bus_spi_pinconfig.c ****             if (pConfig[device].ioTagSck == hw->sckPins[pindex].pin) {
+ 166              	 .loc 1 348 0
+ 167 0046 97F91330 	 ldrsb r3,[r7,#19]
+ 168 004a 9B00     	 lsls r3,r3,#2
+ 169 004c 7A68     	 ldr r2,[r7,#4]
+ 170 004e 1344     	 add r3,r3,r2
+ 171 0050 1978     	 ldrb r1,[r3]
+ 172 0052 7869     	 ldr r0,[r7,#20]
+ 173 0054 BA69     	 ldr r2,[r7,#24]
+ 174 0056 1346     	 mov r3,r2
+ 175 0058 5B00     	 lsls r3,r3,#1
+ 176 005a 1344     	 add r3,r3,r2
+ 177 005c 0344     	 add r3,r3,r0
+ 178 005e 5B79     	 ldrb r3,[r3,#5]
+ 179 0060 9942     	 cmp r1,r3
+ 180 0062 1DD1     	 bne .L6
+ 349:../cleanflight/src/main/drivers/bus_spi_pinconfig.c ****                 pDev->sck = hw->sckPins[pindex].pin;
+ 181              	 .loc 1 349 0
+ 182 0064 7969     	 ldr r1,[r7,#20]
+ 183 0066 BA69     	 ldr r2,[r7,#24]
+ 184 0068 1346     	 mov r3,r2
+ 185 006a 5B00     	 lsls r3,r3,#1
+ 186 006c 1344     	 add r3,r3,r2
+ 187 006e 0B44     	 add r3,r3,r1
+ 188 0070 5A79     	 ldrb r2,[r3,#5]
+ 189 0072 FB68     	 ldr r3,[r7,#12]
+ 190 0074 83F83720 	 strb r2,[r3,#55]
+ 350:../cleanflight/src/main/drivers/bus_spi_pinconfig.c **** #ifdef STM32F7
+ 351:../cleanflight/src/main/drivers/bus_spi_pinconfig.c ****                 pDev->sckAF = hw->sckPins[pindex].af;
+ 352:../cleanflight/src/main/drivers/bus_spi_pinconfig.c **** #endif
+ 353:../cleanflight/src/main/drivers/bus_spi_pinconfig.c **** #ifdef XMC4700_F100x2048
+ 354:../cleanflight/src/main/drivers/bus_spi_pinconfig.c ****                 pDev->sckAF = hw->sckPins[pindex].af;
+ 191              	 .loc 1 354 0
+ 192 0078 7969     	 ldr r1,[r7,#20]
+ 193 007a BA69     	 ldr r2,[r7,#24]
+ 194 007c 1346     	 mov r3,r2
+ 195 007e 5B00     	 lsls r3,r3,#1
+ 196 0080 1344     	 add r3,r3,r2
+ 197 0082 0B44     	 add r3,r3,r1
+ 198 0084 9A79     	 ldrb r2,[r3,#6]
+ 199 0086 FB68     	 ldr r3,[r7,#12]
+ 200 0088 83F83B20 	 strb r2,[r3,#59]
+ 355:../cleanflight/src/main/drivers/bus_spi_pinconfig.c ****                 pDev->sckSRC = hw->sckPins[pindex].src;
+ 201              	 .loc 1 355 0
+ 202 008c 7969     	 ldr r1,[r7,#20]
+ 203 008e BA69     	 ldr r2,[r7,#24]
+ 204 0090 1346     	 mov r3,r2
+ 205 0092 5B00     	 lsls r3,r3,#1
+ 206 0094 1344     	 add r3,r3,r2
+ 207 0096 0B44     	 add r3,r3,r1
+ 208 0098 DA79     	 ldrb r2,[r3,#7]
+ 209 009a FB68     	 ldr r3,[r7,#12]
+ 210 009c 83F83F20 	 strb r2,[r3,#63]
+ 211              	.L6:
+ 356:../cleanflight/src/main/drivers/bus_spi_pinconfig.c **** #endif
+ 357:../cleanflight/src/main/drivers/bus_spi_pinconfig.c ****             }
+ 358:../cleanflight/src/main/drivers/bus_spi_pinconfig.c ****             if (pConfig[device].ioTagMiso == hw->misoPins[pindex].pin) {
+ 212              	 .loc 1 358 0
+ 213 00a0 97F91330 	 ldrsb r3,[r7,#19]
+ 214 00a4 9B00     	 lsls r3,r3,#2
+ 215 00a6 7A68     	 ldr r2,[r7,#4]
+ 216 00a8 1344     	 add r3,r3,r2
+ 217 00aa 5978     	 ldrb r1,[r3,#1]
+ 218 00ac 7869     	 ldr r0,[r7,#20]
+ 219 00ae BA69     	 ldr r2,[r7,#24]
+ 220 00b0 1346     	 mov r3,r2
+ 221 00b2 5B00     	 lsls r3,r3,#1
+ 222 00b4 1344     	 add r3,r3,r2
+ 223 00b6 0344     	 add r3,r3,r0
+ 224 00b8 1033     	 adds r3,r3,#16
+ 225 00ba DB79     	 ldrb r3,[r3,#7]
+ 226 00bc 9942     	 cmp r1,r3
+ 227 00be 20D1     	 bne .L7
+ 359:../cleanflight/src/main/drivers/bus_spi_pinconfig.c ****                 pDev->miso = hw->misoPins[pindex].pin;
+ 228              	 .loc 1 359 0
+ 229 00c0 7969     	 ldr r1,[r7,#20]
+ 230 00c2 BA69     	 ldr r2,[r7,#24]
+ 231 00c4 1346     	 mov r3,r2
+ 232 00c6 5B00     	 lsls r3,r3,#1
+ 233 00c8 1344     	 add r3,r3,r2
+ 234 00ca 0B44     	 add r3,r3,r1
+ 235 00cc 1033     	 adds r3,r3,#16
+ 236 00ce DA79     	 ldrb r2,[r3,#7]
+ 237 00d0 FB68     	 ldr r3,[r7,#12]
+ 238 00d2 83F83820 	 strb r2,[r3,#56]
+ 360:../cleanflight/src/main/drivers/bus_spi_pinconfig.c **** #ifdef STM32F7
+ 361:../cleanflight/src/main/drivers/bus_spi_pinconfig.c ****                 pDev->misoAF = hw->misoPins[pindex].af;
+ 362:../cleanflight/src/main/drivers/bus_spi_pinconfig.c **** #endif
+ 363:../cleanflight/src/main/drivers/bus_spi_pinconfig.c **** #ifdef XMC4700_F100x2048
+ 364:../cleanflight/src/main/drivers/bus_spi_pinconfig.c ****                 pDev->misoAF = hw->misoPins[pindex].af;
+ 239              	 .loc 1 364 0
+ 240 00d6 7969     	 ldr r1,[r7,#20]
+ 241 00d8 BA69     	 ldr r2,[r7,#24]
+ 242 00da 1346     	 mov r3,r2
+ 243 00dc 5B00     	 lsls r3,r3,#1
+ 244 00de 1344     	 add r3,r3,r2
+ 245 00e0 0B44     	 add r3,r3,r1
+ 246 00e2 1033     	 adds r3,r3,#16
+ 247 00e4 1A7A     	 ldrb r2,[r3,#8]
+ 248 00e6 FB68     	 ldr r3,[r7,#12]
+ 249 00e8 83F83C20 	 strb r2,[r3,#60]
+ 365:../cleanflight/src/main/drivers/bus_spi_pinconfig.c ****                 pDev->misoSRC = hw->misoPins[pindex].src;
+ 250              	 .loc 1 365 0
+ 251 00ec 7969     	 ldr r1,[r7,#20]
+ 252 00ee BA69     	 ldr r2,[r7,#24]
+ 253 00f0 1346     	 mov r3,r2
+ 254 00f2 5B00     	 lsls r3,r3,#1
+ 255 00f4 1344     	 add r3,r3,r2
+ 256 00f6 0B44     	 add r3,r3,r1
+ 257 00f8 1033     	 adds r3,r3,#16
+ 258 00fa 5A7A     	 ldrb r2,[r3,#9]
+ 259 00fc FB68     	 ldr r3,[r7,#12]
+ 260 00fe 83F84020 	 strb r2,[r3,#64]
+ 261              	.L7:
+ 366:../cleanflight/src/main/drivers/bus_spi_pinconfig.c **** #endif
+ 367:../cleanflight/src/main/drivers/bus_spi_pinconfig.c ****             }
+ 368:../cleanflight/src/main/drivers/bus_spi_pinconfig.c ****             if (pConfig[device].ioTagMosi == hw->mosiPins[pindex].pin) {
+ 262              	 .loc 1 368 0
+ 263 0102 97F91330 	 ldrsb r3,[r7,#19]
+ 264 0106 9B00     	 lsls r3,r3,#2
+ 265 0108 7A68     	 ldr r2,[r7,#4]
+ 266 010a 1344     	 add r3,r3,r2
+ 267 010c 9978     	 ldrb r1,[r3,#2]
+ 268 010e 7869     	 ldr r0,[r7,#20]
+ 269 0110 BA69     	 ldr r2,[r7,#24]
+ 270 0112 1346     	 mov r3,r2
+ 271 0114 5B00     	 lsls r3,r3,#1
+ 272 0116 1344     	 add r3,r3,r2
+ 273 0118 0344     	 add r3,r3,r0
+ 274 011a 2833     	 adds r3,r3,#40
+ 275 011c 5B78     	 ldrb r3,[r3,#1]
+ 276 011e 9942     	 cmp r1,r3
+ 277 0120 20D1     	 bne .L8
+ 369:../cleanflight/src/main/drivers/bus_spi_pinconfig.c ****                 pDev->mosi = hw->mosiPins[pindex].pin;
+ 278              	 .loc 1 369 0
+ 279 0122 7969     	 ldr r1,[r7,#20]
+ 280 0124 BA69     	 ldr r2,[r7,#24]
+ 281 0126 1346     	 mov r3,r2
+ 282 0128 5B00     	 lsls r3,r3,#1
+ 283 012a 1344     	 add r3,r3,r2
+ 284 012c 0B44     	 add r3,r3,r1
+ 285 012e 2833     	 adds r3,r3,#40
+ 286 0130 5A78     	 ldrb r2,[r3,#1]
+ 287 0132 FB68     	 ldr r3,[r7,#12]
+ 288 0134 83F83920 	 strb r2,[r3,#57]
+ 370:../cleanflight/src/main/drivers/bus_spi_pinconfig.c **** #ifdef STM32F7
+ 371:../cleanflight/src/main/drivers/bus_spi_pinconfig.c ****                 pDev->mosiAF = hw->mosiPins[pindex].af;
+ 372:../cleanflight/src/main/drivers/bus_spi_pinconfig.c **** #endif
+ 373:../cleanflight/src/main/drivers/bus_spi_pinconfig.c **** #ifdef XMC4700_F100x2048
+ 374:../cleanflight/src/main/drivers/bus_spi_pinconfig.c ****                 pDev->mosiAF = hw->mosiPins[pindex].af;
+ 289              	 .loc 1 374 0
+ 290 0138 7969     	 ldr r1,[r7,#20]
+ 291 013a BA69     	 ldr r2,[r7,#24]
+ 292 013c 1346     	 mov r3,r2
+ 293 013e 5B00     	 lsls r3,r3,#1
+ 294 0140 1344     	 add r3,r3,r2
+ 295 0142 0B44     	 add r3,r3,r1
+ 296 0144 2833     	 adds r3,r3,#40
+ 297 0146 9A78     	 ldrb r2,[r3,#2]
+ 298 0148 FB68     	 ldr r3,[r7,#12]
+ 299 014a 83F83D20 	 strb r2,[r3,#61]
+ 375:../cleanflight/src/main/drivers/bus_spi_pinconfig.c ****                 pDev->mosiSRC = hw->mosiPins[pindex].src;
+ 300              	 .loc 1 375 0
+ 301 014e 7969     	 ldr r1,[r7,#20]
+ 302 0150 BA69     	 ldr r2,[r7,#24]
+ 303 0152 1346     	 mov r3,r2
+ 304 0154 5B00     	 lsls r3,r3,#1
+ 305 0156 1344     	 add r3,r3,r2
+ 306 0158 0B44     	 add r3,r3,r1
+ 307 015a 2833     	 adds r3,r3,#40
+ 308 015c DA78     	 ldrb r2,[r3,#3]
+ 309 015e FB68     	 ldr r3,[r7,#12]
+ 310 0160 83F84120 	 strb r2,[r3,#65]
+ 311              	.L8:
+ 376:../cleanflight/src/main/drivers/bus_spi_pinconfig.c **** #endif
+ 377:../cleanflight/src/main/drivers/bus_spi_pinconfig.c ****             }
+ 378:../cleanflight/src/main/drivers/bus_spi_pinconfig.c **** 
+ 379:../cleanflight/src/main/drivers/bus_spi_pinconfig.c **** #ifdef XMC4700_F100x2048
+ 380:../cleanflight/src/main/drivers/bus_spi_pinconfig.c ****             if (pConfig[device].ioTagCs == hw->csPins[pindex].pin) {
+ 312              	 .loc 1 380 0
+ 313 0164 97F91330 	 ldrsb r3,[r7,#19]
+ 314 0168 9B00     	 lsls r3,r3,#2
+ 315 016a 7A68     	 ldr r2,[r7,#4]
+ 316 016c 1344     	 add r3,r3,r2
+ 317 016e D978     	 ldrb r1,[r3,#3]
+ 318 0170 7869     	 ldr r0,[r7,#20]
+ 319 0172 BA69     	 ldr r2,[r7,#24]
+ 320 0174 1346     	 mov r3,r2
+ 321 0176 5B00     	 lsls r3,r3,#1
+ 322 0178 1344     	 add r3,r3,r2
+ 323 017a 0344     	 add r3,r3,r0
+ 324 017c 3833     	 adds r3,r3,#56
+ 325 017e DB78     	 ldrb r3,[r3,#3]
+ 326 0180 9942     	 cmp r1,r3
+ 327 0182 15D1     	 bne .L9
+ 381:../cleanflight/src/main/drivers/bus_spi_pinconfig.c ****             	pDev->csAF = hw->csPins[pindex].af;
+ 328              	 .loc 1 381 0
+ 329 0184 7969     	 ldr r1,[r7,#20]
+ 330 0186 BA69     	 ldr r2,[r7,#24]
+ 331 0188 1346     	 mov r3,r2
+ 332 018a 5B00     	 lsls r3,r3,#1
+ 333 018c 1344     	 add r3,r3,r2
+ 334 018e 0B44     	 add r3,r3,r1
+ 335 0190 3833     	 adds r3,r3,#56
+ 336 0192 1A79     	 ldrb r2,[r3,#4]
+ 337 0194 FB68     	 ldr r3,[r7,#12]
+ 338 0196 83F83E20 	 strb r2,[r3,#62]
+ 382:../cleanflight/src/main/drivers/bus_spi_pinconfig.c ****             	pDev->csSRC = hw->csPins[pindex].src;
+ 339              	 .loc 1 382 0
+ 340 019a 7969     	 ldr r1,[r7,#20]
+ 341 019c BA69     	 ldr r2,[r7,#24]
+ 342 019e 1346     	 mov r3,r2
+ 343 01a0 5B00     	 lsls r3,r3,#1
+ 344 01a2 1344     	 add r3,r3,r2
+ 345 01a4 0B44     	 add r3,r3,r1
+ 346 01a6 3833     	 adds r3,r3,#56
+ 347 01a8 5A79     	 ldrb r2,[r3,#5]
+ 348 01aa FB68     	 ldr r3,[r7,#12]
+ 349 01ac 83F84220 	 strb r2,[r3,#66]
+ 350              	.L9:
+ 347:../cleanflight/src/main/drivers/bus_spi_pinconfig.c ****             if (pConfig[device].ioTagSck == hw->sckPins[pindex].pin) {
+ 351              	 .loc 1 347 0 discriminator 2
+ 352 01b0 BB69     	 ldr r3,[r7,#24]
+ 353 01b2 0133     	 adds r3,r3,#1
+ 354 01b4 BB61     	 str r3,[r7,#24]
+ 355              	.L5:
+ 347:../cleanflight/src/main/drivers/bus_spi_pinconfig.c ****             if (pConfig[device].ioTagSck == hw->sckPins[pindex].pin) {
+ 356              	 .loc 1 347 0 is_stmt 0 discriminator 1
+ 357 01b6 BB69     	 ldr r3,[r7,#24]
+ 358 01b8 052B     	 cmp r3,#5
+ 359 01ba 7FF744AF 	 ble .L10
+ 360              	.LBE4:
+ 383:../cleanflight/src/main/drivers/bus_spi_pinconfig.c ****             }
+ 384:../cleanflight/src/main/drivers/bus_spi_pinconfig.c **** #endif
+ 385:../cleanflight/src/main/drivers/bus_spi_pinconfig.c ****         }
+ 386:../cleanflight/src/main/drivers/bus_spi_pinconfig.c **** 
+ 387:../cleanflight/src/main/drivers/bus_spi_pinconfig.c ****         if (pDev->sck && pDev->miso && pDev->mosi) {
+ 361              	 .loc 1 387 0 is_stmt 1
+ 362 01be FB68     	 ldr r3,[r7,#12]
+ 363 01c0 93F83730 	 ldrb r3,[r3,#55]
+ 364 01c4 002B     	 cmp r3,#0
+ 365 01c6 31D0     	 beq .L4
+ 366              	 .loc 1 387 0 is_stmt 0 discriminator 1
+ 367 01c8 FB68     	 ldr r3,[r7,#12]
+ 368 01ca 93F83830 	 ldrb r3,[r3,#56]
+ 369 01ce 002B     	 cmp r3,#0
+ 370 01d0 2CD0     	 beq .L4
+ 371              	 .loc 1 387 0 discriminator 2
+ 372 01d2 FB68     	 ldr r3,[r7,#12]
+ 373 01d4 93F83930 	 ldrb r3,[r3,#57]
+ 374 01d8 002B     	 cmp r3,#0
+ 375 01da 27D0     	 beq .L4
+ 388:../cleanflight/src/main/drivers/bus_spi_pinconfig.c ****             pDev->dev = hw->reg;
+ 376              	 .loc 1 388 0 is_stmt 1
+ 377 01dc 7B69     	 ldr r3,[r7,#20]
+ 378 01de D3F80120 	 ldr r2,[r3,#1]
+ 379 01e2 FB68     	 ldr r3,[r7,#12]
+ 380 01e4 C3F83320 	 str r2,[r3,#51]
+ 389:../cleanflight/src/main/drivers/bus_spi_pinconfig.c **** #if !(defined(STM32F7) || defined(XMC4700_F100x2048))
+ 390:../cleanflight/src/main/drivers/bus_spi_pinconfig.c ****             pDev->af = hw->af;
+ 391:../cleanflight/src/main/drivers/bus_spi_pinconfig.c **** #endif
+ 392:../cleanflight/src/main/drivers/bus_spi_pinconfig.c ****             pDev->rcc = hw->rcc;
+ 381              	 .loc 1 392 0
+ 382 01e8 7B69     	 ldr r3,[r7,#20]
+ 383 01ea 93F85120 	 ldrb r2,[r3,#81]
+ 384 01ee FB68     	 ldr r3,[r7,#12]
+ 385 01f0 83F84724 	 strb r2,[r3,#1095]
+ 393:../cleanflight/src/main/drivers/bus_spi_pinconfig.c ****             pDev->leadingEdge = false; // XXX Should be part of transfer context
+ 386              	 .loc 1 393 0
+ 387 01f4 FB68     	 ldr r3,[r7,#12]
+ 388 01f6 0022     	 movs r2,#0
+ 389 01f8 83F84A24 	 strb r2,[r3,#1098]
+ 394:../cleanflight/src/main/drivers/bus_spi_pinconfig.c **** #ifdef USE_HAL_DRIVER
+ 395:../cleanflight/src/main/drivers/bus_spi_pinconfig.c ****             pDev->dmaIrqHandler = hw->dmaIrqHandler;
+ 396:../cleanflight/src/main/drivers/bus_spi_pinconfig.c **** #endif
+ 397:../cleanflight/src/main/drivers/bus_spi_pinconfig.c **** #ifdef XMC4700_F100x2048
+ 398:../cleanflight/src/main/drivers/bus_spi_pinconfig.c ****             pDev->rxIrq = hw->rxIrq;
+ 390              	 .loc 1 398 0
+ 391 01fc 7B69     	 ldr r3,[r7,#20]
+ 392 01fe 93F84E20 	 ldrb r2,[r3,#78]
+ 393 0202 FB68     	 ldr r3,[r7,#12]
+ 394 0204 83F84420 	 strb r2,[r3,#68]
+ 399:../cleanflight/src/main/drivers/bus_spi_pinconfig.c ****             pDev->txIrq = hw->txIrq;
+ 395              	 .loc 1 399 0
+ 396 0208 7B69     	 ldr r3,[r7,#20]
+ 397 020a 93F84D20 	 ldrb r2,[r3,#77]
+ 398 020e FB68     	 ldr r3,[r7,#12]
+ 399 0210 83F84320 	 strb r2,[r3,#67]
+ 400:../cleanflight/src/main/drivers/bus_spi_pinconfig.c ****             pDev->rxPriority = hw->rxPriority;
+ 400              	 .loc 1 400 0
+ 401 0214 7B69     	 ldr r3,[r7,#20]
+ 402 0216 93F85020 	 ldrb r2,[r3,#80]
+ 403 021a FB68     	 ldr r3,[r7,#12]
+ 404 021c 83F84620 	 strb r2,[r3,#70]
+ 401:../cleanflight/src/main/drivers/bus_spi_pinconfig.c ****             pDev->txPriority = hw->txPriority;
+ 405              	 .loc 1 401 0
+ 406 0220 7B69     	 ldr r3,[r7,#20]
+ 407 0222 93F84F20 	 ldrb r2,[r3,#79]
+ 408 0226 FB68     	 ldr r3,[r7,#12]
+ 409 0228 83F84520 	 strb r2,[r3,#69]
+ 410              	.L4:
+ 411              	.LBE3:
+ 337:../cleanflight/src/main/drivers/bus_spi_pinconfig.c ****         const spiHardware_t *hw = &spiHardware[hwindex];
+ 412              	 .loc 1 337 0 discriminator 2
+ 413 022c FB69     	 ldr r3,[r7,#28]
+ 414 022e 0133     	 adds r3,r3,#1
+ 415 0230 FB61     	 str r3,[r7,#28]
+ 416              	.L2:
+ 337:../cleanflight/src/main/drivers/bus_spi_pinconfig.c ****         const spiHardware_t *hw = &spiHardware[hwindex];
+ 417              	 .loc 1 337 0 is_stmt 0 discriminator 1
+ 418 0232 FB69     	 ldr r3,[r7,#28]
+ 419 0234 012B     	 cmp r3,#1
+ 420 0236 7FF6EAAE 	 bls .L11
+ 421              	.LBE2:
+ 402:../cleanflight/src/main/drivers/bus_spi_pinconfig.c **** #endif
+ 403:../cleanflight/src/main/drivers/bus_spi_pinconfig.c ****         }
+ 404:../cleanflight/src/main/drivers/bus_spi_pinconfig.c ****     }
+ 405:../cleanflight/src/main/drivers/bus_spi_pinconfig.c **** }
+ 422              	 .loc 1 405 0 is_stmt 1
+ 423 023a 2437     	 adds r7,r7,#36
+ 424              	.LCFI3:
+ 425              	 .cfi_def_cfa_offset 4
+ 426 023c BD46     	 mov sp,r7
+ 427              	.LCFI4:
+ 428              	 .cfi_def_cfa_register 13
+ 429              	 
+ 430 023e 5DF8047B 	 ldr r7,[sp],#4
+ 431              	.LCFI5:
+ 432              	 .cfi_restore 7
+ 433              	 .cfi_def_cfa_offset 0
+ 434 0242 7047     	 bx lr
+ 435              	.L13:
+ 436              	 .align 2
+ 437              	.L12:
+ 438 0244 00000000 	 .word spiHardware
+ 439 0248 00000000 	 .word spiDevice
+ 440              	 .cfi_endproc
+ 441              	.LFE535:
+ 443              	 .text
+ 444              	.Letext0:
+ 445              	 .file 2 "d:\\xmc\\dave-ide-4.4.2-64bit\\eclipse\\arm-gcc-49\\arm-none-eabi\\include\\machine\\_default_types.h"
+ 446              	 .file 3 "d:\\xmc\\dave-ide-4.4.2-64bit\\eclipse\\arm-gcc-49\\arm-none-eabi\\include\\stdint.h"
+ 447              	 .file 4 "d:\\xmc\\dave-ide-4.4.2-64bit\\eclipse\\arm-gcc-49\\lib\\gcc\\arm-none-eabi\\4.9.3\\include\\stddef.h"
+ 448              	 .file 5 "D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/lib/main/XMC4000/xmc4700.h"
+ 449              	 .file 6 "D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/lib/main/XMC4000/XMCLib/inc/xmc4_gpio.h"
+ 450              	 .file 7 "D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/lib/main/XMC4000/XMCLib/inc/xmc_usic.h"
+ 451              	 .file 8 "D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/platform.h"
+ 452              	 .file 9 "D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/build/debug.h"
+ 453              	 .file 10 "D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/drivers/io_types.h"
+ 454              	 .file 11 "D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/drivers/rcc_types.h"
+ 455              	 .file 12 "D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/drivers/bus_spi.h"
+ 456              	 .file 13 "D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/drivers/resource.h"
+ 457              	 .file 14 "D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/drivers/serial.h"
+ 458              	 .file 15 "D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/drivers/bus_spi_impl.h"
+ 459              	 .file 16 "D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/pg/bus_spi.h"
+ 460              	 .file 17 "D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/lib/main/CMSIS/Core/Include/core_cm4.h"
+ 461              	 .file 18 "D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/lib/main/XMC4000/system_XMC4700.h"
+DEFINED SYMBOLS
+                            *ABS*:00000000 bus_spi_pinconfig.c
+    {standard input}:24     .rodata.spiHardware:00000000 spiHardware
+    {standard input}:21     .rodata.spiHardware:00000000 $d
+    {standard input}:103    .text.spiPinConfigure:00000000 $t
+    {standard input}:108    .text.spiPinConfigure:00000000 spiPinConfigure
+    {standard input}:438    .text.spiPinConfigure:00000244 $d
+                     .debug_frame:00000010 $d
+
+UNDEFINED SYMBOLS
+spiDevice

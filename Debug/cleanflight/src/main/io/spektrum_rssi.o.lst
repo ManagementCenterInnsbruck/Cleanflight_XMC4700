@@ -1,0 +1,938 @@
+   1              	 .syntax unified
+   2              	 .cpu cortex-m4
+   3              	 .eabi_attribute 27,3
+   4              	 .fpu fpv4-sp-d16
+   5              	 .eabi_attribute 20,1
+   6              	 .eabi_attribute 21,1
+   7              	 .eabi_attribute 23,3
+   8              	 .eabi_attribute 24,1
+   9              	 .eabi_attribute 25,1
+  10              	 .eabi_attribute 26,1
+  11              	 .eabi_attribute 30,6
+  12              	 .eabi_attribute 34,1
+  13              	 .eabi_attribute 18,4
+  14              	 .thumb
+  15              	 .file "spektrum_rssi.c"
+  16              	 .text
+  17              	.Ltext0:
+  18              	 .cfi_sections .debug_frame
+  19              	 .section .text.constrain,"ax",%progbits
+  20              	 .align 2
+  21              	 .thumb
+  22              	 .thumb_func
+  24              	constrain:
+  25              	.LFB526:
+  26              	 .file 1 "D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/common/maths.h"
+   1:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/common\maths.h **** /*
+   2:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/common\maths.h ****  * This file is part of Cleanflight and Betaflight.
+   3:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/common\maths.h ****  *
+   4:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/common\maths.h ****  * Cleanflight and Betaflight are free software. You can redistribute
+   5:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/common\maths.h ****  * this software and/or modify this software under the terms of the
+   6:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/common\maths.h ****  * GNU General Public License as published by the Free Software
+   7:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/common\maths.h ****  * Foundation, either version 3 of the License, or (at your option)
+   8:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/common\maths.h ****  * any later version.
+   9:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/common\maths.h ****  *
+  10:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/common\maths.h ****  * Cleanflight and Betaflight are distributed in the hope that they
+  11:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/common\maths.h ****  * will be useful, but WITHOUT ANY WARRANTY; without even the implied
+  12:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/common\maths.h ****  * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+  13:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/common\maths.h ****  * See the GNU General Public License for more details.
+  14:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/common\maths.h ****  *
+  15:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/common\maths.h ****  * You should have received a copy of the GNU General Public License
+  16:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/common\maths.h ****  * along with this software.
+  17:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/common\maths.h ****  *
+  18:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/common\maths.h ****  * If not, see <http://www.gnu.org/licenses/>.
+  19:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/common\maths.h ****  */
+  20:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/common\maths.h **** 
+  21:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/common\maths.h **** #pragma once
+  22:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/common\maths.h **** 
+  23:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/common\maths.h **** #include <stdint.h>
+  24:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/common\maths.h **** 
+  25:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/common\maths.h **** #ifndef sq
+  26:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/common\maths.h **** #define sq(x) ((x)*(x))
+  27:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/common\maths.h **** #endif
+  28:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/common\maths.h **** #define power3(x) ((x)*(x)*(x))
+  29:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/common\maths.h **** 
+  30:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/common\maths.h **** // Undefine this for use libc sinf/cosf. Keep this defined to use fast sin/cos approximations
+  31:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/common\maths.h **** #define FAST_MATH             // order 9 approximation
+  32:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/common\maths.h **** #define VERY_FAST_MATH      // order 7 approximation
+  33:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/common\maths.h **** 
+  34:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/common\maths.h **** // Use floating point M_PI instead explicitly.
+  35:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/common\maths.h **** #define M_PIf       3.14159265358979323846f
+  36:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/common\maths.h **** 
+  37:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/common\maths.h **** #define RAD    (M_PIf / 180.0f)
+  38:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/common\maths.h **** #define DEGREES_TO_DECIDEGREES(angle) ((angle) * 10)
+  39:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/common\maths.h **** #define DECIDEGREES_TO_DEGREES(angle) ((angle) / 10)
+  40:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/common\maths.h **** #define DECIDEGREES_TO_RADIANS(angle) ((angle) / 10.0f * 0.0174532925f)
+  41:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/common\maths.h **** #define DEGREES_TO_RADIANS(angle) ((angle) * 0.0174532925f)
+  42:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/common\maths.h **** 
+  43:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/common\maths.h **** #define CM_S_TO_KM_H(centimetersPerSecond) ((centimetersPerSecond) * 36 / 1000)
+  44:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/common\maths.h **** #define CM_S_TO_MPH(centimetersPerSecond) ((centimetersPerSecond) * 10000 / 5080 / 88)
+  45:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/common\maths.h **** 
+  46:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/common\maths.h **** #define MIN(a,b) \
+  47:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/common\maths.h ****   __extension__ ({ __typeof__ (a) _a = (a); \
+  48:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/common\maths.h ****   __typeof__ (b) _b = (b); \
+  49:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/common\maths.h ****   _a < _b ? _a : _b; })
+  50:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/common\maths.h **** #define MAX(a,b) \
+  51:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/common\maths.h ****   __extension__ ({ __typeof__ (a) _a = (a); \
+  52:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/common\maths.h ****   __typeof__ (b) _b = (b); \
+  53:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/common\maths.h ****   _a > _b ? _a : _b; })
+  54:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/common\maths.h **** #define ABS(x) \
+  55:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/common\maths.h ****   __extension__ ({ __typeof__ (x) _x = (x); \
+  56:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/common\maths.h ****   _x > 0 ? _x : -_x; })
+  57:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/common\maths.h **** 
+  58:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/common\maths.h **** #define Q12 (1 << 12)
+  59:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/common\maths.h **** 
+  60:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/common\maths.h **** #define HZ_TO_INTERVAL_US(x) (1000000 / (x))
+  61:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/common\maths.h **** 
+  62:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/common\maths.h **** typedef int32_t fix12_t;
+  63:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/common\maths.h **** 
+  64:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/common\maths.h **** typedef struct stdev_s
+  65:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/common\maths.h **** {
+  66:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/common\maths.h ****     float m_oldM, m_newM, m_oldS, m_newS;
+  67:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/common\maths.h ****     int m_n;
+  68:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/common\maths.h **** } stdev_t;
+  69:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/common\maths.h **** 
+  70:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/common\maths.h **** // Floating point 3 vector.
+  71:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/common\maths.h **** typedef struct fp_vector {
+  72:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/common\maths.h ****     float X;
+  73:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/common\maths.h ****     float Y;
+  74:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/common\maths.h ****     float Z;
+  75:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/common\maths.h **** } t_fp_vector_def;
+  76:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/common\maths.h **** 
+  77:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/common\maths.h **** typedef union u_fp_vector {
+  78:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/common\maths.h ****     float A[3];
+  79:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/common\maths.h ****     t_fp_vector_def V;
+  80:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/common\maths.h **** } t_fp_vector;
+  81:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/common\maths.h **** 
+  82:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/common\maths.h **** // Floating point Euler angles.
+  83:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/common\maths.h **** // Be carefull, could be either of degrees or radians.
+  84:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/common\maths.h **** typedef struct fp_angles {
+  85:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/common\maths.h ****     float roll;
+  86:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/common\maths.h ****     float pitch;
+  87:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/common\maths.h ****     float yaw;
+  88:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/common\maths.h **** } fp_angles_def;
+  89:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/common\maths.h **** 
+  90:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/common\maths.h **** typedef union {
+  91:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/common\maths.h ****     float raw[3];
+  92:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/common\maths.h ****     fp_angles_def angles;
+  93:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/common\maths.h **** } fp_angles_t;
+  94:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/common\maths.h **** 
+  95:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/common\maths.h **** int gcd(int num, int denom);
+  96:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/common\maths.h **** float powerf(float base, int exp);
+  97:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/common\maths.h **** int32_t applyDeadband(int32_t value, int32_t deadband);
+  98:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/common\maths.h **** float fapplyDeadband(float value, float deadband);
+  99:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/common\maths.h **** 
+ 100:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/common\maths.h **** void devClear(stdev_t *dev);
+ 101:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/common\maths.h **** void devPush(stdev_t *dev, float x);
+ 102:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/common\maths.h **** float devVariance(stdev_t *dev);
+ 103:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/common\maths.h **** float devStandardDeviation(stdev_t *dev);
+ 104:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/common\maths.h **** float degreesToRadians(int16_t degrees);
+ 105:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/common\maths.h **** 
+ 106:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/common\maths.h **** int scaleRange(int x, int srcFrom, int srcTo, int destFrom, int destTo);
+ 107:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/common\maths.h **** float scaleRangef(float x, float srcFrom, float srcTo, float destFrom, float destTo);
+ 108:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/common\maths.h **** 
+ 109:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/common\maths.h **** void normalizeV(struct fp_vector *src, struct fp_vector *dest);
+ 110:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/common\maths.h **** 
+ 111:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/common\maths.h **** void rotateV(struct fp_vector *v, fp_angles_t *delta);
+ 112:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/common\maths.h **** void buildRotationMatrix(fp_angles_t *delta, float matrix[3][3]);
+ 113:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/common\maths.h **** 
+ 114:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/common\maths.h **** int32_t quickMedianFilter3(int32_t * v);
+ 115:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/common\maths.h **** int32_t quickMedianFilter5(int32_t * v);
+ 116:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/common\maths.h **** int32_t quickMedianFilter7(int32_t * v);
+ 117:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/common\maths.h **** int32_t quickMedianFilter9(int32_t * v);
+ 118:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/common\maths.h **** 
+ 119:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/common\maths.h **** float quickMedianFilter3f(float * v);
+ 120:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/common\maths.h **** float quickMedianFilter5f(float * v);
+ 121:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/common\maths.h **** float quickMedianFilter7f(float * v);
+ 122:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/common\maths.h **** float quickMedianFilter9f(float * v);
+ 123:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/common\maths.h **** 
+ 124:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/common\maths.h **** #if defined(FAST_MATH) || defined(VERY_FAST_MATH)
+ 125:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/common\maths.h **** float sin_approx(float x);
+ 126:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/common\maths.h **** float cos_approx(float x);
+ 127:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/common\maths.h **** float atan2_approx(float y, float x);
+ 128:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/common\maths.h **** float acos_approx(float x);
+ 129:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/common\maths.h **** #define tan_approx(x)       (sin_approx(x) / cos_approx(x))
+ 130:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/common\maths.h **** float exp_approx(float val);
+ 131:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/common\maths.h **** float log_approx(float val);
+ 132:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/common\maths.h **** float pow_approx(float a, float b);
+ 133:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/common\maths.h **** #else
+ 134:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/common\maths.h **** #define sin_approx(x)   sinf(x)
+ 135:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/common\maths.h **** #define cos_approx(x)   cosf(x)
+ 136:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/common\maths.h **** #define atan2_approx(y,x)   atan2f(y,x)
+ 137:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/common\maths.h **** #define acos_approx(x)      acosf(x)
+ 138:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/common\maths.h **** #define tan_approx(x)       tanf(x)
+ 139:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/common\maths.h **** #define exp_approx(x)       expf(x)
+ 140:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/common\maths.h **** #define log_approx(x)       logf(x)
+ 141:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/common\maths.h **** #define pow_approx(a, b)    powf(b, a)
+ 142:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/common\maths.h **** #endif
+ 143:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/common\maths.h **** 
+ 144:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/common\maths.h **** void arraySubInt32(int32_t *dest, int32_t *array1, int32_t *array2, int count);
+ 145:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/common\maths.h **** 
+ 146:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/common\maths.h **** int16_t qPercent(fix12_t q);
+ 147:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/common\maths.h **** int16_t qMultiply(fix12_t q, int16_t input);
+ 148:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/common\maths.h **** fix12_t qConstruct(int16_t num, int16_t den);
+ 149:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/common\maths.h **** 
+ 150:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/common\maths.h **** static inline int constrain(int amt, int low, int high)
+ 151:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/common\maths.h **** {
+  27              	 .loc 1 151 0
+  28              	 .cfi_startproc
+  29              	 
+  30              	 
+  31              	 
+  32 0000 80B4     	 push {r7}
+  33              	.LCFI0:
+  34              	 .cfi_def_cfa_offset 4
+  35              	 .cfi_offset 7,-4
+  36 0002 85B0     	 sub sp,sp,#20
+  37              	.LCFI1:
+  38              	 .cfi_def_cfa_offset 24
+  39 0004 00AF     	 add r7,sp,#0
+  40              	.LCFI2:
+  41              	 .cfi_def_cfa_register 7
+  42 0006 F860     	 str r0,[r7,#12]
+  43 0008 B960     	 str r1,[r7,#8]
+  44 000a 7A60     	 str r2,[r7,#4]
+ 152:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/common\maths.h ****     if (amt < low)
+  45              	 .loc 1 152 0
+  46 000c FA68     	 ldr r2,[r7,#12]
+  47 000e BB68     	 ldr r3,[r7,#8]
+  48 0010 9A42     	 cmp r2,r3
+  49 0012 01DA     	 bge .L2
+ 153:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/common\maths.h ****         return low;
+  50              	 .loc 1 153 0
+  51 0014 BB68     	 ldr r3,[r7,#8]
+  52 0016 06E0     	 b .L3
+  53              	.L2:
+ 154:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/common\maths.h ****     else if (amt > high)
+  54              	 .loc 1 154 0
+  55 0018 FA68     	 ldr r2,[r7,#12]
+  56 001a 7B68     	 ldr r3,[r7,#4]
+  57 001c 9A42     	 cmp r2,r3
+  58 001e 01DD     	 ble .L4
+ 155:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/common\maths.h ****         return high;
+  59              	 .loc 1 155 0
+  60 0020 7B68     	 ldr r3,[r7,#4]
+  61 0022 00E0     	 b .L3
+  62              	.L4:
+ 156:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/common\maths.h ****     else
+ 157:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/common\maths.h ****         return amt;
+  63              	 .loc 1 157 0
+  64 0024 FB68     	 ldr r3,[r7,#12]
+  65              	.L3:
+ 158:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/common\maths.h **** }
+  66              	 .loc 1 158 0
+  67 0026 1846     	 mov r0,r3
+  68 0028 1437     	 adds r7,r7,#20
+  69              	.LCFI3:
+  70              	 .cfi_def_cfa_offset 4
+  71 002a BD46     	 mov sp,r7
+  72              	.LCFI4:
+  73              	 .cfi_def_cfa_register 13
+  74              	 
+  75 002c 5DF8047B 	 ldr r7,[sp],#4
+  76              	.LCFI5:
+  77              	 .cfi_restore 7
+  78              	 .cfi_def_cfa_offset 0
+  79 0030 7047     	 bx lr
+  80              	 .cfi_endproc
+  81              	.LFE526:
+  83 0032 00BF     	 .section .data.spektrumSatInternal,"aw",%progbits
+  86              	spektrumSatInternal:
+  87 0000 01       	 .byte 1
+  88              	 .section .bss.spek_fade_last_sec,"aw",%nobits
+  89              	 .align 2
+  92              	spek_fade_last_sec:
+  93 0000 00000000 	 .space 4
+  94              	 .section .bss.spek_fade_last_sec_count,"aw",%nobits
+  95              	 .align 1
+  98              	spek_fade_last_sec_count:
+  99 0000 0000     	 .space 2
+ 100              	 .section .text.map,"ax",%progbits
+ 101              	 .align 2
+ 102              	 .global map
+ 103              	 .thumb
+ 104              	 .thumb_func
+ 106              	map:
+ 107              	.LFB539:
+ 108              	 .file 2 "../cleanflight/src/main/io/spektrum_rssi.c"
+   1:../cleanflight/src/main/io/spektrum_rssi.c **** /*
+   2:../cleanflight/src/main/io/spektrum_rssi.c ****  * This file is part of Cleanflight and Betaflight.
+   3:../cleanflight/src/main/io/spektrum_rssi.c ****  *
+   4:../cleanflight/src/main/io/spektrum_rssi.c ****  * Cleanflight and Betaflight are free software. You can redistribute
+   5:../cleanflight/src/main/io/spektrum_rssi.c ****  * this software and/or modify this software under the terms of the
+   6:../cleanflight/src/main/io/spektrum_rssi.c ****  * GNU General Public License as published by the Free Software
+   7:../cleanflight/src/main/io/spektrum_rssi.c ****  * Foundation, either version 3 of the License, or (at your option)
+   8:../cleanflight/src/main/io/spektrum_rssi.c ****  * any later version.
+   9:../cleanflight/src/main/io/spektrum_rssi.c ****  *
+  10:../cleanflight/src/main/io/spektrum_rssi.c ****  * Cleanflight and Betaflight are distributed in the hope that they
+  11:../cleanflight/src/main/io/spektrum_rssi.c ****  * will be useful, but WITHOUT ANY WARRANTY; without even the implied
+  12:../cleanflight/src/main/io/spektrum_rssi.c ****  * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+  13:../cleanflight/src/main/io/spektrum_rssi.c ****  * See the GNU General Public License for more details.
+  14:../cleanflight/src/main/io/spektrum_rssi.c ****  *
+  15:../cleanflight/src/main/io/spektrum_rssi.c ****  * You should have received a copy of the GNU General Public License
+  16:../cleanflight/src/main/io/spektrum_rssi.c ****  * along with this software.
+  17:../cleanflight/src/main/io/spektrum_rssi.c ****  *
+  18:../cleanflight/src/main/io/spektrum_rssi.c ****  * If not, see <http://www.gnu.org/licenses/>.
+  19:../cleanflight/src/main/io/spektrum_rssi.c ****  */
+  20:../cleanflight/src/main/io/spektrum_rssi.c **** 
+  21:../cleanflight/src/main/io/spektrum_rssi.c **** #include "platform.h"
+  22:../cleanflight/src/main/io/spektrum_rssi.c **** #ifdef USE_SERIAL_RX
+  23:../cleanflight/src/main/io/spektrum_rssi.c **** #if defined(USE_SPEKTRUM_REAL_RSSI) || defined(USE_SPEKTRUM_FAKE_RSSI)
+  24:../cleanflight/src/main/io/spektrum_rssi.c **** 
+  25:../cleanflight/src/main/io/spektrum_rssi.c **** #include "config/feature.h"
+  26:../cleanflight/src/main/io/spektrum_rssi.c **** #include "common/utils.h"
+  27:../cleanflight/src/main/io/spektrum_rssi.c **** #include "common/maths.h"
+  28:../cleanflight/src/main/io/spektrum_rssi.c **** 
+  29:../cleanflight/src/main/io/spektrum_rssi.c **** #include "drivers/system.h"
+  30:../cleanflight/src/main/io/spektrum_rssi.c **** #include "drivers/time.h"
+  31:../cleanflight/src/main/io/spektrum_rssi.c **** 
+  32:../cleanflight/src/main/io/spektrum_rssi.c **** #include "pg/rx.h"
+  33:../cleanflight/src/main/io/spektrum_rssi.c **** 
+  34:../cleanflight/src/main/io/spektrum_rssi.c **** #include "rx/rx.h"
+  35:../cleanflight/src/main/io/spektrum_rssi.c **** #include "rx/spektrum.h"
+  36:../cleanflight/src/main/io/spektrum_rssi.c **** #include "io/spektrum_rssi.h"
+  37:../cleanflight/src/main/io/spektrum_rssi.c **** 
+  38:../cleanflight/src/main/io/spektrum_rssi.c **** 
+  39:../cleanflight/src/main/io/spektrum_rssi.c **** #ifdef USE_SPEKTRUM_FAKE_RSSI
+  40:../cleanflight/src/main/io/spektrum_rssi.c **** // Spektrum Rx type. Determined by bind method.
+  41:../cleanflight/src/main/io/spektrum_rssi.c **** static bool spektrumSatInternal = true; // Assume internal,bound by BF.
+  42:../cleanflight/src/main/io/spektrum_rssi.c **** 
+  43:../cleanflight/src/main/io/spektrum_rssi.c **** // Variables used for calculating a signal strength from satellite fade.
+  44:../cleanflight/src/main/io/spektrum_rssi.c **** //  This is time-variant and computed every second based on the fade
+  45:../cleanflight/src/main/io/spektrum_rssi.c **** //  count over the last second.
+  46:../cleanflight/src/main/io/spektrum_rssi.c **** static uint32_t spek_fade_last_sec = 0; // Stores the timestamp of the last second.
+  47:../cleanflight/src/main/io/spektrum_rssi.c **** static uint16_t spek_fade_last_sec_count = 0; // Stores the fade count at the last second.
+  48:../cleanflight/src/main/io/spektrum_rssi.c **** #endif
+  49:../cleanflight/src/main/io/spektrum_rssi.c **** 
+  50:../cleanflight/src/main/io/spektrum_rssi.c **** // Linear mapping and interpolation function
+  51:../cleanflight/src/main/io/spektrum_rssi.c **** int32_t map(int32_t x, int32_t in_min, int32_t in_max, int32_t out_min, int32_t out_max) {
+ 109              	 .loc 2 51 0
+ 110              	 .cfi_startproc
+ 111              	 
+ 112              	 
+ 113              	 
+ 114 0000 80B4     	 push {r7}
+ 115              	.LCFI6:
+ 116              	 .cfi_def_cfa_offset 4
+ 117              	 .cfi_offset 7,-4
+ 118 0002 85B0     	 sub sp,sp,#20
+ 119              	.LCFI7:
+ 120              	 .cfi_def_cfa_offset 24
+ 121 0004 00AF     	 add r7,sp,#0
+ 122              	.LCFI8:
+ 123              	 .cfi_def_cfa_register 7
+ 124 0006 F860     	 str r0,[r7,#12]
+ 125 0008 B960     	 str r1,[r7,#8]
+ 126 000a 7A60     	 str r2,[r7,#4]
+ 127 000c 3B60     	 str r3,[r7]
+  52:../cleanflight/src/main/io/spektrum_rssi.c ****     return (x - in_min) * (out_max - out_min) / (in_max - in_min) + out_min;
+ 128              	 .loc 2 52 0
+ 129 000e FA68     	 ldr r2,[r7,#12]
+ 130 0010 BB68     	 ldr r3,[r7,#8]
+ 131 0012 D31A     	 subs r3,r2,r3
+ 132 0014 B969     	 ldr r1,[r7,#24]
+ 133 0016 3A68     	 ldr r2,[r7]
+ 134 0018 8A1A     	 subs r2,r1,r2
+ 135 001a 02FB03F2 	 mul r2,r2,r3
+ 136 001e 7968     	 ldr r1,[r7,#4]
+ 137 0020 BB68     	 ldr r3,[r7,#8]
+ 138 0022 CB1A     	 subs r3,r1,r3
+ 139 0024 92FBF3F2 	 sdiv r2,r2,r3
+ 140 0028 3B68     	 ldr r3,[r7]
+ 141 002a 1344     	 add r3,r3,r2
+  53:../cleanflight/src/main/io/spektrum_rssi.c **** }
+ 142              	 .loc 2 53 0
+ 143 002c 1846     	 mov r0,r3
+ 144 002e 1437     	 adds r7,r7,#20
+ 145              	.LCFI9:
+ 146              	 .cfi_def_cfa_offset 4
+ 147 0030 BD46     	 mov sp,r7
+ 148              	.LCFI10:
+ 149              	 .cfi_def_cfa_register 13
+ 150              	 
+ 151 0032 5DF8047B 	 ldr r7,[sp],#4
+ 152              	.LCFI11:
+ 153              	 .cfi_restore 7
+ 154              	 .cfi_def_cfa_offset 0
+ 155 0036 7047     	 bx lr
+ 156              	 .cfi_endproc
+ 157              	.LFE539:
+ 159              	 .section .rodata.dbmTable,"a",%progbits
+ 160              	 .align 2
+ 163              	dbmTable:
+ 164 0000 D6       	 .byte -42
+ 165 0001 65       	 .byte 101
+ 166 0002 CF       	 .byte -49
+ 167 0003 64       	 .byte 100
+ 168 0004 C8       	 .byte -56
+ 169 0005 62       	 .byte 98
+ 170 0006 C3       	 .byte -61
+ 171 0007 5F       	 .byte 95
+ 172 0008 BE       	 .byte -66
+ 173 0009 59       	 .byte 89
+ 174 000a BB       	 .byte -69
+ 175 000b 53       	 .byte 83
+ 176 000c B9       	 .byte -71
+ 177 000d 4E       	 .byte 78
+ 178 000e B7       	 .byte -73
+ 179 000f 48       	 .byte 72
+ 180 0010 B6       	 .byte -74
+ 181 0011 45       	 .byte 69
+ 182 0012 B5       	 .byte -75
+ 183 0013 42       	 .byte 66
+ 184 0014 B4       	 .byte -76
+ 185 0015 3F       	 .byte 63
+ 186 0016 B3       	 .byte -77
+ 187 0017 3C       	 .byte 60
+ 188 0018 A4       	 .byte -92
+ 189 0019 00       	 .byte 0
+ 190 001a 0000     	 .section .text.dBm2range,"ax",%progbits
+ 191              	 .align 2
+ 192              	 .thumb
+ 193              	 .thumb_func
+ 195              	dBm2range:
+ 196              	.LFB540:
+  54:../cleanflight/src/main/io/spektrum_rssi.c **** 
+  55:../cleanflight/src/main/io/spektrum_rssi.c **** #ifdef USE_SPEKTRUM_RSSI_PERCENT_CONVERSION
+  56:../cleanflight/src/main/io/spektrum_rssi.c **** 
+  57:../cleanflight/src/main/io/spektrum_rssi.c **** // Conversion table from dBm to a percentage scale aproximating a more linear RSSI vs Distance curv
+  58:../cleanflight/src/main/io/spektrum_rssi.c **** 
+  59:../cleanflight/src/main/io/spektrum_rssi.c **** static const dbm_table_t dbmTable[] = {
+  60:../cleanflight/src/main/io/spektrum_rssi.c ****     {SPEKTRUM_RSSI_MAX, 101},
+  61:../cleanflight/src/main/io/spektrum_rssi.c ****     {-49,100},
+  62:../cleanflight/src/main/io/spektrum_rssi.c ****     {-56, 98},
+  63:../cleanflight/src/main/io/spektrum_rssi.c ****     {-61, 95},
+  64:../cleanflight/src/main/io/spektrum_rssi.c ****     {-66, 89},
+  65:../cleanflight/src/main/io/spektrum_rssi.c ****     {-69, 83},
+  66:../cleanflight/src/main/io/spektrum_rssi.c ****     {-71, 78},
+  67:../cleanflight/src/main/io/spektrum_rssi.c ****     {-73, 72},
+  68:../cleanflight/src/main/io/spektrum_rssi.c ****     {-74, 69},
+  69:../cleanflight/src/main/io/spektrum_rssi.c ****     {-75, 66},
+  70:../cleanflight/src/main/io/spektrum_rssi.c ****     {-76, 63},
+  71:../cleanflight/src/main/io/spektrum_rssi.c ****     {-77, 60},
+  72:../cleanflight/src/main/io/spektrum_rssi.c **** /*
+  73:../cleanflight/src/main/io/spektrum_rssi.c ****     {-78, 56}, // Linear part of the table, can be interpolated
+  74:../cleanflight/src/main/io/spektrum_rssi.c ****     {-79, 52},
+  75:../cleanflight/src/main/io/spektrum_rssi.c ****     {-80, 48},
+  76:../cleanflight/src/main/io/spektrum_rssi.c ****     {-81, 44},
+  77:../cleanflight/src/main/io/spektrum_rssi.c ****     {-82, 40},
+  78:../cleanflight/src/main/io/spektrum_rssi.c ****     {-83, 36},
+  79:../cleanflight/src/main/io/spektrum_rssi.c ****     {-84, 32},
+  80:../cleanflight/src/main/io/spektrum_rssi.c ****     {-85, 28},
+  81:../cleanflight/src/main/io/spektrum_rssi.c ****     {-86, 24},
+  82:../cleanflight/src/main/io/spektrum_rssi.c ****     {-87, 20}, // Beta Flight default RSSI % alatm point
+  83:../cleanflight/src/main/io/spektrum_rssi.c ****     {-88, 16},
+  84:../cleanflight/src/main/io/spektrum_rssi.c ****     {-89, 12},
+  85:../cleanflight/src/main/io/spektrum_rssi.c ****     {-90,  8}, // Failsafe usually hits here
+  86:../cleanflight/src/main/io/spektrum_rssi.c ****     {-91,  4}, // Linear part of the table end
+  87:../cleanflight/src/main/io/spektrum_rssi.c **** */
+  88:../cleanflight/src/main/io/spektrum_rssi.c ****     {SPEKTRUM_RSSI_MIN, 0}};
+  89:../cleanflight/src/main/io/spektrum_rssi.c **** 
+  90:../cleanflight/src/main/io/spektrum_rssi.c **** // Convert dBm to Range %
+  91:../cleanflight/src/main/io/spektrum_rssi.c **** static int8_t dBm2range (int8_t dBm) {
+ 197              	 .loc 2 91 0
+ 198              	 .cfi_startproc
+ 199              	 
+ 200              	 
+ 201 0000 B0B5     	 push {r4,r5,r7,lr}
+ 202              	.LCFI12:
+ 203              	 .cfi_def_cfa_offset 16
+ 204              	 .cfi_offset 4,-16
+ 205              	 .cfi_offset 5,-12
+ 206              	 .cfi_offset 7,-8
+ 207              	 .cfi_offset 14,-4
+ 208 0002 86B0     	 sub sp,sp,#24
+ 209              	.LCFI13:
+ 210              	 .cfi_def_cfa_offset 40
+ 211 0004 02AF     	 add r7,sp,#8
+ 212              	.LCFI14:
+ 213              	 .cfi_def_cfa 7,32
+ 214 0006 0346     	 mov r3,r0
+ 215 0008 FB71     	 strb r3,[r7,#7]
+  92:../cleanflight/src/main/io/spektrum_rssi.c ****     int8_t  retval = dbmTable[0].reportAs;
+ 216              	 .loc 2 92 0
+ 217 000a 6523     	 movs r3,#101
+ 218 000c FB73     	 strb r3,[r7,#15]
+ 219              	.LBB2:
+  93:../cleanflight/src/main/io/spektrum_rssi.c **** 
+  94:../cleanflight/src/main/io/spektrum_rssi.c ****     for ( uint8_t i = 1; i < ARRAYLEN(dbmTable); i++ ) {
+ 220              	 .loc 2 94 0
+ 221 000e 0123     	 movs r3,#1
+ 222 0010 BB73     	 strb r3,[r7,#14]
+ 223 0012 2CE0     	 b .L8
+ 224              	.L11:
+  95:../cleanflight/src/main/io/spektrum_rssi.c ****         if (dBm >= dbmTable[i].dBm) {
+ 225              	 .loc 2 95 0
+ 226 0014 BB7B     	 ldrb r3,[r7,#14]
+ 227 0016 1F4A     	 ldr r2,.L13
+ 228 0018 12F81330 	 ldrb r3,[r2,r3,lsl#1]
+ 229 001c 97F90720 	 ldrsb r2,[r7,#7]
+ 230 0020 5BB2     	 sxtb r3,r3
+ 231 0022 9A42     	 cmp r2,r3
+ 232 0024 20DB     	 blt .L9
+  96:../cleanflight/src/main/io/spektrum_rssi.c ****             // Linear interpolation between table points.
+  97:../cleanflight/src/main/io/spektrum_rssi.c ****             retval = map(dBm, dbmTable[i-1].dBm, dbmTable[i].dBm, dbmTable[i-1].reportAs, dbmTable[
+ 233              	 .loc 2 97 0
+ 234 0026 97F90700 	 ldrsb r0,[r7,#7]
+ 235 002a BB7B     	 ldrb r3,[r7,#14]
+ 236 002c 013B     	 subs r3,r3,#1
+ 237 002e 194A     	 ldr r2,.L13
+ 238 0030 12F81330 	 ldrb r3,[r2,r3,lsl#1]
+ 239 0034 59B2     	 sxtb r1,r3
+ 240 0036 BB7B     	 ldrb r3,[r7,#14]
+ 241 0038 164A     	 ldr r2,.L13
+ 242 003a 12F81330 	 ldrb r3,[r2,r3,lsl#1]
+ 243 003e 5CB2     	 sxtb r4,r3
+ 244 0040 BB7B     	 ldrb r3,[r7,#14]
+ 245 0042 013B     	 subs r3,r3,#1
+ 246 0044 134A     	 ldr r2,.L13
+ 247 0046 5B00     	 lsls r3,r3,#1
+ 248 0048 1344     	 add r3,r3,r2
+ 249 004a 5B78     	 ldrb r3,[r3,#1]
+ 250 004c 1D46     	 mov r5,r3
+ 251 004e BB7B     	 ldrb r3,[r7,#14]
+ 252 0050 104A     	 ldr r2,.L13
+ 253 0052 5B00     	 lsls r3,r3,#1
+ 254 0054 1344     	 add r3,r3,r2
+ 255 0056 5B78     	 ldrb r3,[r3,#1]
+ 256 0058 0093     	 str r3,[sp]
+ 257 005a 2246     	 mov r2,r4
+ 258 005c 2B46     	 mov r3,r5
+ 259 005e FFF7FEFF 	 bl map
+ 260 0062 0346     	 mov r3,r0
+ 261 0064 FB73     	 strb r3,[r7,#15]
+  98:../cleanflight/src/main/io/spektrum_rssi.c ****             break;
+ 262              	 .loc 2 98 0
+ 263 0066 05E0     	 b .L10
+ 264              	.L9:
+  94:../cleanflight/src/main/io/spektrum_rssi.c ****         if (dBm >= dbmTable[i].dBm) {
+ 265              	 .loc 2 94 0 discriminator 2
+ 266 0068 BB7B     	 ldrb r3,[r7,#14]
+ 267 006a 0133     	 adds r3,r3,#1
+ 268 006c BB73     	 strb r3,[r7,#14]
+ 269              	.L8:
+  94:../cleanflight/src/main/io/spektrum_rssi.c ****         if (dBm >= dbmTable[i].dBm) {
+ 270              	 .loc 2 94 0 is_stmt 0 discriminator 1
+ 271 006e BB7B     	 ldrb r3,[r7,#14]
+ 272 0070 0C2B     	 cmp r3,#12
+ 273 0072 CFD9     	 bls .L11
+ 274              	.L10:
+ 275              	.LBE2:
+  99:../cleanflight/src/main/io/spektrum_rssi.c ****         }
+ 100:../cleanflight/src/main/io/spektrum_rssi.c ****     }
+ 101:../cleanflight/src/main/io/spektrum_rssi.c **** 
+ 102:../cleanflight/src/main/io/spektrum_rssi.c ****     retval = constrain(retval, 0, 100);
+ 276              	 .loc 2 102 0 is_stmt 1
+ 277 0074 97F90F30 	 ldrsb r3,[r7,#15]
+ 278 0078 1846     	 mov r0,r3
+ 279 007a 0021     	 movs r1,#0
+ 280 007c 6422     	 movs r2,#100
+ 281 007e FFF7FEFF 	 bl constrain
+ 282 0082 0346     	 mov r3,r0
+ 283 0084 FB73     	 strb r3,[r7,#15]
+ 103:../cleanflight/src/main/io/spektrum_rssi.c ****     return retval;
+ 284              	 .loc 2 103 0
+ 285 0086 FB7B     	 ldrb r3,[r7,#15]
+ 286 0088 5BB2     	 sxtb r3,r3
+ 104:../cleanflight/src/main/io/spektrum_rssi.c **** }
+ 287              	 .loc 2 104 0
+ 288 008a 1846     	 mov r0,r3
+ 289 008c 1037     	 adds r7,r7,#16
+ 290              	.LCFI15:
+ 291              	 .cfi_def_cfa_offset 16
+ 292 008e BD46     	 mov sp,r7
+ 293              	.LCFI16:
+ 294              	 .cfi_def_cfa_register 13
+ 295              	 
+ 296 0090 B0BD     	 pop {r4,r5,r7,pc}
+ 297              	.L14:
+ 298 0092 00BF     	 .align 2
+ 299              	.L13:
+ 300 0094 00000000 	 .word dbmTable
+ 301              	 .cfi_endproc
+ 302              	.LFE540:
+ 304              	 .section .text.spektrumHandleRSSI,"ax",%progbits
+ 305              	 .align 2
+ 306              	 .global spektrumHandleRSSI
+ 307              	 .thumb
+ 308              	 .thumb_func
+ 310              	spektrumHandleRSSI:
+ 311              	.LFB541:
+ 105:../cleanflight/src/main/io/spektrum_rssi.c **** #endif
+ 106:../cleanflight/src/main/io/spektrum_rssi.c **** 
+ 107:../cleanflight/src/main/io/spektrum_rssi.c **** void spektrumHandleRSSI(volatile uint8_t spekFrame[]) {
+ 312              	 .loc 2 107 0
+ 313              	 .cfi_startproc
+ 314              	 
+ 315              	 
+ 316 0000 90B5     	 push {r4,r7,lr}
+ 317              	.LCFI17:
+ 318              	 .cfi_def_cfa_offset 12
+ 319              	 .cfi_offset 4,-12
+ 320              	 .cfi_offset 7,-8
+ 321              	 .cfi_offset 14,-4
+ 322 0002 89B0     	 sub sp,sp,#36
+ 323              	.LCFI18:
+ 324              	 .cfi_def_cfa_offset 48
+ 325 0004 02AF     	 add r7,sp,#8
+ 326              	.LCFI19:
+ 327              	 .cfi_def_cfa 7,40
+ 328 0006 7860     	 str r0,[r7,#4]
+ 108:../cleanflight/src/main/io/spektrum_rssi.c **** #ifdef USE_SPEKTRUM_REAL_RSSI
+ 109:../cleanflight/src/main/io/spektrum_rssi.c ****     static int8_t spek_last_rssi = SPEKTRUM_RSSI_MAX;
+ 110:../cleanflight/src/main/io/spektrum_rssi.c **** 
+ 111:../cleanflight/src/main/io/spektrum_rssi.c ****     // Fetch RSSI
+ 112:../cleanflight/src/main/io/spektrum_rssi.c ****     if (srxlEnabled) {
+ 329              	 .loc 2 112 0
+ 330 0008 564B     	 ldr r3,.L25
+ 331 000a 1B78     	 ldrb r3,[r3]
+ 332 000c 002B     	 cmp r3,#0
+ 333 000e 2CD0     	 beq .L16
+ 334              	.LBB3:
+ 113:../cleanflight/src/main/io/spektrum_rssi.c ****         // Real RSSI reported omly by SRXL Telemetry Rx, in dBm.
+ 114:../cleanflight/src/main/io/spektrum_rssi.c ****         int8_t rssi = spekFrame[0];
+ 335              	 .loc 2 114 0
+ 336 0010 7B68     	 ldr r3,[r7,#4]
+ 337 0012 1B78     	 ldrb r3,[r3]
+ 338 0014 DBB2     	 uxtb r3,r3
+ 339 0016 FB75     	 strb r3,[r7,#23]
+ 115:../cleanflight/src/main/io/spektrum_rssi.c **** 
+ 116:../cleanflight/src/main/io/spektrum_rssi.c ****         if (rssi <= SPEKTRUM_RSSI_FADE_LIMIT ) {
+ 340              	 .loc 2 116 0
+ 341 0018 97F91730 	 ldrsb r3,[r7,#23]
+ 342 001c 13F1630F 	 cmn r3,#99
+ 343 0020 02DA     	 bge .L17
+ 117:../cleanflight/src/main/io/spektrum_rssi.c ****         // If Rx reports -100 dBm or less, it is a fade out and frame loss.
+ 118:../cleanflight/src/main/io/spektrum_rssi.c ****         // If it is a temporary fade, real RSSI will come back in the next frame, in that case.
+ 119:../cleanflight/src/main/io/spektrum_rssi.c ****         // we should not report 0% back as OSD keeps a "minimum RSSI" value. Instead keep last good
+ 120:../cleanflight/src/main/io/spektrum_rssi.c ****         // If it is a total link loss, failsafe will kick in.
+ 121:../cleanflight/src/main/io/spektrum_rssi.c ****         // We could count the fades here, but currentlly to no use
+ 122:../cleanflight/src/main/io/spektrum_rssi.c **** 
+ 123:../cleanflight/src/main/io/spektrum_rssi.c ****         // Ignore report and Keep last known good value
+ 124:../cleanflight/src/main/io/spektrum_rssi.c ****         rssi = spek_last_rssi;
+ 344              	 .loc 2 124 0
+ 345 0022 514B     	 ldr r3,.L25+4
+ 346 0024 1B78     	 ldrb r3,[r3]
+ 347 0026 FB75     	 strb r3,[r7,#23]
+ 348              	.L17:
+ 125:../cleanflight/src/main/io/spektrum_rssi.c ****         }
+ 126:../cleanflight/src/main/io/spektrum_rssi.c **** 
+ 127:../cleanflight/src/main/io/spektrum_rssi.c ****         if(rssi_channel != 0) {
+ 349              	 .loc 2 127 0
+ 350 0028 504B     	 ldr r3,.L25+8
+ 351 002a 1B78     	 ldrb r3,[r3]
+ 352 002c 002B     	 cmp r3,#0
+ 353 002e 18D0     	 beq .L18
+ 128:../cleanflight/src/main/io/spektrum_rssi.c **** #ifdef USE_SPEKTRUM_RSSI_PERCENT_CONVERSION
+ 129:../cleanflight/src/main/io/spektrum_rssi.c ****             // Do an dBm to percent conversion with an approxatelly linear distance
+ 130:../cleanflight/src/main/io/spektrum_rssi.c ****             // and map the percentage to RSSI RC channel range
+ 131:../cleanflight/src/main/io/spektrum_rssi.c ****             spekChannelData[rssi_channel] = (uint16_t)(map(dBm2range (rssi),
+ 354              	 .loc 2 131 0
+ 355 0030 4E4B     	 ldr r3,.L25+8
+ 356 0032 1B78     	 ldrb r3,[r3]
+ 357 0034 1C46     	 mov r4,r3
+ 358 0036 97F91730 	 ldrsb r3,[r7,#23]
+ 359 003a 1846     	 mov r0,r3
+ 360 003c FFF7FEFF 	 bl dBm2range
+ 361 0040 0346     	 mov r3,r0
+ 362 0042 1A46     	 mov r2,r3
+ 363 0044 4A4B     	 ldr r3,.L25+12
+ 364 0046 1B68     	 ldr r3,[r3]
+ 365 0048 0093     	 str r3,[sp]
+ 366 004a 1046     	 mov r0,r2
+ 367 004c 0021     	 movs r1,#0
+ 368 004e 6422     	 movs r2,#100
+ 369 0050 0023     	 movs r3,#0
+ 370 0052 FFF7FEFF 	 bl map
+ 371 0056 0346     	 mov r3,r0
+ 372 0058 9BB2     	 uxth r3,r3
+ 373 005a 1A46     	 mov r2,r3
+ 374 005c 454B     	 ldr r3,.L25+16
+ 375 005e 43F82420 	 str r2,[r3,r4,lsl#2]
+ 376              	.L18:
+ 132:../cleanflight/src/main/io/spektrum_rssi.c ****                                                        0, 100,
+ 133:../cleanflight/src/main/io/spektrum_rssi.c ****                                                        0,resolution));
+ 134:../cleanflight/src/main/io/spektrum_rssi.c **** #else
+ 135:../cleanflight/src/main/io/spektrum_rssi.c ****             // Do a direkt dBm to percent mapping, keeping the non-linear dBm logarithmic curve.
+ 136:../cleanflight/src/main/io/spektrum_rssi.c ****             spekChannelData[rssi_channel] = (uint16_t)(map(rssi),
+ 137:../cleanflight/src/main/io/spektrum_rssi.c ****                                                        SPEKTRUM_RSSI_MIN, SPEKTRUM_RSSI_MAX,
+ 138:../cleanflight/src/main/io/spektrum_rssi.c ****                                                        0,resolution));
+ 139:../cleanflight/src/main/io/spektrum_rssi.c **** #endif
+ 140:../cleanflight/src/main/io/spektrum_rssi.c ****         }
+ 141:../cleanflight/src/main/io/spektrum_rssi.c ****         spek_last_rssi = rssi;
+ 377              	 .loc 2 141 0
+ 378 0062 414A     	 ldr r2,.L25+4
+ 379 0064 FB7D     	 ldrb r3,[r7,#23]
+ 380 0066 1370     	 strb r3,[r2]
+ 381              	.LBE3:
+ 382 0068 78E0     	 b .L15
+ 383              	.L16:
+ 384              	.LBB4:
+ 142:../cleanflight/src/main/io/spektrum_rssi.c ****     }
+ 143:../cleanflight/src/main/io/spektrum_rssi.c **** 
+ 144:../cleanflight/src/main/io/spektrum_rssi.c **** #ifdef USE_SPEKTRUM_FAKE_RSSI
+ 145:../cleanflight/src/main/io/spektrum_rssi.c ****     else
+ 146:../cleanflight/src/main/io/spektrum_rssi.c **** #endif
+ 147:../cleanflight/src/main/io/spektrum_rssi.c **** #endif // USE_SPEKTRUM_REAL_RSSI
+ 148:../cleanflight/src/main/io/spektrum_rssi.c **** 
+ 149:../cleanflight/src/main/io/spektrum_rssi.c **** #ifdef USE_SPEKTRUM_FAKE_RSSI
+ 150:../cleanflight/src/main/io/spektrum_rssi.c ****     {
+ 151:../cleanflight/src/main/io/spektrum_rssi.c ****         // Fake RSSI value computed from fades
+ 152:../cleanflight/src/main/io/spektrum_rssi.c **** 
+ 153:../cleanflight/src/main/io/spektrum_rssi.c ****         const uint32_t current_secs = micros() / 1000 / (1000 / SPEKTRUM_FADE_REPORTS_PER_SEC);
+ 385              	 .loc 2 153 0
+ 386 006a FFF7FEFF 	 bl micros
+ 387 006e 0246     	 mov r2,r0
+ 388 0070 414B     	 ldr r3,.L25+20
+ 389 0072 A3FB0223 	 umull r2,r3,r3,r2
+ 390 0076 5B0C     	 lsrs r3,r3,#17
+ 391 0078 3B61     	 str r3,[r7,#16]
+ 154:../cleanflight/src/main/io/spektrum_rssi.c ****         uint16_t fade;
+ 155:../cleanflight/src/main/io/spektrum_rssi.c ****         uint8_t system;
+ 156:../cleanflight/src/main/io/spektrum_rssi.c **** 
+ 157:../cleanflight/src/main/io/spektrum_rssi.c ****         // Get fade count, different format depending on Rx rype and how Rx is bound. Initially ass
+ 158:../cleanflight/src/main/io/spektrum_rssi.c ****         if (spektrumSatInternal) {
+ 392              	 .loc 2 158 0
+ 393 007a 404B     	 ldr r3,.L25+24
+ 394 007c 1B78     	 ldrb r3,[r3]
+ 395 007e 002B     	 cmp r3,#0
+ 396 0080 29D0     	 beq .L20
+ 159:../cleanflight/src/main/io/spektrum_rssi.c ****             // Internal Rx, bind values 3, 5, 7, 9
+ 160:../cleanflight/src/main/io/spektrum_rssi.c ****             fade = (uint16_t) spekFrame[0];
+ 397              	 .loc 2 160 0
+ 398 0082 7B68     	 ldr r3,[r7,#4]
+ 399 0084 1B78     	 ldrb r3,[r3]
+ 400 0086 DBB2     	 uxtb r3,r3
+ 401 0088 BB82     	 strh r3,[r7,#20]
+ 161:../cleanflight/src/main/io/spektrum_rssi.c ****             system = spekFrame[1];
+ 402              	 .loc 2 161 0
+ 403 008a 7B68     	 ldr r3,[r7,#4]
+ 404 008c 5B78     	 ldrb r3,[r3,#1]
+ 405 008e FB73     	 strb r3,[r7,#15]
+ 162:../cleanflight/src/main/io/spektrum_rssi.c **** 
+ 163:../cleanflight/src/main/io/spektrum_rssi.c ****             // Try to detect system type by assuming Internal until we find ANY frame telling other
+ 164:../cleanflight/src/main/io/spektrum_rssi.c ****             if ( !( (system == SPEKTRUM_DSM2_22) |
+ 406              	 .loc 2 164 0
+ 407 0090 FB7B     	 ldrb r3,[r7,#15]
+ 408 0092 012B     	 cmp r3,#1
+ 409 0094 0CBF     	 ite eq
+ 410 0096 0123     	 moveq r3,#1
+ 411 0098 0023     	 movne r3,#0
+ 412 009a DAB2     	 uxtb r2,r3
+ 413 009c FB7B     	 ldrb r3,[r7,#15]
+ 414 009e 122B     	 cmp r3,#18
+ 415 00a0 0CBF     	 ite eq
+ 416 00a2 0123     	 moveq r3,#1
+ 417 00a4 0023     	 movne r3,#0
+ 418 00a6 DBB2     	 uxtb r3,r3
+ 419 00a8 1343     	 orrs r3,r3,r2
+ 420 00aa DBB2     	 uxtb r3,r3
+ 421 00ac 1A46     	 mov r2,r3
+ 165:../cleanflight/src/main/io/spektrum_rssi.c ****                     (system == SPEKTRUM_DSM2_11) |
+ 166:../cleanflight/src/main/io/spektrum_rssi.c ****                     (system == SPEKTRUM_DSMX_22) |
+ 422              	 .loc 2 166 0
+ 423 00ae FB7B     	 ldrb r3,[r7,#15]
+ 424 00b0 A22B     	 cmp r3,#162
+ 425 00b2 0CBF     	 ite eq
+ 426 00b4 0123     	 moveq r3,#1
+ 427 00b6 0023     	 movne r3,#0
+ 428 00b8 DBB2     	 uxtb r3,r3
+ 165:../cleanflight/src/main/io/spektrum_rssi.c ****                     (system == SPEKTRUM_DSM2_11) |
+ 429              	 .loc 2 165 0
+ 430 00ba 1343     	 orrs r3,r3,r2
+ 167:../cleanflight/src/main/io/spektrum_rssi.c ****                     (system == SPEKTRUM_DSMX_11) ) ){
+ 431              	 .loc 2 167 0
+ 432 00bc FA7B     	 ldrb r2,[r7,#15]
+ 433 00be B22A     	 cmp r2,#178
+ 434 00c0 0CBF     	 ite eq
+ 435 00c2 0122     	 moveq r2,#1
+ 436 00c4 0022     	 movne r2,#0
+ 437 00c6 D2B2     	 uxtb r2,r2
+ 166:../cleanflight/src/main/io/spektrum_rssi.c ****                     (system == SPEKTRUM_DSMX_11) ) ){
+ 438              	 .loc 2 166 0
+ 439 00c8 1343     	 orrs r3,r3,r2
+ 164:../cleanflight/src/main/io/spektrum_rssi.c ****                     (system == SPEKTRUM_DSM2_11) |
+ 440              	 .loc 2 164 0
+ 441 00ca 002B     	 cmp r3,#0
+ 442 00cc 10D1     	 bne .L22
+ 168:../cleanflight/src/main/io/spektrum_rssi.c ****                 spektrumSatInternal =false; // Nope, this is an externally bound Sat Rx
+ 443              	 .loc 2 168 0
+ 444 00ce 2B4B     	 ldr r3,.L25+24
+ 445 00d0 0022     	 movs r2,#0
+ 446 00d2 1A70     	 strb r2,[r3]
+ 447 00d4 0CE0     	 b .L22
+ 448              	.L20:
+ 169:../cleanflight/src/main/io/spektrum_rssi.c ****             }
+ 170:../cleanflight/src/main/io/spektrum_rssi.c ****         } else {
+ 171:../cleanflight/src/main/io/spektrum_rssi.c ****             // External Rx, bind values 4, 6, 8, 10
+ 172:../cleanflight/src/main/io/spektrum_rssi.c ****             fade = ((spekFrame[0] << 8) + spekFrame[1]);
+ 449              	 .loc 2 172 0
+ 450 00d6 7B68     	 ldr r3,[r7,#4]
+ 451 00d8 1B78     	 ldrb r3,[r3]
+ 452 00da DBB2     	 uxtb r3,r3
+ 453 00dc 9BB2     	 uxth r3,r3
+ 454 00de 1B02     	 lsls r3,r3,#8
+ 455 00e0 9AB2     	 uxth r2,r3
+ 456 00e2 7B68     	 ldr r3,[r7,#4]
+ 457 00e4 0133     	 adds r3,r3,#1
+ 458 00e6 1B78     	 ldrb r3,[r3]
+ 459 00e8 DBB2     	 uxtb r3,r3
+ 460 00ea 9BB2     	 uxth r3,r3
+ 461 00ec 1344     	 add r3,r3,r2
+ 462 00ee BB82     	 strh r3,[r7,#20]
+ 463              	.L22:
+ 173:../cleanflight/src/main/io/spektrum_rssi.c ****         }
+ 174:../cleanflight/src/main/io/spektrum_rssi.c **** 
+ 175:../cleanflight/src/main/io/spektrum_rssi.c ****         if (spek_fade_last_sec == 0) {
+ 464              	 .loc 2 175 0
+ 465 00f0 234B     	 ldr r3,.L25+28
+ 466 00f2 1B68     	 ldr r3,[r3]
+ 467 00f4 002B     	 cmp r3,#0
+ 468 00f6 06D1     	 bne .L23
+ 176:../cleanflight/src/main/io/spektrum_rssi.c ****             // This is the first frame status received.
+ 177:../cleanflight/src/main/io/spektrum_rssi.c ****             spek_fade_last_sec_count = fade;
+ 469              	 .loc 2 177 0
+ 470 00f8 224A     	 ldr r2,.L25+32
+ 471 00fa BB8A     	 ldrh r3,[r7,#20]
+ 472 00fc 1380     	 strh r3,[r2]
+ 178:../cleanflight/src/main/io/spektrum_rssi.c ****             spek_fade_last_sec = current_secs;
+ 473              	 .loc 2 178 0
+ 474 00fe 204A     	 ldr r2,.L25+28
+ 475 0100 3B69     	 ldr r3,[r7,#16]
+ 476 0102 1360     	 str r3,[r2]
+ 477 0104 2AE0     	 b .L15
+ 478              	.L23:
+ 179:../cleanflight/src/main/io/spektrum_rssi.c ****         } else if (spek_fade_last_sec != current_secs) {
+ 479              	 .loc 2 179 0
+ 480 0106 1E4B     	 ldr r3,.L25+28
+ 481 0108 1A68     	 ldr r2,[r3]
+ 482 010a 3B69     	 ldr r3,[r7,#16]
+ 483 010c 9A42     	 cmp r2,r3
+ 484 010e 25D0     	 beq .L15
+ 180:../cleanflight/src/main/io/spektrum_rssi.c ****             // If the difference is > 1, then we missed several seconds worth of frames and
+ 181:../cleanflight/src/main/io/spektrum_rssi.c ****             // should just throw out the fade calc (as it's likely a full signal loss).
+ 182:../cleanflight/src/main/io/spektrum_rssi.c ****             if ((current_secs - spek_fade_last_sec) == 1) {
+ 485              	 .loc 2 182 0
+ 486 0110 1B4B     	 ldr r3,.L25+28
+ 487 0112 1B68     	 ldr r3,[r3]
+ 488 0114 3A69     	 ldr r2,[r7,#16]
+ 489 0116 D31A     	 subs r3,r2,r3
+ 490 0118 012B     	 cmp r3,#1
+ 491 011a 19D1     	 bne .L24
+ 183:../cleanflight/src/main/io/spektrum_rssi.c ****                 if (rssi_channel != 0) {
+ 492              	 .loc 2 183 0
+ 493 011c 134B     	 ldr r3,.L25+8
+ 494 011e 1B78     	 ldrb r3,[r3]
+ 495 0120 002B     	 cmp r3,#0
+ 496 0122 15D0     	 beq .L24
+ 184:../cleanflight/src/main/io/spektrum_rssi.c ****                     spekChannelData[rssi_channel] = (uint16_t)(map(fade - spek_fade_last_sec_count,
+ 497              	 .loc 2 184 0
+ 498 0124 114B     	 ldr r3,.L25+8
+ 499 0126 1B78     	 ldrb r3,[r3]
+ 500 0128 1C46     	 mov r4,r3
+ 501 012a BB8A     	 ldrh r3,[r7,#20]
+ 502 012c 154A     	 ldr r2,.L25+32
+ 503 012e 1288     	 ldrh r2,[r2]
+ 504 0130 9A1A     	 subs r2,r3,r2
+ 505 0132 0F4B     	 ldr r3,.L25+12
+ 506 0134 1B68     	 ldr r3,[r3]
+ 507 0136 0093     	 str r3,[sp]
+ 508 0138 1046     	 mov r0,r2
+ 509 013a 1421     	 movs r1,#20
+ 510 013c 0022     	 movs r2,#0
+ 511 013e 0023     	 movs r3,#0
+ 512 0140 FFF7FEFF 	 bl map
+ 513 0144 0346     	 mov r3,r0
+ 514 0146 9BB2     	 uxth r3,r3
+ 515 0148 1A46     	 mov r2,r3
+ 516 014a 0A4B     	 ldr r3,.L25+16
+ 517 014c 43F82420 	 str r2,[r3,r4,lsl#2]
+ 518              	.L24:
+ 185:../cleanflight/src/main/io/spektrum_rssi.c ****                                                                    SPEKTRUM_MAX_FADE_PER_SEC / SPEK
+ 186:../cleanflight/src/main/io/spektrum_rssi.c ****                                                                    0, resolution));
+ 187:../cleanflight/src/main/io/spektrum_rssi.c ****                 }
+ 188:../cleanflight/src/main/io/spektrum_rssi.c ****             }
+ 189:../cleanflight/src/main/io/spektrum_rssi.c ****             spek_fade_last_sec_count = fade;
+ 519              	 .loc 2 189 0
+ 520 0150 0C4A     	 ldr r2,.L25+32
+ 521 0152 BB8A     	 ldrh r3,[r7,#20]
+ 522 0154 1380     	 strh r3,[r2]
+ 190:../cleanflight/src/main/io/spektrum_rssi.c ****             spek_fade_last_sec = current_secs;
+ 523              	 .loc 2 190 0
+ 524 0156 0A4A     	 ldr r2,.L25+28
+ 525 0158 3B69     	 ldr r3,[r7,#16]
+ 526 015a 1360     	 str r3,[r2]
+ 527              	.L15:
+ 528              	.LBE4:
+ 191:../cleanflight/src/main/io/spektrum_rssi.c ****         }
+ 192:../cleanflight/src/main/io/spektrum_rssi.c ****     }
+ 193:../cleanflight/src/main/io/spektrum_rssi.c **** #endif // USE_SPEKTRUM_FAKE_RSSI
+ 194:../cleanflight/src/main/io/spektrum_rssi.c **** }
+ 529              	 .loc 2 194 0
+ 530 015c 1C37     	 adds r7,r7,#28
+ 531              	.LCFI20:
+ 532              	 .cfi_def_cfa_offset 12
+ 533 015e BD46     	 mov sp,r7
+ 534              	.LCFI21:
+ 535              	 .cfi_def_cfa_register 13
+ 536              	 
+ 537 0160 90BD     	 pop {r4,r7,pc}
+ 538              	.L26:
+ 539 0162 00BF     	 .align 2
+ 540              	.L25:
+ 541 0164 00000000 	 .word srxlEnabled
+ 542 0168 00000000 	 .word spek_last_rssi.11994
+ 543 016c 00000000 	 .word rssi_channel
+ 544 0170 00000000 	 .word resolution
+ 545 0174 00000000 	 .word spekChannelData
+ 546 0178 83DE1B43 	 .word 1125899907
+ 547 017c 00000000 	 .word spektrumSatInternal
+ 548 0180 00000000 	 .word spek_fade_last_sec
+ 549 0184 00000000 	 .word spek_fade_last_sec_count
+ 550              	 .cfi_endproc
+ 551              	.LFE541:
+ 553              	 .section .data.spek_last_rssi.11994,"aw",%progbits
+ 556              	spek_last_rssi.11994:
+ 557 0000 D6       	 .byte -42
+ 558              	 .text
+ 559              	.Letext0:
+ 560              	 .file 3 "d:\\xmc\\dave-ide-4.4.2-64bit\\eclipse\\arm-gcc-49\\arm-none-eabi\\include\\machine\\_default_types.h"
+ 561              	 .file 4 "d:\\xmc\\dave-ide-4.4.2-64bit\\eclipse\\arm-gcc-49\\arm-none-eabi\\include\\stdint.h"
+ 562              	 .file 5 "D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/lib/main/XMC4000/XMCLib/inc/xmc_usic.h"
+ 563              	 .file 6 "D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/config/feature.h"
+ 564              	 .file 7 "D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/common/time.h"
+ 565              	 .file 8 "D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/drivers/io_types.h"
+ 566              	 .file 9 "D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/pg/rx.h"
+ 567              	 .file 10 "D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/rx/rx.h"
+ 568              	 .file 11 "D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/io/spektrum_rssi.h"
+ 569              	 .file 12 "D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/lib/main/CMSIS/Core/Include/core_cm4.h"
+ 570              	 .file 13 "D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/lib/main/XMC4000/system_XMC4700.h"
+ 571              	 .file 14 "D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/rx/spektrum.h"
+DEFINED SYMBOLS
+                            *ABS*:00000000 spektrum_rssi.c
+    {standard input}:20     .text.constrain:00000000 $t
+    {standard input}:24     .text.constrain:00000000 constrain
+    {standard input}:86     .data.spektrumSatInternal:00000000 spektrumSatInternal
+    {standard input}:89     .bss.spek_fade_last_sec:00000000 $d
+    {standard input}:92     .bss.spek_fade_last_sec:00000000 spek_fade_last_sec
+    {standard input}:95     .bss.spek_fade_last_sec_count:00000000 $d
+    {standard input}:98     .bss.spek_fade_last_sec_count:00000000 spek_fade_last_sec_count
+    {standard input}:101    .text.map:00000000 $t
+    {standard input}:106    .text.map:00000000 map
+    {standard input}:160    .rodata.dbmTable:00000000 $d
+    {standard input}:163    .rodata.dbmTable:00000000 dbmTable
+    {standard input}:191    .text.dBm2range:00000000 $t
+    {standard input}:195    .text.dBm2range:00000000 dBm2range
+    {standard input}:300    .text.dBm2range:00000094 $d
+    {standard input}:305    .text.spektrumHandleRSSI:00000000 $t
+    {standard input}:310    .text.spektrumHandleRSSI:00000000 spektrumHandleRSSI
+    {standard input}:541    .text.spektrumHandleRSSI:00000164 $d
+    {standard input}:556    .data.spek_last_rssi.11994:00000000 spek_last_rssi.11994
+                     .debug_frame:00000010 $d
+
+UNDEFINED SYMBOLS
+micros
+srxlEnabled
+rssi_channel
+resolution
+spekChannelData

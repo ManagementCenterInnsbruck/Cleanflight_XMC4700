@@ -1,0 +1,336 @@
+   1              	 .syntax unified
+   2              	 .cpu cortex-m4
+   3              	 .eabi_attribute 27,3
+   4              	 .fpu fpv4-sp-d16
+   5              	 .eabi_attribute 20,1
+   6              	 .eabi_attribute 21,1
+   7              	 .eabi_attribute 23,3
+   8              	 .eabi_attribute 24,1
+   9              	 .eabi_attribute 25,1
+  10              	 .eabi_attribute 26,1
+  11              	 .eabi_attribute 30,6
+  12              	 .eabi_attribute 34,1
+  13              	 .eabi_attribute 18,4
+  14              	 .thumb
+  15              	 .file "config_helper.c"
+  16              	 .text
+  17              	.Ltext0:
+  18              	 .cfi_sections .debug_frame
+  19              	 .section .text.serialConfigMutable,"ax",%progbits
+  20              	 .align 2
+  21              	 .thumb
+  22              	 .thumb_func
+  24              	serialConfigMutable:
+  25              	.LFB527:
+  26              	 .file 1 "D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/io/serial.h"
+   1:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/io\serial.h **** /*
+   2:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/io\serial.h ****  * This file is part of Cleanflight and Betaflight.
+   3:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/io\serial.h ****  *
+   4:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/io\serial.h ****  * Cleanflight and Betaflight are free software. You can redistribute
+   5:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/io\serial.h ****  * this software and/or modify this software under the terms of the
+   6:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/io\serial.h ****  * GNU General Public License as published by the Free Software
+   7:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/io\serial.h ****  * Foundation, either version 3 of the License, or (at your option)
+   8:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/io\serial.h ****  * any later version.
+   9:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/io\serial.h ****  *
+  10:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/io\serial.h ****  * Cleanflight and Betaflight are distributed in the hope that they
+  11:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/io\serial.h ****  * will be useful, but WITHOUT ANY WARRANTY; without even the implied
+  12:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/io\serial.h ****  * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+  13:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/io\serial.h ****  * See the GNU General Public License for more details.
+  14:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/io\serial.h ****  *
+  15:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/io\serial.h ****  * You should have received a copy of the GNU General Public License
+  16:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/io\serial.h ****  * along with this software.
+  17:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/io\serial.h ****  *
+  18:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/io\serial.h ****  * If not, see <http://www.gnu.org/licenses/>.
+  19:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/io\serial.h ****  */
+  20:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/io\serial.h **** 
+  21:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/io\serial.h **** #pragma once
+  22:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/io\serial.h **** 
+  23:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/io\serial.h **** #include <stdint.h>
+  24:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/io\serial.h **** #include <stdbool.h>
+  25:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/io\serial.h **** 
+  26:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/io\serial.h **** #include "pg/pg.h"
+  27:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/io\serial.h **** #include "drivers/serial.h"
+  28:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/io\serial.h **** 
+  29:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/io\serial.h **** typedef enum {
+  30:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/io\serial.h ****     PORTSHARING_UNUSED = 0,
+  31:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/io\serial.h ****     PORTSHARING_NOT_SHARED,
+  32:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/io\serial.h ****     PORTSHARING_SHARED
+  33:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/io\serial.h **** } portSharing_e;
+  34:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/io\serial.h **** 
+  35:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/io\serial.h **** typedef enum {
+  36:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/io\serial.h ****     FUNCTION_NONE                = 0,
+  37:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/io\serial.h ****     FUNCTION_MSP                 = (1 << 0),  // 1
+  38:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/io\serial.h ****     FUNCTION_GPS                 = (1 << 1),  // 2
+  39:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/io\serial.h ****     FUNCTION_TELEMETRY_FRSKY_HUB = (1 << 2),  // 4
+  40:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/io\serial.h ****     FUNCTION_TELEMETRY_HOTT      = (1 << 3),  // 8
+  41:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/io\serial.h ****     FUNCTION_TELEMETRY_LTM       = (1 << 4),  // 16
+  42:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/io\serial.h ****     FUNCTION_TELEMETRY_SMARTPORT = (1 << 5),  // 32
+  43:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/io\serial.h ****     FUNCTION_RX_SERIAL           = (1 << 6),  // 64
+  44:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/io\serial.h ****     FUNCTION_BLACKBOX            = (1 << 7),  // 128
+  45:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/io\serial.h ****     FUNCTION_TELEMETRY_MAVLINK   = (1 << 9),  // 512
+  46:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/io\serial.h ****     FUNCTION_ESC_SENSOR          = (1 << 10), // 1024
+  47:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/io\serial.h ****     FUNCTION_VTX_SMARTAUDIO      = (1 << 11), // 2048
+  48:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/io\serial.h ****     FUNCTION_TELEMETRY_IBUS      = (1 << 12), // 4096
+  49:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/io\serial.h ****     FUNCTION_VTX_TRAMP           = (1 << 13), // 8192
+  50:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/io\serial.h ****     FUNCTION_RCDEVICE            = (1 << 14), // 16384
+  51:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/io\serial.h ****     FUNCTION_LIDAR_TF            = (1 << 15), // 32768
+  52:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/io\serial.h **** } serialPortFunction_e;
+  53:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/io\serial.h **** 
+  54:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/io\serial.h **** #define TELEMETRY_SHAREABLE_PORT_FUNCTIONS_MASK (FUNCTION_TELEMETRY_FRSKY_HUB | FUNCTION_TELEMETRY_
+  55:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/io\serial.h **** #define TELEMETRY_PORT_FUNCTIONS_MASK (TELEMETRY_SHAREABLE_PORT_FUNCTIONS_MASK | FUNCTION_TELEMETRY
+  56:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/io\serial.h **** 
+  57:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/io\serial.h **** typedef enum {
+  58:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/io\serial.h ****     BAUD_AUTO = 0,
+  59:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/io\serial.h ****     BAUD_9600,
+  60:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/io\serial.h ****     BAUD_19200,
+  61:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/io\serial.h ****     BAUD_38400,
+  62:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/io\serial.h ****     BAUD_57600,
+  63:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/io\serial.h ****     BAUD_115200,
+  64:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/io\serial.h ****     BAUD_230400,
+  65:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/io\serial.h ****     BAUD_250000,
+  66:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/io\serial.h ****     BAUD_400000,
+  67:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/io\serial.h ****     BAUD_460800,
+  68:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/io\serial.h ****     BAUD_500000,
+  69:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/io\serial.h ****     BAUD_921600,
+  70:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/io\serial.h ****     BAUD_1000000,
+  71:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/io\serial.h ****     BAUD_1500000,
+  72:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/io\serial.h ****     BAUD_2000000,
+  73:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/io\serial.h ****     BAUD_2470000
+  74:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/io\serial.h **** } baudRate_e;
+  75:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/io\serial.h **** 
+  76:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/io\serial.h **** extern const uint32_t baudRates[];
+  77:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/io\serial.h **** 
+  78:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/io\serial.h **** // serial port identifiers are now fixed, these values are used by MSP commands.
+  79:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/io\serial.h **** typedef enum {
+  80:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/io\serial.h ****     SERIAL_PORT_NONE = -1,
+  81:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/io\serial.h ****     SERIAL_PORT_USART1 = 0,
+  82:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/io\serial.h ****     SERIAL_PORT_USART2,
+  83:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/io\serial.h ****     SERIAL_PORT_USART3,
+  84:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/io\serial.h ****     SERIAL_PORT_UART4,
+  85:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/io\serial.h ****     SERIAL_PORT_UART5,
+  86:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/io\serial.h ****     SERIAL_PORT_USART6,
+  87:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/io\serial.h ****     SERIAL_PORT_USART7,
+  88:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/io\serial.h ****     SERIAL_PORT_USART8,
+  89:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/io\serial.h ****     SERIAL_PORT_USB_VCP = 20,
+  90:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/io\serial.h ****     SERIAL_PORT_SOFTSERIAL1 = 30,
+  91:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/io\serial.h ****     SERIAL_PORT_SOFTSERIAL2,
+  92:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/io\serial.h **** 	SERIAL_PORT_SPIS1 = 40,
+  93:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/io\serial.h **** 	SERIAL_PORT_SPIS2,
+  94:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/io\serial.h **** 	SERIAL_PORT_SPIS3,
+  95:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/io\serial.h **** 	SERIAL_PORT_SPIS4,
+  96:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/io\serial.h **** 	SERIAL_PORT_SPIS5,
+  97:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/io\serial.h **** 	SERIAL_PORT_SPIS6,
+  98:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/io\serial.h **** } serialPortIdentifier_e;
+  99:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/io\serial.h **** 
+ 100:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/io\serial.h **** extern const serialPortIdentifier_e serialPortIdentifiers[SERIAL_PORT_COUNT];
+ 101:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/io\serial.h **** 
+ 102:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/io\serial.h **** #define SERIAL_PORT_IDENTIFIER_TO_INDEX(x) (((x) <= SERIAL_PORT_USART8) ? (x) : (RESOURCE_SOFT_OFFS
+ 103:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/io\serial.h **** 
+ 104:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/io\serial.h **** #define SERIAL_PORT_IDENTIFIER_TO_UARTDEV(x) ((x) - SERIAL_PORT_USART1 + UARTDEV_1)
+ 105:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/io\serial.h **** 
+ 106:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/io\serial.h **** //
+ 107:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/io\serial.h **** // runtime
+ 108:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/io\serial.h **** //
+ 109:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/io\serial.h **** typedef struct serialPortUsage_s {
+ 110:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/io\serial.h ****     serialPort_t *serialPort;
+ 111:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/io\serial.h ****     serialPortFunction_e function;
+ 112:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/io\serial.h ****     serialPortIdentifier_e identifier;
+ 113:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/io\serial.h **** } serialPortUsage_t;
+ 114:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/io\serial.h **** 
+ 115:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/io\serial.h **** serialPort_t *findSharedSerialPort(uint16_t functionMask, serialPortFunction_e sharedWithFunction);
+ 116:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/io\serial.h **** 
+ 117:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/io\serial.h **** //
+ 118:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/io\serial.h **** // configuration
+ 119:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/io\serial.h **** //
+ 120:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/io\serial.h **** typedef struct serialPortConfig_s {
+ 121:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/io\serial.h ****     uint16_t functionMask;
+ 122:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/io\serial.h ****     serialPortIdentifier_e identifier;
+ 123:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/io\serial.h ****     uint8_t msp_baudrateIndex;
+ 124:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/io\serial.h ****     uint8_t gps_baudrateIndex;
+ 125:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/io\serial.h ****     uint8_t blackbox_baudrateIndex;
+ 126:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/io\serial.h ****     uint8_t telemetry_baudrateIndex; // not used for all telemetry systems, e.g. HoTT only works at
+ 127:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/io\serial.h **** } serialPortConfig_t;
+ 128:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/io\serial.h **** 
+ 129:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/io\serial.h **** typedef struct serialConfig_s {
+ 130:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/io\serial.h ****     serialPortConfig_t portConfigs[SERIAL_PORT_COUNT];
+ 131:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/io\serial.h ****     uint16_t serial_update_rate_hz;
+ 132:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/io\serial.h ****     uint8_t reboot_character;               // which byte is used to reboot. Default 'R', could be 
+ 133:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/io\serial.h **** } serialConfig_t;
+ 134:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/io\serial.h **** 
+ 135:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/io\serial.h **** PG_DECLARE(serialConfig_t, serialConfig);
+  27              	 .loc 1 135 0
+  28              	 .cfi_startproc
+  29              	 
+  30              	 
+  31              	 
+  32 0000 80B4     	 push {r7}
+  33              	.LCFI0:
+  34              	 .cfi_def_cfa_offset 4
+  35              	 .cfi_offset 7,-4
+  36 0002 00AF     	 add r7,sp,#0
+  37              	.LCFI1:
+  38              	 .cfi_def_cfa_register 7
+  39              	 .loc 1 135 0
+  40 0004 024B     	 ldr r3,.L3
+  41 0006 1846     	 mov r0,r3
+  42 0008 BD46     	 mov sp,r7
+  43              	.LCFI2:
+  44              	 .cfi_def_cfa_register 13
+  45              	 
+  46 000a 5DF8047B 	 ldr r7,[sp],#4
+  47              	.LCFI3:
+  48              	 .cfi_restore 7
+  49              	 .cfi_def_cfa_offset 0
+  50 000e 7047     	 bx lr
+  51              	.L4:
+  52              	 .align 2
+  53              	.L3:
+  54 0010 00000000 	 .word serialConfig_System
+  55              	 .cfi_endproc
+  56              	.LFE527:
+  58              	 .section .text.targetSerialPortFunctionConfig,"ax",%progbits
+  59              	 .align 2
+  60              	 .global targetSerialPortFunctionConfig
+  61              	 .thumb
+  62              	 .thumb_func
+  64              	targetSerialPortFunctionConfig:
+  65              	.LFB528:
+  66              	 .file 2 "../cleanflight/src/main/target/config_helper.c"
+   1:../cleanflight/src/main/target/config_helper.c **** /*
+   2:../cleanflight/src/main/target/config_helper.c ****  * This file is part of Cleanflight and Betaflight.
+   3:../cleanflight/src/main/target/config_helper.c ****  *
+   4:../cleanflight/src/main/target/config_helper.c ****  * Cleanflight and Betaflight are free software. You can redistribute
+   5:../cleanflight/src/main/target/config_helper.c ****  * this software and/or modify this software under the terms of the
+   6:../cleanflight/src/main/target/config_helper.c ****  * GNU General Public License as published by the Free Software
+   7:../cleanflight/src/main/target/config_helper.c ****  * Foundation, either version 3 of the License, or (at your option)
+   8:../cleanflight/src/main/target/config_helper.c ****  * any later version.
+   9:../cleanflight/src/main/target/config_helper.c ****  *
+  10:../cleanflight/src/main/target/config_helper.c ****  * Cleanflight and Betaflight are distributed in the hope that they
+  11:../cleanflight/src/main/target/config_helper.c ****  * will be useful, but WITHOUT ANY WARRANTY; without even the implied
+  12:../cleanflight/src/main/target/config_helper.c ****  * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+  13:../cleanflight/src/main/target/config_helper.c ****  * See the GNU General Public License for more details.
+  14:../cleanflight/src/main/target/config_helper.c ****  *
+  15:../cleanflight/src/main/target/config_helper.c ****  * You should have received a copy of the GNU General Public License
+  16:../cleanflight/src/main/target/config_helper.c ****  * along with this software.
+  17:../cleanflight/src/main/target/config_helper.c ****  *
+  18:../cleanflight/src/main/target/config_helper.c ****  * If not, see <http://www.gnu.org/licenses/>.
+  19:../cleanflight/src/main/target/config_helper.c ****  */
+  20:../cleanflight/src/main/target/config_helper.c **** 
+  21:../cleanflight/src/main/target/config_helper.c **** #include "config_helper.h"
+  22:../cleanflight/src/main/target/config_helper.c **** 
+  23:../cleanflight/src/main/target/config_helper.c **** #ifdef USE_TARGET_CONFIG
+  24:../cleanflight/src/main/target/config_helper.c **** 
+  25:../cleanflight/src/main/target/config_helper.c **** void targetSerialPortFunctionConfig(targetSerialPortFunction_t *config, size_t count)
+  26:../cleanflight/src/main/target/config_helper.c **** {
+  67              	 .loc 2 26 0
+  68              	 .cfi_startproc
+  69              	 
+  70              	 
+  71 0000 80B5     	 push {r7,lr}
+  72              	.LCFI4:
+  73              	 .cfi_def_cfa_offset 8
+  74              	 .cfi_offset 7,-8
+  75              	 .cfi_offset 14,-4
+  76 0002 84B0     	 sub sp,sp,#16
+  77              	.LCFI5:
+  78              	 .cfi_def_cfa_offset 24
+  79 0004 00AF     	 add r7,sp,#0
+  80              	.LCFI6:
+  81              	 .cfi_def_cfa_register 7
+  82 0006 7860     	 str r0,[r7,#4]
+  83 0008 3960     	 str r1,[r7]
+  84              	.LBB2:
+  27:../cleanflight/src/main/target/config_helper.c ****     for (size_t i = 0 ; i < count ; i++) {
+  85              	 .loc 2 27 0
+  86 000a 0023     	 movs r3,#0
+  87 000c FB60     	 str r3,[r7,#12]
+  88 000e 23E0     	 b .L6
+  89              	.L8:
+  90              	.LBB3:
+  28:../cleanflight/src/main/target/config_helper.c ****         int index = findSerialPortIndexByIdentifier(config[i].identifier);
+  91              	 .loc 2 28 0
+  92 0010 FA68     	 ldr r2,[r7,#12]
+  93 0012 1346     	 mov r3,r2
+  94 0014 5B00     	 lsls r3,r3,#1
+  95 0016 1344     	 add r3,r3,r2
+  96 0018 7A68     	 ldr r2,[r7,#4]
+  97 001a 1344     	 add r3,r3,r2
+  98 001c 1B78     	 ldrb r3,[r3]
+  99 001e 5BB2     	 sxtb r3,r3
+ 100 0020 1846     	 mov r0,r3
+ 101 0022 FFF7FEFF 	 bl findSerialPortIndexByIdentifier
+ 102 0026 B860     	 str r0,[r7,#8]
+  29:../cleanflight/src/main/target/config_helper.c ****         if (index >= 0) {
+ 103              	 .loc 2 29 0
+ 104 0028 BB68     	 ldr r3,[r7,#8]
+ 105 002a 002B     	 cmp r3,#0
+ 106 002c 11DB     	 blt .L7
+  30:../cleanflight/src/main/target/config_helper.c ****             serialConfigMutable()->portConfigs[index].functionMask = config[i].function;
+ 107              	 .loc 2 30 0
+ 108 002e FFF7FEFF 	 bl serialConfigMutable
+ 109 0032 FA68     	 ldr r2,[r7,#12]
+ 110 0034 1346     	 mov r3,r2
+ 111 0036 5B00     	 lsls r3,r3,#1
+ 112 0038 1344     	 add r3,r3,r2
+ 113 003a 7A68     	 ldr r2,[r7,#4]
+ 114 003c 1344     	 add r3,r3,r2
+ 115 003e B3F80130 	 ldrh r3,[r3,#1]
+ 116 0042 99B2     	 uxth r1,r3
+ 117 0044 BA68     	 ldr r2,[r7,#8]
+ 118 0046 1346     	 mov r3,r2
+ 119 0048 DB00     	 lsls r3,r3,#3
+ 120 004a 9B1A     	 subs r3,r3,r2
+ 121 004c 0344     	 add r3,r3,r0
+ 122 004e 0A46     	 mov r2,r1
+ 123 0050 1A80     	 strh r2,[r3]
+ 124              	.L7:
+ 125              	.LBE3:
+  27:../cleanflight/src/main/target/config_helper.c ****         int index = findSerialPortIndexByIdentifier(config[i].identifier);
+ 126              	 .loc 2 27 0 discriminator 2
+ 127 0052 FB68     	 ldr r3,[r7,#12]
+ 128 0054 0133     	 adds r3,r3,#1
+ 129 0056 FB60     	 str r3,[r7,#12]
+ 130              	.L6:
+  27:../cleanflight/src/main/target/config_helper.c ****         int index = findSerialPortIndexByIdentifier(config[i].identifier);
+ 131              	 .loc 2 27 0 is_stmt 0 discriminator 1
+ 132 0058 FA68     	 ldr r2,[r7,#12]
+ 133 005a 3B68     	 ldr r3,[r7]
+ 134 005c 9A42     	 cmp r2,r3
+ 135 005e D7D3     	 bcc .L8
+ 136              	.LBE2:
+  31:../cleanflight/src/main/target/config_helper.c ****         }
+  32:../cleanflight/src/main/target/config_helper.c ****     }
+  33:../cleanflight/src/main/target/config_helper.c **** }
+ 137              	 .loc 2 33 0 is_stmt 1
+ 138 0060 1037     	 adds r7,r7,#16
+ 139              	.LCFI7:
+ 140              	 .cfi_def_cfa_offset 8
+ 141 0062 BD46     	 mov sp,r7
+ 142              	.LCFI8:
+ 143              	 .cfi_def_cfa_register 13
+ 144              	 
+ 145 0064 80BD     	 pop {r7,pc}
+ 146              	 .cfi_endproc
+ 147              	.LFE528:
+ 149 0066 00BF     	 .text
+ 150              	.Letext0:
+ 151              	 .file 3 "d:\\xmc\\dave-ide-4.4.2-64bit\\eclipse\\arm-gcc-49\\arm-none-eabi\\include\\machine\\_default_types.h"
+ 152              	 .file 4 "d:\\xmc\\dave-ide-4.4.2-64bit\\eclipse\\arm-gcc-49\\arm-none-eabi\\include\\stdint.h"
+ 153              	 .file 5 "d:\\xmc\\dave-ide-4.4.2-64bit\\eclipse\\arm-gcc-49\\lib\\gcc\\arm-none-eabi\\4.9.3\\include\\stddef.h"
+ 154              	 .file 6 "D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/drivers/io_types.h"
+ 155              	 .file 7 "D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/drivers/serial.h"
+ 156              	 .file 8 "../cleanflight/src/main/target/config_helper.h"
+ 157              	 .file 9 "D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/lib/main/CMSIS/Core/Include/core_cm4.h"
+ 158              	 .file 10 "D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/lib/main/XMC4000/system_XMC4700.h"
+DEFINED SYMBOLS
+                            *ABS*:00000000 config_helper.c
+    {standard input}:20     .text.serialConfigMutable:00000000 $t
+    {standard input}:24     .text.serialConfigMutable:00000000 serialConfigMutable
+    {standard input}:54     .text.serialConfigMutable:00000010 $d
+    {standard input}:59     .text.targetSerialPortFunctionConfig:00000000 $t
+    {standard input}:64     .text.targetSerialPortFunctionConfig:00000000 targetSerialPortFunctionConfig
+                     .debug_frame:00000010 $d
+
+UNDEFINED SYMBOLS
+serialConfig_System
+findSerialPortIndexByIdentifier

@@ -1,0 +1,1101 @@
+   1              	 .syntax unified
+   2              	 .cpu cortex-m4
+   3              	 .eabi_attribute 27,3
+   4              	 .fpu fpv4-sp-d16
+   5              	 .eabi_attribute 20,1
+   6              	 .eabi_attribute 21,1
+   7              	 .eabi_attribute 23,3
+   8              	 .eabi_attribute 24,1
+   9              	 .eabi_attribute 25,1
+  10              	 .eabi_attribute 26,1
+  11              	 .eabi_attribute 30,6
+  12              	 .eabi_attribute 34,1
+  13              	 .eabi_attribute 18,4
+  14              	 .thumb
+  15              	 .file "accgyro_spi_mpu9250.c"
+  16              	 .text
+  17              	.Ltext0:
+  18              	 .cfi_sections .debug_frame
+  19              	 .section .bss.mpuSpi9250InitDone,"aw",%nobits
+  22              	mpuSpi9250InitDone:
+  23 0000 00       	 .space 1
+  24              	 .section .text.mpu9250SpiWriteRegister,"ax",%progbits
+  25              	 .align 2
+  26              	 .global mpu9250SpiWriteRegister
+  27              	 .thumb
+  28              	 .thumb_func
+  30              	mpu9250SpiWriteRegister:
+  31              	.LFB537:
+  32              	 .file 1 "../cleanflight/src/main/drivers/accgyro/accgyro_spi_mpu9250.c"
+   1:../cleanflight/src/main/drivers/accgyro/accgyro_spi_mpu9250.c **** /*
+   2:../cleanflight/src/main/drivers/accgyro/accgyro_spi_mpu9250.c ****  * This file is part of Cleanflight and Betaflight.
+   3:../cleanflight/src/main/drivers/accgyro/accgyro_spi_mpu9250.c ****  *
+   4:../cleanflight/src/main/drivers/accgyro/accgyro_spi_mpu9250.c ****  * Cleanflight and Betaflight are free software. You can redistribute
+   5:../cleanflight/src/main/drivers/accgyro/accgyro_spi_mpu9250.c ****  * this software and/or modify this software under the terms of the
+   6:../cleanflight/src/main/drivers/accgyro/accgyro_spi_mpu9250.c ****  * GNU General Public License as published by the Free Software
+   7:../cleanflight/src/main/drivers/accgyro/accgyro_spi_mpu9250.c ****  * Foundation, either version 3 of the License, or (at your option)
+   8:../cleanflight/src/main/drivers/accgyro/accgyro_spi_mpu9250.c ****  * any later version.
+   9:../cleanflight/src/main/drivers/accgyro/accgyro_spi_mpu9250.c ****  *
+  10:../cleanflight/src/main/drivers/accgyro/accgyro_spi_mpu9250.c ****  * Cleanflight and Betaflight are distributed in the hope that they
+  11:../cleanflight/src/main/drivers/accgyro/accgyro_spi_mpu9250.c ****  * will be useful, but WITHOUT ANY WARRANTY; without even the implied
+  12:../cleanflight/src/main/drivers/accgyro/accgyro_spi_mpu9250.c ****  * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+  13:../cleanflight/src/main/drivers/accgyro/accgyro_spi_mpu9250.c ****  * See the GNU General Public License for more details.
+  14:../cleanflight/src/main/drivers/accgyro/accgyro_spi_mpu9250.c ****  *
+  15:../cleanflight/src/main/drivers/accgyro/accgyro_spi_mpu9250.c ****  * You should have received a copy of the GNU General Public License
+  16:../cleanflight/src/main/drivers/accgyro/accgyro_spi_mpu9250.c ****  * along with this software.
+  17:../cleanflight/src/main/drivers/accgyro/accgyro_spi_mpu9250.c ****  *
+  18:../cleanflight/src/main/drivers/accgyro/accgyro_spi_mpu9250.c ****  * If not, see <http://www.gnu.org/licenses/>.
+  19:../cleanflight/src/main/drivers/accgyro/accgyro_spi_mpu9250.c ****  */
+  20:../cleanflight/src/main/drivers/accgyro/accgyro_spi_mpu9250.c **** 
+  21:../cleanflight/src/main/drivers/accgyro/accgyro_spi_mpu9250.c **** /*
+  22:../cleanflight/src/main/drivers/accgyro/accgyro_spi_mpu9250.c ****  * Authors:
+  23:../cleanflight/src/main/drivers/accgyro/accgyro_spi_mpu9250.c ****  * Dominic Clifton - Cleanflight implementation
+  24:../cleanflight/src/main/drivers/accgyro/accgyro_spi_mpu9250.c ****  * John Ihlein - Initial FF32 code
+  25:../cleanflight/src/main/drivers/accgyro/accgyro_spi_mpu9250.c ****  * Kalyn Doerr (RS2K) - Robust rewrite
+  26:../cleanflight/src/main/drivers/accgyro/accgyro_spi_mpu9250.c **** */
+  27:../cleanflight/src/main/drivers/accgyro/accgyro_spi_mpu9250.c **** 
+  28:../cleanflight/src/main/drivers/accgyro/accgyro_spi_mpu9250.c **** #include <stdbool.h>
+  29:../cleanflight/src/main/drivers/accgyro/accgyro_spi_mpu9250.c **** #include <stdint.h>
+  30:../cleanflight/src/main/drivers/accgyro/accgyro_spi_mpu9250.c **** 
+  31:../cleanflight/src/main/drivers/accgyro/accgyro_spi_mpu9250.c **** #include "platform.h"
+  32:../cleanflight/src/main/drivers/accgyro/accgyro_spi_mpu9250.c **** 
+  33:../cleanflight/src/main/drivers/accgyro/accgyro_spi_mpu9250.c **** #include "build/debug.h"
+  34:../cleanflight/src/main/drivers/accgyro/accgyro_spi_mpu9250.c **** 
+  35:../cleanflight/src/main/drivers/accgyro/accgyro_spi_mpu9250.c **** #include "common/axis.h"
+  36:../cleanflight/src/main/drivers/accgyro/accgyro_spi_mpu9250.c **** #include "common/maths.h"
+  37:../cleanflight/src/main/drivers/accgyro/accgyro_spi_mpu9250.c **** 
+  38:../cleanflight/src/main/drivers/accgyro/accgyro_spi_mpu9250.c **** #include "drivers/accgyro/accgyro.h"
+  39:../cleanflight/src/main/drivers/accgyro/accgyro_spi_mpu9250.c **** #include "drivers/accgyro/accgyro_mpu.h"
+  40:../cleanflight/src/main/drivers/accgyro/accgyro_spi_mpu9250.c **** #include "drivers/accgyro/accgyro_spi_mpu9250.h"
+  41:../cleanflight/src/main/drivers/accgyro/accgyro_spi_mpu9250.c **** #include "drivers/bus_spi.h"
+  42:../cleanflight/src/main/drivers/accgyro/accgyro_spi_mpu9250.c **** #include "drivers/exti.h"
+  43:../cleanflight/src/main/drivers/accgyro/accgyro_spi_mpu9250.c **** #include "drivers/io.h"
+  44:../cleanflight/src/main/drivers/accgyro/accgyro_spi_mpu9250.c **** #include "drivers/light_led.h"
+  45:../cleanflight/src/main/drivers/accgyro/accgyro_spi_mpu9250.c **** #include "drivers/sensor.h"
+  46:../cleanflight/src/main/drivers/accgyro/accgyro_spi_mpu9250.c **** #include "drivers/time.h"
+  47:../cleanflight/src/main/drivers/accgyro/accgyro_spi_mpu9250.c **** #include "drivers/system.h"
+  48:../cleanflight/src/main/drivers/accgyro/accgyro_spi_mpu9250.c **** 
+  49:../cleanflight/src/main/drivers/accgyro/accgyro_spi_mpu9250.c **** 
+  50:../cleanflight/src/main/drivers/accgyro/accgyro_spi_mpu9250.c **** static void mpu9250AccAndGyroInit(gyroDev_t *gyro);
+  51:../cleanflight/src/main/drivers/accgyro/accgyro_spi_mpu9250.c **** 
+  52:../cleanflight/src/main/drivers/accgyro/accgyro_spi_mpu9250.c **** static bool mpuSpi9250InitDone = false;
+  53:../cleanflight/src/main/drivers/accgyro/accgyro_spi_mpu9250.c **** 
+  54:../cleanflight/src/main/drivers/accgyro/accgyro_spi_mpu9250.c **** bool mpu9250SpiWriteRegister(const busDevice_t *bus, uint8_t reg, uint8_t data)
+  55:../cleanflight/src/main/drivers/accgyro/accgyro_spi_mpu9250.c **** {
+  33              	 .loc 1 55 0
+  34              	 .cfi_startproc
+  35              	 
+  36              	 
+  37 0000 80B5     	 push {r7,lr}
+  38              	.LCFI0:
+  39              	 .cfi_def_cfa_offset 8
+  40              	 .cfi_offset 7,-8
+  41              	 .cfi_offset 14,-4
+  42 0002 82B0     	 sub sp,sp,#8
+  43              	.LCFI1:
+  44              	 .cfi_def_cfa_offset 16
+  45 0004 00AF     	 add r7,sp,#0
+  46              	.LCFI2:
+  47              	 .cfi_def_cfa_register 7
+  48 0006 7860     	 str r0,[r7,#4]
+  49 0008 0B46     	 mov r3,r1
+  50 000a FB70     	 strb r3,[r7,#3]
+  51 000c 1346     	 mov r3,r2
+  52 000e BB70     	 strb r3,[r7,#2]
+  56:../cleanflight/src/main/drivers/accgyro/accgyro_spi_mpu9250.c ****     IOLo(bus->busdev_u.spi.csnPin);
+  53              	 .loc 1 56 0
+  54 0010 7B68     	 ldr r3,[r7,#4]
+  55 0012 D3F80530 	 ldr r3,[r3,#5]
+  56 0016 1846     	 mov r0,r3
+  57 0018 FFF7FEFF 	 bl IOLo
+  57:../cleanflight/src/main/drivers/accgyro/accgyro_spi_mpu9250.c ****     delayMicroseconds(1);
+  58              	 .loc 1 57 0
+  59 001c 0120     	 movs r0,#1
+  60 001e FFF7FEFF 	 bl delayMicroseconds
+  58:../cleanflight/src/main/drivers/accgyro/accgyro_spi_mpu9250.c ****     spiTransferByte(bus->busdev_u.spi.instance, reg);
+  61              	 .loc 1 58 0
+  62 0022 7B68     	 ldr r3,[r7,#4]
+  63 0024 D3F80120 	 ldr r2,[r3,#1]
+  64 0028 FB78     	 ldrb r3,[r7,#3]
+  65 002a 1046     	 mov r0,r2
+  66 002c 1946     	 mov r1,r3
+  67 002e FFF7FEFF 	 bl spiTransferByte
+  59:../cleanflight/src/main/drivers/accgyro/accgyro_spi_mpu9250.c ****     spiTransferByte(bus->busdev_u.spi.instance, data);
+  68              	 .loc 1 59 0
+  69 0032 7B68     	 ldr r3,[r7,#4]
+  70 0034 D3F80120 	 ldr r2,[r3,#1]
+  71 0038 BB78     	 ldrb r3,[r7,#2]
+  72 003a 1046     	 mov r0,r2
+  73 003c 1946     	 mov r1,r3
+  74 003e FFF7FEFF 	 bl spiTransferByte
+  60:../cleanflight/src/main/drivers/accgyro/accgyro_spi_mpu9250.c ****     IOHi(bus->busdev_u.spi.csnPin);
+  75              	 .loc 1 60 0
+  76 0042 7B68     	 ldr r3,[r7,#4]
+  77 0044 D3F80530 	 ldr r3,[r3,#5]
+  78 0048 1846     	 mov r0,r3
+  79 004a FFF7FEFF 	 bl IOHi
+  61:../cleanflight/src/main/drivers/accgyro/accgyro_spi_mpu9250.c ****     delayMicroseconds(1);
+  80              	 .loc 1 61 0
+  81 004e 0120     	 movs r0,#1
+  82 0050 FFF7FEFF 	 bl delayMicroseconds
+  62:../cleanflight/src/main/drivers/accgyro/accgyro_spi_mpu9250.c **** 
+  63:../cleanflight/src/main/drivers/accgyro/accgyro_spi_mpu9250.c ****     return true;
+  83              	 .loc 1 63 0
+  84 0054 0123     	 movs r3,#1
+  64:../cleanflight/src/main/drivers/accgyro/accgyro_spi_mpu9250.c **** }
+  85              	 .loc 1 64 0
+  86 0056 1846     	 mov r0,r3
+  87 0058 0837     	 adds r7,r7,#8
+  88              	.LCFI3:
+  89              	 .cfi_def_cfa_offset 8
+  90 005a BD46     	 mov sp,r7
+  91              	.LCFI4:
+  92              	 .cfi_def_cfa_register 13
+  93              	 
+  94 005c 80BD     	 pop {r7,pc}
+  95              	 .cfi_endproc
+  96              	.LFE537:
+  98 005e 00BF     	 .section .text.mpu9250SpiSlowReadRegisterBuffer,"ax",%progbits
+  99              	 .align 2
+ 100              	 .thumb
+ 101              	 .thumb_func
+ 103              	mpu9250SpiSlowReadRegisterBuffer:
+ 104              	.LFB538:
+  65:../cleanflight/src/main/drivers/accgyro/accgyro_spi_mpu9250.c **** 
+  66:../cleanflight/src/main/drivers/accgyro/accgyro_spi_mpu9250.c **** static bool mpu9250SpiSlowReadRegisterBuffer(const busDevice_t *bus, uint8_t reg, uint8_t *data, ui
+  67:../cleanflight/src/main/drivers/accgyro/accgyro_spi_mpu9250.c **** {
+ 105              	 .loc 1 67 0
+ 106              	 .cfi_startproc
+ 107              	 
+ 108              	 
+ 109 0000 80B5     	 push {r7,lr}
+ 110              	.LCFI5:
+ 111              	 .cfi_def_cfa_offset 8
+ 112              	 .cfi_offset 7,-8
+ 113              	 .cfi_offset 14,-4
+ 114 0002 84B0     	 sub sp,sp,#16
+ 115              	.LCFI6:
+ 116              	 .cfi_def_cfa_offset 24
+ 117 0004 00AF     	 add r7,sp,#0
+ 118              	.LCFI7:
+ 119              	 .cfi_def_cfa_register 7
+ 120 0006 F860     	 str r0,[r7,#12]
+ 121 0008 7A60     	 str r2,[r7,#4]
+ 122 000a 1A46     	 mov r2,r3
+ 123 000c 0B46     	 mov r3,r1
+ 124 000e FB72     	 strb r3,[r7,#11]
+ 125 0010 1346     	 mov r3,r2
+ 126 0012 BB72     	 strb r3,[r7,#10]
+  68:../cleanflight/src/main/drivers/accgyro/accgyro_spi_mpu9250.c ****     IOLo(bus->busdev_u.spi.csnPin);
+ 127              	 .loc 1 68 0
+ 128 0014 FB68     	 ldr r3,[r7,#12]
+ 129 0016 D3F80530 	 ldr r3,[r3,#5]
+ 130 001a 1846     	 mov r0,r3
+ 131 001c FFF7FEFF 	 bl IOLo
+  69:../cleanflight/src/main/drivers/accgyro/accgyro_spi_mpu9250.c ****     delayMicroseconds(1);
+ 132              	 .loc 1 69 0
+ 133 0020 0120     	 movs r0,#1
+ 134 0022 FFF7FEFF 	 bl delayMicroseconds
+  70:../cleanflight/src/main/drivers/accgyro/accgyro_spi_mpu9250.c ****     spiTransferByte(bus->busdev_u.spi.instance, reg | 0x80); // read transaction
+ 135              	 .loc 1 70 0
+ 136 0026 FB68     	 ldr r3,[r7,#12]
+ 137 0028 D3F80120 	 ldr r2,[r3,#1]
+ 138 002c FB7A     	 ldrb r3,[r7,#11]
+ 139 002e 63F07F03 	 orn r3,r3,#127
+ 140 0032 DBB2     	 uxtb r3,r3
+ 141 0034 1046     	 mov r0,r2
+ 142 0036 1946     	 mov r1,r3
+ 143 0038 FFF7FEFF 	 bl spiTransferByte
+  71:../cleanflight/src/main/drivers/accgyro/accgyro_spi_mpu9250.c ****     spiTransfer(bus->busdev_u.spi.instance, NULL, data, length);
+ 144              	 .loc 1 71 0
+ 145 003c FB68     	 ldr r3,[r7,#12]
+ 146 003e D3F80120 	 ldr r2,[r3,#1]
+ 147 0042 BB7A     	 ldrb r3,[r7,#10]
+ 148 0044 1046     	 mov r0,r2
+ 149 0046 0021     	 movs r1,#0
+ 150 0048 7A68     	 ldr r2,[r7,#4]
+ 151 004a FFF7FEFF 	 bl spiTransfer
+  72:../cleanflight/src/main/drivers/accgyro/accgyro_spi_mpu9250.c ****     IOHi(bus->busdev_u.spi.csnPin);
+ 152              	 .loc 1 72 0
+ 153 004e FB68     	 ldr r3,[r7,#12]
+ 154 0050 D3F80530 	 ldr r3,[r3,#5]
+ 155 0054 1846     	 mov r0,r3
+ 156 0056 FFF7FEFF 	 bl IOHi
+  73:../cleanflight/src/main/drivers/accgyro/accgyro_spi_mpu9250.c ****     delayMicroseconds(1);
+ 157              	 .loc 1 73 0
+ 158 005a 0120     	 movs r0,#1
+ 159 005c FFF7FEFF 	 bl delayMicroseconds
+  74:../cleanflight/src/main/drivers/accgyro/accgyro_spi_mpu9250.c **** 
+  75:../cleanflight/src/main/drivers/accgyro/accgyro_spi_mpu9250.c ****     return true;
+ 160              	 .loc 1 75 0
+ 161 0060 0123     	 movs r3,#1
+  76:../cleanflight/src/main/drivers/accgyro/accgyro_spi_mpu9250.c **** }
+ 162              	 .loc 1 76 0
+ 163 0062 1846     	 mov r0,r3
+ 164 0064 1037     	 adds r7,r7,#16
+ 165              	.LCFI8:
+ 166              	 .cfi_def_cfa_offset 8
+ 167 0066 BD46     	 mov sp,r7
+ 168              	.LCFI9:
+ 169              	 .cfi_def_cfa_register 13
+ 170              	 
+ 171 0068 80BD     	 pop {r7,pc}
+ 172              	 .cfi_endproc
+ 173              	.LFE538:
+ 175 006a 00BF     	 .section .text.mpu9250SpiResetGyro,"ax",%progbits
+ 176              	 .align 2
+ 177              	 .global mpu9250SpiResetGyro
+ 178              	 .thumb
+ 179              	 .thumb_func
+ 181              	mpu9250SpiResetGyro:
+ 182              	.LFB539:
+  77:../cleanflight/src/main/drivers/accgyro/accgyro_spi_mpu9250.c **** 
+  78:../cleanflight/src/main/drivers/accgyro/accgyro_spi_mpu9250.c **** void mpu9250SpiResetGyro(void)
+  79:../cleanflight/src/main/drivers/accgyro/accgyro_spi_mpu9250.c **** {
+ 183              	 .loc 1 79 0
+ 184              	 .cfi_startproc
+ 185              	 
+ 186              	 
+ 187              	 
+ 188 0000 80B4     	 push {r7}
+ 189              	.LCFI10:
+ 190              	 .cfi_def_cfa_offset 4
+ 191              	 .cfi_offset 7,-4
+ 192 0002 00AF     	 add r7,sp,#0
+ 193              	.LCFI11:
+ 194              	 .cfi_def_cfa_register 7
+  80:../cleanflight/src/main/drivers/accgyro/accgyro_spi_mpu9250.c **** #if 0
+  81:../cleanflight/src/main/drivers/accgyro/accgyro_spi_mpu9250.c **** // XXX This doesn't work. Need a proper busDevice_t.
+  82:../cleanflight/src/main/drivers/accgyro/accgyro_spi_mpu9250.c ****     // Device Reset
+  83:../cleanflight/src/main/drivers/accgyro/accgyro_spi_mpu9250.c **** #ifdef MPU9250_CS_PIN
+  84:../cleanflight/src/main/drivers/accgyro/accgyro_spi_mpu9250.c ****     busDevice_t bus = { .spi = { .csnPin = IOGetByTag(IO_TAG(MPU9250_CS_PIN)) } };
+  85:../cleanflight/src/main/drivers/accgyro/accgyro_spi_mpu9250.c ****     mpu9250SpiWriteRegister(&bus, MPU_RA_PWR_MGMT_1, MPU9250_BIT_RESET);
+  86:../cleanflight/src/main/drivers/accgyro/accgyro_spi_mpu9250.c ****     delay(150);
+  87:../cleanflight/src/main/drivers/accgyro/accgyro_spi_mpu9250.c **** #endif
+  88:../cleanflight/src/main/drivers/accgyro/accgyro_spi_mpu9250.c **** #endif
+  89:../cleanflight/src/main/drivers/accgyro/accgyro_spi_mpu9250.c **** }
+ 195              	 .loc 1 89 0
+ 196 0004 BD46     	 mov sp,r7
+ 197              	.LCFI12:
+ 198              	 .cfi_def_cfa_register 13
+ 199              	 
+ 200 0006 5DF8047B 	 ldr r7,[sp],#4
+ 201              	.LCFI13:
+ 202              	 .cfi_restore 7
+ 203              	 .cfi_def_cfa_offset 0
+ 204 000a 7047     	 bx lr
+ 205              	 .cfi_endproc
+ 206              	.LFE539:
+ 208              	 .section .text.mpu9250SpiGyroInit,"ax",%progbits
+ 209              	 .align 2
+ 210              	 .global mpu9250SpiGyroInit
+ 211              	 .thumb
+ 212              	 .thumb_func
+ 214              	mpu9250SpiGyroInit:
+ 215              	.LFB540:
+  90:../cleanflight/src/main/drivers/accgyro/accgyro_spi_mpu9250.c **** 
+  91:../cleanflight/src/main/drivers/accgyro/accgyro_spi_mpu9250.c **** void mpu9250SpiGyroInit(gyroDev_t *gyro)
+  92:../cleanflight/src/main/drivers/accgyro/accgyro_spi_mpu9250.c **** {
+ 216              	 .loc 1 92 0
+ 217              	 .cfi_startproc
+ 218              	 
+ 219              	 
+ 220 0000 80B5     	 push {r7,lr}
+ 221              	.LCFI14:
+ 222              	 .cfi_def_cfa_offset 8
+ 223              	 .cfi_offset 7,-8
+ 224              	 .cfi_offset 14,-4
+ 225 0002 82B0     	 sub sp,sp,#8
+ 226              	.LCFI15:
+ 227              	 .cfi_def_cfa_offset 16
+ 228 0004 00AF     	 add r7,sp,#0
+ 229              	.LCFI16:
+ 230              	 .cfi_def_cfa_register 7
+ 231 0006 7860     	 str r0,[r7,#4]
+  93:../cleanflight/src/main/drivers/accgyro/accgyro_spi_mpu9250.c ****     mpuGyroInit(gyro);
+ 232              	 .loc 1 93 0
+ 233 0008 7868     	 ldr r0,[r7,#4]
+ 234 000a FFF7FEFF 	 bl mpuGyroInit
+  94:../cleanflight/src/main/drivers/accgyro/accgyro_spi_mpu9250.c **** 
+  95:../cleanflight/src/main/drivers/accgyro/accgyro_spi_mpu9250.c ****     mpu9250AccAndGyroInit(gyro);
+ 235              	 .loc 1 95 0
+ 236 000e 7868     	 ldr r0,[r7,#4]
+ 237 0010 FFF7FEFF 	 bl mpu9250AccAndGyroInit
+  96:../cleanflight/src/main/drivers/accgyro/accgyro_spi_mpu9250.c **** 
+  97:../cleanflight/src/main/drivers/accgyro/accgyro_spi_mpu9250.c ****     spiResetErrorCounter(gyro->bus.busdev_u.spi.instance);
+ 238              	 .loc 1 97 0
+ 239 0014 7B68     	 ldr r3,[r7,#4]
+ 240 0016 D3F81130 	 ldr r3,[r3,#17]
+ 241 001a 1846     	 mov r0,r3
+ 242 001c FFF7FEFF 	 bl spiResetErrorCounter
+  98:../cleanflight/src/main/drivers/accgyro/accgyro_spi_mpu9250.c **** 
+  99:../cleanflight/src/main/drivers/accgyro/accgyro_spi_mpu9250.c ****     spiSetDivisor(gyro->bus.busdev_u.spi.instance, SPI_CLOCK_FAST); //high speed now that we don't 
+ 243              	 .loc 1 99 0
+ 244 0020 7B68     	 ldr r3,[r7,#4]
+ 245 0022 D3F81130 	 ldr r3,[r3,#17]
+ 246 0026 1846     	 mov r0,r3
+ 247 0028 0221     	 movs r1,#2
+ 248 002a FFF7FEFF 	 bl spiSetDivisor
+ 100:../cleanflight/src/main/drivers/accgyro/accgyro_spi_mpu9250.c **** 
+ 101:../cleanflight/src/main/drivers/accgyro/accgyro_spi_mpu9250.c ****     mpuGyroRead(gyro);
+ 249              	 .loc 1 101 0
+ 250 002e 7868     	 ldr r0,[r7,#4]
+ 251 0030 FFF7FEFF 	 bl mpuGyroRead
+ 102:../cleanflight/src/main/drivers/accgyro/accgyro_spi_mpu9250.c **** 
+ 103:../cleanflight/src/main/drivers/accgyro/accgyro_spi_mpu9250.c ****     if ((((int8_t)gyro->gyroADCRaw[1]) == -1 && ((int8_t)gyro->gyroADCRaw[0]) == -1) || spiGetError
+ 252              	 .loc 1 103 0
+ 253 0034 7B68     	 ldr r3,[r7,#4]
+ 254 0036 B3F94F30 	 ldrsh r3,[r3,#79]
+ 255 003a 9BB2     	 uxth r3,r3
+ 256 003c DBB2     	 uxtb r3,r3
+ 257 003e 5BB2     	 sxtb r3,r3
+ 258 0040 B3F1FF3F 	 cmp r3,#-1
+ 259 0044 08D1     	 bne .L7
+ 260              	 .loc 1 103 0 is_stmt 0 discriminator 1
+ 261 0046 7B68     	 ldr r3,[r7,#4]
+ 262 0048 B3F94D30 	 ldrsh r3,[r3,#77]
+ 263 004c 9BB2     	 uxth r3,r3
+ 264 004e DBB2     	 uxtb r3,r3
+ 265 0050 5BB2     	 sxtb r3,r3
+ 266 0052 B3F1FF3F 	 cmp r3,#-1
+ 267 0056 08D0     	 beq .L8
+ 268              	.L7:
+ 269              	 .loc 1 103 0 discriminator 3
+ 270 0058 7B68     	 ldr r3,[r7,#4]
+ 271 005a D3F81130 	 ldr r3,[r3,#17]
+ 272 005e 1846     	 mov r0,r3
+ 273 0060 FFF7FEFF 	 bl spiGetErrorCounter
+ 274 0064 0346     	 mov r3,r0
+ 275 0066 002B     	 cmp r3,#0
+ 276 0068 08D0     	 beq .L6
+ 277              	.L8:
+ 104:../cleanflight/src/main/drivers/accgyro/accgyro_spi_mpu9250.c ****         spiResetErrorCounter(gyro->bus.busdev_u.spi.instance);
+ 278              	 .loc 1 104 0 is_stmt 1
+ 279 006a 7B68     	 ldr r3,[r7,#4]
+ 280 006c D3F81130 	 ldr r3,[r3,#17]
+ 281 0070 1846     	 mov r0,r3
+ 282 0072 FFF7FEFF 	 bl spiResetErrorCounter
+ 105:../cleanflight/src/main/drivers/accgyro/accgyro_spi_mpu9250.c ****         failureMode(FAILURE_GYRO_INIT_FAILED);
+ 283              	 .loc 1 105 0
+ 284 0076 0620     	 movs r0,#6
+ 285 0078 FFF7FEFF 	 bl failureMode
+ 286              	.L6:
+ 106:../cleanflight/src/main/drivers/accgyro/accgyro_spi_mpu9250.c ****     }
+ 107:../cleanflight/src/main/drivers/accgyro/accgyro_spi_mpu9250.c **** }
+ 287              	 .loc 1 107 0
+ 288 007c 0837     	 adds r7,r7,#8
+ 289              	.LCFI17:
+ 290              	 .cfi_def_cfa_offset 8
+ 291 007e BD46     	 mov sp,r7
+ 292              	.LCFI18:
+ 293              	 .cfi_def_cfa_register 13
+ 294              	 
+ 295 0080 80BD     	 pop {r7,pc}
+ 296              	 .cfi_endproc
+ 297              	.LFE540:
+ 299              	 .section .text.mpu9250SpiAccInit,"ax",%progbits
+ 300              	 .align 2
+ 301              	 .global mpu9250SpiAccInit
+ 302              	 .thumb
+ 303              	 .thumb_func
+ 305              	mpu9250SpiAccInit:
+ 306              	.LFB541:
+ 108:../cleanflight/src/main/drivers/accgyro/accgyro_spi_mpu9250.c **** 
+ 109:../cleanflight/src/main/drivers/accgyro/accgyro_spi_mpu9250.c **** void mpu9250SpiAccInit(accDev_t *acc)
+ 110:../cleanflight/src/main/drivers/accgyro/accgyro_spi_mpu9250.c **** {
+ 307              	 .loc 1 110 0
+ 308              	 .cfi_startproc
+ 309              	 
+ 310              	 
+ 311              	 
+ 312 0000 80B4     	 push {r7}
+ 313              	.LCFI19:
+ 314              	 .cfi_def_cfa_offset 4
+ 315              	 .cfi_offset 7,-4
+ 316 0002 83B0     	 sub sp,sp,#12
+ 317              	.LCFI20:
+ 318              	 .cfi_def_cfa_offset 16
+ 319 0004 00AF     	 add r7,sp,#0
+ 320              	.LCFI21:
+ 321              	 .cfi_def_cfa_register 7
+ 322 0006 7860     	 str r0,[r7,#4]
+ 111:../cleanflight/src/main/drivers/accgyro/accgyro_spi_mpu9250.c ****     acc->acc_1G = 512 * 4;
+ 323              	 .loc 1 111 0
+ 324 0008 7B68     	 ldr r3,[r7,#4]
+ 325 000a 0022     	 movs r2,#0
+ 326 000c 5A74     	 strb r2,[r3,#17]
+ 327 000e 0022     	 movs r2,#0
+ 328 0010 42F00802 	 orr r2,r2,#8
+ 329 0014 9A74     	 strb r2,[r3,#18]
+ 112:../cleanflight/src/main/drivers/accgyro/accgyro_spi_mpu9250.c **** }
+ 330              	 .loc 1 112 0
+ 331 0016 0C37     	 adds r7,r7,#12
+ 332              	.LCFI22:
+ 333              	 .cfi_def_cfa_offset 4
+ 334 0018 BD46     	 mov sp,r7
+ 335              	.LCFI23:
+ 336              	 .cfi_def_cfa_register 13
+ 337              	 
+ 338 001a 5DF8047B 	 ldr r7,[sp],#4
+ 339              	.LCFI24:
+ 340              	 .cfi_restore 7
+ 341              	 .cfi_def_cfa_offset 0
+ 342 001e 7047     	 bx lr
+ 343              	 .cfi_endproc
+ 344              	.LFE541:
+ 346              	 .section .text.mpu9250SpiWriteRegisterVerify,"ax",%progbits
+ 347              	 .align 2
+ 348              	 .global mpu9250SpiWriteRegisterVerify
+ 349              	 .thumb
+ 350              	 .thumb_func
+ 352              	mpu9250SpiWriteRegisterVerify:
+ 353              	.LFB542:
+ 113:../cleanflight/src/main/drivers/accgyro/accgyro_spi_mpu9250.c **** 
+ 114:../cleanflight/src/main/drivers/accgyro/accgyro_spi_mpu9250.c **** bool mpu9250SpiWriteRegisterVerify(const busDevice_t *bus, uint8_t reg, uint8_t data)
+ 115:../cleanflight/src/main/drivers/accgyro/accgyro_spi_mpu9250.c **** {
+ 354              	 .loc 1 115 0
+ 355              	 .cfi_startproc
+ 356              	 
+ 357              	 
+ 358 0000 80B5     	 push {r7,lr}
+ 359              	.LCFI25:
+ 360              	 .cfi_def_cfa_offset 8
+ 361              	 .cfi_offset 7,-8
+ 362              	 .cfi_offset 14,-4
+ 363 0002 84B0     	 sub sp,sp,#16
+ 364              	.LCFI26:
+ 365              	 .cfi_def_cfa_offset 24
+ 366 0004 00AF     	 add r7,sp,#0
+ 367              	.LCFI27:
+ 368              	 .cfi_def_cfa_register 7
+ 369 0006 7860     	 str r0,[r7,#4]
+ 370 0008 0B46     	 mov r3,r1
+ 371 000a FB70     	 strb r3,[r7,#3]
+ 372 000c 1346     	 mov r3,r2
+ 373 000e BB70     	 strb r3,[r7,#2]
+ 116:../cleanflight/src/main/drivers/accgyro/accgyro_spi_mpu9250.c ****     mpu9250SpiWriteRegister(bus, reg, data);
+ 374              	 .loc 1 116 0
+ 375 0010 FA78     	 ldrb r2,[r7,#3]
+ 376 0012 BB78     	 ldrb r3,[r7,#2]
+ 377 0014 7868     	 ldr r0,[r7,#4]
+ 378 0016 1146     	 mov r1,r2
+ 379 0018 1A46     	 mov r2,r3
+ 380 001a FFF7FEFF 	 bl mpu9250SpiWriteRegister
+ 117:../cleanflight/src/main/drivers/accgyro/accgyro_spi_mpu9250.c ****     delayMicroseconds(100);
+ 381              	 .loc 1 117 0
+ 382 001e 6420     	 movs r0,#100
+ 383 0020 FFF7FEFF 	 bl delayMicroseconds
+ 118:../cleanflight/src/main/drivers/accgyro/accgyro_spi_mpu9250.c **** 
+ 119:../cleanflight/src/main/drivers/accgyro/accgyro_spi_mpu9250.c ****     uint8_t attemptsRemaining = 20;
+ 384              	 .loc 1 119 0
+ 385 0024 1423     	 movs r3,#20
+ 386 0026 FB73     	 strb r3,[r7,#15]
+ 387              	.L14:
+ 388              	.LBB2:
+ 120:../cleanflight/src/main/drivers/accgyro/accgyro_spi_mpu9250.c ****     do {
+ 121:../cleanflight/src/main/drivers/accgyro/accgyro_spi_mpu9250.c ****         uint8_t in;
+ 122:../cleanflight/src/main/drivers/accgyro/accgyro_spi_mpu9250.c ****         mpu9250SpiSlowReadRegisterBuffer(bus, reg, &in, 1);
+ 389              	 .loc 1 122 0
+ 390 0028 FA78     	 ldrb r2,[r7,#3]
+ 391 002a 07F10E03 	 add r3,r7,#14
+ 392 002e 7868     	 ldr r0,[r7,#4]
+ 393 0030 1146     	 mov r1,r2
+ 394 0032 1A46     	 mov r2,r3
+ 395 0034 0123     	 movs r3,#1
+ 396 0036 FFF7FEFF 	 bl mpu9250SpiSlowReadRegisterBuffer
+ 123:../cleanflight/src/main/drivers/accgyro/accgyro_spi_mpu9250.c ****         if (in == data) {
+ 397              	 .loc 1 123 0
+ 398 003a BB7B     	 ldrb r3,[r7,#14]
+ 399 003c BA78     	 ldrb r2,[r7,#2]
+ 400 003e 9A42     	 cmp r2,r3
+ 401 0040 01D1     	 bne .L12
+ 124:../cleanflight/src/main/drivers/accgyro/accgyro_spi_mpu9250.c ****             return true;
+ 402              	 .loc 1 124 0
+ 403 0042 0123     	 movs r3,#1
+ 404 0044 18E0     	 b .L13
+ 405              	.L12:
+ 125:../cleanflight/src/main/drivers/accgyro/accgyro_spi_mpu9250.c ****         } else {
+ 126:../cleanflight/src/main/drivers/accgyro/accgyro_spi_mpu9250.c ****             debug[3]++;
+ 406              	 .loc 1 126 0
+ 407 0046 0E4B     	 ldr r3,.L15
+ 408 0048 DB88     	 ldrh r3,[r3,#6]
+ 409 004a 9BB2     	 uxth r3,r3
+ 410 004c 9BB2     	 uxth r3,r3
+ 411 004e 0133     	 adds r3,r3,#1
+ 412 0050 9BB2     	 uxth r3,r3
+ 413 0052 9AB2     	 uxth r2,r3
+ 414 0054 0A4B     	 ldr r3,.L15
+ 415 0056 DA80     	 strh r2,[r3,#6]
+ 127:../cleanflight/src/main/drivers/accgyro/accgyro_spi_mpu9250.c ****             mpu9250SpiWriteRegister(bus, reg, data);
+ 416              	 .loc 1 127 0
+ 417 0058 FA78     	 ldrb r2,[r7,#3]
+ 418 005a BB78     	 ldrb r3,[r7,#2]
+ 419 005c 7868     	 ldr r0,[r7,#4]
+ 420 005e 1146     	 mov r1,r2
+ 421 0060 1A46     	 mov r2,r3
+ 422 0062 FFF7FEFF 	 bl mpu9250SpiWriteRegister
+ 128:../cleanflight/src/main/drivers/accgyro/accgyro_spi_mpu9250.c ****             delayMicroseconds(100);
+ 423              	 .loc 1 128 0
+ 424 0066 6420     	 movs r0,#100
+ 425 0068 FFF7FEFF 	 bl delayMicroseconds
+ 426              	.LBE2:
+ 129:../cleanflight/src/main/drivers/accgyro/accgyro_spi_mpu9250.c ****         }
+ 130:../cleanflight/src/main/drivers/accgyro/accgyro_spi_mpu9250.c ****     } while (attemptsRemaining--);
+ 427              	 .loc 1 130 0
+ 428 006c FB7B     	 ldrb r3,[r7,#15]
+ 429 006e 5A1E     	 subs r2,r3,#1
+ 430 0070 FA73     	 strb r2,[r7,#15]
+ 431 0072 002B     	 cmp r3,#0
+ 432 0074 D8D1     	 bne .L14
+ 131:../cleanflight/src/main/drivers/accgyro/accgyro_spi_mpu9250.c ****     return false;
+ 433              	 .loc 1 131 0
+ 434 0076 0023     	 movs r3,#0
+ 435              	.L13:
+ 132:../cleanflight/src/main/drivers/accgyro/accgyro_spi_mpu9250.c **** }
+ 436              	 .loc 1 132 0
+ 437 0078 1846     	 mov r0,r3
+ 438 007a 1037     	 adds r7,r7,#16
+ 439              	.LCFI28:
+ 440              	 .cfi_def_cfa_offset 8
+ 441 007c BD46     	 mov sp,r7
+ 442              	.LCFI29:
+ 443              	 .cfi_def_cfa_register 13
+ 444              	 
+ 445 007e 80BD     	 pop {r7,pc}
+ 446              	.L16:
+ 447              	 .align 2
+ 448              	.L15:
+ 449 0080 00000000 	 .word debug
+ 450              	 .cfi_endproc
+ 451              	.LFE542:
+ 453              	 .section .text.mpu9250AccAndGyroInit,"ax",%progbits
+ 454              	 .align 2
+ 455              	 .thumb
+ 456              	 .thumb_func
+ 458              	mpu9250AccAndGyroInit:
+ 459              	.LFB543:
+ 133:../cleanflight/src/main/drivers/accgyro/accgyro_spi_mpu9250.c **** 
+ 134:../cleanflight/src/main/drivers/accgyro/accgyro_spi_mpu9250.c **** static void mpu9250AccAndGyroInit(gyroDev_t *gyro) {
+ 460              	 .loc 1 134 0
+ 461              	 .cfi_startproc
+ 462              	 
+ 463              	 
+ 464 0000 90B5     	 push {r4,r7,lr}
+ 465              	.LCFI30:
+ 466              	 .cfi_def_cfa_offset 12
+ 467              	 .cfi_offset 4,-12
+ 468              	 .cfi_offset 7,-8
+ 469              	 .cfi_offset 14,-4
+ 470 0002 83B0     	 sub sp,sp,#12
+ 471              	.LCFI31:
+ 472              	 .cfi_def_cfa_offset 24
+ 473 0004 00AF     	 add r7,sp,#0
+ 474              	.LCFI32:
+ 475              	 .cfi_def_cfa_register 7
+ 476 0006 7860     	 str r0,[r7,#4]
+ 135:../cleanflight/src/main/drivers/accgyro/accgyro_spi_mpu9250.c **** 
+ 136:../cleanflight/src/main/drivers/accgyro/accgyro_spi_mpu9250.c ****     if (mpuSpi9250InitDone) {
+ 477              	 .loc 1 136 0
+ 478 0008 2F4B     	 ldr r3,.L20
+ 479 000a 1B78     	 ldrb r3,[r3]
+ 480 000c 002B     	 cmp r3,#0
+ 481 000e 00D0     	 beq .L18
+ 137:../cleanflight/src/main/drivers/accgyro/accgyro_spi_mpu9250.c ****         return;
+ 482              	 .loc 1 137 0
+ 483 0010 56E0     	 b .L17
+ 484              	.L18:
+ 138:../cleanflight/src/main/drivers/accgyro/accgyro_spi_mpu9250.c ****     }
+ 139:../cleanflight/src/main/drivers/accgyro/accgyro_spi_mpu9250.c **** 
+ 140:../cleanflight/src/main/drivers/accgyro/accgyro_spi_mpu9250.c ****     spiSetDivisor(gyro->bus.busdev_u.spi.instance, SPI_CLOCK_INITIALIZATON); //low speed for writin
+ 485              	 .loc 1 140 0
+ 486 0012 7B68     	 ldr r3,[r7,#4]
+ 487 0014 D3F81130 	 ldr r3,[r3,#17]
+ 488 0018 1846     	 mov r0,r3
+ 489 001a 4FF48071 	 mov r1,#256
+ 490 001e FFF7FEFF 	 bl spiSetDivisor
+ 141:../cleanflight/src/main/drivers/accgyro/accgyro_spi_mpu9250.c **** 
+ 142:../cleanflight/src/main/drivers/accgyro/accgyro_spi_mpu9250.c ****     mpu9250SpiWriteRegister(&gyro->bus, MPU_RA_PWR_MGMT_1, MPU9250_BIT_RESET);
+ 491              	 .loc 1 142 0
+ 492 0022 7B68     	 ldr r3,[r7,#4]
+ 493 0024 1033     	 adds r3,r3,#16
+ 494 0026 1846     	 mov r0,r3
+ 495 0028 6B21     	 movs r1,#107
+ 496 002a 8022     	 movs r2,#128
+ 497 002c FFF7FEFF 	 bl mpu9250SpiWriteRegister
+ 143:../cleanflight/src/main/drivers/accgyro/accgyro_spi_mpu9250.c ****     delay(50);
+ 498              	 .loc 1 143 0
+ 499 0030 3220     	 movs r0,#50
+ 500 0032 FFF7FEFF 	 bl delay
+ 144:../cleanflight/src/main/drivers/accgyro/accgyro_spi_mpu9250.c **** 
+ 145:../cleanflight/src/main/drivers/accgyro/accgyro_spi_mpu9250.c ****     mpu9250SpiWriteRegisterVerify(&gyro->bus, MPU_RA_PWR_MGMT_1, INV_CLK_PLL);
+ 501              	 .loc 1 145 0
+ 502 0036 7B68     	 ldr r3,[r7,#4]
+ 503 0038 1033     	 adds r3,r3,#16
+ 504 003a 1846     	 mov r0,r3
+ 505 003c 6B21     	 movs r1,#107
+ 506 003e 0122     	 movs r2,#1
+ 507 0040 FFF7FEFF 	 bl mpu9250SpiWriteRegisterVerify
+ 146:../cleanflight/src/main/drivers/accgyro/accgyro_spi_mpu9250.c **** 
+ 147:../cleanflight/src/main/drivers/accgyro/accgyro_spi_mpu9250.c ****     mpu9250SpiWriteRegisterVerify(&gyro->bus, MPU_RA_GYRO_CONFIG, INV_FSR_2000DPS << 3 | mpuGyroFCH
+ 508              	 .loc 1 147 0
+ 509 0044 7B68     	 ldr r3,[r7,#4]
+ 510 0046 03F11004 	 add r4,r3,#16
+ 511 004a 7868     	 ldr r0,[r7,#4]
+ 512 004c FFF7FEFF 	 bl mpuGyroFCHOICE
+ 513 0050 0346     	 mov r3,r0
+ 514 0052 43F01803 	 orr r3,r3,#24
+ 515 0056 DBB2     	 uxtb r3,r3
+ 516 0058 2046     	 mov r0,r4
+ 517 005a 1B21     	 movs r1,#27
+ 518 005c 1A46     	 mov r2,r3
+ 519 005e FFF7FEFF 	 bl mpu9250SpiWriteRegisterVerify
+ 148:../cleanflight/src/main/drivers/accgyro/accgyro_spi_mpu9250.c **** 
+ 149:../cleanflight/src/main/drivers/accgyro/accgyro_spi_mpu9250.c ****     mpu9250SpiWriteRegisterVerify(&gyro->bus, MPU_RA_CONFIG, mpuGyroDLPF(gyro));
+ 520              	 .loc 1 149 0
+ 521 0062 7B68     	 ldr r3,[r7,#4]
+ 522 0064 03F11004 	 add r4,r3,#16
+ 523 0068 7868     	 ldr r0,[r7,#4]
+ 524 006a FFF7FEFF 	 bl mpuGyroDLPF
+ 525 006e 0346     	 mov r3,r0
+ 526 0070 2046     	 mov r0,r4
+ 527 0072 1A21     	 movs r1,#26
+ 528 0074 1A46     	 mov r2,r3
+ 529 0076 FFF7FEFF 	 bl mpu9250SpiWriteRegisterVerify
+ 150:../cleanflight/src/main/drivers/accgyro/accgyro_spi_mpu9250.c **** 
+ 151:../cleanflight/src/main/drivers/accgyro/accgyro_spi_mpu9250.c ****     mpu9250SpiWriteRegisterVerify(&gyro->bus, MPU_RA_SMPLRT_DIV, gyro->mpuDividerDrops);
+ 530              	 .loc 1 151 0
+ 531 007a 7B68     	 ldr r3,[r7,#4]
+ 532 007c 03F11002 	 add r2,r3,#16
+ 533 0080 7B68     	 ldr r3,[r7,#4]
+ 534 0082 93F86130 	 ldrb r3,[r3,#97]
+ 535 0086 1046     	 mov r0,r2
+ 536 0088 1921     	 movs r1,#25
+ 537 008a 1A46     	 mov r2,r3
+ 538 008c FFF7FEFF 	 bl mpu9250SpiWriteRegisterVerify
+ 152:../cleanflight/src/main/drivers/accgyro/accgyro_spi_mpu9250.c **** 
+ 153:../cleanflight/src/main/drivers/accgyro/accgyro_spi_mpu9250.c ****     mpu9250SpiWriteRegisterVerify(&gyro->bus, MPU_RA_ACCEL_CONFIG, INV_FSR_16G << 3);
+ 539              	 .loc 1 153 0
+ 540 0090 7B68     	 ldr r3,[r7,#4]
+ 541 0092 1033     	 adds r3,r3,#16
+ 542 0094 1846     	 mov r0,r3
+ 543 0096 1C21     	 movs r1,#28
+ 544 0098 1822     	 movs r2,#24
+ 545 009a FFF7FEFF 	 bl mpu9250SpiWriteRegisterVerify
+ 154:../cleanflight/src/main/drivers/accgyro/accgyro_spi_mpu9250.c ****     mpu9250SpiWriteRegisterVerify(&gyro->bus, MPU_RA_INT_PIN_CFG, 0 << 7 | 0 << 6 | 0 << 5 | 1 << 4
+ 546              	 .loc 1 154 0
+ 547 009e 7B68     	 ldr r3,[r7,#4]
+ 548 00a0 1033     	 adds r3,r3,#16
+ 549 00a2 1846     	 mov r0,r3
+ 550 00a4 3721     	 movs r1,#55
+ 551 00a6 1222     	 movs r2,#18
+ 552 00a8 FFF7FEFF 	 bl mpu9250SpiWriteRegisterVerify
+ 155:../cleanflight/src/main/drivers/accgyro/accgyro_spi_mpu9250.c **** 
+ 156:../cleanflight/src/main/drivers/accgyro/accgyro_spi_mpu9250.c **** #if defined(USE_MPU_DATA_READY_SIGNAL)
+ 157:../cleanflight/src/main/drivers/accgyro/accgyro_spi_mpu9250.c ****     mpu9250SpiWriteRegisterVerify(&gyro->bus, MPU_RA_INT_ENABLE, 0x01); //this resets register MPU_
+ 158:../cleanflight/src/main/drivers/accgyro/accgyro_spi_mpu9250.c **** #endif
+ 159:../cleanflight/src/main/drivers/accgyro/accgyro_spi_mpu9250.c **** 
+ 160:../cleanflight/src/main/drivers/accgyro/accgyro_spi_mpu9250.c ****     spiSetDivisor(gyro->bus.busdev_u.spi.instance, SPI_CLOCK_FAST);
+ 553              	 .loc 1 160 0
+ 554 00ac 7B68     	 ldr r3,[r7,#4]
+ 555 00ae D3F81130 	 ldr r3,[r3,#17]
+ 556 00b2 1846     	 mov r0,r3
+ 557 00b4 0221     	 movs r1,#2
+ 558 00b6 FFF7FEFF 	 bl spiSetDivisor
+ 161:../cleanflight/src/main/drivers/accgyro/accgyro_spi_mpu9250.c **** 
+ 162:../cleanflight/src/main/drivers/accgyro/accgyro_spi_mpu9250.c ****     mpuSpi9250InitDone = true; //init done
+ 559              	 .loc 1 162 0
+ 560 00ba 034B     	 ldr r3,.L20
+ 561 00bc 0122     	 movs r2,#1
+ 562 00be 1A70     	 strb r2,[r3]
+ 563              	.L17:
+ 163:../cleanflight/src/main/drivers/accgyro/accgyro_spi_mpu9250.c **** }
+ 564              	 .loc 1 163 0
+ 565 00c0 0C37     	 adds r7,r7,#12
+ 566              	.LCFI33:
+ 567              	 .cfi_def_cfa_offset 12
+ 568 00c2 BD46     	 mov sp,r7
+ 569              	.LCFI34:
+ 570              	 .cfi_def_cfa_register 13
+ 571              	 
+ 572 00c4 90BD     	 pop {r4,r7,pc}
+ 573              	.L21:
+ 574 00c6 00BF     	 .align 2
+ 575              	.L20:
+ 576 00c8 00000000 	 .word mpuSpi9250InitDone
+ 577              	 .cfi_endproc
+ 578              	.LFE543:
+ 580              	 .section .text.mpu9250SpiDetect,"ax",%progbits
+ 581              	 .align 2
+ 582              	 .global mpu9250SpiDetect
+ 583              	 .thumb
+ 584              	 .thumb_func
+ 586              	mpu9250SpiDetect:
+ 587              	.LFB544:
+ 164:../cleanflight/src/main/drivers/accgyro/accgyro_spi_mpu9250.c **** 
+ 165:../cleanflight/src/main/drivers/accgyro/accgyro_spi_mpu9250.c **** uint8_t mpu9250SpiDetect(const busDevice_t *bus)
+ 166:../cleanflight/src/main/drivers/accgyro/accgyro_spi_mpu9250.c **** {
+ 588              	 .loc 1 166 0
+ 589              	 .cfi_startproc
+ 590              	 
+ 591              	 
+ 592 0000 80B5     	 push {r7,lr}
+ 593              	.LCFI35:
+ 594              	 .cfi_def_cfa_offset 8
+ 595              	 .cfi_offset 7,-8
+ 596              	 .cfi_offset 14,-4
+ 597 0002 84B0     	 sub sp,sp,#16
+ 598              	.LCFI36:
+ 599              	 .cfi_def_cfa_offset 24
+ 600 0004 00AF     	 add r7,sp,#0
+ 601              	.LCFI37:
+ 602              	 .cfi_def_cfa_register 7
+ 603 0006 7860     	 str r0,[r7,#4]
+ 167:../cleanflight/src/main/drivers/accgyro/accgyro_spi_mpu9250.c **** #ifndef USE_DUAL_GYRO
+ 168:../cleanflight/src/main/drivers/accgyro/accgyro_spi_mpu9250.c ****     IOInit(bus->busdev_u.spi.csnPin, OWNER_MPU_CS, 0);
+ 604              	 .loc 1 168 0
+ 605 0008 7B68     	 ldr r3,[r7,#4]
+ 606 000a D3F80530 	 ldr r3,[r3,#5]
+ 607 000e 1846     	 mov r0,r3
+ 608 0010 1C21     	 movs r1,#28
+ 609 0012 0022     	 movs r2,#0
+ 610 0014 FFF7FEFF 	 bl IOInit
+ 169:../cleanflight/src/main/drivers/accgyro/accgyro_spi_mpu9250.c ****     IOConfigGPIO(bus->busdev_u.spi.csnPin, SPI_IO_CS_CFG);
+ 611              	 .loc 1 169 0
+ 612 0018 7B68     	 ldr r3,[r7,#4]
+ 613 001a D3F80530 	 ldr r3,[r3,#5]
+ 614 001e 1846     	 mov r0,r3
+ 615 0020 8121     	 movs r1,#129
+ 616 0022 FFF7FEFF 	 bl IOConfigGPIO
+ 170:../cleanflight/src/main/drivers/accgyro/accgyro_spi_mpu9250.c ****     IOHi(bus->busdev_u.spi.csnPin);
+ 617              	 .loc 1 170 0
+ 618 0026 7B68     	 ldr r3,[r7,#4]
+ 619 0028 D3F80530 	 ldr r3,[r3,#5]
+ 620 002c 1846     	 mov r0,r3
+ 621 002e FFF7FEFF 	 bl IOHi
+ 171:../cleanflight/src/main/drivers/accgyro/accgyro_spi_mpu9250.c **** #endif
+ 172:../cleanflight/src/main/drivers/accgyro/accgyro_spi_mpu9250.c **** 
+ 173:../cleanflight/src/main/drivers/accgyro/accgyro_spi_mpu9250.c ****     spiSetDivisor(bus->busdev_u.spi.instance, SPI_CLOCK_INITIALIZATON); //low speed
+ 622              	 .loc 1 173 0
+ 623 0032 7B68     	 ldr r3,[r7,#4]
+ 624 0034 D3F80130 	 ldr r3,[r3,#1]
+ 625 0038 1846     	 mov r0,r3
+ 626 003a 4FF48071 	 mov r1,#256
+ 627 003e FFF7FEFF 	 bl spiSetDivisor
+ 174:../cleanflight/src/main/drivers/accgyro/accgyro_spi_mpu9250.c ****     mpu9250SpiWriteRegister(bus, MPU_RA_PWR_MGMT_1, MPU9250_BIT_RESET);
+ 628              	 .loc 1 174 0
+ 629 0042 7868     	 ldr r0,[r7,#4]
+ 630 0044 6B21     	 movs r1,#107
+ 631 0046 8022     	 movs r2,#128
+ 632 0048 FFF7FEFF 	 bl mpu9250SpiWriteRegister
+ 175:../cleanflight/src/main/drivers/accgyro/accgyro_spi_mpu9250.c **** 
+ 176:../cleanflight/src/main/drivers/accgyro/accgyro_spi_mpu9250.c ****     uint8_t attemptsRemaining = 20;
+ 633              	 .loc 1 176 0
+ 634 004c 1423     	 movs r3,#20
+ 635 004e FB73     	 strb r3,[r7,#15]
+ 636              	.L26:
+ 637              	.LBB3:
+ 177:../cleanflight/src/main/drivers/accgyro/accgyro_spi_mpu9250.c ****     do {
+ 178:../cleanflight/src/main/drivers/accgyro/accgyro_spi_mpu9250.c ****         delay(150);
+ 638              	 .loc 1 178 0
+ 639 0050 9620     	 movs r0,#150
+ 640 0052 FFF7FEFF 	 bl delay
+ 179:../cleanflight/src/main/drivers/accgyro/accgyro_spi_mpu9250.c ****         const uint8_t in = spiBusReadRegister(bus, MPU_RA_WHO_AM_I);
+ 641              	 .loc 1 179 0
+ 642 0056 7868     	 ldr r0,[r7,#4]
+ 643 0058 7521     	 movs r1,#117
+ 644 005a FFF7FEFF 	 bl spiBusReadRegister
+ 645 005e 0346     	 mov r3,r0
+ 646 0060 BB73     	 strb r3,[r7,#14]
+ 180:../cleanflight/src/main/drivers/accgyro/accgyro_spi_mpu9250.c ****         if (in == MPU9250_WHO_AM_I_CONST || in == MPU9255_WHO_AM_I_CONST) {
+ 647              	 .loc 1 180 0
+ 648 0062 BB7B     	 ldrb r3,[r7,#14]
+ 649 0064 712B     	 cmp r3,#113
+ 650 0066 0CD0     	 beq .L23
+ 651              	 .loc 1 180 0 is_stmt 0 discriminator 1
+ 652 0068 BB7B     	 ldrb r3,[r7,#14]
+ 653 006a 732B     	 cmp r3,#115
+ 654 006c 09D0     	 beq .L23
+ 181:../cleanflight/src/main/drivers/accgyro/accgyro_spi_mpu9250.c ****             break;
+ 182:../cleanflight/src/main/drivers/accgyro/accgyro_spi_mpu9250.c ****         }
+ 183:../cleanflight/src/main/drivers/accgyro/accgyro_spi_mpu9250.c ****         if (!attemptsRemaining) {
+ 655              	 .loc 1 183 0 is_stmt 1
+ 656 006e FB7B     	 ldrb r3,[r7,#15]
+ 657 0070 002B     	 cmp r3,#0
+ 658 0072 01D1     	 bne .L24
+ 184:../cleanflight/src/main/drivers/accgyro/accgyro_spi_mpu9250.c ****             return MPU_NONE;
+ 659              	 .loc 1 184 0
+ 660 0074 0023     	 movs r3,#0
+ 661 0076 0CE0     	 b .L25
+ 662              	.L24:
+ 663              	.LBE3:
+ 185:../cleanflight/src/main/drivers/accgyro/accgyro_spi_mpu9250.c ****         }
+ 186:../cleanflight/src/main/drivers/accgyro/accgyro_spi_mpu9250.c ****     } while (attemptsRemaining--);
+ 664              	 .loc 1 186 0
+ 665 0078 FB7B     	 ldrb r3,[r7,#15]
+ 666 007a 5A1E     	 subs r2,r3,#1
+ 667 007c FA73     	 strb r2,[r7,#15]
+ 668 007e 002B     	 cmp r3,#0
+ 669 0080 E6D1     	 bne .L26
+ 670              	.L23:
+ 187:../cleanflight/src/main/drivers/accgyro/accgyro_spi_mpu9250.c **** 
+ 188:../cleanflight/src/main/drivers/accgyro/accgyro_spi_mpu9250.c ****     spiSetDivisor(bus->busdev_u.spi.instance, SPI_CLOCK_FAST);
+ 671              	 .loc 1 188 0
+ 672 0082 7B68     	 ldr r3,[r7,#4]
+ 673 0084 D3F80130 	 ldr r3,[r3,#1]
+ 674 0088 1846     	 mov r0,r3
+ 675 008a 0221     	 movs r1,#2
+ 676 008c FFF7FEFF 	 bl spiSetDivisor
+ 189:../cleanflight/src/main/drivers/accgyro/accgyro_spi_mpu9250.c **** 
+ 190:../cleanflight/src/main/drivers/accgyro/accgyro_spi_mpu9250.c ****     return MPU_9250_SPI;
+ 677              	 .loc 1 190 0
+ 678 0090 0623     	 movs r3,#6
+ 679              	.L25:
+ 191:../cleanflight/src/main/drivers/accgyro/accgyro_spi_mpu9250.c **** }
+ 680              	 .loc 1 191 0
+ 681 0092 1846     	 mov r0,r3
+ 682 0094 1037     	 adds r7,r7,#16
+ 683              	.LCFI38:
+ 684              	 .cfi_def_cfa_offset 8
+ 685 0096 BD46     	 mov sp,r7
+ 686              	.LCFI39:
+ 687              	 .cfi_def_cfa_register 13
+ 688              	 
+ 689 0098 80BD     	 pop {r7,pc}
+ 690              	 .cfi_endproc
+ 691              	.LFE544:
+ 693 009a 00BF     	 .section .text.mpu9250SpiAccDetect,"ax",%progbits
+ 694              	 .align 2
+ 695              	 .global mpu9250SpiAccDetect
+ 696              	 .thumb
+ 697              	 .thumb_func
+ 699              	mpu9250SpiAccDetect:
+ 700              	.LFB545:
+ 192:../cleanflight/src/main/drivers/accgyro/accgyro_spi_mpu9250.c **** 
+ 193:../cleanflight/src/main/drivers/accgyro/accgyro_spi_mpu9250.c **** bool mpu9250SpiAccDetect(accDev_t *acc)
+ 194:../cleanflight/src/main/drivers/accgyro/accgyro_spi_mpu9250.c **** {
+ 701              	 .loc 1 194 0
+ 702              	 .cfi_startproc
+ 703              	 
+ 704              	 
+ 705              	 
+ 706 0000 80B4     	 push {r7}
+ 707              	.LCFI40:
+ 708              	 .cfi_def_cfa_offset 4
+ 709              	 .cfi_offset 7,-4
+ 710 0002 83B0     	 sub sp,sp,#12
+ 711              	.LCFI41:
+ 712              	 .cfi_def_cfa_offset 16
+ 713 0004 00AF     	 add r7,sp,#0
+ 714              	.LCFI42:
+ 715              	 .cfi_def_cfa_register 7
+ 716 0006 7860     	 str r0,[r7,#4]
+ 195:../cleanflight/src/main/drivers/accgyro/accgyro_spi_mpu9250.c ****     if (acc->mpuDetectionResult.sensor != MPU_9250_SPI) {
+ 717              	 .loc 1 195 0
+ 718 0008 7B68     	 ldr r3,[r7,#4]
+ 719 000a 5B7E     	 ldrb r3,[r3,#25]
+ 720 000c 062B     	 cmp r3,#6
+ 721 000e 01D0     	 beq .L28
+ 196:../cleanflight/src/main/drivers/accgyro/accgyro_spi_mpu9250.c ****         return false;
+ 722              	 .loc 1 196 0
+ 723 0010 0023     	 movs r3,#0
+ 724 0012 06E0     	 b .L29
+ 725              	.L28:
+ 197:../cleanflight/src/main/drivers/accgyro/accgyro_spi_mpu9250.c ****     }
+ 198:../cleanflight/src/main/drivers/accgyro/accgyro_spi_mpu9250.c **** 
+ 199:../cleanflight/src/main/drivers/accgyro/accgyro_spi_mpu9250.c ****     acc->initFn = mpu9250SpiAccInit;
+ 726              	 .loc 1 199 0
+ 727 0014 7B68     	 ldr r3,[r7,#4]
+ 728 0016 064A     	 ldr r2,.L30
+ 729 0018 1A60     	 str r2,[r3]
+ 200:../cleanflight/src/main/drivers/accgyro/accgyro_spi_mpu9250.c ****     acc->readFn = mpuAccRead;
+ 730              	 .loc 1 200 0
+ 731 001a 7B68     	 ldr r3,[r7,#4]
+ 732 001c 054A     	 ldr r2,.L30+4
+ 733 001e 5A60     	 str r2,[r3,#4]
+ 201:../cleanflight/src/main/drivers/accgyro/accgyro_spi_mpu9250.c **** 
+ 202:../cleanflight/src/main/drivers/accgyro/accgyro_spi_mpu9250.c ****     return true;
+ 734              	 .loc 1 202 0
+ 735 0020 0123     	 movs r3,#1
+ 736              	.L29:
+ 203:../cleanflight/src/main/drivers/accgyro/accgyro_spi_mpu9250.c **** }
+ 737              	 .loc 1 203 0
+ 738 0022 1846     	 mov r0,r3
+ 739 0024 0C37     	 adds r7,r7,#12
+ 740              	.LCFI43:
+ 741              	 .cfi_def_cfa_offset 4
+ 742 0026 BD46     	 mov sp,r7
+ 743              	.LCFI44:
+ 744              	 .cfi_def_cfa_register 13
+ 745              	 
+ 746 0028 5DF8047B 	 ldr r7,[sp],#4
+ 747              	.LCFI45:
+ 748              	 .cfi_restore 7
+ 749              	 .cfi_def_cfa_offset 0
+ 750 002c 7047     	 bx lr
+ 751              	.L31:
+ 752 002e 00BF     	 .align 2
+ 753              	.L30:
+ 754 0030 00000000 	 .word mpu9250SpiAccInit
+ 755 0034 00000000 	 .word mpuAccRead
+ 756              	 .cfi_endproc
+ 757              	.LFE545:
+ 759              	 .section .text.mpu9250SpiGyroDetect,"ax",%progbits
+ 760              	 .align 2
+ 761              	 .global mpu9250SpiGyroDetect
+ 762              	 .thumb
+ 763              	 .thumb_func
+ 765              	mpu9250SpiGyroDetect:
+ 766              	.LFB546:
+ 204:../cleanflight/src/main/drivers/accgyro/accgyro_spi_mpu9250.c **** 
+ 205:../cleanflight/src/main/drivers/accgyro/accgyro_spi_mpu9250.c **** bool mpu9250SpiGyroDetect(gyroDev_t *gyro)
+ 206:../cleanflight/src/main/drivers/accgyro/accgyro_spi_mpu9250.c **** {
+ 767              	 .loc 1 206 0
+ 768              	 .cfi_startproc
+ 769              	 
+ 770              	 
+ 771              	 
+ 772 0000 80B4     	 push {r7}
+ 773              	.LCFI46:
+ 774              	 .cfi_def_cfa_offset 4
+ 775              	 .cfi_offset 7,-4
+ 776 0002 83B0     	 sub sp,sp,#12
+ 777              	.LCFI47:
+ 778              	 .cfi_def_cfa_offset 16
+ 779 0004 00AF     	 add r7,sp,#0
+ 780              	.LCFI48:
+ 781              	 .cfi_def_cfa_register 7
+ 782 0006 7860     	 str r0,[r7,#4]
+ 207:../cleanflight/src/main/drivers/accgyro/accgyro_spi_mpu9250.c ****     if (gyro->mpuDetectionResult.sensor != MPU_9250_SPI) {
+ 783              	 .loc 1 207 0
+ 784 0008 7B68     	 ldr r3,[r7,#4]
+ 785 000a 93F85930 	 ldrb r3,[r3,#89]
+ 786 000e 062B     	 cmp r3,#6
+ 787 0010 01D0     	 beq .L33
+ 208:../cleanflight/src/main/drivers/accgyro/accgyro_spi_mpu9250.c ****         return false;
+ 788              	 .loc 1 208 0
+ 789 0012 0023     	 movs r3,#0
+ 790 0014 0AE0     	 b .L34
+ 791              	.L33:
+ 209:../cleanflight/src/main/drivers/accgyro/accgyro_spi_mpu9250.c ****     }
+ 210:../cleanflight/src/main/drivers/accgyro/accgyro_spi_mpu9250.c **** 
+ 211:../cleanflight/src/main/drivers/accgyro/accgyro_spi_mpu9250.c ****     gyro->initFn = mpu9250SpiGyroInit;
+ 792              	 .loc 1 211 0
+ 793 0016 7B68     	 ldr r3,[r7,#4]
+ 794 0018 074A     	 ldr r2,.L35
+ 795 001a 1A60     	 str r2,[r3]
+ 212:../cleanflight/src/main/drivers/accgyro/accgyro_spi_mpu9250.c ****     gyro->readFn = mpuGyroReadSPI;
+ 796              	 .loc 1 212 0
+ 797 001c 7B68     	 ldr r3,[r7,#4]
+ 798 001e 074A     	 ldr r2,.L35+4
+ 799 0020 5A60     	 str r2,[r3,#4]
+ 213:../cleanflight/src/main/drivers/accgyro/accgyro_spi_mpu9250.c **** 
+ 214:../cleanflight/src/main/drivers/accgyro/accgyro_spi_mpu9250.c ****     // 16.4 dps/lsb scalefactor
+ 215:../cleanflight/src/main/drivers/accgyro/accgyro_spi_mpu9250.c ****     gyro->scale = 1.0f / 16.4f;
+ 800              	 .loc 1 215 0
+ 801 0022 7B68     	 ldr r3,[r7,#4]
+ 802 0024 1933     	 adds r3,r3,#25
+ 803 0026 064A     	 ldr r2,.L35+8
+ 804 0028 1A60     	 str r2,[r3]
+ 216:../cleanflight/src/main/drivers/accgyro/accgyro_spi_mpu9250.c **** 
+ 217:../cleanflight/src/main/drivers/accgyro/accgyro_spi_mpu9250.c ****     return true;
+ 805              	 .loc 1 217 0
+ 806 002a 0123     	 movs r3,#1
+ 807              	.L34:
+ 218:../cleanflight/src/main/drivers/accgyro/accgyro_spi_mpu9250.c **** }
+ 808              	 .loc 1 218 0
+ 809 002c 1846     	 mov r0,r3
+ 810 002e 0C37     	 adds r7,r7,#12
+ 811              	.LCFI49:
+ 812              	 .cfi_def_cfa_offset 4
+ 813 0030 BD46     	 mov sp,r7
+ 814              	.LCFI50:
+ 815              	 .cfi_def_cfa_register 13
+ 816              	 
+ 817 0032 5DF8047B 	 ldr r7,[sp],#4
+ 818              	.LCFI51:
+ 819              	 .cfi_restore 7
+ 820              	 .cfi_def_cfa_offset 0
+ 821 0036 7047     	 bx lr
+ 822              	.L36:
+ 823              	 .align 2
+ 824              	.L35:
+ 825 0038 00000000 	 .word mpu9250SpiGyroInit
+ 826 003c 00000000 	 .word mpuGyroReadSPI
+ 827 0040 90C1793D 	 .word 1031389584
+ 828              	 .cfi_endproc
+ 829              	.LFE546:
+ 831              	 .text
+ 832              	.Letext0:
+ 833              	 .file 2 "d:\\xmc\\dave-ide-4.4.2-64bit\\eclipse\\arm-gcc-49\\arm-none-eabi\\include\\machine\\_default_types.h"
+ 834              	 .file 3 "d:\\xmc\\dave-ide-4.4.2-64bit\\eclipse\\arm-gcc-49\\arm-none-eabi\\include\\stdint.h"
+ 835              	 .file 4 "D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/lib/main/XMC4000/xmc4700.h"
+ 836              	 .file 5 "D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/lib/main/XMC4000/XMCLib/inc/xmc4_gpio.h"
+ 837              	 .file 6 "D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/lib/main/XMC4000/XMCLib/inc/xmc_usic.h"
+ 838              	 .file 7 "D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/platform.h"
+ 839              	 .file 8 "D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/drivers/io_types.h"
+ 840              	 .file 9 "D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/drivers/exti.h"
+ 841              	 .file 10 "D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/drivers/bus_i2c.h"
+ 842              	 .file 11 "D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/build/debug.h"
+ 843              	 .file 12 "D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/drivers/bus.h"
+ 844              	 .file 13 "D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/drivers/sensor.h"
+ 845              	 .file 14 "D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/drivers/accgyro/accgyro.h"
+ 846              	 .file 15 "D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/drivers/accgyro/accgyro_mpu.h"
+ 847              	 .file 16 "D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/common/time.h"
+ 848              	 .file 17 "D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/sensors/gyro.h"
+ 849              	 .file 18 "D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/drivers/bus_spi.h"
+ 850              	 .file 19 "D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/drivers/resource.h"
+ 851              	 .file 20 "D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/drivers/light_led.h"
+ 852              	 .file 21 "D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/drivers/system.h"
+ 853              	 .file 22 "D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/lib/main/CMSIS/Core/Include/core_cm4.h"
+ 854              	 .file 23 "D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/lib/main/XMC4000/system_XMC4700.h"
+DEFINED SYMBOLS
+                            *ABS*:00000000 accgyro_spi_mpu9250.c
+    {standard input}:22     .bss.mpuSpi9250InitDone:00000000 mpuSpi9250InitDone
+    {standard input}:23     .bss.mpuSpi9250InitDone:00000000 $d
+    {standard input}:25     .text.mpu9250SpiWriteRegister:00000000 $t
+    {standard input}:30     .text.mpu9250SpiWriteRegister:00000000 mpu9250SpiWriteRegister
+    {standard input}:99     .text.mpu9250SpiSlowReadRegisterBuffer:00000000 $t
+    {standard input}:103    .text.mpu9250SpiSlowReadRegisterBuffer:00000000 mpu9250SpiSlowReadRegisterBuffer
+    {standard input}:176    .text.mpu9250SpiResetGyro:00000000 $t
+    {standard input}:181    .text.mpu9250SpiResetGyro:00000000 mpu9250SpiResetGyro
+    {standard input}:209    .text.mpu9250SpiGyroInit:00000000 $t
+    {standard input}:214    .text.mpu9250SpiGyroInit:00000000 mpu9250SpiGyroInit
+    {standard input}:458    .text.mpu9250AccAndGyroInit:00000000 mpu9250AccAndGyroInit
+    {standard input}:300    .text.mpu9250SpiAccInit:00000000 $t
+    {standard input}:305    .text.mpu9250SpiAccInit:00000000 mpu9250SpiAccInit
+    {standard input}:347    .text.mpu9250SpiWriteRegisterVerify:00000000 $t
+    {standard input}:352    .text.mpu9250SpiWriteRegisterVerify:00000000 mpu9250SpiWriteRegisterVerify
+    {standard input}:449    .text.mpu9250SpiWriteRegisterVerify:00000080 $d
+    {standard input}:454    .text.mpu9250AccAndGyroInit:00000000 $t
+    {standard input}:576    .text.mpu9250AccAndGyroInit:000000c8 $d
+    {standard input}:581    .text.mpu9250SpiDetect:00000000 $t
+    {standard input}:586    .text.mpu9250SpiDetect:00000000 mpu9250SpiDetect
+    {standard input}:694    .text.mpu9250SpiAccDetect:00000000 $t
+    {standard input}:699    .text.mpu9250SpiAccDetect:00000000 mpu9250SpiAccDetect
+    {standard input}:754    .text.mpu9250SpiAccDetect:00000030 $d
+    {standard input}:760    .text.mpu9250SpiGyroDetect:00000000 $t
+    {standard input}:765    .text.mpu9250SpiGyroDetect:00000000 mpu9250SpiGyroDetect
+    {standard input}:825    .text.mpu9250SpiGyroDetect:00000038 $d
+                     .debug_frame:00000010 $d
+
+UNDEFINED SYMBOLS
+IOLo
+delayMicroseconds
+spiTransferByte
+IOHi
+spiTransfer
+mpuGyroInit
+spiResetErrorCounter
+spiSetDivisor
+mpuGyroRead
+spiGetErrorCounter
+failureMode
+debug
+delay
+mpuGyroFCHOICE
+mpuGyroDLPF
+IOInit
+IOConfigGPIO
+spiBusReadRegister
+mpuAccRead
+mpuGyroReadSPI

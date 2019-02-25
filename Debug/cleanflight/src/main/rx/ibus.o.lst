@@ -1,0 +1,1150 @@
+   1              	 .syntax unified
+   2              	 .cpu cortex-m4
+   3              	 .eabi_attribute 27,3
+   4              	 .fpu fpv4-sp-d16
+   5              	 .eabi_attribute 20,1
+   6              	 .eabi_attribute 21,1
+   7              	 .eabi_attribute 23,3
+   8              	 .eabi_attribute 24,1
+   9              	 .eabi_attribute 25,1
+  10              	 .eabi_attribute 26,1
+  11              	 .eabi_attribute 30,6
+  12              	 .eabi_attribute 34,1
+  13              	 .eabi_attribute 18,4
+  14              	 .thumb
+  15              	 .file "ibus.c"
+  16              	 .text
+  17              	.Ltext0:
+  18              	 .cfi_sections .debug_frame
+  19              	 .section .bss.ibusModel,"aw",%nobits
+  22              	ibusModel:
+  23 0000 00       	 .space 1
+  24              	 .section .bss.ibusSyncByte,"aw",%nobits
+  27              	ibusSyncByte:
+  28 0000 00       	 .space 1
+  29              	 .section .bss.ibusFrameSize,"aw",%nobits
+  32              	ibusFrameSize:
+  33 0000 00       	 .space 1
+  34              	 .section .bss.ibusChannelOffset,"aw",%nobits
+  37              	ibusChannelOffset:
+  38 0000 00       	 .space 1
+  39              	 .section .bss.rxBytesToIgnore,"aw",%nobits
+  42              	rxBytesToIgnore:
+  43 0000 00       	 .space 1
+  44              	 .section .bss.ibusChecksum,"aw",%nobits
+  45              	 .align 1
+  48              	ibusChecksum:
+  49 0000 0000     	 .space 2
+  50              	 .section .bss.ibusFrameDone,"aw",%nobits
+  53              	ibusFrameDone:
+  54 0000 00       	 .space 1
+  55              	 .section .bss.ibusChannelData,"aw",%nobits
+  56              	 .align 2
+  59              	ibusChannelData:
+  60 0000 00000000 	 .space 56
+  60      00000000 
+  60      00000000 
+  60      00000000 
+  60      00000000 
+  61              	 .section .bss.ibus,"aw",%nobits
+  62              	 .align 2
+  65              	ibus:
+  66 0000 00000000 	 .space 32
+  66      00000000 
+  66      00000000 
+  66      00000000 
+  66      00000000 
+  67              	 .section .text.isValidIa6bIbusPacketLength,"ax",%progbits
+  68              	 .align 2
+  69              	 .thumb
+  70              	 .thumb_func
+  72              	isValidIa6bIbusPacketLength:
+  73              	.LFB539:
+  74              	 .file 1 "../cleanflight/src/main/rx/ibus.c"
+   1:../cleanflight/src/main/rx/ibus.c **** /*
+   2:../cleanflight/src/main/rx/ibus.c ****  * This file is part of Cleanflight and Betaflight.
+   3:../cleanflight/src/main/rx/ibus.c ****  *
+   4:../cleanflight/src/main/rx/ibus.c ****  * Cleanflight and Betaflight are free software. You can redistribute
+   5:../cleanflight/src/main/rx/ibus.c ****  * this software and/or modify this software under the terms of the
+   6:../cleanflight/src/main/rx/ibus.c ****  * GNU General Public License as published by the Free Software
+   7:../cleanflight/src/main/rx/ibus.c ****  * Foundation, either version 3 of the License, or (at your option)
+   8:../cleanflight/src/main/rx/ibus.c ****  * any later version.
+   9:../cleanflight/src/main/rx/ibus.c ****  *
+  10:../cleanflight/src/main/rx/ibus.c ****  * Cleanflight and Betaflight are distributed in the hope that they
+  11:../cleanflight/src/main/rx/ibus.c ****  * will be useful, but WITHOUT ANY WARRANTY; without even the implied
+  12:../cleanflight/src/main/rx/ibus.c ****  * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+  13:../cleanflight/src/main/rx/ibus.c ****  * See the GNU General Public License for more details.
+  14:../cleanflight/src/main/rx/ibus.c ****  *
+  15:../cleanflight/src/main/rx/ibus.c ****  * You should have received a copy of the GNU General Public License
+  16:../cleanflight/src/main/rx/ibus.c ****  * along with this software.
+  17:../cleanflight/src/main/rx/ibus.c ****  *
+  18:../cleanflight/src/main/rx/ibus.c ****  * If not, see <http://www.gnu.org/licenses/>.
+  19:../cleanflight/src/main/rx/ibus.c ****  */
+  20:../cleanflight/src/main/rx/ibus.c **** 
+  21:../cleanflight/src/main/rx/ibus.c **** /*
+  22:../cleanflight/src/main/rx/ibus.c ****  * Driver for IBUS (Flysky) receiver
+  23:../cleanflight/src/main/rx/ibus.c ****  *   - initial implementation for MultiWii by Cesco/Pl¸schi
+  24:../cleanflight/src/main/rx/ibus.c ****  *   - implementation for BaseFlight by Andreas (fiendie) Tacke
+  25:../cleanflight/src/main/rx/ibus.c ****  *   - ported to CleanFlight by Konstantin (digitalentity) Sharlaimov
+  26:../cleanflight/src/main/rx/ibus.c ****  */
+  27:../cleanflight/src/main/rx/ibus.c **** 
+  28:../cleanflight/src/main/rx/ibus.c **** #include <stdbool.h>
+  29:../cleanflight/src/main/rx/ibus.c **** #include <stdint.h>
+  30:../cleanflight/src/main/rx/ibus.c **** #include <stdlib.h>
+  31:../cleanflight/src/main/rx/ibus.c **** 
+  32:../cleanflight/src/main/rx/ibus.c **** #include "platform.h"
+  33:../cleanflight/src/main/rx/ibus.c **** 
+  34:../cleanflight/src/main/rx/ibus.c **** #ifdef USE_SERIAL_RX
+  35:../cleanflight/src/main/rx/ibus.c **** 
+  36:../cleanflight/src/main/rx/ibus.c **** #include "pg/rx.h"
+  37:../cleanflight/src/main/rx/ibus.c **** 
+  38:../cleanflight/src/main/rx/ibus.c **** #include "common/utils.h"
+  39:../cleanflight/src/main/rx/ibus.c **** 
+  40:../cleanflight/src/main/rx/ibus.c **** #include "drivers/serial.h"
+  41:../cleanflight/src/main/rx/ibus.c **** #include "drivers/serial_uart.h"
+  42:../cleanflight/src/main/rx/ibus.c **** #include "drivers/time.h"
+  43:../cleanflight/src/main/rx/ibus.c **** 
+  44:../cleanflight/src/main/rx/ibus.c **** #include "io/serial.h"
+  45:../cleanflight/src/main/rx/ibus.c **** 
+  46:../cleanflight/src/main/rx/ibus.c **** #ifdef USE_TELEMETRY
+  47:../cleanflight/src/main/rx/ibus.c **** #include "telemetry/telemetry.h"
+  48:../cleanflight/src/main/rx/ibus.c **** #endif
+  49:../cleanflight/src/main/rx/ibus.c **** 
+  50:../cleanflight/src/main/rx/ibus.c **** #include "rx/rx.h"
+  51:../cleanflight/src/main/rx/ibus.c **** #include "rx/ibus.h"
+  52:../cleanflight/src/main/rx/ibus.c **** #include "telemetry/ibus.h"
+  53:../cleanflight/src/main/rx/ibus.c **** #include "telemetry/ibus_shared.h"
+  54:../cleanflight/src/main/rx/ibus.c **** 
+  55:../cleanflight/src/main/rx/ibus.c **** #define IBUS_MAX_CHANNEL 14
+  56:../cleanflight/src/main/rx/ibus.c **** #define IBUS_BUFFSIZE 32
+  57:../cleanflight/src/main/rx/ibus.c **** #define IBUS_MODEL_IA6B 0
+  58:../cleanflight/src/main/rx/ibus.c **** #define IBUS_MODEL_IA6 1
+  59:../cleanflight/src/main/rx/ibus.c **** #define IBUS_FRAME_GAP 500
+  60:../cleanflight/src/main/rx/ibus.c **** 
+  61:../cleanflight/src/main/rx/ibus.c **** #define IBUS_BAUDRATE 115200
+  62:../cleanflight/src/main/rx/ibus.c **** #define IBUS_TELEMETRY_PACKET_LENGTH (4)
+  63:../cleanflight/src/main/rx/ibus.c **** #define IBUS_SERIAL_RX_PACKET_LENGTH (32)
+  64:../cleanflight/src/main/rx/ibus.c **** 
+  65:../cleanflight/src/main/rx/ibus.c **** static uint8_t ibusModel;
+  66:../cleanflight/src/main/rx/ibus.c **** static uint8_t ibusSyncByte;
+  67:../cleanflight/src/main/rx/ibus.c **** static uint8_t ibusFrameSize;
+  68:../cleanflight/src/main/rx/ibus.c **** static uint8_t ibusChannelOffset;
+  69:../cleanflight/src/main/rx/ibus.c **** static uint8_t rxBytesToIgnore;
+  70:../cleanflight/src/main/rx/ibus.c **** static uint16_t ibusChecksum;
+  71:../cleanflight/src/main/rx/ibus.c **** 
+  72:../cleanflight/src/main/rx/ibus.c **** static bool ibusFrameDone = false;
+  73:../cleanflight/src/main/rx/ibus.c **** static uint32_t ibusChannelData[IBUS_MAX_CHANNEL];
+  74:../cleanflight/src/main/rx/ibus.c **** 
+  75:../cleanflight/src/main/rx/ibus.c **** static uint8_t ibus[IBUS_BUFFSIZE] = { 0, };
+  76:../cleanflight/src/main/rx/ibus.c **** 
+  77:../cleanflight/src/main/rx/ibus.c **** 
+  78:../cleanflight/src/main/rx/ibus.c **** static bool isValidIa6bIbusPacketLength(uint8_t length)
+  79:../cleanflight/src/main/rx/ibus.c **** {
+  75              	 .loc 1 79 0
+  76              	 .cfi_startproc
+  77              	 
+  78              	 
+  79              	 
+  80 0000 80B4     	 push {r7}
+  81              	.LCFI0:
+  82              	 .cfi_def_cfa_offset 4
+  83              	 .cfi_offset 7,-4
+  84 0002 83B0     	 sub sp,sp,#12
+  85              	.LCFI1:
+  86              	 .cfi_def_cfa_offset 16
+  87 0004 00AF     	 add r7,sp,#0
+  88              	.LCFI2:
+  89              	 .cfi_def_cfa_register 7
+  90 0006 0346     	 mov r3,r0
+  91 0008 FB71     	 strb r3,[r7,#7]
+  80:../cleanflight/src/main/rx/ibus.c ****     return (length == IBUS_TELEMETRY_PACKET_LENGTH) || (length == IBUS_SERIAL_RX_PACKET_LENGTH);
+  92              	 .loc 1 80 0
+  93 000a FB79     	 ldrb r3,[r7,#7]
+  94 000c 042B     	 cmp r3,#4
+  95 000e 02D0     	 beq .L2
+  96              	 .loc 1 80 0 is_stmt 0 discriminator 2
+  97 0010 FB79     	 ldrb r3,[r7,#7]
+  98 0012 202B     	 cmp r3,#32
+  99 0014 01D1     	 bne .L3
+ 100              	.L2:
+ 101              	 .loc 1 80 0 discriminator 3
+ 102 0016 0123     	 movs r3,#1
+ 103 0018 00E0     	 b .L4
+ 104              	.L3:
+ 105              	 .loc 1 80 0 discriminator 4
+ 106 001a 0023     	 movs r3,#0
+ 107              	.L4:
+ 108              	 .loc 1 80 0 discriminator 6
+ 109 001c 03F00103 	 and r3,r3,#1
+ 110 0020 DBB2     	 uxtb r3,r3
+  81:../cleanflight/src/main/rx/ibus.c **** }
+ 111              	 .loc 1 81 0 is_stmt 1 discriminator 6
+ 112 0022 1846     	 mov r0,r3
+ 113 0024 0C37     	 adds r7,r7,#12
+ 114              	.LCFI3:
+ 115              	 .cfi_def_cfa_offset 4
+ 116 0026 BD46     	 mov sp,r7
+ 117              	.LCFI4:
+ 118              	 .cfi_def_cfa_register 13
+ 119              	 
+ 120 0028 5DF8047B 	 ldr r7,[sp],#4
+ 121              	.LCFI5:
+ 122              	 .cfi_restore 7
+ 123              	 .cfi_def_cfa_offset 0
+ 124 002c 7047     	 bx lr
+ 125              	 .cfi_endproc
+ 126              	.LFE539:
+ 128 002e 00BF     	 .section .text.ibusDataReceive,"ax",%progbits
+ 129              	 .align 2
+ 130              	 .thumb
+ 131              	 .thumb_func
+ 133              	ibusDataReceive:
+ 134              	.LFB540:
+  82:../cleanflight/src/main/rx/ibus.c **** 
+  83:../cleanflight/src/main/rx/ibus.c **** 
+  84:../cleanflight/src/main/rx/ibus.c **** // Receive ISR callback
+  85:../cleanflight/src/main/rx/ibus.c **** static void ibusDataReceive(uint16_t c, void *data)
+  86:../cleanflight/src/main/rx/ibus.c **** {
+ 135              	 .loc 1 86 0
+ 136              	 .cfi_startproc
+ 137              	 
+ 138              	 
+ 139 0000 80B5     	 push {r7,lr}
+ 140              	.LCFI6:
+ 141              	 .cfi_def_cfa_offset 8
+ 142              	 .cfi_offset 7,-8
+ 143              	 .cfi_offset 14,-4
+ 144 0002 84B0     	 sub sp,sp,#16
+ 145              	.LCFI7:
+ 146              	 .cfi_def_cfa_offset 24
+ 147 0004 00AF     	 add r7,sp,#0
+ 148              	.LCFI8:
+ 149              	 .cfi_def_cfa_register 7
+ 150 0006 0346     	 mov r3,r0
+ 151 0008 3960     	 str r1,[r7]
+ 152 000a FB80     	 strh r3,[r7,#6]
+  87:../cleanflight/src/main/rx/ibus.c ****     UNUSED(data);
+  88:../cleanflight/src/main/rx/ibus.c **** 
+  89:../cleanflight/src/main/rx/ibus.c ****     uint32_t ibusTime;
+  90:../cleanflight/src/main/rx/ibus.c ****     static uint32_t ibusTimeLast;
+  91:../cleanflight/src/main/rx/ibus.c ****     static uint8_t ibusFramePosition;
+  92:../cleanflight/src/main/rx/ibus.c **** 
+  93:../cleanflight/src/main/rx/ibus.c ****     ibusTime = micros();
+ 153              	 .loc 1 93 0
+ 154 000c FFF7FEFF 	 bl micros
+ 155 0010 F860     	 str r0,[r7,#12]
+  94:../cleanflight/src/main/rx/ibus.c **** 
+  95:../cleanflight/src/main/rx/ibus.c ****     if ((ibusTime - ibusTimeLast) > IBUS_FRAME_GAP) {
+ 156              	 .loc 1 95 0
+ 157 0012 3A4B     	 ldr r3,.L14
+ 158 0014 1B68     	 ldr r3,[r3]
+ 159 0016 FA68     	 ldr r2,[r7,#12]
+ 160 0018 D31A     	 subs r3,r2,r3
+ 161 001a B3F5FA7F 	 cmp r3,#500
+ 162 001e 06D9     	 bls .L7
+  96:../cleanflight/src/main/rx/ibus.c ****         ibusFramePosition = 0;
+ 163              	 .loc 1 96 0
+ 164 0020 374B     	 ldr r3,.L14+4
+ 165 0022 0022     	 movs r2,#0
+ 166 0024 1A70     	 strb r2,[r3]
+  97:../cleanflight/src/main/rx/ibus.c ****         rxBytesToIgnore = 0;
+ 167              	 .loc 1 97 0
+ 168 0026 374B     	 ldr r3,.L14+8
+ 169 0028 0022     	 movs r2,#0
+ 170 002a 1A70     	 strb r2,[r3]
+ 171 002c 0AE0     	 b .L8
+ 172              	.L7:
+  98:../cleanflight/src/main/rx/ibus.c ****     } else if (rxBytesToIgnore) {
+ 173              	 .loc 1 98 0
+ 174 002e 354B     	 ldr r3,.L14+8
+ 175 0030 1B78     	 ldrb r3,[r3]
+ 176 0032 002B     	 cmp r3,#0
+ 177 0034 06D0     	 beq .L8
+  99:../cleanflight/src/main/rx/ibus.c ****         rxBytesToIgnore--;
+ 178              	 .loc 1 99 0
+ 179 0036 334B     	 ldr r3,.L14+8
+ 180 0038 1B78     	 ldrb r3,[r3]
+ 181 003a 013B     	 subs r3,r3,#1
+ 182 003c DAB2     	 uxtb r2,r3
+ 183 003e 314B     	 ldr r3,.L14+8
+ 184 0040 1A70     	 strb r2,[r3]
+ 100:../cleanflight/src/main/rx/ibus.c ****         return;
+ 185              	 .loc 1 100 0
+ 186 0042 58E0     	 b .L6
+ 187              	.L8:
+ 101:../cleanflight/src/main/rx/ibus.c ****     }
+ 102:../cleanflight/src/main/rx/ibus.c **** 
+ 103:../cleanflight/src/main/rx/ibus.c ****     ibusTimeLast = ibusTime;
+ 188              	 .loc 1 103 0
+ 189 0044 2D4A     	 ldr r2,.L14
+ 190 0046 FB68     	 ldr r3,[r7,#12]
+ 191 0048 1360     	 str r3,[r2]
+ 104:../cleanflight/src/main/rx/ibus.c **** 
+ 105:../cleanflight/src/main/rx/ibus.c ****     if (ibusFramePosition == 0) {
+ 192              	 .loc 1 105 0
+ 193 004a 2D4B     	 ldr r3,.L14+4
+ 194 004c 1B78     	 ldrb r3,[r3]
+ 195 004e 002B     	 cmp r3,#0
+ 196 0050 38D1     	 bne .L10
+ 106:../cleanflight/src/main/rx/ibus.c ****         if (isValidIa6bIbusPacketLength(c)) {
+ 197              	 .loc 1 106 0
+ 198 0052 FB88     	 ldrh r3,[r7,#6]
+ 199 0054 DBB2     	 uxtb r3,r3
+ 200 0056 1846     	 mov r0,r3
+ 201 0058 FFF7FEFF 	 bl isValidIa6bIbusPacketLength
+ 202 005c 0346     	 mov r3,r0
+ 203 005e 002B     	 cmp r3,#0
+ 204 0060 12D0     	 beq .L11
+ 107:../cleanflight/src/main/rx/ibus.c ****             ibusModel = IBUS_MODEL_IA6B;
+ 205              	 .loc 1 107 0
+ 206 0062 294B     	 ldr r3,.L14+12
+ 207 0064 0022     	 movs r2,#0
+ 208 0066 1A70     	 strb r2,[r3]
+ 108:../cleanflight/src/main/rx/ibus.c ****             ibusSyncByte = c;
+ 209              	 .loc 1 108 0
+ 210 0068 FB88     	 ldrh r3,[r7,#6]
+ 211 006a DAB2     	 uxtb r2,r3
+ 212 006c 274B     	 ldr r3,.L14+16
+ 213 006e 1A70     	 strb r2,[r3]
+ 109:../cleanflight/src/main/rx/ibus.c ****             ibusFrameSize = c;
+ 214              	 .loc 1 109 0
+ 215 0070 FB88     	 ldrh r3,[r7,#6]
+ 216 0072 DAB2     	 uxtb r2,r3
+ 217 0074 264B     	 ldr r3,.L14+20
+ 218 0076 1A70     	 strb r2,[r3]
+ 110:../cleanflight/src/main/rx/ibus.c ****             ibusChannelOffset = 2;
+ 219              	 .loc 1 110 0
+ 220 0078 264B     	 ldr r3,.L14+24
+ 221 007a 0222     	 movs r2,#2
+ 222 007c 1A70     	 strb r2,[r3]
+ 111:../cleanflight/src/main/rx/ibus.c ****             ibusChecksum = 0xFFFF;
+ 223              	 .loc 1 111 0
+ 224 007e 264B     	 ldr r3,.L14+28
+ 225 0080 4FF6FF72 	 movw r2,#65535
+ 226 0084 1A80     	 strh r2,[r3]
+ 227 0086 1DE0     	 b .L10
+ 228              	.L11:
+ 112:../cleanflight/src/main/rx/ibus.c ****         } else if ((ibusSyncByte == 0) && (c == 0x55)) {
+ 229              	 .loc 1 112 0
+ 230 0088 204B     	 ldr r3,.L14+16
+ 231 008a 1B78     	 ldrb r3,[r3]
+ 232 008c 002B     	 cmp r3,#0
+ 233 008e 12D1     	 bne .L12
+ 234              	 .loc 1 112 0 is_stmt 0 discriminator 1
+ 235 0090 FB88     	 ldrh r3,[r7,#6]
+ 236 0092 552B     	 cmp r3,#85
+ 237 0094 0FD1     	 bne .L12
+ 113:../cleanflight/src/main/rx/ibus.c ****             ibusModel = IBUS_MODEL_IA6;
+ 238              	 .loc 1 113 0 is_stmt 1
+ 239 0096 1C4B     	 ldr r3,.L14+12
+ 240 0098 0122     	 movs r2,#1
+ 241 009a 1A70     	 strb r2,[r3]
+ 114:../cleanflight/src/main/rx/ibus.c ****             ibusSyncByte = 0x55;
+ 242              	 .loc 1 114 0
+ 243 009c 1B4B     	 ldr r3,.L14+16
+ 244 009e 5522     	 movs r2,#85
+ 245 00a0 1A70     	 strb r2,[r3]
+ 115:../cleanflight/src/main/rx/ibus.c ****             ibusFrameSize = 31;
+ 246              	 .loc 1 115 0
+ 247 00a2 1B4B     	 ldr r3,.L14+20
+ 248 00a4 1F22     	 movs r2,#31
+ 249 00a6 1A70     	 strb r2,[r3]
+ 116:../cleanflight/src/main/rx/ibus.c ****             ibusChecksum = 0x0000;
+ 250              	 .loc 1 116 0
+ 251 00a8 1B4B     	 ldr r3,.L14+28
+ 252 00aa 0022     	 movs r2,#0
+ 253 00ac 1A80     	 strh r2,[r3]
+ 117:../cleanflight/src/main/rx/ibus.c ****             ibusChannelOffset = 1;
+ 254              	 .loc 1 117 0
+ 255 00ae 194B     	 ldr r3,.L14+24
+ 256 00b0 0122     	 movs r2,#1
+ 257 00b2 1A70     	 strb r2,[r3]
+ 258 00b4 06E0     	 b .L10
+ 259              	.L12:
+ 118:../cleanflight/src/main/rx/ibus.c ****         } else if (ibusSyncByte != c) {
+ 260              	 .loc 1 118 0
+ 261 00b6 154B     	 ldr r3,.L14+16
+ 262 00b8 1B78     	 ldrb r3,[r3]
+ 263 00ba 9BB2     	 uxth r3,r3
+ 264 00bc FA88     	 ldrh r2,[r7,#6]
+ 265 00be 9A42     	 cmp r2,r3
+ 266 00c0 00D0     	 beq .L10
+ 119:../cleanflight/src/main/rx/ibus.c ****             return;
+ 267              	 .loc 1 119 0
+ 268 00c2 18E0     	 b .L6
+ 269              	.L10:
+ 120:../cleanflight/src/main/rx/ibus.c ****         }
+ 121:../cleanflight/src/main/rx/ibus.c ****     }
+ 122:../cleanflight/src/main/rx/ibus.c **** 
+ 123:../cleanflight/src/main/rx/ibus.c ****     ibus[ibusFramePosition] = (uint8_t)c;
+ 270              	 .loc 1 123 0
+ 271 00c4 0E4B     	 ldr r3,.L14+4
+ 272 00c6 1B78     	 ldrb r3,[r3]
+ 273 00c8 1A46     	 mov r2,r3
+ 274 00ca FB88     	 ldrh r3,[r7,#6]
+ 275 00cc D9B2     	 uxtb r1,r3
+ 276 00ce 134B     	 ldr r3,.L14+32
+ 277 00d0 9954     	 strb r1,[r3,r2]
+ 124:../cleanflight/src/main/rx/ibus.c **** 
+ 125:../cleanflight/src/main/rx/ibus.c ****     if (ibusFramePosition == ibusFrameSize - 1) {
+ 278              	 .loc 1 125 0
+ 279 00d2 0B4B     	 ldr r3,.L14+4
+ 280 00d4 1B78     	 ldrb r3,[r3]
+ 281 00d6 1A46     	 mov r2,r3
+ 282 00d8 0D4B     	 ldr r3,.L14+20
+ 283 00da 1B78     	 ldrb r3,[r3]
+ 284 00dc 013B     	 subs r3,r3,#1
+ 285 00de 9A42     	 cmp r2,r3
+ 286 00e0 03D1     	 bne .L13
+ 126:../cleanflight/src/main/rx/ibus.c ****         ibusFrameDone = true;
+ 287              	 .loc 1 126 0
+ 288 00e2 0F4B     	 ldr r3,.L14+36
+ 289 00e4 0122     	 movs r2,#1
+ 290 00e6 1A70     	 strb r2,[r3]
+ 291 00e8 05E0     	 b .L6
+ 292              	.L13:
+ 127:../cleanflight/src/main/rx/ibus.c ****     } else {
+ 128:../cleanflight/src/main/rx/ibus.c ****         ibusFramePosition++;
+ 293              	 .loc 1 128 0
+ 294 00ea 054B     	 ldr r3,.L14+4
+ 295 00ec 1B78     	 ldrb r3,[r3]
+ 296 00ee 0133     	 adds r3,r3,#1
+ 297 00f0 DAB2     	 uxtb r2,r3
+ 298 00f2 034B     	 ldr r3,.L14+4
+ 299 00f4 1A70     	 strb r2,[r3]
+ 300              	.L6:
+ 129:../cleanflight/src/main/rx/ibus.c ****     }
+ 130:../cleanflight/src/main/rx/ibus.c **** }
+ 301              	 .loc 1 130 0
+ 302 00f6 1037     	 adds r7,r7,#16
+ 303              	.LCFI9:
+ 304              	 .cfi_def_cfa_offset 8
+ 305 00f8 BD46     	 mov sp,r7
+ 306              	.LCFI10:
+ 307              	 .cfi_def_cfa_register 13
+ 308              	 
+ 309 00fa 80BD     	 pop {r7,pc}
+ 310              	.L15:
+ 311              	 .align 2
+ 312              	.L14:
+ 313 00fc 00000000 	 .word ibusTimeLast.12606
+ 314 0100 00000000 	 .word ibusFramePosition.12607
+ 315 0104 00000000 	 .word rxBytesToIgnore
+ 316 0108 00000000 	 .word ibusModel
+ 317 010c 00000000 	 .word ibusSyncByte
+ 318 0110 00000000 	 .word ibusFrameSize
+ 319 0114 00000000 	 .word ibusChannelOffset
+ 320 0118 00000000 	 .word ibusChecksum
+ 321 011c 00000000 	 .word ibus
+ 322 0120 00000000 	 .word ibusFrameDone
+ 323              	 .cfi_endproc
+ 324              	.LFE540:
+ 326              	 .section .text.isChecksumOkIa6,"ax",%progbits
+ 327              	 .align 2
+ 328              	 .thumb
+ 329              	 .thumb_func
+ 331              	isChecksumOkIa6:
+ 332              	.LFB541:
+ 131:../cleanflight/src/main/rx/ibus.c **** 
+ 132:../cleanflight/src/main/rx/ibus.c **** 
+ 133:../cleanflight/src/main/rx/ibus.c **** static bool isChecksumOkIa6(void)
+ 134:../cleanflight/src/main/rx/ibus.c **** {
+ 333              	 .loc 1 134 0
+ 334              	 .cfi_startproc
+ 335              	 
+ 336              	 
+ 337              	 
+ 338 0000 80B4     	 push {r7}
+ 339              	.LCFI11:
+ 340              	 .cfi_def_cfa_offset 4
+ 341              	 .cfi_offset 7,-4
+ 342 0002 83B0     	 sub sp,sp,#12
+ 343              	.LCFI12:
+ 344              	 .cfi_def_cfa_offset 16
+ 345 0004 00AF     	 add r7,sp,#0
+ 346              	.LCFI13:
+ 347              	 .cfi_def_cfa_register 7
+ 135:../cleanflight/src/main/rx/ibus.c ****     uint8_t offset;
+ 136:../cleanflight/src/main/rx/ibus.c ****     uint8_t i;
+ 137:../cleanflight/src/main/rx/ibus.c ****     uint16_t chksum, rxsum;
+ 138:../cleanflight/src/main/rx/ibus.c ****     chksum = ibusChecksum;
+ 348              	 .loc 1 138 0
+ 349 0006 1F4B     	 ldr r3,.L20
+ 350 0008 1B88     	 ldrh r3,[r3]
+ 351 000a BB80     	 strh r3,[r7,#4]
+ 139:../cleanflight/src/main/rx/ibus.c ****     rxsum = ibus[ibusFrameSize - 2] + (ibus[ibusFrameSize - 1] << 8);
+ 352              	 .loc 1 139 0
+ 353 000c 1E4B     	 ldr r3,.L20+4
+ 354 000e 1B78     	 ldrb r3,[r3]
+ 355 0010 023B     	 subs r3,r3,#2
+ 356 0012 1E4A     	 ldr r2,.L20+8
+ 357 0014 D35C     	 ldrb r3,[r2,r3]
+ 358 0016 9AB2     	 uxth r2,r3
+ 359 0018 1B4B     	 ldr r3,.L20+4
+ 360 001a 1B78     	 ldrb r3,[r3]
+ 361 001c 013B     	 subs r3,r3,#1
+ 362 001e 1B49     	 ldr r1,.L20+8
+ 363 0020 CB5C     	 ldrb r3,[r1,r3]
+ 364 0022 9BB2     	 uxth r3,r3
+ 365 0024 1B02     	 lsls r3,r3,#8
+ 366 0026 9BB2     	 uxth r3,r3
+ 367 0028 1344     	 add r3,r3,r2
+ 368 002a 7B80     	 strh r3,[r7,#2]
+ 140:../cleanflight/src/main/rx/ibus.c ****     for (i = 0, offset = ibusChannelOffset; i < IBUS_MAX_CHANNEL; i++, offset += 2) {
+ 369              	 .loc 1 140 0
+ 370 002c 0023     	 movs r3,#0
+ 371 002e BB71     	 strb r3,[r7,#6]
+ 372 0030 174B     	 ldr r3,.L20+12
+ 373 0032 1B78     	 ldrb r3,[r3]
+ 374 0034 FB71     	 strb r3,[r7,#7]
+ 375 0036 15E0     	 b .L17
+ 376              	.L18:
+ 141:../cleanflight/src/main/rx/ibus.c ****         chksum += ibus[offset] + (ibus[offset + 1] << 8);
+ 377              	 .loc 1 141 0 discriminator 3
+ 378 0038 FB79     	 ldrb r3,[r7,#7]
+ 379 003a 144A     	 ldr r2,.L20+8
+ 380 003c D35C     	 ldrb r3,[r2,r3]
+ 381 003e 9AB2     	 uxth r2,r3
+ 382 0040 FB79     	 ldrb r3,[r7,#7]
+ 383 0042 0133     	 adds r3,r3,#1
+ 384 0044 1149     	 ldr r1,.L20+8
+ 385 0046 CB5C     	 ldrb r3,[r1,r3]
+ 386 0048 9BB2     	 uxth r3,r3
+ 387 004a 1B02     	 lsls r3,r3,#8
+ 388 004c 9BB2     	 uxth r3,r3
+ 389 004e 1344     	 add r3,r3,r2
+ 390 0050 9AB2     	 uxth r2,r3
+ 391 0052 BB88     	 ldrh r3,[r7,#4]
+ 392 0054 1344     	 add r3,r3,r2
+ 393 0056 BB80     	 strh r3,[r7,#4]
+ 140:../cleanflight/src/main/rx/ibus.c ****     for (i = 0, offset = ibusChannelOffset; i < IBUS_MAX_CHANNEL; i++, offset += 2) {
+ 394              	 .loc 1 140 0 discriminator 3
+ 395 0058 BB79     	 ldrb r3,[r7,#6]
+ 396 005a 0133     	 adds r3,r3,#1
+ 397 005c BB71     	 strb r3,[r7,#6]
+ 398 005e FB79     	 ldrb r3,[r7,#7]
+ 399 0060 0233     	 adds r3,r3,#2
+ 400 0062 FB71     	 strb r3,[r7,#7]
+ 401              	.L17:
+ 140:../cleanflight/src/main/rx/ibus.c ****     for (i = 0, offset = ibusChannelOffset; i < IBUS_MAX_CHANNEL; i++, offset += 2) {
+ 402              	 .loc 1 140 0 is_stmt 0 discriminator 1
+ 403 0064 BB79     	 ldrb r3,[r7,#6]
+ 404 0066 0D2B     	 cmp r3,#13
+ 405 0068 E6D9     	 bls .L18
+ 142:../cleanflight/src/main/rx/ibus.c ****     }
+ 143:../cleanflight/src/main/rx/ibus.c ****     return chksum == rxsum;
+ 406              	 .loc 1 143 0 is_stmt 1
+ 407 006a BA88     	 ldrh r2,[r7,#4]
+ 408 006c 7B88     	 ldrh r3,[r7,#2]
+ 409 006e 9A42     	 cmp r2,r3
+ 410 0070 0CBF     	 ite eq
+ 411 0072 0123     	 moveq r3,#1
+ 412 0074 0023     	 movne r3,#0
+ 413 0076 DBB2     	 uxtb r3,r3
+ 144:../cleanflight/src/main/rx/ibus.c **** }
+ 414              	 .loc 1 144 0
+ 415 0078 1846     	 mov r0,r3
+ 416 007a 0C37     	 adds r7,r7,#12
+ 417              	.LCFI14:
+ 418              	 .cfi_def_cfa_offset 4
+ 419 007c BD46     	 mov sp,r7
+ 420              	.LCFI15:
+ 421              	 .cfi_def_cfa_register 13
+ 422              	 
+ 423 007e 5DF8047B 	 ldr r7,[sp],#4
+ 424              	.LCFI16:
+ 425              	 .cfi_restore 7
+ 426              	 .cfi_def_cfa_offset 0
+ 427 0082 7047     	 bx lr
+ 428              	.L21:
+ 429              	 .align 2
+ 430              	.L20:
+ 431 0084 00000000 	 .word ibusChecksum
+ 432 0088 00000000 	 .word ibusFrameSize
+ 433 008c 00000000 	 .word ibus
+ 434 0090 00000000 	 .word ibusChannelOffset
+ 435              	 .cfi_endproc
+ 436              	.LFE541:
+ 438              	 .section .text.checksumIsOk,"ax",%progbits
+ 439              	 .align 2
+ 440              	 .thumb
+ 441              	 .thumb_func
+ 443              	checksumIsOk:
+ 444              	.LFB542:
+ 145:../cleanflight/src/main/rx/ibus.c **** 
+ 146:../cleanflight/src/main/rx/ibus.c **** 
+ 147:../cleanflight/src/main/rx/ibus.c **** static bool checksumIsOk(void) {
+ 445              	 .loc 1 147 0
+ 446              	 .cfi_startproc
+ 447              	 
+ 448              	 
+ 449 0000 80B5     	 push {r7,lr}
+ 450              	.LCFI17:
+ 451              	 .cfi_def_cfa_offset 8
+ 452              	 .cfi_offset 7,-8
+ 453              	 .cfi_offset 14,-4
+ 454 0002 00AF     	 add r7,sp,#0
+ 455              	.LCFI18:
+ 456              	 .cfi_def_cfa_register 7
+ 148:../cleanflight/src/main/rx/ibus.c ****     if (ibusModel == IBUS_MODEL_IA6 ) {
+ 457              	 .loc 1 148 0
+ 458 0004 084B     	 ldr r3,.L25
+ 459 0006 1B78     	 ldrb r3,[r3]
+ 460 0008 012B     	 cmp r3,#1
+ 461 000a 03D1     	 bne .L23
+ 149:../cleanflight/src/main/rx/ibus.c ****         return isChecksumOkIa6();
+ 462              	 .loc 1 149 0
+ 463 000c FFF7FEFF 	 bl isChecksumOkIa6
+ 464 0010 0346     	 mov r3,r0
+ 465 0012 06E0     	 b .L24
+ 466              	.L23:
+ 150:../cleanflight/src/main/rx/ibus.c ****     } else {
+ 151:../cleanflight/src/main/rx/ibus.c ****         return isChecksumOkIa6b(ibus, ibusFrameSize);
+ 467              	 .loc 1 151 0
+ 468 0014 054B     	 ldr r3,.L25+4
+ 469 0016 1B78     	 ldrb r3,[r3]
+ 470 0018 0548     	 ldr r0,.L25+8
+ 471 001a 1946     	 mov r1,r3
+ 472 001c FFF7FEFF 	 bl isChecksumOkIa6b
+ 473 0020 0346     	 mov r3,r0
+ 474              	.L24:
+ 152:../cleanflight/src/main/rx/ibus.c ****     }
+ 153:../cleanflight/src/main/rx/ibus.c **** }
+ 475              	 .loc 1 153 0
+ 476 0022 1846     	 mov r0,r3
+ 477 0024 80BD     	 pop {r7,pc}
+ 478              	.L26:
+ 479 0026 00BF     	 .align 2
+ 480              	.L25:
+ 481 0028 00000000 	 .word ibusModel
+ 482 002c 00000000 	 .word ibusFrameSize
+ 483 0030 00000000 	 .word ibus
+ 484              	 .cfi_endproc
+ 485              	.LFE542:
+ 487              	 .section .text.updateChannelData,"ax",%progbits
+ 488              	 .align 2
+ 489              	 .thumb
+ 490              	 .thumb_func
+ 492              	updateChannelData:
+ 493              	.LFB543:
+ 154:../cleanflight/src/main/rx/ibus.c **** 
+ 155:../cleanflight/src/main/rx/ibus.c **** 
+ 156:../cleanflight/src/main/rx/ibus.c **** static void updateChannelData(void) {
+ 494              	 .loc 1 156 0
+ 495              	 .cfi_startproc
+ 496              	 
+ 497              	 
+ 498              	 
+ 499 0000 80B4     	 push {r7}
+ 500              	.LCFI19:
+ 501              	 .cfi_def_cfa_offset 4
+ 502              	 .cfi_offset 7,-4
+ 503 0002 83B0     	 sub sp,sp,#12
+ 504              	.LCFI20:
+ 505              	 .cfi_def_cfa_offset 16
+ 506 0004 00AF     	 add r7,sp,#0
+ 507              	.LCFI21:
+ 508              	 .cfi_def_cfa_register 7
+ 157:../cleanflight/src/main/rx/ibus.c ****     uint8_t i;
+ 158:../cleanflight/src/main/rx/ibus.c ****     uint8_t offset;
+ 159:../cleanflight/src/main/rx/ibus.c **** 
+ 160:../cleanflight/src/main/rx/ibus.c ****     for (i = 0, offset = ibusChannelOffset; i < IBUS_MAX_CHANNEL; i++, offset += 2) {
+ 509              	 .loc 1 160 0
+ 510 0006 0023     	 movs r3,#0
+ 511 0008 FB71     	 strb r3,[r7,#7]
+ 512 000a 104B     	 ldr r3,.L30
+ 513 000c 1B78     	 ldrb r3,[r3]
+ 514 000e BB71     	 strb r3,[r7,#6]
+ 515 0010 14E0     	 b .L28
+ 516              	.L29:
+ 161:../cleanflight/src/main/rx/ibus.c ****         ibusChannelData[i] = ibus[offset] + (ibus[offset + 1] << 8);
+ 517              	 .loc 1 161 0 discriminator 3
+ 518 0012 FB79     	 ldrb r3,[r7,#7]
+ 519 0014 BA79     	 ldrb r2,[r7,#6]
+ 520 0016 0E49     	 ldr r1,.L30+4
+ 521 0018 8A5C     	 ldrb r2,[r1,r2]
+ 522 001a 1046     	 mov r0,r2
+ 523 001c BA79     	 ldrb r2,[r7,#6]
+ 524 001e 0132     	 adds r2,r2,#1
+ 525 0020 0B49     	 ldr r1,.L30+4
+ 526 0022 8A5C     	 ldrb r2,[r1,r2]
+ 527 0024 1202     	 lsls r2,r2,#8
+ 528 0026 0244     	 add r2,r2,r0
+ 529 0028 1146     	 mov r1,r2
+ 530 002a 0A4A     	 ldr r2,.L30+8
+ 531 002c 42F82310 	 str r1,[r2,r3,lsl#2]
+ 160:../cleanflight/src/main/rx/ibus.c ****         ibusChannelData[i] = ibus[offset] + (ibus[offset + 1] << 8);
+ 532              	 .loc 1 160 0 discriminator 3
+ 533 0030 FB79     	 ldrb r3,[r7,#7]
+ 534 0032 0133     	 adds r3,r3,#1
+ 535 0034 FB71     	 strb r3,[r7,#7]
+ 536 0036 BB79     	 ldrb r3,[r7,#6]
+ 537 0038 0233     	 adds r3,r3,#2
+ 538 003a BB71     	 strb r3,[r7,#6]
+ 539              	.L28:
+ 160:../cleanflight/src/main/rx/ibus.c ****         ibusChannelData[i] = ibus[offset] + (ibus[offset + 1] << 8);
+ 540              	 .loc 1 160 0 is_stmt 0 discriminator 1
+ 541 003c FB79     	 ldrb r3,[r7,#7]
+ 542 003e 0D2B     	 cmp r3,#13
+ 543 0040 E7D9     	 bls .L29
+ 162:../cleanflight/src/main/rx/ibus.c ****     }
+ 163:../cleanflight/src/main/rx/ibus.c **** }
+ 544              	 .loc 1 163 0 is_stmt 1
+ 545 0042 0C37     	 adds r7,r7,#12
+ 546              	.LCFI22:
+ 547              	 .cfi_def_cfa_offset 4
+ 548 0044 BD46     	 mov sp,r7
+ 549              	.LCFI23:
+ 550              	 .cfi_def_cfa_register 13
+ 551              	 
+ 552 0046 5DF8047B 	 ldr r7,[sp],#4
+ 553              	.LCFI24:
+ 554              	 .cfi_restore 7
+ 555              	 .cfi_def_cfa_offset 0
+ 556 004a 7047     	 bx lr
+ 557              	.L31:
+ 558              	 .align 2
+ 559              	.L30:
+ 560 004c 00000000 	 .word ibusChannelOffset
+ 561 0050 00000000 	 .word ibus
+ 562 0054 00000000 	 .word ibusChannelData
+ 563              	 .cfi_endproc
+ 564              	.LFE543:
+ 566              	 .section .text.ibusFrameStatus,"ax",%progbits
+ 567              	 .align 2
+ 568              	 .thumb
+ 569              	 .thumb_func
+ 571              	ibusFrameStatus:
+ 572              	.LFB544:
+ 164:../cleanflight/src/main/rx/ibus.c **** 
+ 165:../cleanflight/src/main/rx/ibus.c **** static uint8_t ibusFrameStatus(rxRuntimeConfig_t *rxRuntimeConfig)
+ 166:../cleanflight/src/main/rx/ibus.c **** {
+ 573              	 .loc 1 166 0
+ 574              	 .cfi_startproc
+ 575              	 
+ 576              	 
+ 577 0000 80B5     	 push {r7,lr}
+ 578              	.LCFI25:
+ 579              	 .cfi_def_cfa_offset 8
+ 580              	 .cfi_offset 7,-8
+ 581              	 .cfi_offset 14,-4
+ 582 0002 84B0     	 sub sp,sp,#16
+ 583              	.LCFI26:
+ 584              	 .cfi_def_cfa_offset 24
+ 585 0004 00AF     	 add r7,sp,#0
+ 586              	.LCFI27:
+ 587              	 .cfi_def_cfa_register 7
+ 588 0006 7860     	 str r0,[r7,#4]
+ 167:../cleanflight/src/main/rx/ibus.c ****     UNUSED(rxRuntimeConfig);
+ 168:../cleanflight/src/main/rx/ibus.c **** 
+ 169:../cleanflight/src/main/rx/ibus.c ****     uint8_t frameStatus = RX_FRAME_PENDING;
+ 589              	 .loc 1 169 0
+ 590 0008 0023     	 movs r3,#0
+ 591 000a FB73     	 strb r3,[r7,#15]
+ 170:../cleanflight/src/main/rx/ibus.c **** 
+ 171:../cleanflight/src/main/rx/ibus.c ****     if (!ibusFrameDone) {
+ 592              	 .loc 1 171 0
+ 593 000c 104B     	 ldr r3,.L37
+ 594 000e 1B78     	 ldrb r3,[r3]
+ 595 0010 83F00103 	 eor r3,r3,#1
+ 596 0014 DBB2     	 uxtb r3,r3
+ 597 0016 002B     	 cmp r3,#0
+ 598 0018 01D0     	 beq .L33
+ 172:../cleanflight/src/main/rx/ibus.c ****         return frameStatus;
+ 599              	 .loc 1 172 0
+ 600 001a FB7B     	 ldrb r3,[r7,#15]
+ 601 001c 14E0     	 b .L34
+ 602              	.L33:
+ 173:../cleanflight/src/main/rx/ibus.c ****     }
+ 174:../cleanflight/src/main/rx/ibus.c **** 
+ 175:../cleanflight/src/main/rx/ibus.c ****     ibusFrameDone = false;
+ 603              	 .loc 1 175 0
+ 604 001e 0C4B     	 ldr r3,.L37
+ 605 0020 0022     	 movs r2,#0
+ 606 0022 1A70     	 strb r2,[r3]
+ 176:../cleanflight/src/main/rx/ibus.c **** 
+ 177:../cleanflight/src/main/rx/ibus.c ****     if (checksumIsOk()) {
+ 607              	 .loc 1 177 0
+ 608 0024 FFF7FEFF 	 bl checksumIsOk
+ 609 0028 0346     	 mov r3,r0
+ 610 002a 002B     	 cmp r3,#0
+ 611 002c 0BD0     	 beq .L35
+ 178:../cleanflight/src/main/rx/ibus.c ****         if (ibusModel == IBUS_MODEL_IA6 || ibusSyncByte == 0x20) {
+ 612              	 .loc 1 178 0
+ 613 002e 094B     	 ldr r3,.L37+4
+ 614 0030 1B78     	 ldrb r3,[r3]
+ 615 0032 012B     	 cmp r3,#1
+ 616 0034 03D0     	 beq .L36
+ 617              	 .loc 1 178 0 is_stmt 0 discriminator 1
+ 618 0036 084B     	 ldr r3,.L37+8
+ 619 0038 1B78     	 ldrb r3,[r3]
+ 620 003a 202B     	 cmp r3,#32
+ 621 003c 03D1     	 bne .L35
+ 622              	.L36:
+ 179:../cleanflight/src/main/rx/ibus.c ****             updateChannelData();
+ 623              	 .loc 1 179 0 is_stmt 1
+ 624 003e FFF7FEFF 	 bl updateChannelData
+ 180:../cleanflight/src/main/rx/ibus.c ****             frameStatus = RX_FRAME_COMPLETE;
+ 625              	 .loc 1 180 0
+ 626 0042 0123     	 movs r3,#1
+ 627 0044 FB73     	 strb r3,[r7,#15]
+ 628              	.L35:
+ 181:../cleanflight/src/main/rx/ibus.c ****         }
+ 182:../cleanflight/src/main/rx/ibus.c ****         else
+ 183:../cleanflight/src/main/rx/ibus.c ****         {
+ 184:../cleanflight/src/main/rx/ibus.c **** #if defined(USE_TELEMETRY) && defined(USE_TELEMETRY_IBUS)
+ 185:../cleanflight/src/main/rx/ibus.c ****             rxBytesToIgnore = respondToIbusRequest(ibus);
+ 186:../cleanflight/src/main/rx/ibus.c **** #endif
+ 187:../cleanflight/src/main/rx/ibus.c ****         }
+ 188:../cleanflight/src/main/rx/ibus.c ****     }
+ 189:../cleanflight/src/main/rx/ibus.c **** 
+ 190:../cleanflight/src/main/rx/ibus.c ****     return frameStatus;
+ 629              	 .loc 1 190 0
+ 630 0046 FB7B     	 ldrb r3,[r7,#15]
+ 631              	.L34:
+ 191:../cleanflight/src/main/rx/ibus.c **** }
+ 632              	 .loc 1 191 0
+ 633 0048 1846     	 mov r0,r3
+ 634 004a 1037     	 adds r7,r7,#16
+ 635              	.LCFI28:
+ 636              	 .cfi_def_cfa_offset 8
+ 637 004c BD46     	 mov sp,r7
+ 638              	.LCFI29:
+ 639              	 .cfi_def_cfa_register 13
+ 640              	 
+ 641 004e 80BD     	 pop {r7,pc}
+ 642              	.L38:
+ 643              	 .align 2
+ 644              	.L37:
+ 645 0050 00000000 	 .word ibusFrameDone
+ 646 0054 00000000 	 .word ibusModel
+ 647 0058 00000000 	 .word ibusSyncByte
+ 648              	 .cfi_endproc
+ 649              	.LFE544:
+ 651              	 .section .text.ibusReadRawRC,"ax",%progbits
+ 652              	 .align 2
+ 653              	 .thumb
+ 654              	 .thumb_func
+ 656              	ibusReadRawRC:
+ 657              	.LFB545:
+ 192:../cleanflight/src/main/rx/ibus.c **** 
+ 193:../cleanflight/src/main/rx/ibus.c **** 
+ 194:../cleanflight/src/main/rx/ibus.c **** static uint16_t ibusReadRawRC(const rxRuntimeConfig_t *rxRuntimeConfig, uint8_t chan)
+ 195:../cleanflight/src/main/rx/ibus.c **** {
+ 658              	 .loc 1 195 0
+ 659              	 .cfi_startproc
+ 660              	 
+ 661              	 
+ 662              	 
+ 663 0000 80B4     	 push {r7}
+ 664              	.LCFI30:
+ 665              	 .cfi_def_cfa_offset 4
+ 666              	 .cfi_offset 7,-4
+ 667 0002 83B0     	 sub sp,sp,#12
+ 668              	.LCFI31:
+ 669              	 .cfi_def_cfa_offset 16
+ 670 0004 00AF     	 add r7,sp,#0
+ 671              	.LCFI32:
+ 672              	 .cfi_def_cfa_register 7
+ 673 0006 7860     	 str r0,[r7,#4]
+ 674 0008 0B46     	 mov r3,r1
+ 675 000a FB70     	 strb r3,[r7,#3]
+ 196:../cleanflight/src/main/rx/ibus.c ****     UNUSED(rxRuntimeConfig);
+ 197:../cleanflight/src/main/rx/ibus.c ****     return ibusChannelData[chan];
+ 676              	 .loc 1 197 0
+ 677 000c FB78     	 ldrb r3,[r7,#3]
+ 678 000e 054A     	 ldr r2,.L41
+ 679 0010 52F82330 	 ldr r3,[r2,r3,lsl#2]
+ 680 0014 9BB2     	 uxth r3,r3
+ 198:../cleanflight/src/main/rx/ibus.c **** }
+ 681              	 .loc 1 198 0
+ 682 0016 1846     	 mov r0,r3
+ 683 0018 0C37     	 adds r7,r7,#12
+ 684              	.LCFI33:
+ 685              	 .cfi_def_cfa_offset 4
+ 686 001a BD46     	 mov sp,r7
+ 687              	.LCFI34:
+ 688              	 .cfi_def_cfa_register 13
+ 689              	 
+ 690 001c 5DF8047B 	 ldr r7,[sp],#4
+ 691              	.LCFI35:
+ 692              	 .cfi_restore 7
+ 693              	 .cfi_def_cfa_offset 0
+ 694 0020 7047     	 bx lr
+ 695              	.L42:
+ 696 0022 00BF     	 .align 2
+ 697              	.L41:
+ 698 0024 00000000 	 .word ibusChannelData
+ 699              	 .cfi_endproc
+ 700              	.LFE545:
+ 702              	 .section .text.ibusInit,"ax",%progbits
+ 703              	 .align 2
+ 704              	 .global ibusInit
+ 705              	 .thumb
+ 706              	 .thumb_func
+ 708              	ibusInit:
+ 709              	.LFB546:
+ 199:../cleanflight/src/main/rx/ibus.c **** 
+ 200:../cleanflight/src/main/rx/ibus.c **** 
+ 201:../cleanflight/src/main/rx/ibus.c **** bool ibusInit(const rxConfig_t *rxConfig, rxRuntimeConfig_t *rxRuntimeConfig)
+ 202:../cleanflight/src/main/rx/ibus.c **** {
+ 710              	 .loc 1 202 0
+ 711              	 .cfi_startproc
+ 712              	 
+ 713              	 
+ 714 0000 80B5     	 push {r7,lr}
+ 715              	.LCFI36:
+ 716              	 .cfi_def_cfa_offset 8
+ 717              	 .cfi_offset 7,-8
+ 718              	 .cfi_offset 14,-4
+ 719 0002 8AB0     	 sub sp,sp,#40
+ 720              	.LCFI37:
+ 721              	 .cfi_def_cfa_offset 48
+ 722 0004 04AF     	 add r7,sp,#16
+ 723              	.LCFI38:
+ 724              	 .cfi_def_cfa 7,32
+ 725 0006 7860     	 str r0,[r7,#4]
+ 726 0008 3960     	 str r1,[r7]
+ 203:../cleanflight/src/main/rx/ibus.c ****     UNUSED(rxConfig);
+ 204:../cleanflight/src/main/rx/ibus.c ****     ibusSyncByte = 0;
+ 727              	 .loc 1 204 0
+ 728 000a 2C4B     	 ldr r3,.L51
+ 729 000c 0022     	 movs r2,#0
+ 730 000e 1A70     	 strb r2,[r3]
+ 205:../cleanflight/src/main/rx/ibus.c **** 
+ 206:../cleanflight/src/main/rx/ibus.c ****     rxRuntimeConfig->channelCount = IBUS_MAX_CHANNEL;
+ 731              	 .loc 1 206 0
+ 732 0010 3B68     	 ldr r3,[r7]
+ 733 0012 0E22     	 movs r2,#14
+ 734 0014 1A70     	 strb r2,[r3]
+ 207:../cleanflight/src/main/rx/ibus.c ****     rxRuntimeConfig->rxRefreshRate = 20000; // TODO - Verify speed
+ 735              	 .loc 1 207 0
+ 736 0016 3B68     	 ldr r3,[r7]
+ 737 0018 0022     	 movs r2,#0
+ 738 001a 42F02002 	 orr r2,r2,#32
+ 739 001e 5A70     	 strb r2,[r3,#1]
+ 740 0020 0022     	 movs r2,#0
+ 741 0022 42F04E02 	 orr r2,r2,#78
+ 742 0026 9A70     	 strb r2,[r3,#2]
+ 208:../cleanflight/src/main/rx/ibus.c **** 
+ 209:../cleanflight/src/main/rx/ibus.c ****     rxRuntimeConfig->rcReadRawFn = ibusReadRawRC;
+ 743              	 .loc 1 209 0
+ 744 0028 3B68     	 ldr r3,[r7]
+ 745 002a 254A     	 ldr r2,.L51+4
+ 746 002c C3F80320 	 str r2,[r3,#3]
+ 210:../cleanflight/src/main/rx/ibus.c ****     rxRuntimeConfig->rcFrameStatusFn = ibusFrameStatus;
+ 747              	 .loc 1 210 0
+ 748 0030 3B68     	 ldr r3,[r7]
+ 749 0032 244A     	 ldr r2,.L51+8
+ 750 0034 C3F80720 	 str r2,[r3,#7]
+ 211:../cleanflight/src/main/rx/ibus.c **** 
+ 212:../cleanflight/src/main/rx/ibus.c ****     const serialPortConfig_t *portConfig = findSerialPortConfig(FUNCTION_RX_SERIAL);
+ 751              	 .loc 1 212 0
+ 752 0038 4020     	 movs r0,#64
+ 753 003a FFF7FEFF 	 bl findSerialPortConfig
+ 754 003e 7861     	 str r0,[r7,#20]
+ 213:../cleanflight/src/main/rx/ibus.c ****     if (!portConfig) {
+ 755              	 .loc 1 213 0
+ 756 0040 7B69     	 ldr r3,[r7,#20]
+ 757 0042 002B     	 cmp r3,#0
+ 758 0044 01D1     	 bne .L44
+ 214:../cleanflight/src/main/rx/ibus.c ****         return false;
+ 759              	 .loc 1 214 0
+ 760 0046 0023     	 movs r3,#0
+ 761 0048 33E0     	 b .L45
+ 762              	.L44:
+ 215:../cleanflight/src/main/rx/ibus.c ****     }
+ 216:../cleanflight/src/main/rx/ibus.c **** 
+ 217:../cleanflight/src/main/rx/ibus.c **** #ifdef USE_TELEMETRY
+ 218:../cleanflight/src/main/rx/ibus.c ****     // bool portShared = telemetryCheckRxPortShared(portConfig);
+ 219:../cleanflight/src/main/rx/ibus.c ****     bool portShared = isSerialPortShared(portConfig, FUNCTION_RX_SERIAL, FUNCTION_TELEMETRY_IBUS);
+ 220:../cleanflight/src/main/rx/ibus.c **** #else
+ 221:../cleanflight/src/main/rx/ibus.c ****     bool portShared = false;
+ 763              	 .loc 1 221 0
+ 764 004a 0023     	 movs r3,#0
+ 765 004c FB74     	 strb r3,[r7,#19]
+ 222:../cleanflight/src/main/rx/ibus.c **** #endif
+ 223:../cleanflight/src/main/rx/ibus.c **** 
+ 224:../cleanflight/src/main/rx/ibus.c **** 
+ 225:../cleanflight/src/main/rx/ibus.c ****     rxBytesToIgnore = 0;
+ 766              	 .loc 1 225 0
+ 767 004e 1E4B     	 ldr r3,.L51+12
+ 768 0050 0022     	 movs r2,#0
+ 769 0052 1A70     	 strb r2,[r3]
+ 226:../cleanflight/src/main/rx/ibus.c ****     serialPort_t *ibusPort = openSerialPort(portConfig->identifier,
+ 770              	 .loc 1 226 0
+ 771 0054 7B69     	 ldr r3,[r7,#20]
+ 772 0056 9978     	 ldrb r1,[r3,#2]
+ 773 0058 FB7C     	 ldrb r3,[r7,#19]
+ 774 005a 002B     	 cmp r3,#0
+ 775 005c 01D0     	 beq .L46
+ 776              	 .loc 1 226 0 is_stmt 0 discriminator 1
+ 777 005e 0322     	 movs r2,#3
+ 778 0060 00E0     	 b .L47
+ 779              	.L46:
+ 780              	 .loc 1 226 0 discriminator 2
+ 781 0062 0122     	 movs r2,#1
+ 782              	.L47:
+ 227:../cleanflight/src/main/rx/ibus.c ****         FUNCTION_RX_SERIAL,
+ 228:../cleanflight/src/main/rx/ibus.c ****         ibusDataReceive,
+ 229:../cleanflight/src/main/rx/ibus.c ****         NULL,
+ 230:../cleanflight/src/main/rx/ibus.c ****         IBUS_BAUDRATE,
+ 231:../cleanflight/src/main/rx/ibus.c ****         portShared ? MODE_RXTX : MODE_RX,
+ 232:../cleanflight/src/main/rx/ibus.c ****         (rxConfig->serialrx_inverted ? SERIAL_INVERTED : 0) | (rxConfig->halfDuplex || portShared ?
+ 783              	 .loc 1 232 0 is_stmt 1 discriminator 4
+ 784 0064 7B68     	 ldr r3,[r7,#4]
+ 785 0066 5B7A     	 ldrb r3,[r3,#9]
+ 786 0068 002B     	 cmp r3,#0
+ 787 006a 14BF     	 ite ne
+ 788 006c 0123     	 movne r3,#1
+ 789 006e 0023     	 moveq r3,#0
+ 790 0070 DBB2     	 uxtb r3,r3
+ 791 0072 D8B2     	 uxtb r0,r3
+ 792 0074 7B68     	 ldr r3,[r7,#4]
+ 793 0076 9B7A     	 ldrb r3,[r3,#10]
+ 226:../cleanflight/src/main/rx/ibus.c ****     serialPort_t *ibusPort = openSerialPort(portConfig->identifier,
+ 794              	 .loc 1 226 0 discriminator 4
+ 795 0078 002B     	 cmp r3,#0
+ 796 007a 02D1     	 bne .L48
+ 797              	 .loc 1 232 0
+ 798 007c FB7C     	 ldrb r3,[r7,#19]
+ 799 007e 002B     	 cmp r3,#0
+ 800 0080 01D0     	 beq .L49
+ 801              	.L48:
+ 226:../cleanflight/src/main/rx/ibus.c ****     serialPort_t *ibusPort = openSerialPort(portConfig->identifier,
+ 802              	 .loc 1 226 0 discriminator 5
+ 803 0082 0823     	 movs r3,#8
+ 804 0084 00E0     	 b .L50
+ 805              	.L49:
+ 226:../cleanflight/src/main/rx/ibus.c ****     serialPort_t *ibusPort = openSerialPort(portConfig->identifier,
+ 806              	 .loc 1 226 0 is_stmt 0 discriminator 7
+ 807 0086 0023     	 movs r3,#0
+ 808              	.L50:
+ 226:../cleanflight/src/main/rx/ibus.c ****     serialPort_t *ibusPort = openSerialPort(portConfig->identifier,
+ 809              	 .loc 1 226 0 discriminator 6
+ 810 0088 0343     	 orrs r3,r3,r0
+ 811 008a DBB2     	 uxtb r3,r3
+ 812 008c DBB2     	 uxtb r3,r3
+ 813 008e 48B2     	 sxtb r0,r1
+ 814 0090 4FF4E131 	 mov r1,#115200
+ 815 0094 0091     	 str r1,[sp]
+ 816 0096 0192     	 str r2,[sp,#4]
+ 817 0098 0293     	 str r3,[sp,#8]
+ 818 009a 4021     	 movs r1,#64
+ 819 009c 0B4A     	 ldr r2,.L51+16
+ 820 009e 0023     	 movs r3,#0
+ 821 00a0 FFF7FEFF 	 bl openSerialPort
+ 822 00a4 F860     	 str r0,[r7,#12]
+ 233:../cleanflight/src/main/rx/ibus.c ****         );
+ 234:../cleanflight/src/main/rx/ibus.c **** 
+ 235:../cleanflight/src/main/rx/ibus.c **** #if defined(USE_TELEMETRY) && defined(USE_TELEMETRY_IBUS)
+ 236:../cleanflight/src/main/rx/ibus.c ****     if (portShared) {
+ 237:../cleanflight/src/main/rx/ibus.c ****         initSharedIbusTelemetry(ibusPort);
+ 238:../cleanflight/src/main/rx/ibus.c ****     }
+ 239:../cleanflight/src/main/rx/ibus.c **** #endif
+ 240:../cleanflight/src/main/rx/ibus.c **** 
+ 241:../cleanflight/src/main/rx/ibus.c ****     return ibusPort != NULL;
+ 823              	 .loc 1 241 0 is_stmt 1 discriminator 6
+ 824 00a6 FB68     	 ldr r3,[r7,#12]
+ 825 00a8 002B     	 cmp r3,#0
+ 826 00aa 14BF     	 ite ne
+ 827 00ac 0123     	 movne r3,#1
+ 828 00ae 0023     	 moveq r3,#0
+ 829 00b0 DBB2     	 uxtb r3,r3
+ 830              	.L45:
+ 242:../cleanflight/src/main/rx/ibus.c **** }
+ 831              	 .loc 1 242 0
+ 832 00b2 1846     	 mov r0,r3
+ 833 00b4 1837     	 adds r7,r7,#24
+ 834              	.LCFI39:
+ 835              	 .cfi_def_cfa_offset 8
+ 836 00b6 BD46     	 mov sp,r7
+ 837              	.LCFI40:
+ 838              	 .cfi_def_cfa_register 13
+ 839              	 
+ 840 00b8 80BD     	 pop {r7,pc}
+ 841              	.L52:
+ 842 00ba 00BF     	 .align 2
+ 843              	.L51:
+ 844 00bc 00000000 	 .word ibusSyncByte
+ 845 00c0 00000000 	 .word ibusReadRawRC
+ 846 00c4 00000000 	 .word ibusFrameStatus
+ 847 00c8 00000000 	 .word rxBytesToIgnore
+ 848 00cc 00000000 	 .word ibusDataReceive
+ 849              	 .cfi_endproc
+ 850              	.LFE546:
+ 852              	 .section .bss.ibusTimeLast.12606,"aw",%nobits
+ 853              	 .align 2
+ 856              	ibusTimeLast.12606:
+ 857 0000 00000000 	 .space 4
+ 858              	 .section .bss.ibusFramePosition.12607,"aw",%nobits
+ 861              	ibusFramePosition.12607:
+ 862 0000 00       	 .space 1
+ 863              	 .text
+ 864              	.Letext0:
+ 865              	 .file 2 "d:\\xmc\\dave-ide-4.4.2-64bit\\eclipse\\arm-gcc-49\\arm-none-eabi\\include\\machine\\_default_types.h"
+ 866              	 .file 3 "d:\\xmc\\dave-ide-4.4.2-64bit\\eclipse\\arm-gcc-49\\arm-none-eabi\\include\\stdint.h"
+ 867              	 .file 4 "D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/lib/main/XMC4000/XMCLib/inc/xmc_usic.h"
+ 868              	 .file 5 "D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/drivers/io_types.h"
+ 869              	 .file 6 "D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/pg/rx.h"
+ 870              	 .file 7 "D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/drivers/resource.h"
+ 871              	 .file 8 "D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/drivers/serial.h"
+ 872              	 .file 9 "D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/common/time.h"
+ 873              	 .file 10 "D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/io/serial.h"
+ 874              	 .file 11 "D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/rx/rx.h"
+ 875              	 .file 12 "D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/lib/main/CMSIS/Core/Include/core_cm4.h"
+ 876              	 .file 13 "D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/lib/main/XMC4000/system_XMC4700.h"
+DEFINED SYMBOLS
+                            *ABS*:00000000 ibus.c
+    {standard input}:22     .bss.ibusModel:00000000 ibusModel
+    {standard input}:23     .bss.ibusModel:00000000 $d
+    {standard input}:27     .bss.ibusSyncByte:00000000 ibusSyncByte
+    {standard input}:28     .bss.ibusSyncByte:00000000 $d
+    {standard input}:32     .bss.ibusFrameSize:00000000 ibusFrameSize
+    {standard input}:33     .bss.ibusFrameSize:00000000 $d
+    {standard input}:37     .bss.ibusChannelOffset:00000000 ibusChannelOffset
+    {standard input}:38     .bss.ibusChannelOffset:00000000 $d
+    {standard input}:42     .bss.rxBytesToIgnore:00000000 rxBytesToIgnore
+    {standard input}:43     .bss.rxBytesToIgnore:00000000 $d
+    {standard input}:45     .bss.ibusChecksum:00000000 $d
+    {standard input}:48     .bss.ibusChecksum:00000000 ibusChecksum
+    {standard input}:53     .bss.ibusFrameDone:00000000 ibusFrameDone
+    {standard input}:54     .bss.ibusFrameDone:00000000 $d
+    {standard input}:56     .bss.ibusChannelData:00000000 $d
+    {standard input}:59     .bss.ibusChannelData:00000000 ibusChannelData
+    {standard input}:62     .bss.ibus:00000000 $d
+    {standard input}:65     .bss.ibus:00000000 ibus
+    {standard input}:68     .text.isValidIa6bIbusPacketLength:00000000 $t
+    {standard input}:72     .text.isValidIa6bIbusPacketLength:00000000 isValidIa6bIbusPacketLength
+    {standard input}:129    .text.ibusDataReceive:00000000 $t
+    {standard input}:133    .text.ibusDataReceive:00000000 ibusDataReceive
+    {standard input}:313    .text.ibusDataReceive:000000fc $d
+    {standard input}:856    .bss.ibusTimeLast.12606:00000000 ibusTimeLast.12606
+    {standard input}:861    .bss.ibusFramePosition.12607:00000000 ibusFramePosition.12607
+    {standard input}:327    .text.isChecksumOkIa6:00000000 $t
+    {standard input}:331    .text.isChecksumOkIa6:00000000 isChecksumOkIa6
+    {standard input}:431    .text.isChecksumOkIa6:00000084 $d
+    {standard input}:439    .text.checksumIsOk:00000000 $t
+    {standard input}:443    .text.checksumIsOk:00000000 checksumIsOk
+    {standard input}:481    .text.checksumIsOk:00000028 $d
+    {standard input}:488    .text.updateChannelData:00000000 $t
+    {standard input}:492    .text.updateChannelData:00000000 updateChannelData
+    {standard input}:560    .text.updateChannelData:0000004c $d
+    {standard input}:567    .text.ibusFrameStatus:00000000 $t
+    {standard input}:571    .text.ibusFrameStatus:00000000 ibusFrameStatus
+    {standard input}:645    .text.ibusFrameStatus:00000050 $d
+    {standard input}:652    .text.ibusReadRawRC:00000000 $t
+    {standard input}:656    .text.ibusReadRawRC:00000000 ibusReadRawRC
+    {standard input}:698    .text.ibusReadRawRC:00000024 $d
+    {standard input}:703    .text.ibusInit:00000000 $t
+    {standard input}:708    .text.ibusInit:00000000 ibusInit
+    {standard input}:844    .text.ibusInit:000000bc $d
+    {standard input}:853    .bss.ibusTimeLast.12606:00000000 $d
+    {standard input}:862    .bss.ibusFramePosition.12607:00000000 $d
+                     .debug_frame:00000010 $d
+
+UNDEFINED SYMBOLS
+micros
+isChecksumOkIa6b
+findSerialPortConfig
+openSerialPort

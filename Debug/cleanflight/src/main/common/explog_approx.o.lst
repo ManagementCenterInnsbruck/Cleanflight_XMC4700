@@ -1,0 +1,448 @@
+   1              	 .syntax unified
+   2              	 .cpu cortex-m4
+   3              	 .eabi_attribute 27,3
+   4              	 .fpu fpv4-sp-d16
+   5              	 .eabi_attribute 20,1
+   6              	 .eabi_attribute 21,1
+   7              	 .eabi_attribute 23,3
+   8              	 .eabi_attribute 24,1
+   9              	 .eabi_attribute 25,1
+  10              	 .eabi_attribute 26,1
+  11              	 .eabi_attribute 30,6
+  12              	 .eabi_attribute 34,1
+  13              	 .eabi_attribute 18,4
+  14              	 .thumb
+  15              	 .file "explog_approx.c"
+  16              	 .text
+  17              	.Ltext0:
+  18              	 .cfi_sections .debug_frame
+  19              	 .global exp_cst1
+  20              	 .section .data.exp_cst1,"aw",%progbits
+  21              	 .align 2
+  24              	exp_cst1:
+  25 0000 0000FF4E 	 .word 1325334528
+  26              	 .global exp_cst2
+  27              	 .section .bss.exp_cst2,"aw",%nobits
+  28              	 .align 2
+  31              	exp_cst2:
+  32 0000 00000000 	 .space 4
+  33              	 .section .text.exp_approx,"ax",%progbits
+  34              	 .align 2
+  35              	 .global exp_approx
+  36              	 .thumb
+  37              	 .thumb_func
+  39              	exp_approx:
+  40              	.LFB0:
+  41              	 .file 1 "../cleanflight/src/main/common/explog_approx.c"
+   1:../cleanflight/src/main/common/explog_approx.c **** /*
+   2:../cleanflight/src/main/common/explog_approx.c **** 
+   3:../cleanflight/src/main/common/explog_approx.c **** The MIT License (MIT)
+   4:../cleanflight/src/main/common/explog_approx.c **** 
+   5:../cleanflight/src/main/common/explog_approx.c **** Copyright (c) 2015 Jacques-Henri Jourdan <jourgun@gmail.com>
+   6:../cleanflight/src/main/common/explog_approx.c **** 
+   7:../cleanflight/src/main/common/explog_approx.c **** Permission is hereby granted, free of charge, to any person obtaining a copy
+   8:../cleanflight/src/main/common/explog_approx.c **** of this software and associated documentation files (the "Software"), to deal
+   9:../cleanflight/src/main/common/explog_approx.c **** in the Software without restriction, including without limitation the rights
+  10:../cleanflight/src/main/common/explog_approx.c **** to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+  11:../cleanflight/src/main/common/explog_approx.c **** copies of the Software, and to permit persons to whom the Software is
+  12:../cleanflight/src/main/common/explog_approx.c **** furnished to do so, subject to the following conditions:
+  13:../cleanflight/src/main/common/explog_approx.c **** 
+  14:../cleanflight/src/main/common/explog_approx.c **** The above copyright notice and this permission notice shall be included in all
+  15:../cleanflight/src/main/common/explog_approx.c **** copies or substantial portions of the Software.
+  16:../cleanflight/src/main/common/explog_approx.c **** 
+  17:../cleanflight/src/main/common/explog_approx.c **** THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+  18:../cleanflight/src/main/common/explog_approx.c **** IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+  19:../cleanflight/src/main/common/explog_approx.c **** FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+  20:../cleanflight/src/main/common/explog_approx.c **** AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+  21:../cleanflight/src/main/common/explog_approx.c **** LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+  22:../cleanflight/src/main/common/explog_approx.c **** OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+  23:../cleanflight/src/main/common/explog_approx.c **** SOFTWARE.
+  24:../cleanflight/src/main/common/explog_approx.c **** 
+  25:../cleanflight/src/main/common/explog_approx.c **** Taken from https://github.com/jhjourdan/SIMD-math-prims/blob/master/simd_math_prims.h
+  26:../cleanflight/src/main/common/explog_approx.c **** Stripped down for BF use
+  27:../cleanflight/src/main/common/explog_approx.c **** 
+  28:../cleanflight/src/main/common/explog_approx.c **** */
+  29:../cleanflight/src/main/common/explog_approx.c **** 
+  30:../cleanflight/src/main/common/explog_approx.c **** #include <math.h>
+  31:../cleanflight/src/main/common/explog_approx.c **** #include <stdint.h>
+  32:../cleanflight/src/main/common/explog_approx.c **** 
+  33:../cleanflight/src/main/common/explog_approx.c **** /* Workaround a lack of optimization in gcc */
+  34:../cleanflight/src/main/common/explog_approx.c **** float exp_cst1 = 2139095040.f;
+  35:../cleanflight/src/main/common/explog_approx.c **** float exp_cst2 = 0.f;
+  36:../cleanflight/src/main/common/explog_approx.c **** 
+  37:../cleanflight/src/main/common/explog_approx.c **** /* Relative error bounded by 1e-5 for normalized outputs
+  38:../cleanflight/src/main/common/explog_approx.c ****    Returns invalid outputs for nan inputs
+  39:../cleanflight/src/main/common/explog_approx.c ****    Continuous error */
+  40:../cleanflight/src/main/common/explog_approx.c **** float exp_approx(float val) {
+  42              	 .loc 1 40 0
+  43              	 .cfi_startproc
+  44              	 
+  45              	 
+  46              	 
+  47 0000 80B4     	 push {r7}
+  48              	.LCFI0:
+  49              	 .cfi_def_cfa_offset 4
+  50              	 .cfi_offset 7,-4
+  51 0002 8BB0     	 sub sp,sp,#44
+  52              	.LCFI1:
+  53              	 .cfi_def_cfa_offset 48
+  54 0004 00AF     	 add r7,sp,#0
+  55              	.LCFI2:
+  56              	 .cfi_def_cfa_register 7
+  57 0006 7860     	 str r0,[r7,#4]
+  41:../cleanflight/src/main/common/explog_approx.c ****   union { int32_t i; float f; } xu, xu2;
+  42:../cleanflight/src/main/common/explog_approx.c ****   float val2, val3, val4, b;
+  43:../cleanflight/src/main/common/explog_approx.c ****   int32_t val4i;
+  44:../cleanflight/src/main/common/explog_approx.c ****   val2 = 12102203.1615614f*val+1065353216.f;
+  58              	 .loc 1 44 0
+  59 0008 D7ED017A 	 flds s15,[r7,#4]
+  60 000c 9FED347A 	 flds s14,.L13
+  61 0010 67EE877A 	 fmuls s15,s15,s14
+  62 0014 9FED337A 	 flds s14,.L13+4
+  63 0018 77EE877A 	 fadds s15,s15,s14
+  64 001c C7ED097A 	 fsts s15,[r7,#36]
+  45:../cleanflight/src/main/common/explog_approx.c ****   val3 = val2 < exp_cst1 ? val2 : exp_cst1;
+  65              	 .loc 1 45 0
+  66 0020 314B     	 ldr r3,.L13+8
+  67 0022 D3ED007A 	 flds s15,[r3]
+  68 0026 97ED097A 	 flds s14,[r7,#36]
+  69 002a B4EEE77A 	 fcmpes s14,s15
+  70 002e F1EE10FA 	 fmstat
+  71 0032 01D5     	 bpl .L11
+  72              	 .loc 1 45 0 is_stmt 0 discriminator 1
+  73 0034 7B6A     	 ldr r3,[r7,#36]
+  74 0036 01E0     	 b .L4
+  75              	.L11:
+  76              	 .loc 1 45 0 discriminator 2
+  77 0038 2B4B     	 ldr r3,.L13+8
+  78 003a 1B68     	 ldr r3,[r3]
+  79              	.L4:
+  80              	 .loc 1 45 0 discriminator 4
+  81 003c 3B62     	 str r3,[r7,#32]
+  46:../cleanflight/src/main/common/explog_approx.c ****   val4 = val3 > exp_cst2 ? val3 : exp_cst2;
+  82              	 .loc 1 46 0 is_stmt 1 discriminator 4
+  83 003e 2B4B     	 ldr r3,.L13+12
+  84 0040 D3ED007A 	 flds s15,[r3]
+  85 0044 97ED087A 	 flds s14,[r7,#32]
+  86 0048 B4EEE77A 	 fcmpes s14,s15
+  87 004c F1EE10FA 	 fmstat
+  88 0050 01DD     	 ble .L12
+  89              	 .loc 1 46 0 is_stmt 0 discriminator 1
+  90 0052 3B6A     	 ldr r3,[r7,#32]
+  91 0054 01E0     	 b .L7
+  92              	.L12:
+  93              	 .loc 1 46 0 discriminator 2
+  94 0056 254B     	 ldr r3,.L13+12
+  95 0058 1B68     	 ldr r3,[r3]
+  96              	.L7:
+  97              	 .loc 1 46 0 discriminator 4
+  98 005a FB61     	 str r3,[r7,#28]
+  47:../cleanflight/src/main/common/explog_approx.c ****   val4i = (int32_t) val4;
+  99              	 .loc 1 47 0 is_stmt 1 discriminator 4
+ 100 005c D7ED077A 	 flds s15,[r7,#28]
+ 101 0060 FDEEE77A 	 ftosizs s15,s15
+ 102 0064 17EE903A 	 fmrs r3,s15
+ 103 0068 BB61     	 str r3,[r7,#24]
+  48:../cleanflight/src/main/common/explog_approx.c ****   xu.i = val4i & 0x7F800000;                   // mask exponent  / round down to neareset 2^n (impl
+ 104              	 .loc 1 48 0 discriminator 4
+ 105 006a BB69     	 ldr r3,[r7,#24]
+ 106 006c 03F0FF43 	 and r3,r3,#2139095040
+ 107 0070 3B61     	 str r3,[r7,#16]
+  49:../cleanflight/src/main/common/explog_approx.c ****   xu2.i = (val4i & 0x7FFFFF) | 0x3F800000;     // force exponent to 0
+ 108              	 .loc 1 49 0 discriminator 4
+ 109 0072 BB69     	 ldr r3,[r7,#24]
+ 110 0074 C3F31603 	 ubfx r3,r3,#0,#23
+ 111 0078 43F07E53 	 orr r3,r3,#1065353216
+ 112 007c FB60     	 str r3,[r7,#12]
+  50:../cleanflight/src/main/common/explog_approx.c ****   b = xu2.f;
+ 113              	 .loc 1 50 0 discriminator 4
+ 114 007e FB68     	 ldr r3,[r7,#12]
+ 115 0080 7B61     	 str r3,[r7,#20]
+  51:../cleanflight/src/main/common/explog_approx.c **** 
+  52:../cleanflight/src/main/common/explog_approx.c ****   /* Generated in Sollya with:
+  53:../cleanflight/src/main/common/explog_approx.c ****      > f=remez(1-x*exp(-(x-1)*log(2)),
+  54:../cleanflight/src/main/common/explog_approx.c ****                [|(x-1)*(x-2), (x-1)*(x-2)*x, (x-1)*(x-2)*x*x|],
+  55:../cleanflight/src/main/common/explog_approx.c ****                [1.000001,1.999999], exp(-(x-1)*log(2)));
+  56:../cleanflight/src/main/common/explog_approx.c ****      > plot(exp((x-1)*log(2))/(f+x)-1, [1,2]);
+  57:../cleanflight/src/main/common/explog_approx.c ****      > f+x;
+  58:../cleanflight/src/main/common/explog_approx.c ****   */
+  59:../cleanflight/src/main/common/explog_approx.c ****   return
+  60:../cleanflight/src/main/common/explog_approx.c ****     xu.f * (0.509871020343597804469416f + b *
+ 116              	 .loc 1 60 0 discriminator 4
+ 117 0082 97ED047A 	 flds s14,[r7,#16]
+  61:../cleanflight/src/main/common/explog_approx.c ****             (0.312146713032169896138863f + b *
+  62:../cleanflight/src/main/common/explog_approx.c ****              (0.166617139319965966118107f + b *
+  63:../cleanflight/src/main/common/explog_approx.c ****               (-2.19061993049215080032874e-3f + b *
+ 118              	 .loc 1 63 0 discriminator 4
+ 119 0086 D7ED057A 	 flds s15,[r7,#20]
+ 120 008a DFED196A 	 flds s13,.L13+16
+ 121 008e 67EEA67A 	 fmuls s15,s15,s13
+ 122 0092 DFED186A 	 flds s13,.L13+20
+ 123 0096 77EEE66A 	 fsubs s13,s15,s13
+  62:../cleanflight/src/main/common/explog_approx.c ****               (-2.19061993049215080032874e-3f + b *
+ 124              	 .loc 1 62 0 discriminator 4
+ 125 009a D7ED057A 	 flds s15,[r7,#20]
+ 126 009e 66EEA77A 	 fmuls s15,s13,s15
+ 127 00a2 DFED156A 	 flds s13,.L13+24
+ 128 00a6 77EEA66A 	 fadds s13,s15,s13
+  61:../cleanflight/src/main/common/explog_approx.c ****             (0.312146713032169896138863f + b *
+ 129              	 .loc 1 61 0 discriminator 4
+ 130 00aa D7ED057A 	 flds s15,[r7,#20]
+ 131 00ae 66EEA77A 	 fmuls s15,s13,s15
+ 132 00b2 DFED126A 	 flds s13,.L13+28
+ 133 00b6 77EEA66A 	 fadds s13,s15,s13
+  60:../cleanflight/src/main/common/explog_approx.c ****             (0.312146713032169896138863f + b *
+ 134              	 .loc 1 60 0 discriminator 4
+ 135 00ba D7ED057A 	 flds s15,[r7,#20]
+ 136 00be 66EEA77A 	 fmuls s15,s13,s15
+ 137 00c2 DFED0F6A 	 flds s13,.L13+32
+ 138 00c6 77EEA67A 	 fadds s15,s15,s13
+  59:../cleanflight/src/main/common/explog_approx.c ****     xu.f * (0.509871020343597804469416f + b *
+ 139              	 .loc 1 59 0 discriminator 4
+ 140 00ca 67EE277A 	 fmuls s15,s14,s15
+ 141 00ce 17EE903A 	 fmrs r3,s15
+  64:../cleanflight/src/main/common/explog_approx.c ****                1.3555747234758484073940937e-2f))));
+  65:../cleanflight/src/main/common/explog_approx.c **** }
+ 142              	 .loc 1 65 0 discriminator 4
+ 143 00d2 1846     	 mov r0,r3
+ 144 00d4 2C37     	 adds r7,r7,#44
+ 145              	.LCFI3:
+ 146              	 .cfi_def_cfa_offset 4
+ 147 00d6 BD46     	 mov sp,r7
+ 148              	.LCFI4:
+ 149              	 .cfi_def_cfa_register 13
+ 150              	 
+ 151 00d8 5DF8047B 	 ldr r7,[sp],#4
+ 152              	.LCFI5:
+ 153              	 .cfi_restore 7
+ 154              	 .cfi_def_cfa_offset 0
+ 155 00dc 7047     	 bx lr
+ 156              	.L14:
+ 157 00de 00BF     	 .align 2
+ 158              	.L13:
+ 159 00e0 3BAA384B 	 .word 1262004795
+ 160 00e4 00007E4E 	 .word 1316880384
+ 161 00e8 00000000 	 .word exp_cst1
+ 162 00ec 00000000 	 .word exp_cst2
+ 163 00f0 ED185E3C 	 .word 1012799725
+ 164 00f4 81900F3B 	 .word 990875777
+ 165 00f8 AF9D2A3E 	 .word 1042980271
+ 166 00fc B2D19F3E 	 .word 1050661298
+ 167 0100 E886023F 	 .word 1057130216
+ 168              	 .cfi_endproc
+ 169              	.LFE0:
+ 171              	 .section .text.log_approx,"ax",%progbits
+ 172              	 .align 2
+ 173              	 .global log_approx
+ 174              	 .thumb
+ 175              	 .thumb_func
+ 177              	log_approx:
+ 178              	.LFB1:
+  66:../cleanflight/src/main/common/explog_approx.c **** 
+  67:../cleanflight/src/main/common/explog_approx.c **** /* Absolute error bounded by 1e-6 for normalized inputs
+  68:../cleanflight/src/main/common/explog_approx.c ****    Returns a finite number for +inf input
+  69:../cleanflight/src/main/common/explog_approx.c ****    Returns -inf for nan and <= 0 inputs.
+  70:../cleanflight/src/main/common/explog_approx.c ****    Continuous error. */
+  71:../cleanflight/src/main/common/explog_approx.c **** float log_approx(float val) {
+ 179              	 .loc 1 71 0
+ 180              	 .cfi_startproc
+ 181              	 
+ 182              	 
+ 183              	 
+ 184 0000 80B4     	 push {r7}
+ 185              	.LCFI6:
+ 186              	 .cfi_def_cfa_offset 4
+ 187              	 .cfi_offset 7,-4
+ 188 0002 87B0     	 sub sp,sp,#28
+ 189              	.LCFI7:
+ 190              	 .cfi_def_cfa_offset 32
+ 191 0004 00AF     	 add r7,sp,#0
+ 192              	.LCFI8:
+ 193              	 .cfi_def_cfa_register 7
+ 194 0006 7860     	 str r0,[r7,#4]
+  72:../cleanflight/src/main/common/explog_approx.c ****   union { float f; int32_t i; } valu;
+  73:../cleanflight/src/main/common/explog_approx.c ****   float exp, addcst, x;
+  74:../cleanflight/src/main/common/explog_approx.c ****   valu.f = val;
+ 195              	 .loc 1 74 0
+ 196 0008 7B68     	 ldr r3,[r7,#4]
+ 197 000a BB60     	 str r3,[r7,#8]
+  75:../cleanflight/src/main/common/explog_approx.c ****   exp = valu.i >> 23;
+ 198              	 .loc 1 75 0
+ 199 000c BB68     	 ldr r3,[r7,#8]
+ 200 000e DB15     	 asrs r3,r3,#23
+ 201 0010 07EE903A 	 fmsr s15,r3
+ 202 0014 F8EEE77A 	 fsitos s15,s15
+ 203 0018 C7ED057A 	 fsts s15,[r7,#20]
+  76:../cleanflight/src/main/common/explog_approx.c ****   /* 89.970756366f = 127 * log(2) - constant term of polynomial */
+  77:../cleanflight/src/main/common/explog_approx.c ****   addcst = val > 0 ? -89.970756366f : -(float)INFINITY;
+ 204              	 .loc 1 77 0
+ 205 001c D7ED017A 	 flds s15,[r7,#4]
+ 206 0020 F5EEC07A 	 fcmpezs s15
+ 207 0024 F1EE10FA 	 fmstat
+ 208 0028 01DD     	 ble .L21
+ 209              	 .loc 1 77 0 is_stmt 0 discriminator 1
+ 210 002a 234B     	 ldr r3,.L22
+ 211 002c 00E0     	 b .L18
+ 212              	.L21:
+ 213              	 .loc 1 77 0 discriminator 2
+ 214 002e 234B     	 ldr r3,.L22+4
+ 215              	.L18:
+ 216              	 .loc 1 77 0 discriminator 4
+ 217 0030 3B61     	 str r3,[r7,#16]
+  78:../cleanflight/src/main/common/explog_approx.c ****   valu.i = (valu.i & 0x7FFFFF) | 0x3F800000;
+ 218              	 .loc 1 78 0 is_stmt 1 discriminator 4
+ 219 0032 BB68     	 ldr r3,[r7,#8]
+ 220 0034 C3F31603 	 ubfx r3,r3,#0,#23
+ 221 0038 43F07E53 	 orr r3,r3,#1065353216
+ 222 003c BB60     	 str r3,[r7,#8]
+  79:../cleanflight/src/main/common/explog_approx.c ****   x = valu.f;
+ 223              	 .loc 1 79 0 discriminator 4
+ 224 003e BB68     	 ldr r3,[r7,#8]
+ 225 0040 FB60     	 str r3,[r7,#12]
+  80:../cleanflight/src/main/common/explog_approx.c **** 
+  81:../cleanflight/src/main/common/explog_approx.c **** 
+  82:../cleanflight/src/main/common/explog_approx.c ****   /* Generated in Sollya using:
+  83:../cleanflight/src/main/common/explog_approx.c ****     > f = remez(log(x)-(x-1)*log(2),
+  84:../cleanflight/src/main/common/explog_approx.c ****             [|1,(x-1)*(x-2), (x-1)*(x-2)*x, (x-1)*(x-2)*x*x,
+  85:../cleanflight/src/main/common/explog_approx.c ****               (x-1)*(x-2)*x*x*x|], [1,2], 1, 1e-8);
+  86:../cleanflight/src/main/common/explog_approx.c ****     > plot(f+(x-1)*log(2)-log(x), [1,2]);
+  87:../cleanflight/src/main/common/explog_approx.c ****     > f+(x-1)*log(2)
+  88:../cleanflight/src/main/common/explog_approx.c ****  */
+  89:../cleanflight/src/main/common/explog_approx.c ****   return
+  90:../cleanflight/src/main/common/explog_approx.c ****     x * (3.529304993f + x * (-2.461222105f +
+  91:../cleanflight/src/main/common/explog_approx.c ****       x * (1.130626167f + x * (-0.288739945f +
+  92:../cleanflight/src/main/common/explog_approx.c ****         x * 3.110401639e-2f))))
+ 226              	 .loc 1 92 0 discriminator 4
+ 227 0042 D7ED037A 	 flds s15,[r7,#12]
+ 228 0046 9FED1E7A 	 flds s14,.L22+8
+ 229 004a 67EE877A 	 fmuls s15,s15,s14
+  91:../cleanflight/src/main/common/explog_approx.c ****         x * 3.110401639e-2f))))
+ 230              	 .loc 1 91 0 discriminator 4
+ 231 004e 9FED1D7A 	 flds s14,.L22+12
+ 232 0052 37EEC77A 	 fsubs s14,s15,s14
+ 233 0056 D7ED037A 	 flds s15,[r7,#12]
+ 234 005a 67EE277A 	 fmuls s15,s14,s15
+ 235 005e 9FED1A7A 	 flds s14,.L22+16
+ 236 0062 37EE877A 	 fadds s14,s15,s14
+ 237 0066 D7ED037A 	 flds s15,[r7,#12]
+ 238 006a 67EE277A 	 fmuls s15,s14,s15
+  90:../cleanflight/src/main/common/explog_approx.c ****       x * (1.130626167f + x * (-0.288739945f +
+ 239              	 .loc 1 90 0 discriminator 4
+ 240 006e 9FED177A 	 flds s14,.L22+20
+ 241 0072 37EEC77A 	 fsubs s14,s15,s14
+ 242 0076 D7ED037A 	 flds s15,[r7,#12]
+ 243 007a 67EE277A 	 fmuls s15,s14,s15
+ 244 007e 9FED147A 	 flds s14,.L22+24
+ 245 0082 37EE877A 	 fadds s14,s15,s14
+ 246 0086 D7ED037A 	 flds s15,[r7,#12]
+ 247 008a 27EE277A 	 fmuls s14,s14,s15
+  93:../cleanflight/src/main/common/explog_approx.c ****     + (addcst + 0.69314718055995f*exp);
+ 248              	 .loc 1 93 0 discriminator 4
+ 249 008e D7ED057A 	 flds s15,[r7,#20]
+ 250 0092 DFED106A 	 flds s13,.L22+28
+ 251 0096 67EEA66A 	 fmuls s13,s15,s13
+ 252 009a D7ED047A 	 flds s15,[r7,#16]
+ 253 009e 76EEA77A 	 fadds s15,s13,s15
+  89:../cleanflight/src/main/common/explog_approx.c ****     x * (3.529304993f + x * (-2.461222105f +
+ 254              	 .loc 1 89 0 discriminator 4
+ 255 00a2 77EE277A 	 fadds s15,s14,s15
+ 256 00a6 17EE903A 	 fmrs r3,s15
+  94:../cleanflight/src/main/common/explog_approx.c **** }
+ 257              	 .loc 1 94 0 discriminator 4
+ 258 00aa 1846     	 mov r0,r3
+ 259 00ac 1C37     	 adds r7,r7,#28
+ 260              	.LCFI9:
+ 261              	 .cfi_def_cfa_offset 4
+ 262 00ae BD46     	 mov sp,r7
+ 263              	.LCFI10:
+ 264              	 .cfi_def_cfa_register 13
+ 265              	 
+ 266 00b0 5DF8047B 	 ldr r7,[sp],#4
+ 267              	.LCFI11:
+ 268              	 .cfi_restore 7
+ 269              	 .cfi_def_cfa_offset 0
+ 270 00b4 7047     	 bx lr
+ 271              	.L23:
+ 272 00b6 00BF     	 .align 2
+ 273              	.L22:
+ 274 00b8 07F1B3C2 	 .word -1028394745
+ 275 00bc 000080FF 	 .word -8388608
+ 276 00c0 DACDFE3C 	 .word 1023331802
+ 277 00c4 B9D5933E 	 .word 1049875897
+ 278 00c8 5CB8903F 	 .word 1066448988
+ 279 00cc AA841D40 	 .word 1075676330
+ 280 00d0 22E06140 	 .word 1080156194
+ 281 00d4 1872313F 	 .word 1060205080
+ 282              	 .cfi_endproc
+ 283              	.LFE1:
+ 285              	 .section .text.pow_approx,"ax",%progbits
+ 286              	 .align 2
+ 287              	 .global pow_approx
+ 288              	 .thumb
+ 289              	 .thumb_func
+ 291              	pow_approx:
+ 292              	.LFB2:
+  95:../cleanflight/src/main/common/explog_approx.c **** 
+  96:../cleanflight/src/main/common/explog_approx.c **** float pow_approx(float a, float b)
+  97:../cleanflight/src/main/common/explog_approx.c **** {
+ 293              	 .loc 1 97 0
+ 294              	 .cfi_startproc
+ 295              	 
+ 296              	 
+ 297 0000 80B5     	 push {r7,lr}
+ 298              	.LCFI12:
+ 299              	 .cfi_def_cfa_offset 8
+ 300              	 .cfi_offset 7,-8
+ 301              	 .cfi_offset 14,-4
+ 302 0002 82B0     	 sub sp,sp,#8
+ 303              	.LCFI13:
+ 304              	 .cfi_def_cfa_offset 16
+ 305 0004 00AF     	 add r7,sp,#0
+ 306              	.LCFI14:
+ 307              	 .cfi_def_cfa_register 7
+ 308 0006 7860     	 str r0,[r7,#4]
+ 309 0008 3960     	 str r1,[r7]
+  98:../cleanflight/src/main/common/explog_approx.c ****     return exp_approx(b * log_approx(a));
+ 310              	 .loc 1 98 0
+ 311 000a 7868     	 ldr r0,[r7,#4]
+ 312 000c FFF7FEFF 	 bl log_approx
+ 313 0010 07EE100A 	 fmsr s14,r0
+ 314 0014 D7ED007A 	 flds s15,[r7]
+ 315 0018 67EE277A 	 fmuls s15,s14,s15
+ 316 001c 17EE900A 	 fmrs r0,s15
+ 317 0020 FFF7FEFF 	 bl exp_approx
+ 318 0024 0346     	 mov r3,r0
+  99:../cleanflight/src/main/common/explog_approx.c **** }
+ 319              	 .loc 1 99 0
+ 320 0026 1846     	 mov r0,r3
+ 321 0028 0837     	 adds r7,r7,#8
+ 322              	.LCFI15:
+ 323              	 .cfi_def_cfa_offset 8
+ 324 002a BD46     	 mov sp,r7
+ 325              	.LCFI16:
+ 326              	 .cfi_def_cfa_register 13
+ 327              	 
+ 328 002c 80BD     	 pop {r7,pc}
+ 329              	 .cfi_endproc
+ 330              	.LFE2:
+ 332 002e 00BF     	 .text
+ 333              	.Letext0:
+ 334              	 .file 2 "d:\\xmc\\dave-ide-4.4.2-64bit\\eclipse\\arm-gcc-49\\arm-none-eabi\\include\\machine\\_default_types.h"
+ 335              	 .file 3 "d:\\xmc\\dave-ide-4.4.2-64bit\\eclipse\\arm-gcc-49\\arm-none-eabi\\include\\stdint.h"
+DEFINED SYMBOLS
+                            *ABS*:00000000 explog_approx.c
+    {standard input}:24     .data.exp_cst1:00000000 exp_cst1
+    {standard input}:21     .data.exp_cst1:00000000 $d
+    {standard input}:31     .bss.exp_cst2:00000000 exp_cst2
+    {standard input}:28     .bss.exp_cst2:00000000 $d
+    {standard input}:34     .text.exp_approx:00000000 $t
+    {standard input}:39     .text.exp_approx:00000000 exp_approx
+    {standard input}:159    .text.exp_approx:000000e0 $d
+    {standard input}:172    .text.log_approx:00000000 $t
+    {standard input}:177    .text.log_approx:00000000 log_approx
+    {standard input}:274    .text.log_approx:000000b8 $d
+    {standard input}:286    .text.pow_approx:00000000 $t
+    {standard input}:291    .text.pow_approx:00000000 pow_approx
+                     .debug_frame:00000010 $d
+
+NO UNDEFINED SYMBOLS

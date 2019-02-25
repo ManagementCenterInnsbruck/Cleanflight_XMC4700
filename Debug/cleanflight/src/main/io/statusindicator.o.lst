@@ -1,0 +1,447 @@
+   1              	 .syntax unified
+   2              	 .cpu cortex-m4
+   3              	 .eabi_attribute 27,3
+   4              	 .fpu fpv4-sp-d16
+   5              	 .eabi_attribute 20,1
+   6              	 .eabi_attribute 21,1
+   7              	 .eabi_attribute 23,3
+   8              	 .eabi_attribute 24,1
+   9              	 .eabi_attribute 25,1
+  10              	 .eabi_attribute 26,1
+  11              	 .eabi_attribute 30,6
+  12              	 .eabi_attribute 34,1
+  13              	 .eabi_attribute 18,4
+  14              	 .thumb
+  15              	 .file "statusindicator.c"
+  16              	 .text
+  17              	.Ltext0:
+  18              	 .cfi_sections .debug_frame
+  19              	 .section .bss.warningLedTimer,"aw",%nobits
+  20              	 .align 2
+  23              	warningLedTimer:
+  24 0000 00000000 	 .space 4
+  25              	 .section .bss.warningLedState,"aw",%nobits
+  28              	warningLedState:
+  29 0000 00       	 .space 1
+  30              	 .section .text.warningLedResetTimer,"ax",%progbits
+  31              	 .align 2
+  32              	 .global warningLedResetTimer
+  33              	 .thumb
+  34              	 .thumb_func
+  36              	warningLedResetTimer:
+  37              	.LFB529:
+  38              	 .file 1 "../cleanflight/src/main/io/statusindicator.c"
+   1:../cleanflight/src/main/io/statusindicator.c **** /*
+   2:../cleanflight/src/main/io/statusindicator.c ****  * This file is part of Cleanflight and Betaflight.
+   3:../cleanflight/src/main/io/statusindicator.c ****  *
+   4:../cleanflight/src/main/io/statusindicator.c ****  * Cleanflight and Betaflight are free software. You can redistribute
+   5:../cleanflight/src/main/io/statusindicator.c ****  * this software and/or modify this software under the terms of the
+   6:../cleanflight/src/main/io/statusindicator.c ****  * GNU General Public License as published by the Free Software
+   7:../cleanflight/src/main/io/statusindicator.c ****  * Foundation, either version 3 of the License, or (at your option)
+   8:../cleanflight/src/main/io/statusindicator.c ****  * any later version.
+   9:../cleanflight/src/main/io/statusindicator.c ****  *
+  10:../cleanflight/src/main/io/statusindicator.c ****  * Cleanflight and Betaflight are distributed in the hope that they
+  11:../cleanflight/src/main/io/statusindicator.c ****  * will be useful, but WITHOUT ANY WARRANTY; without even the implied
+  12:../cleanflight/src/main/io/statusindicator.c ****  * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+  13:../cleanflight/src/main/io/statusindicator.c ****  * See the GNU General Public License for more details.
+  14:../cleanflight/src/main/io/statusindicator.c ****  *
+  15:../cleanflight/src/main/io/statusindicator.c ****  * You should have received a copy of the GNU General Public License
+  16:../cleanflight/src/main/io/statusindicator.c ****  * along with this software.
+  17:../cleanflight/src/main/io/statusindicator.c ****  *
+  18:../cleanflight/src/main/io/statusindicator.c ****  * If not, see <http://www.gnu.org/licenses/>.
+  19:../cleanflight/src/main/io/statusindicator.c ****  */
+  20:../cleanflight/src/main/io/statusindicator.c **** 
+  21:../cleanflight/src/main/io/statusindicator.c **** #include <stdbool.h>
+  22:../cleanflight/src/main/io/statusindicator.c **** #include <stdint.h>
+  23:../cleanflight/src/main/io/statusindicator.c **** 
+  24:../cleanflight/src/main/io/statusindicator.c **** #include "platform.h"
+  25:../cleanflight/src/main/io/statusindicator.c **** 
+  26:../cleanflight/src/main/io/statusindicator.c **** #include "drivers/light_led.h"
+  27:../cleanflight/src/main/io/statusindicator.c **** #include "drivers/time.h"
+  28:../cleanflight/src/main/io/statusindicator.c **** 
+  29:../cleanflight/src/main/io/statusindicator.c **** #include "statusindicator.h"
+  30:../cleanflight/src/main/io/statusindicator.c **** 
+  31:../cleanflight/src/main/io/statusindicator.c **** static uint32_t warningLedTimer = 0;
+  32:../cleanflight/src/main/io/statusindicator.c **** 
+  33:../cleanflight/src/main/io/statusindicator.c **** typedef enum {
+  34:../cleanflight/src/main/io/statusindicator.c ****     WARNING_LED_OFF = 0,
+  35:../cleanflight/src/main/io/statusindicator.c ****     WARNING_LED_ON,
+  36:../cleanflight/src/main/io/statusindicator.c ****     WARNING_LED_FLASH
+  37:../cleanflight/src/main/io/statusindicator.c **** } warningLedState_e;
+  38:../cleanflight/src/main/io/statusindicator.c **** 
+  39:../cleanflight/src/main/io/statusindicator.c **** static warningLedState_e warningLedState = WARNING_LED_OFF;
+  40:../cleanflight/src/main/io/statusindicator.c **** 
+  41:../cleanflight/src/main/io/statusindicator.c **** void warningLedResetTimer(void) {
+  39              	 .loc 1 41 0
+  40              	 .cfi_startproc
+  41              	 
+  42              	 
+  43 0000 80B5     	 push {r7,lr}
+  44              	.LCFI0:
+  45              	 .cfi_def_cfa_offset 8
+  46              	 .cfi_offset 7,-8
+  47              	 .cfi_offset 14,-4
+  48 0002 82B0     	 sub sp,sp,#8
+  49              	.LCFI1:
+  50              	 .cfi_def_cfa_offset 16
+  51 0004 00AF     	 add r7,sp,#0
+  52              	.LCFI2:
+  53              	 .cfi_def_cfa_register 7
+  42:../cleanflight/src/main/io/statusindicator.c ****     uint32_t now = millis();
+  54              	 .loc 1 42 0
+  55 0006 FFF7FEFF 	 bl millis
+  56 000a 7860     	 str r0,[r7,#4]
+  43:../cleanflight/src/main/io/statusindicator.c ****     warningLedTimer = now + 500000;
+  57              	 .loc 1 43 0
+  58 000c 7B68     	 ldr r3,[r7,#4]
+  59 000e 03F5F423 	 add r3,r3,#499712
+  60 0012 03F59073 	 add r3,r3,#288
+  61 0016 024A     	 ldr r2,.L2
+  62 0018 1360     	 str r3,[r2]
+  44:../cleanflight/src/main/io/statusindicator.c **** }
+  63              	 .loc 1 44 0
+  64 001a 0837     	 adds r7,r7,#8
+  65              	.LCFI3:
+  66              	 .cfi_def_cfa_offset 8
+  67 001c BD46     	 mov sp,r7
+  68              	.LCFI4:
+  69              	 .cfi_def_cfa_register 13
+  70              	 
+  71 001e 80BD     	 pop {r7,pc}
+  72              	.L3:
+  73              	 .align 2
+  74              	.L2:
+  75 0020 00000000 	 .word warningLedTimer
+  76              	 .cfi_endproc
+  77              	.LFE529:
+  79              	 .section .text.warningLedEnable,"ax",%progbits
+  80              	 .align 2
+  81              	 .global warningLedEnable
+  82              	 .thumb
+  83              	 .thumb_func
+  85              	warningLedEnable:
+  86              	.LFB530:
+  45:../cleanflight/src/main/io/statusindicator.c **** 
+  46:../cleanflight/src/main/io/statusindicator.c **** void warningLedEnable(void)
+  47:../cleanflight/src/main/io/statusindicator.c **** {
+  87              	 .loc 1 47 0
+  88              	 .cfi_startproc
+  89              	 
+  90              	 
+  91              	 
+  92 0000 80B4     	 push {r7}
+  93              	.LCFI5:
+  94              	 .cfi_def_cfa_offset 4
+  95              	 .cfi_offset 7,-4
+  96 0002 00AF     	 add r7,sp,#0
+  97              	.LCFI6:
+  98              	 .cfi_def_cfa_register 7
+  48:../cleanflight/src/main/io/statusindicator.c ****     warningLedState = WARNING_LED_ON;
+  99              	 .loc 1 48 0
+ 100 0004 034B     	 ldr r3,.L5
+ 101 0006 0122     	 movs r2,#1
+ 102 0008 1A70     	 strb r2,[r3]
+  49:../cleanflight/src/main/io/statusindicator.c **** }
+ 103              	 .loc 1 49 0
+ 104 000a BD46     	 mov sp,r7
+ 105              	.LCFI7:
+ 106              	 .cfi_def_cfa_register 13
+ 107              	 
+ 108 000c 5DF8047B 	 ldr r7,[sp],#4
+ 109              	.LCFI8:
+ 110              	 .cfi_restore 7
+ 111              	 .cfi_def_cfa_offset 0
+ 112 0010 7047     	 bx lr
+ 113              	.L6:
+ 114 0012 00BF     	 .align 2
+ 115              	.L5:
+ 116 0014 00000000 	 .word warningLedState
+ 117              	 .cfi_endproc
+ 118              	.LFE530:
+ 120              	 .section .text.warningLedDisable,"ax",%progbits
+ 121              	 .align 2
+ 122              	 .global warningLedDisable
+ 123              	 .thumb
+ 124              	 .thumb_func
+ 126              	warningLedDisable:
+ 127              	.LFB531:
+  50:../cleanflight/src/main/io/statusindicator.c **** 
+  51:../cleanflight/src/main/io/statusindicator.c **** void warningLedDisable(void)
+  52:../cleanflight/src/main/io/statusindicator.c **** {
+ 128              	 .loc 1 52 0
+ 129              	 .cfi_startproc
+ 130              	 
+ 131              	 
+ 132              	 
+ 133 0000 80B4     	 push {r7}
+ 134              	.LCFI9:
+ 135              	 .cfi_def_cfa_offset 4
+ 136              	 .cfi_offset 7,-4
+ 137 0002 00AF     	 add r7,sp,#0
+ 138              	.LCFI10:
+ 139              	 .cfi_def_cfa_register 7
+  53:../cleanflight/src/main/io/statusindicator.c ****     warningLedState = WARNING_LED_OFF;
+ 140              	 .loc 1 53 0
+ 141 0004 034B     	 ldr r3,.L8
+ 142 0006 0022     	 movs r2,#0
+ 143 0008 1A70     	 strb r2,[r3]
+  54:../cleanflight/src/main/io/statusindicator.c **** }
+ 144              	 .loc 1 54 0
+ 145 000a BD46     	 mov sp,r7
+ 146              	.LCFI11:
+ 147              	 .cfi_def_cfa_register 13
+ 148              	 
+ 149 000c 5DF8047B 	 ldr r7,[sp],#4
+ 150              	.LCFI12:
+ 151              	 .cfi_restore 7
+ 152              	 .cfi_def_cfa_offset 0
+ 153 0010 7047     	 bx lr
+ 154              	.L9:
+ 155 0012 00BF     	 .align 2
+ 156              	.L8:
+ 157 0014 00000000 	 .word warningLedState
+ 158              	 .cfi_endproc
+ 159              	.LFE531:
+ 161              	 .section .text.warningLedFlash,"ax",%progbits
+ 162              	 .align 2
+ 163              	 .global warningLedFlash
+ 164              	 .thumb
+ 165              	 .thumb_func
+ 167              	warningLedFlash:
+ 168              	.LFB532:
+  55:../cleanflight/src/main/io/statusindicator.c **** 
+  56:../cleanflight/src/main/io/statusindicator.c **** void warningLedFlash(void)
+  57:../cleanflight/src/main/io/statusindicator.c **** {
+ 169              	 .loc 1 57 0
+ 170              	 .cfi_startproc
+ 171              	 
+ 172              	 
+ 173              	 
+ 174 0000 80B4     	 push {r7}
+ 175              	.LCFI13:
+ 176              	 .cfi_def_cfa_offset 4
+ 177              	 .cfi_offset 7,-4
+ 178 0002 00AF     	 add r7,sp,#0
+ 179              	.LCFI14:
+ 180              	 .cfi_def_cfa_register 7
+  58:../cleanflight/src/main/io/statusindicator.c ****     warningLedState = WARNING_LED_FLASH;
+ 181              	 .loc 1 58 0
+ 182 0004 034B     	 ldr r3,.L11
+ 183 0006 0222     	 movs r2,#2
+ 184 0008 1A70     	 strb r2,[r3]
+  59:../cleanflight/src/main/io/statusindicator.c **** }
+ 185              	 .loc 1 59 0
+ 186 000a BD46     	 mov sp,r7
+ 187              	.LCFI15:
+ 188              	 .cfi_def_cfa_register 13
+ 189              	 
+ 190 000c 5DF8047B 	 ldr r7,[sp],#4
+ 191              	.LCFI16:
+ 192              	 .cfi_restore 7
+ 193              	 .cfi_def_cfa_offset 0
+ 194 0010 7047     	 bx lr
+ 195              	.L12:
+ 196 0012 00BF     	 .align 2
+ 197              	.L11:
+ 198 0014 00000000 	 .word warningLedState
+ 199              	 .cfi_endproc
+ 200              	.LFE532:
+ 202              	 .section .text.warningLedRefresh,"ax",%progbits
+ 203              	 .align 2
+ 204              	 .global warningLedRefresh
+ 205              	 .thumb
+ 206              	 .thumb_func
+ 208              	warningLedRefresh:
+ 209              	.LFB533:
+  60:../cleanflight/src/main/io/statusindicator.c **** 
+  61:../cleanflight/src/main/io/statusindicator.c **** void warningLedRefresh(void)
+  62:../cleanflight/src/main/io/statusindicator.c **** {
+ 210              	 .loc 1 62 0
+ 211              	 .cfi_startproc
+ 212              	 
+ 213              	 
+ 214 0000 80B5     	 push {r7,lr}
+ 215              	.LCFI17:
+ 216              	 .cfi_def_cfa_offset 8
+ 217              	 .cfi_offset 7,-8
+ 218              	 .cfi_offset 14,-4
+ 219 0002 82B0     	 sub sp,sp,#8
+ 220              	.LCFI18:
+ 221              	 .cfi_def_cfa_offset 16
+ 222 0004 00AF     	 add r7,sp,#0
+ 223              	.LCFI19:
+ 224              	 .cfi_def_cfa_register 7
+  63:../cleanflight/src/main/io/statusindicator.c ****     switch (warningLedState) {
+ 225              	 .loc 1 63 0
+ 226 0006 114B     	 ldr r3,.L18
+ 227 0008 1B78     	 ldrb r3,[r3]
+ 228 000a 012B     	 cmp r3,#1
+ 229 000c 08D0     	 beq .L15
+ 230 000e 022B     	 cmp r3,#2
+ 231 0010 0BD0     	 beq .L16
+ 232 0012 002B     	 cmp r3,#0
+ 233 0014 0DD1     	 bne .L14
+  64:../cleanflight/src/main/io/statusindicator.c ****         case WARNING_LED_OFF:
+  65:../cleanflight/src/main/io/statusindicator.c ****             LED0_OFF;
+ 234              	 .loc 1 65 0
+ 235 0016 0020     	 movs r0,#0
+ 236 0018 0021     	 movs r1,#0
+ 237 001a FFF7FEFF 	 bl ledSet
+  66:../cleanflight/src/main/io/statusindicator.c ****             break;
+ 238              	 .loc 1 66 0
+ 239 001e 08E0     	 b .L14
+ 240              	.L15:
+  67:../cleanflight/src/main/io/statusindicator.c ****         case WARNING_LED_ON:
+  68:../cleanflight/src/main/io/statusindicator.c ****             LED0_ON;
+ 241              	 .loc 1 68 0
+ 242 0020 0020     	 movs r0,#0
+ 243 0022 0121     	 movs r1,#1
+ 244 0024 FFF7FEFF 	 bl ledSet
+  69:../cleanflight/src/main/io/statusindicator.c ****             break;
+ 245              	 .loc 1 69 0
+ 246 0028 03E0     	 b .L14
+ 247              	.L16:
+  70:../cleanflight/src/main/io/statusindicator.c ****         case WARNING_LED_FLASH:
+  71:../cleanflight/src/main/io/statusindicator.c ****             LED0_TOGGLE;
+ 248              	 .loc 1 71 0
+ 249 002a 0020     	 movs r0,#0
+ 250 002c FFF7FEFF 	 bl ledToggle
+  72:../cleanflight/src/main/io/statusindicator.c ****             break;
+ 251              	 .loc 1 72 0
+ 252 0030 00BF     	 nop
+ 253              	.L14:
+  73:../cleanflight/src/main/io/statusindicator.c ****     }
+  74:../cleanflight/src/main/io/statusindicator.c **** 
+  75:../cleanflight/src/main/io/statusindicator.c ****     uint32_t now = micros();
+ 254              	 .loc 1 75 0
+ 255 0032 FFF7FEFF 	 bl micros
+ 256 0036 7860     	 str r0,[r7,#4]
+  76:../cleanflight/src/main/io/statusindicator.c ****     warningLedTimer = now + 500000;
+ 257              	 .loc 1 76 0
+ 258 0038 7B68     	 ldr r3,[r7,#4]
+ 259 003a 03F5F423 	 add r3,r3,#499712
+ 260 003e 03F59073 	 add r3,r3,#288
+ 261 0042 034A     	 ldr r2,.L18+4
+ 262 0044 1360     	 str r3,[r2]
+  77:../cleanflight/src/main/io/statusindicator.c **** }
+ 263              	 .loc 1 77 0
+ 264 0046 0837     	 adds r7,r7,#8
+ 265              	.LCFI20:
+ 266              	 .cfi_def_cfa_offset 8
+ 267 0048 BD46     	 mov sp,r7
+ 268              	.LCFI21:
+ 269              	 .cfi_def_cfa_register 13
+ 270              	 
+ 271 004a 80BD     	 pop {r7,pc}
+ 272              	.L19:
+ 273              	 .align 2
+ 274              	.L18:
+ 275 004c 00000000 	 .word warningLedState
+ 276 0050 00000000 	 .word warningLedTimer
+ 277              	 .cfi_endproc
+ 278              	.LFE533:
+ 280              	 .section .text.warningLedUpdate,"ax",%progbits
+ 281              	 .align 2
+ 282              	 .global warningLedUpdate
+ 283              	 .thumb
+ 284              	 .thumb_func
+ 286              	warningLedUpdate:
+ 287              	.LFB534:
+  78:../cleanflight/src/main/io/statusindicator.c **** 
+  79:../cleanflight/src/main/io/statusindicator.c **** void warningLedUpdate(void)
+  80:../cleanflight/src/main/io/statusindicator.c **** {
+ 288              	 .loc 1 80 0
+ 289              	 .cfi_startproc
+ 290              	 
+ 291              	 
+ 292 0000 80B5     	 push {r7,lr}
+ 293              	.LCFI22:
+ 294              	 .cfi_def_cfa_offset 8
+ 295              	 .cfi_offset 7,-8
+ 296              	 .cfi_offset 14,-4
+ 297 0002 82B0     	 sub sp,sp,#8
+ 298              	.LCFI23:
+ 299              	 .cfi_def_cfa_offset 16
+ 300 0004 00AF     	 add r7,sp,#0
+ 301              	.LCFI24:
+ 302              	 .cfi_def_cfa_register 7
+  81:../cleanflight/src/main/io/statusindicator.c ****     uint32_t now = micros();
+ 303              	 .loc 1 81 0
+ 304 0006 FFF7FEFF 	 bl micros
+ 305 000a 7860     	 str r0,[r7,#4]
+  82:../cleanflight/src/main/io/statusindicator.c **** 
+  83:../cleanflight/src/main/io/statusindicator.c ****     if ((int32_t)(now - warningLedTimer) < 0) {
+ 306              	 .loc 1 83 0
+ 307 000c 054B     	 ldr r3,.L23
+ 308 000e 1B68     	 ldr r3,[r3]
+ 309 0010 7A68     	 ldr r2,[r7,#4]
+ 310 0012 D31A     	 subs r3,r2,r3
+ 311 0014 002B     	 cmp r3,#0
+ 312 0016 00DA     	 bge .L21
+  84:../cleanflight/src/main/io/statusindicator.c ****         return;
+ 313              	 .loc 1 84 0
+ 314 0018 01E0     	 b .L20
+ 315              	.L21:
+  85:../cleanflight/src/main/io/statusindicator.c ****     }
+  86:../cleanflight/src/main/io/statusindicator.c **** 
+  87:../cleanflight/src/main/io/statusindicator.c ****     warningLedRefresh();
+ 316              	 .loc 1 87 0
+ 317 001a FFF7FEFF 	 bl warningLedRefresh
+ 318              	.L20:
+  88:../cleanflight/src/main/io/statusindicator.c **** }
+ 319              	 .loc 1 88 0
+ 320 001e 0837     	 adds r7,r7,#8
+ 321              	.LCFI25:
+ 322              	 .cfi_def_cfa_offset 8
+ 323 0020 BD46     	 mov sp,r7
+ 324              	.LCFI26:
+ 325              	 .cfi_def_cfa_register 13
+ 326              	 
+ 327 0022 80BD     	 pop {r7,pc}
+ 328              	.L24:
+ 329              	 .align 2
+ 330              	.L23:
+ 331 0024 00000000 	 .word warningLedTimer
+ 332              	 .cfi_endproc
+ 333              	.LFE534:
+ 335              	 .text
+ 336              	.Letext0:
+ 337              	 .file 2 "d:\\xmc\\dave-ide-4.4.2-64bit\\eclipse\\arm-gcc-49\\arm-none-eabi\\include\\machine\\_default_types.h"
+ 338              	 .file 3 "d:\\xmc\\dave-ide-4.4.2-64bit\\eclipse\\arm-gcc-49\\arm-none-eabi\\include\\stdint.h"
+ 339              	 .file 4 "D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/lib/main/XMC4000/XMCLib/inc/xmc_usic.h"
+ 340              	 .file 5 "D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/drivers/io_types.h"
+ 341              	 .file 6 "D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/drivers/light_led.h"
+ 342              	 .file 7 "D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/common/time.h"
+ 343              	 .file 8 "D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/lib/main/CMSIS/Core/Include/core_cm4.h"
+ 344              	 .file 9 "D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/lib/main/XMC4000/system_XMC4700.h"
+DEFINED SYMBOLS
+                            *ABS*:00000000 statusindicator.c
+    {standard input}:20     .bss.warningLedTimer:00000000 $d
+    {standard input}:23     .bss.warningLedTimer:00000000 warningLedTimer
+    {standard input}:28     .bss.warningLedState:00000000 warningLedState
+    {standard input}:29     .bss.warningLedState:00000000 $d
+    {standard input}:31     .text.warningLedResetTimer:00000000 $t
+    {standard input}:36     .text.warningLedResetTimer:00000000 warningLedResetTimer
+    {standard input}:75     .text.warningLedResetTimer:00000020 $d
+    {standard input}:80     .text.warningLedEnable:00000000 $t
+    {standard input}:85     .text.warningLedEnable:00000000 warningLedEnable
+    {standard input}:116    .text.warningLedEnable:00000014 $d
+    {standard input}:121    .text.warningLedDisable:00000000 $t
+    {standard input}:126    .text.warningLedDisable:00000000 warningLedDisable
+    {standard input}:157    .text.warningLedDisable:00000014 $d
+    {standard input}:162    .text.warningLedFlash:00000000 $t
+    {standard input}:167    .text.warningLedFlash:00000000 warningLedFlash
+    {standard input}:198    .text.warningLedFlash:00000014 $d
+    {standard input}:203    .text.warningLedRefresh:00000000 $t
+    {standard input}:208    .text.warningLedRefresh:00000000 warningLedRefresh
+    {standard input}:275    .text.warningLedRefresh:0000004c $d
+    {standard input}:281    .text.warningLedUpdate:00000000 $t
+    {standard input}:286    .text.warningLedUpdate:00000000 warningLedUpdate
+    {standard input}:331    .text.warningLedUpdate:00000024 $d
+                     .debug_frame:00000010 $d
+
+UNDEFINED SYMBOLS
+millis
+ledSet
+ledToggle
+micros

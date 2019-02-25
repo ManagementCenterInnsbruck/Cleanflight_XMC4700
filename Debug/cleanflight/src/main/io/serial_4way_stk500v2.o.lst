@@ -1,0 +1,2290 @@
+   1              	 .syntax unified
+   2              	 .cpu cortex-m4
+   3              	 .eabi_attribute 27,3
+   4              	 .fpu fpv4-sp-d16
+   5              	 .eabi_attribute 20,1
+   6              	 .eabi_attribute 21,1
+   7              	 .eabi_attribute 23,3
+   8              	 .eabi_attribute 24,1
+   9              	 .eabi_attribute 25,1
+  10              	 .eabi_attribute 26,1
+  11              	 .eabi_attribute 30,6
+  12              	 .eabi_attribute 34,1
+  13              	 .eabi_attribute 18,4
+  14              	 .thumb
+  15              	 .file "serial_4way_stk500v2.c"
+  16              	 .text
+  17              	.Ltext0:
+  18              	 .cfi_sections .debug_frame
+  19              	 .section .bss.StkInBuf,"aw",%nobits
+  20              	 .align 2
+  23              	StkInBuf:
+  24 0000 00000000 	 .space 16
+  24      00000000 
+  24      00000000 
+  24      00000000 
+  25              	 .section .bss.LastBitTime,"aw",%nobits
+  26              	 .align 2
+  29              	LastBitTime:
+  30 0000 00000000 	 .space 4
+  31              	 .section .bss.HiLoTsh,"aw",%nobits
+  32              	 .align 2
+  35              	HiLoTsh:
+  36 0000 00000000 	 .space 4
+  37              	 .section .bss.SeqNumber,"aw",%nobits
+  40              	SeqNumber:
+  41 0000 00       	 .space 1
+  42              	 .section .bss.StkCmd,"aw",%nobits
+  45              	StkCmd:
+  46 0000 00       	 .space 1
+  47              	 .section .bss.ckSumIn,"aw",%nobits
+  50              	ckSumIn:
+  51 0000 00       	 .space 1
+  52              	 .section .bss.ckSumOut,"aw",%nobits
+  55              	ckSumOut:
+  56 0000 00       	 .space 1
+  57              	 .section .text.StkSendByte,"ax",%progbits
+  58              	 .align 2
+  59              	 .thumb
+  60              	 .thumb_func
+  62              	StkSendByte:
+  63              	.LFB531:
+  64              	 .file 1 "../cleanflight/src/main/io/serial_4way_stk500v2.c"
+   1:../cleanflight/src/main/io/serial_4way_stk500v2.c **** /*
+   2:../cleanflight/src/main/io/serial_4way_stk500v2.c ****  * This file is part of Cleanflight and Betaflight.
+   3:../cleanflight/src/main/io/serial_4way_stk500v2.c ****  *
+   4:../cleanflight/src/main/io/serial_4way_stk500v2.c ****  * Cleanflight and Betaflight are free software. You can redistribute
+   5:../cleanflight/src/main/io/serial_4way_stk500v2.c ****  * this software and/or modify this software under the terms of the
+   6:../cleanflight/src/main/io/serial_4way_stk500v2.c ****  * GNU General Public License as published by the Free Software
+   7:../cleanflight/src/main/io/serial_4way_stk500v2.c ****  * Foundation, either version 3 of the License, or (at your option)
+   8:../cleanflight/src/main/io/serial_4way_stk500v2.c ****  * any later version.
+   9:../cleanflight/src/main/io/serial_4way_stk500v2.c ****  *
+  10:../cleanflight/src/main/io/serial_4way_stk500v2.c ****  * Cleanflight and Betaflight are distributed in the hope that they
+  11:../cleanflight/src/main/io/serial_4way_stk500v2.c ****  * will be useful, but WITHOUT ANY WARRANTY; without even the implied
+  12:../cleanflight/src/main/io/serial_4way_stk500v2.c ****  * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+  13:../cleanflight/src/main/io/serial_4way_stk500v2.c ****  * See the GNU General Public License for more details.
+  14:../cleanflight/src/main/io/serial_4way_stk500v2.c ****  *
+  15:../cleanflight/src/main/io/serial_4way_stk500v2.c ****  * You should have received a copy of the GNU General Public License
+  16:../cleanflight/src/main/io/serial_4way_stk500v2.c ****  * along with this software.
+  17:../cleanflight/src/main/io/serial_4way_stk500v2.c ****  *
+  18:../cleanflight/src/main/io/serial_4way_stk500v2.c ****  * If not, see <http://www.gnu.org/licenses/>.
+  19:../cleanflight/src/main/io/serial_4way_stk500v2.c ****  */
+  20:../cleanflight/src/main/io/serial_4way_stk500v2.c **** 
+  21:../cleanflight/src/main/io/serial_4way_stk500v2.c **** /*
+  22:../cleanflight/src/main/io/serial_4way_stk500v2.c ****  * Author: 4712
+  23:../cleanflight/src/main/io/serial_4way_stk500v2.c ****  * have a look at https://github.com/sim-/tgy/blob/master/boot.inc
+  24:../cleanflight/src/main/io/serial_4way_stk500v2.c ****  * for info about the stk500v2 implementation
+  25:../cleanflight/src/main/io/serial_4way_stk500v2.c ****  */
+  26:../cleanflight/src/main/io/serial_4way_stk500v2.c **** 
+  27:../cleanflight/src/main/io/serial_4way_stk500v2.c **** #include <stdbool.h>
+  28:../cleanflight/src/main/io/serial_4way_stk500v2.c **** #include <stdint.h>
+  29:../cleanflight/src/main/io/serial_4way_stk500v2.c **** 
+  30:../cleanflight/src/main/io/serial_4way_stk500v2.c **** #include "platform.h"
+  31:../cleanflight/src/main/io/serial_4way_stk500v2.c **** 
+  32:../cleanflight/src/main/io/serial_4way_stk500v2.c **** #ifdef  USE_SERIAL_4WAY_BLHELI_INTERFACE
+  33:../cleanflight/src/main/io/serial_4way_stk500v2.c **** 
+  34:../cleanflight/src/main/io/serial_4way_stk500v2.c **** #include "drivers/io.h"
+  35:../cleanflight/src/main/io/serial_4way_stk500v2.c **** #include "drivers/serial.h"
+  36:../cleanflight/src/main/io/serial_4way_stk500v2.c **** #include "drivers/time.h"
+  37:../cleanflight/src/main/io/serial_4way_stk500v2.c **** 
+  38:../cleanflight/src/main/io/serial_4way_stk500v2.c **** #include "io/serial.h"
+  39:../cleanflight/src/main/io/serial_4way_stk500v2.c **** #include "io/serial_4way.h"
+  40:../cleanflight/src/main/io/serial_4way_stk500v2.c **** #include "io/serial_4way_impl.h"
+  41:../cleanflight/src/main/io/serial_4way_stk500v2.c **** #include "io/serial_4way_stk500v2.h"
+  42:../cleanflight/src/main/io/serial_4way_stk500v2.c **** 
+  43:../cleanflight/src/main/io/serial_4way_stk500v2.c **** #ifdef USE_SERIAL_4WAY_SK_BOOTLOADER
+  44:../cleanflight/src/main/io/serial_4way_stk500v2.c **** 
+  45:../cleanflight/src/main/io/serial_4way_stk500v2.c **** #define BIT_LO_US (32) //32uS
+  46:../cleanflight/src/main/io/serial_4way_stk500v2.c **** #define BIT_HI_US (2*BIT_LO_US)
+  47:../cleanflight/src/main/io/serial_4way_stk500v2.c **** 
+  48:../cleanflight/src/main/io/serial_4way_stk500v2.c **** static uint8_t StkInBuf[16];
+  49:../cleanflight/src/main/io/serial_4way_stk500v2.c **** 
+  50:../cleanflight/src/main/io/serial_4way_stk500v2.c **** #define STK_BIT_TIMEOUT 250 // micro seconds
+  51:../cleanflight/src/main/io/serial_4way_stk500v2.c **** #define STK_WAIT_TICKS (1000 / STK_BIT_TIMEOUT)    // per ms
+  52:../cleanflight/src/main/io/serial_4way_stk500v2.c **** #define STK_WAITCYLCES (STK_WAIT_TICKS * 35)       // 35ms
+  53:../cleanflight/src/main/io/serial_4way_stk500v2.c **** #define STK_WAITCYLCES_START (STK_WAIT_TICKS / 2)  // 0.5 ms
+  54:../cleanflight/src/main/io/serial_4way_stk500v2.c **** #define STK_WAITCYLCES_EXT (STK_WAIT_TICKS * 5000) //5 s
+  55:../cleanflight/src/main/io/serial_4way_stk500v2.c **** 
+  56:../cleanflight/src/main/io/serial_4way_stk500v2.c **** #define  WaitPinLo  while (ESC_IS_HI) {if (micros() > timeout_timer) goto timeout;}
+  57:../cleanflight/src/main/io/serial_4way_stk500v2.c **** #define  WaitPinHi  while (ESC_IS_LO) {if (micros() > timeout_timer) goto timeout;}
+  58:../cleanflight/src/main/io/serial_4way_stk500v2.c **** 
+  59:../cleanflight/src/main/io/serial_4way_stk500v2.c **** static uint32_t LastBitTime;
+  60:../cleanflight/src/main/io/serial_4way_stk500v2.c **** static uint32_t HiLoTsh;
+  61:../cleanflight/src/main/io/serial_4way_stk500v2.c **** 
+  62:../cleanflight/src/main/io/serial_4way_stk500v2.c **** static uint8_t SeqNumber;
+  63:../cleanflight/src/main/io/serial_4way_stk500v2.c **** static uint8_t StkCmd;
+  64:../cleanflight/src/main/io/serial_4way_stk500v2.c **** static uint8_t ckSumIn;
+  65:../cleanflight/src/main/io/serial_4way_stk500v2.c **** static uint8_t ckSumOut;
+  66:../cleanflight/src/main/io/serial_4way_stk500v2.c **** 
+  67:../cleanflight/src/main/io/serial_4way_stk500v2.c **** // used STK message constants from ATMEL AVR - Application note
+  68:../cleanflight/src/main/io/serial_4way_stk500v2.c **** #define MESSAGE_START           0x1B
+  69:../cleanflight/src/main/io/serial_4way_stk500v2.c **** #define TOKEN                   0x0E
+  70:../cleanflight/src/main/io/serial_4way_stk500v2.c **** 
+  71:../cleanflight/src/main/io/serial_4way_stk500v2.c **** #define CMD_SIGN_ON             0x01
+  72:../cleanflight/src/main/io/serial_4way_stk500v2.c **** #define CMD_LOAD_ADDRESS        0x06
+  73:../cleanflight/src/main/io/serial_4way_stk500v2.c **** #define CMD_CHIP_ERASE_ISP      0x12
+  74:../cleanflight/src/main/io/serial_4way_stk500v2.c **** #define CMD_PROGRAM_FLASH_ISP   0x13
+  75:../cleanflight/src/main/io/serial_4way_stk500v2.c **** #define CMD_READ_FLASH_ISP      0x14
+  76:../cleanflight/src/main/io/serial_4way_stk500v2.c **** #define CMD_PROGRAM_EEPROM_ISP  0x15
+  77:../cleanflight/src/main/io/serial_4way_stk500v2.c **** #define CMD_READ_EEPROM_ISP     0x16
+  78:../cleanflight/src/main/io/serial_4way_stk500v2.c **** #define CMD_READ_SIGNATURE_ISP  0x1B
+  79:../cleanflight/src/main/io/serial_4way_stk500v2.c **** #define CMD_SPI_MULTI           0x1D
+  80:../cleanflight/src/main/io/serial_4way_stk500v2.c **** 
+  81:../cleanflight/src/main/io/serial_4way_stk500v2.c **** #define STATUS_CMD_OK           0x00
+  82:../cleanflight/src/main/io/serial_4way_stk500v2.c **** 
+  83:../cleanflight/src/main/io/serial_4way_stk500v2.c **** #define CmdFlashEepromRead 0xA0
+  84:../cleanflight/src/main/io/serial_4way_stk500v2.c **** #define EnterIspCmd1 0xAC
+  85:../cleanflight/src/main/io/serial_4way_stk500v2.c **** #define EnterIspCmd2 0x53
+  86:../cleanflight/src/main/io/serial_4way_stk500v2.c **** #define signature_r  0x30
+  87:../cleanflight/src/main/io/serial_4way_stk500v2.c **** 
+  88:../cleanflight/src/main/io/serial_4way_stk500v2.c **** #define delay_us(x) delayMicroseconds(x)
+  89:../cleanflight/src/main/io/serial_4way_stk500v2.c **** #define IRQ_OFF // dummy
+  90:../cleanflight/src/main/io/serial_4way_stk500v2.c **** #define IRQ_ON  // dummy
+  91:../cleanflight/src/main/io/serial_4way_stk500v2.c **** 
+  92:../cleanflight/src/main/io/serial_4way_stk500v2.c **** static void StkSendByte(uint8_t dat)
+  93:../cleanflight/src/main/io/serial_4way_stk500v2.c **** {
+  65              	 .loc 1 93 0
+  66              	 .cfi_startproc
+  67              	 
+  68              	 
+  69 0000 80B5     	 push {r7,lr}
+  70              	.LCFI0:
+  71              	 .cfi_def_cfa_offset 8
+  72              	 .cfi_offset 7,-8
+  73              	 .cfi_offset 14,-4
+  74 0002 84B0     	 sub sp,sp,#16
+  75              	.LCFI1:
+  76              	 .cfi_def_cfa_offset 24
+  77 0004 00AF     	 add r7,sp,#0
+  78              	.LCFI2:
+  79              	 .cfi_def_cfa_register 7
+  80 0006 0346     	 mov r3,r0
+  81 0008 FB71     	 strb r3,[r7,#7]
+  94:../cleanflight/src/main/io/serial_4way_stk500v2.c ****     ckSumOut ^= dat;
+  82              	 .loc 1 94 0
+  83 000a 264B     	 ldr r3,.L6
+  84 000c 1A78     	 ldrb r2,[r3]
+  85 000e FB79     	 ldrb r3,[r7,#7]
+  86 0010 5340     	 eors r3,r3,r2
+  87 0012 DAB2     	 uxtb r2,r3
+  88 0014 234B     	 ldr r3,.L6
+  89 0016 1A70     	 strb r2,[r3]
+  90              	.LBB2:
+  95:../cleanflight/src/main/io/serial_4way_stk500v2.c ****     for (uint8_t i = 0; i < 8; i++)    {
+  91              	 .loc 1 95 0
+  92 0018 0023     	 movs r3,#0
+  93 001a FB73     	 strb r3,[r7,#15]
+  94 001c 3BE0     	 b .L2
+  95              	.L5:
+  96:../cleanflight/src/main/io/serial_4way_stk500v2.c ****         if (dat & 0x01) {
+  96              	 .loc 1 96 0
+  97 001e FB79     	 ldrb r3,[r7,#7]
+  98 0020 03F00103 	 and r3,r3,#1
+  99 0024 002B     	 cmp r3,#0
+ 100 0026 10D0     	 beq .L3
+  97:../cleanflight/src/main/io/serial_4way_stk500v2.c ****             // 1-bits are encoded as 64.0us high, 72.8us low (135.8us total).
+  98:../cleanflight/src/main/io/serial_4way_stk500v2.c ****             ESC_SET_HI;
+ 101              	 .loc 1 98 0
+ 102 0028 1F4B     	 ldr r3,.L6+4
+ 103 002a 1B78     	 ldrb r3,[r3]
+ 104 002c 1846     	 mov r0,r3
+ 105 002e FFF7FEFF 	 bl setEscHi
+  99:../cleanflight/src/main/io/serial_4way_stk500v2.c ****             delay_us(BIT_HI_US);
+ 106              	 .loc 1 99 0
+ 107 0032 4020     	 movs r0,#64
+ 108 0034 FFF7FEFF 	 bl delayMicroseconds
+ 100:../cleanflight/src/main/io/serial_4way_stk500v2.c ****             ESC_SET_LO;
+ 109              	 .loc 1 100 0
+ 110 0038 1B4B     	 ldr r3,.L6+4
+ 111 003a 1B78     	 ldrb r3,[r3]
+ 112 003c 1846     	 mov r0,r3
+ 113 003e FFF7FEFF 	 bl setEscLo
+ 101:../cleanflight/src/main/io/serial_4way_stk500v2.c ****             delay_us(BIT_HI_US);
+ 114              	 .loc 1 101 0
+ 115 0042 4020     	 movs r0,#64
+ 116 0044 FFF7FEFF 	 bl delayMicroseconds
+ 117 0048 1FE0     	 b .L4
+ 118              	.L3:
+ 102:../cleanflight/src/main/io/serial_4way_stk500v2.c ****         } else {
+ 103:../cleanflight/src/main/io/serial_4way_stk500v2.c ****             // 0-bits are encoded as 27.8us high, 34.5us low, 34.4us high, 37.9 low (134.6us total)
+ 104:../cleanflight/src/main/io/serial_4way_stk500v2.c ****             ESC_SET_HI;
+ 119              	 .loc 1 104 0
+ 120 004a 174B     	 ldr r3,.L6+4
+ 121 004c 1B78     	 ldrb r3,[r3]
+ 122 004e 1846     	 mov r0,r3
+ 123 0050 FFF7FEFF 	 bl setEscHi
+ 105:../cleanflight/src/main/io/serial_4way_stk500v2.c ****             delay_us(BIT_LO_US);
+ 124              	 .loc 1 105 0
+ 125 0054 2020     	 movs r0,#32
+ 126 0056 FFF7FEFF 	 bl delayMicroseconds
+ 106:../cleanflight/src/main/io/serial_4way_stk500v2.c ****             ESC_SET_LO;
+ 127              	 .loc 1 106 0
+ 128 005a 134B     	 ldr r3,.L6+4
+ 129 005c 1B78     	 ldrb r3,[r3]
+ 130 005e 1846     	 mov r0,r3
+ 131 0060 FFF7FEFF 	 bl setEscLo
+ 107:../cleanflight/src/main/io/serial_4way_stk500v2.c ****             delay_us(BIT_LO_US);
+ 132              	 .loc 1 107 0
+ 133 0064 2020     	 movs r0,#32
+ 134 0066 FFF7FEFF 	 bl delayMicroseconds
+ 108:../cleanflight/src/main/io/serial_4way_stk500v2.c ****             ESC_SET_HI;
+ 135              	 .loc 1 108 0
+ 136 006a 0F4B     	 ldr r3,.L6+4
+ 137 006c 1B78     	 ldrb r3,[r3]
+ 138 006e 1846     	 mov r0,r3
+ 139 0070 FFF7FEFF 	 bl setEscHi
+ 109:../cleanflight/src/main/io/serial_4way_stk500v2.c ****             delay_us(BIT_LO_US);
+ 140              	 .loc 1 109 0
+ 141 0074 2020     	 movs r0,#32
+ 142 0076 FFF7FEFF 	 bl delayMicroseconds
+ 110:../cleanflight/src/main/io/serial_4way_stk500v2.c ****             ESC_SET_LO;
+ 143              	 .loc 1 110 0
+ 144 007a 0B4B     	 ldr r3,.L6+4
+ 145 007c 1B78     	 ldrb r3,[r3]
+ 146 007e 1846     	 mov r0,r3
+ 147 0080 FFF7FEFF 	 bl setEscLo
+ 111:../cleanflight/src/main/io/serial_4way_stk500v2.c ****             delay_us(BIT_LO_US);
+ 148              	 .loc 1 111 0
+ 149 0084 2020     	 movs r0,#32
+ 150 0086 FFF7FEFF 	 bl delayMicroseconds
+ 151              	.L4:
+ 112:../cleanflight/src/main/io/serial_4way_stk500v2.c ****         }
+ 113:../cleanflight/src/main/io/serial_4way_stk500v2.c ****         dat >>= 1;
+ 152              	 .loc 1 113 0 discriminator 2
+ 153 008a FB79     	 ldrb r3,[r7,#7]
+ 154 008c 5B08     	 lsrs r3,r3,#1
+ 155 008e FB71     	 strb r3,[r7,#7]
+  95:../cleanflight/src/main/io/serial_4way_stk500v2.c ****         if (dat & 0x01) {
+ 156              	 .loc 1 95 0 discriminator 2
+ 157 0090 FB7B     	 ldrb r3,[r7,#15]
+ 158 0092 0133     	 adds r3,r3,#1
+ 159 0094 FB73     	 strb r3,[r7,#15]
+ 160              	.L2:
+  95:../cleanflight/src/main/io/serial_4way_stk500v2.c ****         if (dat & 0x01) {
+ 161              	 .loc 1 95 0 is_stmt 0 discriminator 1
+ 162 0096 FB7B     	 ldrb r3,[r7,#15]
+ 163 0098 072B     	 cmp r3,#7
+ 164 009a C0D9     	 bls .L5
+ 165              	.LBE2:
+ 114:../cleanflight/src/main/io/serial_4way_stk500v2.c ****     }
+ 115:../cleanflight/src/main/io/serial_4way_stk500v2.c **** }
+ 166              	 .loc 1 115 0 is_stmt 1
+ 167 009c 1037     	 adds r7,r7,#16
+ 168              	.LCFI3:
+ 169              	 .cfi_def_cfa_offset 8
+ 170 009e BD46     	 mov sp,r7
+ 171              	.LCFI4:
+ 172              	 .cfi_def_cfa_register 13
+ 173              	 
+ 174 00a0 80BD     	 pop {r7,pc}
+ 175              	.L7:
+ 176 00a2 00BF     	 .align 2
+ 177              	.L6:
+ 178 00a4 00000000 	 .word ckSumOut
+ 179 00a8 00000000 	 .word selected_esc
+ 180              	 .cfi_endproc
+ 181              	.LFE531:
+ 183              	 .section .text.StkSendPacketHeader,"ax",%progbits
+ 184              	 .align 2
+ 185              	 .thumb
+ 186              	 .thumb_func
+ 188              	StkSendPacketHeader:
+ 189              	.LFB532:
+ 116:../cleanflight/src/main/io/serial_4way_stk500v2.c **** 
+ 117:../cleanflight/src/main/io/serial_4way_stk500v2.c **** static void StkSendPacketHeader(void)
+ 118:../cleanflight/src/main/io/serial_4way_stk500v2.c **** {
+ 190              	 .loc 1 118 0
+ 191              	 .cfi_startproc
+ 192              	 
+ 193              	 
+ 194 0000 80B5     	 push {r7,lr}
+ 195              	.LCFI5:
+ 196              	 .cfi_def_cfa_offset 8
+ 197              	 .cfi_offset 7,-8
+ 198              	 .cfi_offset 14,-4
+ 199 0002 00AF     	 add r7,sp,#0
+ 200              	.LCFI6:
+ 201              	 .cfi_def_cfa_register 7
+ 119:../cleanflight/src/main/io/serial_4way_stk500v2.c ****     IRQ_OFF;
+ 120:../cleanflight/src/main/io/serial_4way_stk500v2.c ****     ESC_OUTPUT;
+ 202              	 .loc 1 120 0
+ 203 0004 0F4B     	 ldr r3,.L9
+ 204 0006 1B78     	 ldrb r3,[r3]
+ 205 0008 1846     	 mov r0,r3
+ 206 000a FFF7FEFF 	 bl setEscOutput
+ 121:../cleanflight/src/main/io/serial_4way_stk500v2.c ****     StkSendByte(0xFF);
+ 207              	 .loc 1 121 0
+ 208 000e FF20     	 movs r0,#255
+ 209 0010 FFF7FEFF 	 bl StkSendByte
+ 122:../cleanflight/src/main/io/serial_4way_stk500v2.c ****     StkSendByte(0xFF);
+ 210              	 .loc 1 122 0
+ 211 0014 FF20     	 movs r0,#255
+ 212 0016 FFF7FEFF 	 bl StkSendByte
+ 123:../cleanflight/src/main/io/serial_4way_stk500v2.c ****     StkSendByte(0x7F);
+ 213              	 .loc 1 123 0
+ 214 001a 7F20     	 movs r0,#127
+ 215 001c FFF7FEFF 	 bl StkSendByte
+ 124:../cleanflight/src/main/io/serial_4way_stk500v2.c ****     ckSumOut = 0;
+ 216              	 .loc 1 124 0
+ 217 0020 094B     	 ldr r3,.L9+4
+ 218 0022 0022     	 movs r2,#0
+ 219 0024 1A70     	 strb r2,[r3]
+ 125:../cleanflight/src/main/io/serial_4way_stk500v2.c ****     StkSendByte(MESSAGE_START);
+ 220              	 .loc 1 125 0
+ 221 0026 1B20     	 movs r0,#27
+ 222 0028 FFF7FEFF 	 bl StkSendByte
+ 126:../cleanflight/src/main/io/serial_4way_stk500v2.c ****     StkSendByte(++SeqNumber);
+ 223              	 .loc 1 126 0
+ 224 002c 074B     	 ldr r3,.L9+8
+ 225 002e 1B78     	 ldrb r3,[r3]
+ 226 0030 0133     	 adds r3,r3,#1
+ 227 0032 DAB2     	 uxtb r2,r3
+ 228 0034 054B     	 ldr r3,.L9+8
+ 229 0036 1A70     	 strb r2,[r3]
+ 230 0038 044B     	 ldr r3,.L9+8
+ 231 003a 1B78     	 ldrb r3,[r3]
+ 232 003c 1846     	 mov r0,r3
+ 233 003e FFF7FEFF 	 bl StkSendByte
+ 127:../cleanflight/src/main/io/serial_4way_stk500v2.c **** }
+ 234              	 .loc 1 127 0
+ 235 0042 80BD     	 pop {r7,pc}
+ 236              	.L10:
+ 237              	 .align 2
+ 238              	.L9:
+ 239 0044 00000000 	 .word selected_esc
+ 240 0048 00000000 	 .word ckSumOut
+ 241 004c 00000000 	 .word SeqNumber
+ 242              	 .cfi_endproc
+ 243              	.LFE532:
+ 245              	 .section .text.StkSendPacketFooter,"ax",%progbits
+ 246              	 .align 2
+ 247              	 .thumb
+ 248              	 .thumb_func
+ 250              	StkSendPacketFooter:
+ 251              	.LFB533:
+ 128:../cleanflight/src/main/io/serial_4way_stk500v2.c **** 
+ 129:../cleanflight/src/main/io/serial_4way_stk500v2.c **** static void StkSendPacketFooter(void)
+ 130:../cleanflight/src/main/io/serial_4way_stk500v2.c **** {
+ 252              	 .loc 1 130 0
+ 253              	 .cfi_startproc
+ 254              	 
+ 255              	 
+ 256 0000 80B5     	 push {r7,lr}
+ 257              	.LCFI7:
+ 258              	 .cfi_def_cfa_offset 8
+ 259              	 .cfi_offset 7,-8
+ 260              	 .cfi_offset 14,-4
+ 261 0002 00AF     	 add r7,sp,#0
+ 262              	.LCFI8:
+ 263              	 .cfi_def_cfa_register 7
+ 131:../cleanflight/src/main/io/serial_4way_stk500v2.c ****     StkSendByte(ckSumOut);
+ 264              	 .loc 1 131 0
+ 265 0004 094B     	 ldr r3,.L12
+ 266 0006 1B78     	 ldrb r3,[r3]
+ 267 0008 1846     	 mov r0,r3
+ 268 000a FFF7FEFF 	 bl StkSendByte
+ 132:../cleanflight/src/main/io/serial_4way_stk500v2.c ****     ESC_SET_HI;
+ 269              	 .loc 1 132 0
+ 270 000e 084B     	 ldr r3,.L12+4
+ 271 0010 1B78     	 ldrb r3,[r3]
+ 272 0012 1846     	 mov r0,r3
+ 273 0014 FFF7FEFF 	 bl setEscHi
+ 133:../cleanflight/src/main/io/serial_4way_stk500v2.c ****     delay_us(BIT_LO_US);
+ 274              	 .loc 1 133 0
+ 275 0018 2020     	 movs r0,#32
+ 276 001a FFF7FEFF 	 bl delayMicroseconds
+ 134:../cleanflight/src/main/io/serial_4way_stk500v2.c ****     ESC_INPUT;
+ 277              	 .loc 1 134 0
+ 278 001e 044B     	 ldr r3,.L12+4
+ 279 0020 1B78     	 ldrb r3,[r3]
+ 280 0022 1846     	 mov r0,r3
+ 281 0024 FFF7FEFF 	 bl setEscInput
+ 135:../cleanflight/src/main/io/serial_4way_stk500v2.c ****     IRQ_ON;
+ 136:../cleanflight/src/main/io/serial_4way_stk500v2.c **** }
+ 282              	 .loc 1 136 0
+ 283 0028 80BD     	 pop {r7,pc}
+ 284              	.L13:
+ 285 002a 00BF     	 .align 2
+ 286              	.L12:
+ 287 002c 00000000 	 .word ckSumOut
+ 288 0030 00000000 	 .word selected_esc
+ 289              	 .cfi_endproc
+ 290              	.LFE533:
+ 292              	 .section .text.ReadBit,"ax",%progbits
+ 293              	 .align 2
+ 294              	 .thumb
+ 295              	 .thumb_func
+ 297              	ReadBit:
+ 298              	.LFB534:
+ 137:../cleanflight/src/main/io/serial_4way_stk500v2.c **** 
+ 138:../cleanflight/src/main/io/serial_4way_stk500v2.c **** 
+ 139:../cleanflight/src/main/io/serial_4way_stk500v2.c **** 
+ 140:../cleanflight/src/main/io/serial_4way_stk500v2.c **** static int8_t ReadBit(void)
+ 141:../cleanflight/src/main/io/serial_4way_stk500v2.c **** {
+ 299              	 .loc 1 141 0
+ 300              	 .cfi_startproc
+ 301              	 
+ 302              	 
+ 303 0000 80B5     	 push {r7,lr}
+ 304              	.LCFI9:
+ 305              	 .cfi_def_cfa_offset 8
+ 306              	 .cfi_offset 7,-8
+ 307              	 .cfi_offset 14,-4
+ 308 0002 82B0     	 sub sp,sp,#8
+ 309              	.LCFI10:
+ 310              	 .cfi_def_cfa_offset 16
+ 311 0004 00AF     	 add r7,sp,#0
+ 312              	.LCFI11:
+ 313              	 .cfi_def_cfa_register 7
+ 142:../cleanflight/src/main/io/serial_4way_stk500v2.c ****     uint32_t btimer = micros();
+ 314              	 .loc 1 142 0
+ 315 0006 FFF7FEFF 	 bl micros
+ 316 000a 7860     	 str r0,[r7,#4]
+ 143:../cleanflight/src/main/io/serial_4way_stk500v2.c ****     uint32_t timeout_timer = btimer + STK_BIT_TIMEOUT;
+ 317              	 .loc 1 143 0
+ 318 000c 7B68     	 ldr r3,[r7,#4]
+ 319 000e FA33     	 adds r3,r3,#250
+ 320 0010 3B60     	 str r3,[r7]
+ 144:../cleanflight/src/main/io/serial_4way_stk500v2.c ****     WaitPinLo;
+ 321              	 .loc 1 144 0
+ 322 0012 06E0     	 b .L15
+ 323              	.L17:
+ 324              	 .loc 1 144 0 is_stmt 0 discriminator 2
+ 325 0014 FFF7FEFF 	 bl micros
+ 326 0018 0246     	 mov r2,r0
+ 327 001a 3B68     	 ldr r3,[r7]
+ 328 001c 9A42     	 cmp r2,r3
+ 329 001e 00D9     	 bls .L15
+ 330              	 .loc 1 144 0
+ 331 0020 4BE0     	 b .L16
+ 332              	.L15:
+ 333              	 .loc 1 144 0 discriminator 1
+ 334 0022 294B     	 ldr r3,.L26
+ 335 0024 1B78     	 ldrb r3,[r3]
+ 336 0026 1846     	 mov r0,r3
+ 337 0028 FFF7FEFF 	 bl isEscHi
+ 338 002c 0346     	 mov r3,r0
+ 339 002e 002B     	 cmp r3,#0
+ 340 0030 F0D1     	 bne .L17
+ 145:../cleanflight/src/main/io/serial_4way_stk500v2.c ****     WaitPinHi;
+ 341              	 .loc 1 145 0 is_stmt 1
+ 342 0032 06E0     	 b .L18
+ 343              	.L19:
+ 344              	 .loc 1 145 0 is_stmt 0 discriminator 2
+ 345 0034 FFF7FEFF 	 bl micros
+ 346 0038 0246     	 mov r2,r0
+ 347 003a 3B68     	 ldr r3,[r7]
+ 348 003c 9A42     	 cmp r2,r3
+ 349 003e 00D9     	 bls .L18
+ 350              	 .loc 1 145 0
+ 351 0040 3BE0     	 b .L16
+ 352              	.L18:
+ 353              	 .loc 1 145 0 discriminator 1
+ 354 0042 214B     	 ldr r3,.L26
+ 355 0044 1B78     	 ldrb r3,[r3]
+ 356 0046 1846     	 mov r0,r3
+ 357 0048 FFF7FEFF 	 bl isEscLo
+ 358 004c 0346     	 mov r3,r0
+ 359 004e 002B     	 cmp r3,#0
+ 360 0050 F0D1     	 bne .L19
+ 146:../cleanflight/src/main/io/serial_4way_stk500v2.c ****     LastBitTime = micros() - btimer;
+ 361              	 .loc 1 146 0 is_stmt 1
+ 362 0052 FFF7FEFF 	 bl micros
+ 363 0056 0246     	 mov r2,r0
+ 364 0058 7B68     	 ldr r3,[r7,#4]
+ 365 005a D31A     	 subs r3,r2,r3
+ 366 005c 1B4A     	 ldr r2,.L26+4
+ 367 005e 1360     	 str r3,[r2]
+ 147:../cleanflight/src/main/io/serial_4way_stk500v2.c ****     if (LastBitTime <= HiLoTsh) {
+ 368              	 .loc 1 147 0
+ 369 0060 1A4B     	 ldr r3,.L26+4
+ 370 0062 1A68     	 ldr r2,[r3]
+ 371 0064 1A4B     	 ldr r3,.L26+8
+ 372 0066 1B68     	 ldr r3,[r3]
+ 373 0068 9A42     	 cmp r2,r3
+ 374 006a 24D8     	 bhi .L20
+ 148:../cleanflight/src/main/io/serial_4way_stk500v2.c ****         timeout_timer = timeout_timer + STK_BIT_TIMEOUT;
+ 375              	 .loc 1 148 0
+ 376 006c 3B68     	 ldr r3,[r7]
+ 377 006e FA33     	 adds r3,r3,#250
+ 378 0070 3B60     	 str r3,[r7]
+ 149:../cleanflight/src/main/io/serial_4way_stk500v2.c ****         WaitPinLo;
+ 379              	 .loc 1 149 0
+ 380 0072 06E0     	 b .L21
+ 381              	.L22:
+ 382              	 .loc 1 149 0 is_stmt 0 discriminator 2
+ 383 0074 FFF7FEFF 	 bl micros
+ 384 0078 0246     	 mov r2,r0
+ 385 007a 3B68     	 ldr r3,[r7]
+ 386 007c 9A42     	 cmp r2,r3
+ 387 007e 00D9     	 bls .L21
+ 388              	 .loc 1 149 0
+ 389 0080 1BE0     	 b .L16
+ 390              	.L21:
+ 391              	 .loc 1 149 0 discriminator 1
+ 392 0082 114B     	 ldr r3,.L26
+ 393 0084 1B78     	 ldrb r3,[r3]
+ 394 0086 1846     	 mov r0,r3
+ 395 0088 FFF7FEFF 	 bl isEscHi
+ 396 008c 0346     	 mov r3,r0
+ 397 008e 002B     	 cmp r3,#0
+ 398 0090 F0D1     	 bne .L22
+ 150:../cleanflight/src/main/io/serial_4way_stk500v2.c ****         WaitPinHi;
+ 399              	 .loc 1 150 0 is_stmt 1
+ 400 0092 06E0     	 b .L23
+ 401              	.L24:
+ 402              	 .loc 1 150 0 is_stmt 0 discriminator 2
+ 403 0094 FFF7FEFF 	 bl micros
+ 404 0098 0246     	 mov r2,r0
+ 405 009a 3B68     	 ldr r3,[r7]
+ 406 009c 9A42     	 cmp r2,r3
+ 407 009e 00D9     	 bls .L23
+ 408              	 .loc 1 150 0
+ 409 00a0 0BE0     	 b .L16
+ 410              	.L23:
+ 411              	 .loc 1 150 0 discriminator 1
+ 412 00a2 094B     	 ldr r3,.L26
+ 413 00a4 1B78     	 ldrb r3,[r3]
+ 414 00a6 1846     	 mov r0,r3
+ 415 00a8 FFF7FEFF 	 bl isEscLo
+ 416 00ac 0346     	 mov r3,r0
+ 417 00ae 002B     	 cmp r3,#0
+ 418 00b0 F0D1     	 bne .L24
+ 151:../cleanflight/src/main/io/serial_4way_stk500v2.c ****         //lo-bit
+ 152:../cleanflight/src/main/io/serial_4way_stk500v2.c ****         return 0;
+ 419              	 .loc 1 152 0 is_stmt 1
+ 420 00b2 0023     	 movs r3,#0
+ 421 00b4 02E0     	 b .L25
+ 422              	.L20:
+ 153:../cleanflight/src/main/io/serial_4way_stk500v2.c ****     } else {
+ 154:../cleanflight/src/main/io/serial_4way_stk500v2.c ****         return 1;
+ 423              	 .loc 1 154 0
+ 424 00b6 0123     	 movs r3,#1
+ 425 00b8 00E0     	 b .L25
+ 426              	.L16:
+ 155:../cleanflight/src/main/io/serial_4way_stk500v2.c ****     }
+ 156:../cleanflight/src/main/io/serial_4way_stk500v2.c **** timeout:
+ 157:../cleanflight/src/main/io/serial_4way_stk500v2.c ****     return -1;
+ 427              	 .loc 1 157 0
+ 428 00ba FF23     	 movs r3,#255
+ 429              	.L25:
+ 430 00bc 5BB2     	 sxtb r3,r3
+ 158:../cleanflight/src/main/io/serial_4way_stk500v2.c **** }
+ 431              	 .loc 1 158 0
+ 432 00be 1846     	 mov r0,r3
+ 433 00c0 0837     	 adds r7,r7,#8
+ 434              	.LCFI12:
+ 435              	 .cfi_def_cfa_offset 8
+ 436 00c2 BD46     	 mov sp,r7
+ 437              	.LCFI13:
+ 438              	 .cfi_def_cfa_register 13
+ 439              	 
+ 440 00c4 80BD     	 pop {r7,pc}
+ 441              	.L27:
+ 442 00c6 00BF     	 .align 2
+ 443              	.L26:
+ 444 00c8 00000000 	 .word selected_esc
+ 445 00cc 00000000 	 .word LastBitTime
+ 446 00d0 00000000 	 .word HiLoTsh
+ 447              	 .cfi_endproc
+ 448              	.LFE534:
+ 450              	 .section .text.ReadByte,"ax",%progbits
+ 451              	 .align 2
+ 452              	 .thumb
+ 453              	 .thumb_func
+ 455              	ReadByte:
+ 456              	.LFB535:
+ 159:../cleanflight/src/main/io/serial_4way_stk500v2.c **** 
+ 160:../cleanflight/src/main/io/serial_4way_stk500v2.c **** static uint8_t ReadByte(uint8_t *bt)
+ 161:../cleanflight/src/main/io/serial_4way_stk500v2.c **** {
+ 457              	 .loc 1 161 0
+ 458              	 .cfi_startproc
+ 459              	 
+ 460              	 
+ 461 0000 80B5     	 push {r7,lr}
+ 462              	.LCFI14:
+ 463              	 .cfi_def_cfa_offset 8
+ 464              	 .cfi_offset 7,-8
+ 465              	 .cfi_offset 14,-4
+ 466 0002 84B0     	 sub sp,sp,#16
+ 467              	.LCFI15:
+ 468              	 .cfi_def_cfa_offset 24
+ 469 0004 00AF     	 add r7,sp,#0
+ 470              	.LCFI16:
+ 471              	 .cfi_def_cfa_register 7
+ 472 0006 7860     	 str r0,[r7,#4]
+ 162:../cleanflight/src/main/io/serial_4way_stk500v2.c ****     *bt = 0;
+ 473              	 .loc 1 162 0
+ 474 0008 7B68     	 ldr r3,[r7,#4]
+ 475 000a 0022     	 movs r2,#0
+ 476 000c 1A70     	 strb r2,[r3]
+ 477              	.LBB3:
+ 163:../cleanflight/src/main/io/serial_4way_stk500v2.c ****     for (uint8_t i = 0; i < 8; i++) {
+ 478              	 .loc 1 163 0
+ 479 000e 0023     	 movs r3,#0
+ 480 0010 FB73     	 strb r3,[r7,#15]
+ 481 0012 20E0     	 b .L29
+ 482              	.L33:
+ 483              	.LBB4:
+ 164:../cleanflight/src/main/io/serial_4way_stk500v2.c ****         int8_t bit = ReadBit();
+ 484              	 .loc 1 164 0
+ 485 0014 FFF7FEFF 	 bl ReadBit
+ 486 0018 0346     	 mov r3,r0
+ 487 001a BB73     	 strb r3,[r7,#14]
+ 165:../cleanflight/src/main/io/serial_4way_stk500v2.c ****         if (bit == -1) goto timeout;
+ 488              	 .loc 1 165 0
+ 489 001c 97F90E30 	 ldrsb r3,[r7,#14]
+ 490 0020 B3F1FF3F 	 cmp r3,#-1
+ 491 0024 02D1     	 bne .L30
+ 492 0026 00BF     	 nop
+ 493              	.L31:
+ 494              	.LBE4:
+ 495              	.LBE3:
+ 166:../cleanflight/src/main/io/serial_4way_stk500v2.c ****         if (bit == 1) {
+ 167:../cleanflight/src/main/io/serial_4way_stk500v2.c ****             *bt |= (1 << i);
+ 168:../cleanflight/src/main/io/serial_4way_stk500v2.c ****         }
+ 169:../cleanflight/src/main/io/serial_4way_stk500v2.c ****     }
+ 170:../cleanflight/src/main/io/serial_4way_stk500v2.c ****     ckSumIn ^=*bt;
+ 171:../cleanflight/src/main/io/serial_4way_stk500v2.c ****     return 1;
+ 172:../cleanflight/src/main/io/serial_4way_stk500v2.c **** timeout:
+ 173:../cleanflight/src/main/io/serial_4way_stk500v2.c ****     return 0;
+ 496              	 .loc 1 173 0
+ 497 0028 0023     	 movs r3,#0
+ 498 002a 20E0     	 b .L34
+ 499              	.L30:
+ 500              	.LBB6:
+ 501              	.LBB5:
+ 166:../cleanflight/src/main/io/serial_4way_stk500v2.c ****         if (bit == 1) {
+ 502              	 .loc 1 166 0
+ 503 002c 97F90E30 	 ldrsb r3,[r7,#14]
+ 504 0030 012B     	 cmp r3,#1
+ 505 0032 0DD1     	 bne .L32
+ 167:../cleanflight/src/main/io/serial_4way_stk500v2.c ****         }
+ 506              	 .loc 1 167 0
+ 507 0034 7B68     	 ldr r3,[r7,#4]
+ 508 0036 1B78     	 ldrb r3,[r3]
+ 509 0038 D9B2     	 uxtb r1,r3
+ 510 003a FB7B     	 ldrb r3,[r7,#15]
+ 511 003c 0122     	 movs r2,#1
+ 512 003e 02FA03F3 	 lsl r3,r2,r3
+ 513 0042 DBB2     	 uxtb r3,r3
+ 514 0044 0A46     	 mov r2,r1
+ 515 0046 1343     	 orrs r3,r3,r2
+ 516 0048 DBB2     	 uxtb r3,r3
+ 517 004a DAB2     	 uxtb r2,r3
+ 518 004c 7B68     	 ldr r3,[r7,#4]
+ 519 004e 1A70     	 strb r2,[r3]
+ 520              	.L32:
+ 521              	.LBE5:
+ 163:../cleanflight/src/main/io/serial_4way_stk500v2.c ****         int8_t bit = ReadBit();
+ 522              	 .loc 1 163 0 discriminator 2
+ 523 0050 FB7B     	 ldrb r3,[r7,#15]
+ 524 0052 0133     	 adds r3,r3,#1
+ 525 0054 FB73     	 strb r3,[r7,#15]
+ 526              	.L29:
+ 163:../cleanflight/src/main/io/serial_4way_stk500v2.c ****         int8_t bit = ReadBit();
+ 527              	 .loc 1 163 0 is_stmt 0 discriminator 1
+ 528 0056 FB7B     	 ldrb r3,[r7,#15]
+ 529 0058 072B     	 cmp r3,#7
+ 530 005a DBD9     	 bls .L33
+ 531              	.LBE6:
+ 170:../cleanflight/src/main/io/serial_4way_stk500v2.c ****     return 1;
+ 532              	 .loc 1 170 0 is_stmt 1
+ 533 005c 7B68     	 ldr r3,[r7,#4]
+ 534 005e 1A78     	 ldrb r2,[r3]
+ 535 0060 054B     	 ldr r3,.L35
+ 536 0062 1B78     	 ldrb r3,[r3]
+ 537 0064 5340     	 eors r3,r3,r2
+ 538 0066 DAB2     	 uxtb r2,r3
+ 539 0068 034B     	 ldr r3,.L35
+ 540 006a 1A70     	 strb r2,[r3]
+ 171:../cleanflight/src/main/io/serial_4way_stk500v2.c **** timeout:
+ 541              	 .loc 1 171 0
+ 542 006c 0123     	 movs r3,#1
+ 543              	.L34:
+ 174:../cleanflight/src/main/io/serial_4way_stk500v2.c **** }
+ 544              	 .loc 1 174 0
+ 545 006e 1846     	 mov r0,r3
+ 546 0070 1037     	 adds r7,r7,#16
+ 547              	.LCFI17:
+ 548              	 .cfi_def_cfa_offset 8
+ 549 0072 BD46     	 mov sp,r7
+ 550              	.LCFI18:
+ 551              	 .cfi_def_cfa_register 13
+ 552              	 
+ 553 0074 80BD     	 pop {r7,pc}
+ 554              	.L36:
+ 555 0076 00BF     	 .align 2
+ 556              	.L35:
+ 557 0078 00000000 	 .word ckSumIn
+ 558              	 .cfi_endproc
+ 559              	.LFE535:
+ 561              	 .section .text.StkReadLeader,"ax",%progbits
+ 562              	 .align 2
+ 563              	 .thumb
+ 564              	 .thumb_func
+ 566              	StkReadLeader:
+ 567              	.LFB536:
+ 175:../cleanflight/src/main/io/serial_4way_stk500v2.c **** 
+ 176:../cleanflight/src/main/io/serial_4way_stk500v2.c **** static uint8_t StkReadLeader(void)
+ 177:../cleanflight/src/main/io/serial_4way_stk500v2.c **** {
+ 568              	 .loc 1 177 0
+ 569              	 .cfi_startproc
+ 570              	 
+ 571              	 
+ 572 0000 80B5     	 push {r7,lr}
+ 573              	.LCFI19:
+ 574              	 .cfi_def_cfa_offset 8
+ 575              	 .cfi_offset 7,-8
+ 576              	 .cfi_offset 14,-4
+ 577 0002 82B0     	 sub sp,sp,#8
+ 578              	.LCFI20:
+ 579              	 .cfi_def_cfa_offset 16
+ 580 0004 00AF     	 add r7,sp,#0
+ 581              	.LCFI21:
+ 582              	 .cfi_def_cfa_register 7
+ 178:../cleanflight/src/main/io/serial_4way_stk500v2.c **** 
+ 179:../cleanflight/src/main/io/serial_4way_stk500v2.c ****     // Reset learned timing
+ 180:../cleanflight/src/main/io/serial_4way_stk500v2.c ****     HiLoTsh = BIT_HI_US + BIT_LO_US;
+ 583              	 .loc 1 180 0
+ 584 0006 2B4B     	 ldr r3,.L54
+ 585 0008 6022     	 movs r2,#96
+ 586 000a 1A60     	 str r2,[r3]
+ 181:../cleanflight/src/main/io/serial_4way_stk500v2.c **** 
+ 182:../cleanflight/src/main/io/serial_4way_stk500v2.c ****     // Wait for the first bit
+ 183:../cleanflight/src/main/io/serial_4way_stk500v2.c ****     uint32_t waitcycl; //250uS each
+ 184:../cleanflight/src/main/io/serial_4way_stk500v2.c **** 
+ 185:../cleanflight/src/main/io/serial_4way_stk500v2.c ****     if ((StkCmd == CMD_PROGRAM_EEPROM_ISP) || (StkCmd == CMD_CHIP_ERASE_ISP)) {
+ 587              	 .loc 1 185 0
+ 588 000c 2A4B     	 ldr r3,.L54+4
+ 589 000e 1B78     	 ldrb r3,[r3]
+ 590 0010 152B     	 cmp r3,#21
+ 591 0012 03D0     	 beq .L38
+ 592              	 .loc 1 185 0 is_stmt 0 discriminator 1
+ 593 0014 284B     	 ldr r3,.L54+4
+ 594 0016 1B78     	 ldrb r3,[r3]
+ 595 0018 122B     	 cmp r3,#18
+ 596 001a 03D1     	 bne .L39
+ 597              	.L38:
+ 186:../cleanflight/src/main/io/serial_4way_stk500v2.c ****          waitcycl = STK_WAITCYLCES_EXT;
+ 598              	 .loc 1 186 0 is_stmt 1
+ 599 001c 44F62063 	 movw r3,#20000
+ 600 0020 7B60     	 str r3,[r7,#4]
+ 601 0022 08E0     	 b .L40
+ 602              	.L39:
+ 187:../cleanflight/src/main/io/serial_4way_stk500v2.c ****     } else if (StkCmd == CMD_SIGN_ON) {
+ 603              	 .loc 1 187 0
+ 604 0024 244B     	 ldr r3,.L54+4
+ 605 0026 1B78     	 ldrb r3,[r3]
+ 606 0028 012B     	 cmp r3,#1
+ 607 002a 02D1     	 bne .L41
+ 188:../cleanflight/src/main/io/serial_4way_stk500v2.c ****         waitcycl = STK_WAITCYLCES_START;
+ 608              	 .loc 1 188 0
+ 609 002c 0223     	 movs r3,#2
+ 610 002e 7B60     	 str r3,[r7,#4]
+ 611 0030 01E0     	 b .L40
+ 612              	.L41:
+ 189:../cleanflight/src/main/io/serial_4way_stk500v2.c ****     } else {
+ 190:../cleanflight/src/main/io/serial_4way_stk500v2.c ****         waitcycl= STK_WAITCYLCES;
+ 613              	 .loc 1 190 0
+ 614 0032 8C23     	 movs r3,#140
+ 615 0034 7B60     	 str r3,[r7,#4]
+ 616              	.L40:
+ 191:../cleanflight/src/main/io/serial_4way_stk500v2.c ****     }
+ 192:../cleanflight/src/main/io/serial_4way_stk500v2.c ****     for ( ; waitcycl >0 ; waitcycl--) {
+ 617              	 .loc 1 192 0
+ 618 0036 08E0     	 b .L42
+ 619              	.L45:
+ 193:../cleanflight/src/main/io/serial_4way_stk500v2.c ****         //check is not timeout
+ 194:../cleanflight/src/main/io/serial_4way_stk500v2.c ****         if (ReadBit() >- 1) break;
+ 620              	 .loc 1 194 0
+ 621 0038 FFF7FEFF 	 bl ReadBit
+ 622 003c 0346     	 mov r3,r0
+ 623 003e 002B     	 cmp r3,#0
+ 624 0040 00DB     	 blt .L43
+ 625 0042 05E0     	 b .L44
+ 626              	.L43:
+ 192:../cleanflight/src/main/io/serial_4way_stk500v2.c ****         //check is not timeout
+ 627              	 .loc 1 192 0
+ 628 0044 7B68     	 ldr r3,[r7,#4]
+ 629 0046 013B     	 subs r3,r3,#1
+ 630 0048 7B60     	 str r3,[r7,#4]
+ 631              	.L42:
+ 192:../cleanflight/src/main/io/serial_4way_stk500v2.c ****         //check is not timeout
+ 632              	 .loc 1 192 0 is_stmt 0 discriminator 1
+ 633 004a 7B68     	 ldr r3,[r7,#4]
+ 634 004c 002B     	 cmp r3,#0
+ 635 004e F3D1     	 bne .L45
+ 636              	.L44:
+ 195:../cleanflight/src/main/io/serial_4way_stk500v2.c ****     }
+ 196:../cleanflight/src/main/io/serial_4way_stk500v2.c **** 
+ 197:../cleanflight/src/main/io/serial_4way_stk500v2.c ****     //Skip the first bits
+ 198:../cleanflight/src/main/io/serial_4way_stk500v2.c ****     if (waitcycl == 0) {
+ 637              	 .loc 1 198 0 is_stmt 1
+ 638 0050 7B68     	 ldr r3,[r7,#4]
+ 639 0052 002B     	 cmp r3,#0
+ 640 0054 00D1     	 bne .L46
+ 199:../cleanflight/src/main/io/serial_4way_stk500v2.c ****         goto timeout;
+ 641              	 .loc 1 199 0
+ 642 0056 28E0     	 b .L47
+ 643              	.L46:
+ 644              	.LBB7:
+ 200:../cleanflight/src/main/io/serial_4way_stk500v2.c ****     }
+ 201:../cleanflight/src/main/io/serial_4way_stk500v2.c **** 
+ 202:../cleanflight/src/main/io/serial_4way_stk500v2.c ****     for (uint8_t i = 0; i < 10; i++) {
+ 645              	 .loc 1 202 0
+ 646 0058 0023     	 movs r3,#0
+ 647 005a FB70     	 strb r3,[r7,#3]
+ 648 005c 09E0     	 b .L48
+ 649              	.L50:
+ 203:../cleanflight/src/main/io/serial_4way_stk500v2.c ****         if (ReadBit() == -1) goto timeout;
+ 650              	 .loc 1 203 0
+ 651 005e FFF7FEFF 	 bl ReadBit
+ 652 0062 0346     	 mov r3,r0
+ 653 0064 B3F1FF3F 	 cmp r3,#-1
+ 654 0068 00D1     	 bne .L49
+ 655 006a 1EE0     	 b .L47
+ 656              	.L49:
+ 202:../cleanflight/src/main/io/serial_4way_stk500v2.c ****         if (ReadBit() == -1) goto timeout;
+ 657              	 .loc 1 202 0 discriminator 2
+ 658 006c FB78     	 ldrb r3,[r7,#3]
+ 659 006e 0133     	 adds r3,r3,#1
+ 660 0070 FB70     	 strb r3,[r7,#3]
+ 661              	.L48:
+ 202:../cleanflight/src/main/io/serial_4way_stk500v2.c ****         if (ReadBit() == -1) goto timeout;
+ 662              	 .loc 1 202 0 is_stmt 0 discriminator 1
+ 663 0072 FB78     	 ldrb r3,[r7,#3]
+ 664 0074 092B     	 cmp r3,#9
+ 665 0076 F2D9     	 bls .L50
+ 666              	.LBE7:
+ 204:../cleanflight/src/main/io/serial_4way_stk500v2.c ****     }
+ 205:../cleanflight/src/main/io/serial_4way_stk500v2.c **** 
+ 206:../cleanflight/src/main/io/serial_4way_stk500v2.c ****     // learn timing
+ 207:../cleanflight/src/main/io/serial_4way_stk500v2.c ****     HiLoTsh = (LastBitTime >> 1) + (LastBitTime >> 2);
+ 667              	 .loc 1 207 0 is_stmt 1
+ 668 0078 104B     	 ldr r3,.L54+8
+ 669 007a 1B68     	 ldr r3,[r3]
+ 670 007c 5A08     	 lsrs r2,r3,#1
+ 671 007e 0F4B     	 ldr r3,.L54+8
+ 672 0080 1B68     	 ldr r3,[r3]
+ 673 0082 9B08     	 lsrs r3,r3,#2
+ 674 0084 1344     	 add r3,r3,r2
+ 675 0086 0B4A     	 ldr r2,.L54
+ 676 0088 1360     	 str r3,[r2]
+ 677              	.L52:
+ 208:../cleanflight/src/main/io/serial_4way_stk500v2.c **** 
+ 209:../cleanflight/src/main/io/serial_4way_stk500v2.c ****     // Read until we get a 0 bit
+ 210:../cleanflight/src/main/io/serial_4way_stk500v2.c ****     int8_t bit;
+ 211:../cleanflight/src/main/io/serial_4way_stk500v2.c ****     do {
+ 212:../cleanflight/src/main/io/serial_4way_stk500v2.c ****         bit = ReadBit();
+ 678              	 .loc 1 212 0
+ 679 008a FFF7FEFF 	 bl ReadBit
+ 680 008e 0346     	 mov r3,r0
+ 681 0090 BB70     	 strb r3,[r7,#2]
+ 213:../cleanflight/src/main/io/serial_4way_stk500v2.c ****         if (bit == -1) goto timeout;
+ 682              	 .loc 1 213 0
+ 683 0092 97F90230 	 ldrsb r3,[r7,#2]
+ 684 0096 B3F1FF3F 	 cmp r3,#-1
+ 685 009a 00D1     	 bne .L51
+ 686 009c 05E0     	 b .L47
+ 687              	.L51:
+ 214:../cleanflight/src/main/io/serial_4way_stk500v2.c ****     } while (bit > 0);
+ 688              	 .loc 1 214 0
+ 689 009e 97F90230 	 ldrsb r3,[r7,#2]
+ 690 00a2 002B     	 cmp r3,#0
+ 691 00a4 F1DC     	 bgt .L52
+ 215:../cleanflight/src/main/io/serial_4way_stk500v2.c ****     return 1;
+ 692              	 .loc 1 215 0
+ 693 00a6 0123     	 movs r3,#1
+ 694 00a8 00E0     	 b .L53
+ 695              	.L47:
+ 216:../cleanflight/src/main/io/serial_4way_stk500v2.c **** timeout:
+ 217:../cleanflight/src/main/io/serial_4way_stk500v2.c ****     return 0;
+ 696              	 .loc 1 217 0
+ 697 00aa 0023     	 movs r3,#0
+ 698              	.L53:
+ 218:../cleanflight/src/main/io/serial_4way_stk500v2.c **** }
+ 699              	 .loc 1 218 0
+ 700 00ac 1846     	 mov r0,r3
+ 701 00ae 0837     	 adds r7,r7,#8
+ 702              	.LCFI22:
+ 703              	 .cfi_def_cfa_offset 8
+ 704 00b0 BD46     	 mov sp,r7
+ 705              	.LCFI23:
+ 706              	 .cfi_def_cfa_register 13
+ 707              	 
+ 708 00b2 80BD     	 pop {r7,pc}
+ 709              	.L55:
+ 710              	 .align 2
+ 711              	.L54:
+ 712 00b4 00000000 	 .word HiLoTsh
+ 713 00b8 00000000 	 .word StkCmd
+ 714 00bc 00000000 	 .word LastBitTime
+ 715              	 .cfi_endproc
+ 716              	.LFE536:
+ 718              	 .section .text.StkRcvPacket,"ax",%progbits
+ 719              	 .align 2
+ 720              	 .thumb
+ 721              	 .thumb_func
+ 723              	StkRcvPacket:
+ 724              	.LFB537:
+ 219:../cleanflight/src/main/io/serial_4way_stk500v2.c **** 
+ 220:../cleanflight/src/main/io/serial_4way_stk500v2.c **** static uint8_t StkRcvPacket(uint8_t *pstring)
+ 221:../cleanflight/src/main/io/serial_4way_stk500v2.c **** {
+ 725              	 .loc 1 221 0
+ 726              	 .cfi_startproc
+ 727              	 
+ 728              	 
+ 729 0000 80B5     	 push {r7,lr}
+ 730              	.LCFI24:
+ 731              	 .cfi_def_cfa_offset 8
+ 732              	 .cfi_offset 7,-8
+ 733              	 .cfi_offset 14,-4
+ 734 0002 84B0     	 sub sp,sp,#16
+ 735              	.LCFI25:
+ 736              	 .cfi_def_cfa_offset 24
+ 737 0004 00AF     	 add r7,sp,#0
+ 738              	.LCFI26:
+ 739              	 .cfi_def_cfa_register 7
+ 740 0006 7860     	 str r0,[r7,#4]
+ 222:../cleanflight/src/main/io/serial_4way_stk500v2.c ****     uint8_t bt = 0;
+ 741              	 .loc 1 222 0
+ 742 0008 0023     	 movs r3,#0
+ 743 000a 7B73     	 strb r3,[r7,#13]
+ 223:../cleanflight/src/main/io/serial_4way_stk500v2.c ****     uint8_16_u Len;
+ 224:../cleanflight/src/main/io/serial_4way_stk500v2.c **** 
+ 225:../cleanflight/src/main/io/serial_4way_stk500v2.c ****     IRQ_OFF;
+ 226:../cleanflight/src/main/io/serial_4way_stk500v2.c ****     if (!StkReadLeader()) goto Err;
+ 744              	 .loc 1 226 0
+ 745 000c FFF7FEFF 	 bl StkReadLeader
+ 746 0010 0346     	 mov r3,r0
+ 747 0012 002B     	 cmp r3,#0
+ 748 0014 00D1     	 bne .L57
+ 749 0016 71E0     	 b .L58
+ 750              	.L57:
+ 227:../cleanflight/src/main/io/serial_4way_stk500v2.c ****     ckSumIn=0;
+ 751              	 .loc 1 227 0
+ 752 0018 3B4B     	 ldr r3,.L67
+ 753 001a 0022     	 movs r2,#0
+ 754 001c 1A70     	 strb r2,[r3]
+ 228:../cleanflight/src/main/io/serial_4way_stk500v2.c ****     if (!ReadByte(&bt) || (bt != MESSAGE_START)) goto Err;
+ 755              	 .loc 1 228 0
+ 756 001e 07F10D03 	 add r3,r7,#13
+ 757 0022 1846     	 mov r0,r3
+ 758 0024 FFF7FEFF 	 bl ReadByte
+ 759 0028 0346     	 mov r3,r0
+ 760 002a 002B     	 cmp r3,#0
+ 761 002c 66D0     	 beq .L58
+ 762              	 .loc 1 228 0 is_stmt 0 discriminator 1
+ 763 002e 7B7B     	 ldrb r3,[r7,#13]
+ 764 0030 1B2B     	 cmp r3,#27
+ 765 0032 63D1     	 bne .L58
+ 229:../cleanflight/src/main/io/serial_4way_stk500v2.c ****     if (!ReadByte(&bt) || (bt != SeqNumber)) goto Err;
+ 766              	 .loc 1 229 0 is_stmt 1
+ 767 0034 07F10D03 	 add r3,r7,#13
+ 768 0038 1846     	 mov r0,r3
+ 769 003a FFF7FEFF 	 bl ReadByte
+ 770 003e 0346     	 mov r3,r0
+ 771 0040 002B     	 cmp r3,#0
+ 772 0042 5BD0     	 beq .L58
+ 773              	 .loc 1 229 0 is_stmt 0 discriminator 1
+ 774 0044 7A7B     	 ldrb r2,[r7,#13]
+ 775 0046 314B     	 ldr r3,.L67+4
+ 776 0048 1B78     	 ldrb r3,[r3]
+ 777 004a 9A42     	 cmp r2,r3
+ 778 004c 56D1     	 bne .L58
+ 230:../cleanflight/src/main/io/serial_4way_stk500v2.c ****     ReadByte(&Len.bytes[1]);
+ 779              	 .loc 1 230 0 is_stmt 1
+ 780 004e 07F10803 	 add r3,r7,#8
+ 781 0052 0133     	 adds r3,r3,#1
+ 782 0054 1846     	 mov r0,r3
+ 783 0056 FFF7FEFF 	 bl ReadByte
+ 231:../cleanflight/src/main/io/serial_4way_stk500v2.c ****     if (Len.bytes[1] > 1) goto Err;
+ 784              	 .loc 1 231 0
+ 785 005a 7B7A     	 ldrb r3,[r7,#9]
+ 786 005c 012B     	 cmp r3,#1
+ 787 005e 00D9     	 bls .L59
+ 788 0060 4CE0     	 b .L58
+ 789              	.L59:
+ 232:../cleanflight/src/main/io/serial_4way_stk500v2.c ****     ReadByte(&Len.bytes[0]);
+ 790              	 .loc 1 232 0
+ 791 0062 07F10803 	 add r3,r7,#8
+ 792 0066 1846     	 mov r0,r3
+ 793 0068 FFF7FEFF 	 bl ReadByte
+ 233:../cleanflight/src/main/io/serial_4way_stk500v2.c ****     if (Len.bytes[0] < 1) goto Err;
+ 794              	 .loc 1 233 0
+ 795 006c 3B7A     	 ldrb r3,[r7,#8]
+ 796 006e 002B     	 cmp r3,#0
+ 797 0070 00D1     	 bne .L60
+ 798 0072 43E0     	 b .L58
+ 799              	.L60:
+ 234:../cleanflight/src/main/io/serial_4way_stk500v2.c ****     if (!ReadByte(&bt) || (bt != TOKEN)) goto Err;
+ 800              	 .loc 1 234 0
+ 801 0074 07F10D03 	 add r3,r7,#13
+ 802 0078 1846     	 mov r0,r3
+ 803 007a FFF7FEFF 	 bl ReadByte
+ 804 007e 0346     	 mov r3,r0
+ 805 0080 002B     	 cmp r3,#0
+ 806 0082 3BD0     	 beq .L58
+ 807              	 .loc 1 234 0 is_stmt 0 discriminator 1
+ 808 0084 7B7B     	 ldrb r3,[r7,#13]
+ 809 0086 0E2B     	 cmp r3,#14
+ 810 0088 38D1     	 bne .L58
+ 235:../cleanflight/src/main/io/serial_4way_stk500v2.c ****     if (!ReadByte(&bt) || (bt != StkCmd)) goto Err;
+ 811              	 .loc 1 235 0 is_stmt 1
+ 812 008a 07F10D03 	 add r3,r7,#13
+ 813 008e 1846     	 mov r0,r3
+ 814 0090 FFF7FEFF 	 bl ReadByte
+ 815 0094 0346     	 mov r3,r0
+ 816 0096 002B     	 cmp r3,#0
+ 817 0098 30D0     	 beq .L58
+ 818              	 .loc 1 235 0 is_stmt 0 discriminator 1
+ 819 009a 7A7B     	 ldrb r2,[r7,#13]
+ 820 009c 1C4B     	 ldr r3,.L67+8
+ 821 009e 1B78     	 ldrb r3,[r3]
+ 822 00a0 9A42     	 cmp r2,r3
+ 823 00a2 2BD1     	 bne .L58
+ 236:../cleanflight/src/main/io/serial_4way_stk500v2.c ****     if (!ReadByte(&bt) || (bt != STATUS_CMD_OK)) goto Err;
+ 824              	 .loc 1 236 0 is_stmt 1
+ 825 00a4 07F10D03 	 add r3,r7,#13
+ 826 00a8 1846     	 mov r0,r3
+ 827 00aa FFF7FEFF 	 bl ReadByte
+ 828 00ae 0346     	 mov r3,r0
+ 829 00b0 002B     	 cmp r3,#0
+ 830 00b2 23D0     	 beq .L58
+ 831              	 .loc 1 236 0 is_stmt 0 discriminator 1
+ 832 00b4 7B7B     	 ldrb r3,[r7,#13]
+ 833 00b6 002B     	 cmp r3,#0
+ 834 00b8 20D1     	 bne .L58
+ 835              	.LBB8:
+ 237:../cleanflight/src/main/io/serial_4way_stk500v2.c ****     for (uint16_t i = 0; i < (Len.word - 2); i++)
+ 836              	 .loc 1 237 0 is_stmt 1
+ 837 00ba 0023     	 movs r3,#0
+ 838 00bc FB81     	 strh r3,[r7,#14]
+ 839 00be 0CE0     	 b .L61
+ 840              	.L63:
+ 238:../cleanflight/src/main/io/serial_4way_stk500v2.c ****     {
+ 239:../cleanflight/src/main/io/serial_4way_stk500v2.c ****          if (!ReadByte(pstring)) goto Err;
+ 841              	 .loc 1 239 0
+ 842 00c0 7868     	 ldr r0,[r7,#4]
+ 843 00c2 FFF7FEFF 	 bl ReadByte
+ 844 00c6 0346     	 mov r3,r0
+ 845 00c8 002B     	 cmp r3,#0
+ 846 00ca 00D1     	 bne .L62
+ 847 00cc 16E0     	 b .L58
+ 848              	.L62:
+ 240:../cleanflight/src/main/io/serial_4way_stk500v2.c ****          pstring++;
+ 849              	 .loc 1 240 0 discriminator 2
+ 850 00ce 7B68     	 ldr r3,[r7,#4]
+ 851 00d0 0133     	 adds r3,r3,#1
+ 852 00d2 7B60     	 str r3,[r7,#4]
+ 237:../cleanflight/src/main/io/serial_4way_stk500v2.c ****     for (uint16_t i = 0; i < (Len.word - 2); i++)
+ 853              	 .loc 1 237 0 discriminator 2
+ 854 00d4 FB89     	 ldrh r3,[r7,#14]
+ 855 00d6 0133     	 adds r3,r3,#1
+ 856 00d8 FB81     	 strh r3,[r7,#14]
+ 857              	.L61:
+ 237:../cleanflight/src/main/io/serial_4way_stk500v2.c ****     for (uint16_t i = 0; i < (Len.word - 2); i++)
+ 858              	 .loc 1 237 0 is_stmt 0 discriminator 1
+ 859 00da FA89     	 ldrh r2,[r7,#14]
+ 860 00dc 3B89     	 ldrh r3,[r7,#8]
+ 861 00de 023B     	 subs r3,r3,#2
+ 862 00e0 9A42     	 cmp r2,r3
+ 863 00e2 EDDB     	 blt .L63
+ 864              	.LBE8:
+ 241:../cleanflight/src/main/io/serial_4way_stk500v2.c ****     }
+ 242:../cleanflight/src/main/io/serial_4way_stk500v2.c ****     ReadByte(&bt);
+ 865              	 .loc 1 242 0 is_stmt 1
+ 866 00e4 07F10D03 	 add r3,r7,#13
+ 867 00e8 1846     	 mov r0,r3
+ 868 00ea FFF7FEFF 	 bl ReadByte
+ 243:../cleanflight/src/main/io/serial_4way_stk500v2.c ****     if (ckSumIn != 0) goto Err;
+ 869              	 .loc 1 243 0
+ 870 00ee 064B     	 ldr r3,.L67
+ 871 00f0 1B78     	 ldrb r3,[r3]
+ 872 00f2 002B     	 cmp r3,#0
+ 873 00f4 00D0     	 beq .L64
+ 874 00f6 01E0     	 b .L58
+ 875              	.L64:
+ 244:../cleanflight/src/main/io/serial_4way_stk500v2.c ****     IRQ_ON;
+ 245:../cleanflight/src/main/io/serial_4way_stk500v2.c ****     return 1;
+ 876              	 .loc 1 245 0
+ 877 00f8 0123     	 movs r3,#1
+ 878 00fa 00E0     	 b .L66
+ 879              	.L58:
+ 246:../cleanflight/src/main/io/serial_4way_stk500v2.c **** Err:
+ 247:../cleanflight/src/main/io/serial_4way_stk500v2.c ****     IRQ_ON;
+ 248:../cleanflight/src/main/io/serial_4way_stk500v2.c ****     return 0;
+ 880              	 .loc 1 248 0
+ 881 00fc 0023     	 movs r3,#0
+ 882              	.L66:
+ 249:../cleanflight/src/main/io/serial_4way_stk500v2.c **** }
+ 883              	 .loc 1 249 0 discriminator 1
+ 884 00fe 1846     	 mov r0,r3
+ 885 0100 1037     	 adds r7,r7,#16
+ 886              	.LCFI27:
+ 887              	 .cfi_def_cfa_offset 8
+ 888 0102 BD46     	 mov sp,r7
+ 889              	.LCFI28:
+ 890              	 .cfi_def_cfa_register 13
+ 891              	 
+ 892 0104 80BD     	 pop {r7,pc}
+ 893              	.L68:
+ 894 0106 00BF     	 .align 2
+ 895              	.L67:
+ 896 0108 00000000 	 .word ckSumIn
+ 897 010c 00000000 	 .word SeqNumber
+ 898 0110 00000000 	 .word StkCmd
+ 899              	 .cfi_endproc
+ 900              	.LFE537:
+ 902              	 .section .text._CMD_SPI_MULTI_EX,"ax",%progbits
+ 903              	 .align 2
+ 904              	 .thumb
+ 905              	 .thumb_func
+ 907              	_CMD_SPI_MULTI_EX:
+ 908              	.LFB538:
+ 250:../cleanflight/src/main/io/serial_4way_stk500v2.c **** 
+ 251:../cleanflight/src/main/io/serial_4way_stk500v2.c **** static uint8_t _CMD_SPI_MULTI_EX(volatile uint8_t * ResByte,uint8_t Cmd,uint8_t AdrHi,uint8_t AdrLo
+ 252:../cleanflight/src/main/io/serial_4way_stk500v2.c **** {
+ 909              	 .loc 1 252 0
+ 910              	 .cfi_startproc
+ 911              	 
+ 912              	 
+ 913 0000 80B5     	 push {r7,lr}
+ 914              	.LCFI29:
+ 915              	 .cfi_def_cfa_offset 8
+ 916              	 .cfi_offset 7,-8
+ 917              	 .cfi_offset 14,-4
+ 918 0002 82B0     	 sub sp,sp,#8
+ 919              	.LCFI30:
+ 920              	 .cfi_def_cfa_offset 16
+ 921 0004 00AF     	 add r7,sp,#0
+ 922              	.LCFI31:
+ 923              	 .cfi_def_cfa_register 7
+ 924 0006 7860     	 str r0,[r7,#4]
+ 925 0008 0846     	 mov r0,r1
+ 926 000a 1146     	 mov r1,r2
+ 927 000c 1A46     	 mov r2,r3
+ 928 000e 0346     	 mov r3,r0
+ 929 0010 FB70     	 strb r3,[r7,#3]
+ 930 0012 0B46     	 mov r3,r1
+ 931 0014 BB70     	 strb r3,[r7,#2]
+ 932 0016 1346     	 mov r3,r2
+ 933 0018 7B70     	 strb r3,[r7,#1]
+ 253:../cleanflight/src/main/io/serial_4way_stk500v2.c ****     StkCmd= CMD_SPI_MULTI;
+ 934              	 .loc 1 253 0
+ 935 001a 264B     	 ldr r3,.L74
+ 936 001c 1D22     	 movs r2,#29
+ 937 001e 1A70     	 strb r2,[r3]
+ 254:../cleanflight/src/main/io/serial_4way_stk500v2.c ****     StkSendPacketHeader();
+ 938              	 .loc 1 254 0
+ 939 0020 FFF7FEFF 	 bl StkSendPacketHeader
+ 255:../cleanflight/src/main/io/serial_4way_stk500v2.c ****     StkSendByte(0); // hi byte Msg len
+ 940              	 .loc 1 255 0
+ 941 0024 0020     	 movs r0,#0
+ 942 0026 FFF7FEFF 	 bl StkSendByte
+ 256:../cleanflight/src/main/io/serial_4way_stk500v2.c ****     StkSendByte(8); // lo byte Msg len
+ 943              	 .loc 1 256 0
+ 944 002a 0820     	 movs r0,#8
+ 945 002c FFF7FEFF 	 bl StkSendByte
+ 257:../cleanflight/src/main/io/serial_4way_stk500v2.c ****     StkSendByte(TOKEN);
+ 946              	 .loc 1 257 0
+ 947 0030 0E20     	 movs r0,#14
+ 948 0032 FFF7FEFF 	 bl StkSendByte
+ 258:../cleanflight/src/main/io/serial_4way_stk500v2.c ****     StkSendByte(CMD_SPI_MULTI);
+ 949              	 .loc 1 258 0
+ 950 0036 1D20     	 movs r0,#29
+ 951 0038 FFF7FEFF 	 bl StkSendByte
+ 259:../cleanflight/src/main/io/serial_4way_stk500v2.c ****     StkSendByte(4); // NumTX
+ 952              	 .loc 1 259 0
+ 953 003c 0420     	 movs r0,#4
+ 954 003e FFF7FEFF 	 bl StkSendByte
+ 260:../cleanflight/src/main/io/serial_4way_stk500v2.c ****     StkSendByte(4); // NumRX
+ 955              	 .loc 1 260 0
+ 956 0042 0420     	 movs r0,#4
+ 957 0044 FFF7FEFF 	 bl StkSendByte
+ 261:../cleanflight/src/main/io/serial_4way_stk500v2.c ****     StkSendByte(0); // RxStartAdr
+ 958              	 .loc 1 261 0
+ 959 0048 0020     	 movs r0,#0
+ 960 004a FFF7FEFF 	 bl StkSendByte
+ 262:../cleanflight/src/main/io/serial_4way_stk500v2.c ****     StkSendByte(Cmd);    // {TxData} Cmd
+ 961              	 .loc 1 262 0
+ 962 004e FB78     	 ldrb r3,[r7,#3]
+ 963 0050 1846     	 mov r0,r3
+ 964 0052 FFF7FEFF 	 bl StkSendByte
+ 263:../cleanflight/src/main/io/serial_4way_stk500v2.c ****     StkSendByte(AdrHi); // {TxData} AdrHi
+ 965              	 .loc 1 263 0
+ 966 0056 BB78     	 ldrb r3,[r7,#2]
+ 967 0058 1846     	 mov r0,r3
+ 968 005a FFF7FEFF 	 bl StkSendByte
+ 264:../cleanflight/src/main/io/serial_4way_stk500v2.c ****     StkSendByte(AdrLo);    // {TxData} AdrLoch
+ 969              	 .loc 1 264 0
+ 970 005e 7B78     	 ldrb r3,[r7,#1]
+ 971 0060 1846     	 mov r0,r3
+ 972 0062 FFF7FEFF 	 bl StkSendByte
+ 265:../cleanflight/src/main/io/serial_4way_stk500v2.c ****     StkSendByte(0); // {TxData} 0
+ 973              	 .loc 1 265 0
+ 974 0066 0020     	 movs r0,#0
+ 975 0068 FFF7FEFF 	 bl StkSendByte
+ 266:../cleanflight/src/main/io/serial_4way_stk500v2.c ****     StkSendPacketFooter();
+ 976              	 .loc 1 266 0
+ 977 006c FFF7FEFF 	 bl StkSendPacketFooter
+ 267:../cleanflight/src/main/io/serial_4way_stk500v2.c ****     if (StkRcvPacket((void *)StkInBuf)) { // NumRX + 3
+ 978              	 .loc 1 267 0
+ 979 0070 1148     	 ldr r0,.L74+4
+ 980 0072 FFF7FEFF 	 bl StkRcvPacket
+ 981 0076 0346     	 mov r3,r0
+ 982 0078 002B     	 cmp r3,#0
+ 983 007a 16D0     	 beq .L70
+ 268:../cleanflight/src/main/io/serial_4way_stk500v2.c ****          if ((StkInBuf[0] == 0x00) && ((StkInBuf[1] == Cmd)||(StkInBuf[1] == 0x00)/* ignore  zero r
+ 984              	 .loc 1 268 0
+ 985 007c 0E4B     	 ldr r3,.L74+4
+ 986 007e 1B78     	 ldrb r3,[r3]
+ 987 0080 002B     	 cmp r3,#0
+ 988 0082 10D1     	 bne .L71
+ 989              	 .loc 1 268 0 is_stmt 0 discriminator 1
+ 990 0084 0C4B     	 ldr r3,.L74+4
+ 991 0086 5B78     	 ldrb r3,[r3,#1]
+ 992 0088 FA78     	 ldrb r2,[r7,#3]
+ 993 008a 9A42     	 cmp r2,r3
+ 994 008c 03D0     	 beq .L72
+ 995              	 .loc 1 268 0 discriminator 3
+ 996 008e 0A4B     	 ldr r3,.L74+4
+ 997 0090 5B78     	 ldrb r3,[r3,#1]
+ 998 0092 002B     	 cmp r3,#0
+ 999 0094 07D1     	 bne .L71
+ 1000              	.L72:
+ 1001              	 .loc 1 268 0 discriminator 4
+ 1002 0096 084B     	 ldr r3,.L74+4
+ 1003 0098 9B78     	 ldrb r3,[r3,#2]
+ 1004 009a 002B     	 cmp r3,#0
+ 1005 009c 03D1     	 bne .L71
+ 269:../cleanflight/src/main/io/serial_4way_stk500v2.c ****             *ResByte = StkInBuf[3];
+ 1006              	 .loc 1 269 0 is_stmt 1
+ 1007 009e 064B     	 ldr r3,.L74+4
+ 1008 00a0 DA78     	 ldrb r2,[r3,#3]
+ 1009 00a2 7B68     	 ldr r3,[r7,#4]
+ 1010 00a4 1A70     	 strb r2,[r3]
+ 1011              	.L71:
+ 270:../cleanflight/src/main/io/serial_4way_stk500v2.c ****          }
+ 271:../cleanflight/src/main/io/serial_4way_stk500v2.c ****          return 1;
+ 1012              	 .loc 1 271 0
+ 1013 00a6 0123     	 movs r3,#1
+ 1014 00a8 00E0     	 b .L73
+ 1015              	.L70:
+ 272:../cleanflight/src/main/io/serial_4way_stk500v2.c ****     }
+ 273:../cleanflight/src/main/io/serial_4way_stk500v2.c ****     return 0;
+ 1016              	 .loc 1 273 0
+ 1017 00aa 0023     	 movs r3,#0
+ 1018              	.L73:
+ 274:../cleanflight/src/main/io/serial_4way_stk500v2.c **** }
+ 1019              	 .loc 1 274 0
+ 1020 00ac 1846     	 mov r0,r3
+ 1021 00ae 0837     	 adds r7,r7,#8
+ 1022              	.LCFI32:
+ 1023              	 .cfi_def_cfa_offset 8
+ 1024 00b0 BD46     	 mov sp,r7
+ 1025              	.LCFI33:
+ 1026              	 .cfi_def_cfa_register 13
+ 1027              	 
+ 1028 00b2 80BD     	 pop {r7,pc}
+ 1029              	.L75:
+ 1030              	 .align 2
+ 1031              	.L74:
+ 1032 00b4 00000000 	 .word StkCmd
+ 1033 00b8 00000000 	 .word StkInBuf
+ 1034              	 .cfi_endproc
+ 1035              	.LFE538:
+ 1037              	 .section .text._CMD_LOAD_ADDRESS,"ax",%progbits
+ 1038              	 .align 2
+ 1039              	 .thumb
+ 1040              	 .thumb_func
+ 1042              	_CMD_LOAD_ADDRESS:
+ 1043              	.LFB539:
+ 275:../cleanflight/src/main/io/serial_4way_stk500v2.c **** 
+ 276:../cleanflight/src/main/io/serial_4way_stk500v2.c **** static uint8_t _CMD_LOAD_ADDRESS(ioMem_t *pMem)
+ 277:../cleanflight/src/main/io/serial_4way_stk500v2.c **** {
+ 1044              	 .loc 1 277 0
+ 1045              	 .cfi_startproc
+ 1046              	 
+ 1047              	 
+ 1048 0000 80B5     	 push {r7,lr}
+ 1049              	.LCFI34:
+ 1050              	 .cfi_def_cfa_offset 8
+ 1051              	 .cfi_offset 7,-8
+ 1052              	 .cfi_offset 14,-4
+ 1053 0002 82B0     	 sub sp,sp,#8
+ 1054              	.LCFI35:
+ 1055              	 .cfi_def_cfa_offset 16
+ 1056 0004 00AF     	 add r7,sp,#0
+ 1057              	.LCFI36:
+ 1058              	 .cfi_def_cfa_register 7
+ 1059 0006 7860     	 str r0,[r7,#4]
+ 278:../cleanflight/src/main/io/serial_4way_stk500v2.c ****     // ignore 0xFFFF
+ 279:../cleanflight/src/main/io/serial_4way_stk500v2.c ****     // assume address is set before and we read or write the immediately following package
+ 280:../cleanflight/src/main/io/serial_4way_stk500v2.c ****     if ((pMem->D_FLASH_ADDR_H == 0xFF) && (pMem->D_FLASH_ADDR_L == 0xFF)) return 1;
+ 1060              	 .loc 1 280 0
+ 1061 0008 7B68     	 ldr r3,[r7,#4]
+ 1062 000a 5B78     	 ldrb r3,[r3,#1]
+ 1063 000c FF2B     	 cmp r3,#255
+ 1064 000e 05D1     	 bne .L77
+ 1065              	 .loc 1 280 0 is_stmt 0 discriminator 1
+ 1066 0010 7B68     	 ldr r3,[r7,#4]
+ 1067 0012 9B78     	 ldrb r3,[r3,#2]
+ 1068 0014 FF2B     	 cmp r3,#255
+ 1069 0016 01D1     	 bne .L77
+ 1070              	 .loc 1 280 0 discriminator 2
+ 1071 0018 0123     	 movs r3,#1
+ 1072 001a 26E0     	 b .L78
+ 1073              	.L77:
+ 281:../cleanflight/src/main/io/serial_4way_stk500v2.c ****     StkCmd = CMD_LOAD_ADDRESS;
+ 1074              	 .loc 1 281 0 is_stmt 1
+ 1075 001c 154B     	 ldr r3,.L79
+ 1076 001e 0622     	 movs r2,#6
+ 1077 0020 1A70     	 strb r2,[r3]
+ 282:../cleanflight/src/main/io/serial_4way_stk500v2.c ****     StkSendPacketHeader();
+ 1078              	 .loc 1 282 0
+ 1079 0022 FFF7FEFF 	 bl StkSendPacketHeader
+ 283:../cleanflight/src/main/io/serial_4way_stk500v2.c ****     StkSendByte(0); // hi byte Msg len
+ 1080              	 .loc 1 283 0
+ 1081 0026 0020     	 movs r0,#0
+ 1082 0028 FFF7FEFF 	 bl StkSendByte
+ 284:../cleanflight/src/main/io/serial_4way_stk500v2.c ****     StkSendByte(5); // lo byte Msg len
+ 1083              	 .loc 1 284 0
+ 1084 002c 0520     	 movs r0,#5
+ 1085 002e FFF7FEFF 	 bl StkSendByte
+ 285:../cleanflight/src/main/io/serial_4way_stk500v2.c ****     StkSendByte(TOKEN);
+ 1086              	 .loc 1 285 0
+ 1087 0032 0E20     	 movs r0,#14
+ 1088 0034 FFF7FEFF 	 bl StkSendByte
+ 286:../cleanflight/src/main/io/serial_4way_stk500v2.c ****     StkSendByte(CMD_LOAD_ADDRESS);
+ 1089              	 .loc 1 286 0
+ 1090 0038 0620     	 movs r0,#6
+ 1091 003a FFF7FEFF 	 bl StkSendByte
+ 287:../cleanflight/src/main/io/serial_4way_stk500v2.c ****     StkSendByte(0);
+ 1092              	 .loc 1 287 0
+ 1093 003e 0020     	 movs r0,#0
+ 1094 0040 FFF7FEFF 	 bl StkSendByte
+ 288:../cleanflight/src/main/io/serial_4way_stk500v2.c ****     StkSendByte(0);
+ 1095              	 .loc 1 288 0
+ 1096 0044 0020     	 movs r0,#0
+ 1097 0046 FFF7FEFF 	 bl StkSendByte
+ 289:../cleanflight/src/main/io/serial_4way_stk500v2.c ****     StkSendByte(pMem->D_FLASH_ADDR_H);
+ 1098              	 .loc 1 289 0
+ 1099 004a 7B68     	 ldr r3,[r7,#4]
+ 1100 004c 5B78     	 ldrb r3,[r3,#1]
+ 1101 004e 1846     	 mov r0,r3
+ 1102 0050 FFF7FEFF 	 bl StkSendByte
+ 290:../cleanflight/src/main/io/serial_4way_stk500v2.c ****     StkSendByte(pMem->D_FLASH_ADDR_L);
+ 1103              	 .loc 1 290 0
+ 1104 0054 7B68     	 ldr r3,[r7,#4]
+ 1105 0056 9B78     	 ldrb r3,[r3,#2]
+ 1106 0058 1846     	 mov r0,r3
+ 1107 005a FFF7FEFF 	 bl StkSendByte
+ 291:../cleanflight/src/main/io/serial_4way_stk500v2.c ****     StkSendPacketFooter();
+ 1108              	 .loc 1 291 0
+ 1109 005e FFF7FEFF 	 bl StkSendPacketFooter
+ 292:../cleanflight/src/main/io/serial_4way_stk500v2.c ****     return (StkRcvPacket((void *)StkInBuf));
+ 1110              	 .loc 1 292 0
+ 1111 0062 0548     	 ldr r0,.L79+4
+ 1112 0064 FFF7FEFF 	 bl StkRcvPacket
+ 1113 0068 0346     	 mov r3,r0
+ 1114              	.L78:
+ 293:../cleanflight/src/main/io/serial_4way_stk500v2.c **** }
+ 1115              	 .loc 1 293 0
+ 1116 006a 1846     	 mov r0,r3
+ 1117 006c 0837     	 adds r7,r7,#8
+ 1118              	.LCFI37:
+ 1119              	 .cfi_def_cfa_offset 8
+ 1120 006e BD46     	 mov sp,r7
+ 1121              	.LCFI38:
+ 1122              	 .cfi_def_cfa_register 13
+ 1123              	 
+ 1124 0070 80BD     	 pop {r7,pc}
+ 1125              	.L80:
+ 1126 0072 00BF     	 .align 2
+ 1127              	.L79:
+ 1128 0074 00000000 	 .word StkCmd
+ 1129 0078 00000000 	 .word StkInBuf
+ 1130              	 .cfi_endproc
+ 1131              	.LFE539:
+ 1133              	 .section .text._CMD_READ_MEM_ISP,"ax",%progbits
+ 1134              	 .align 2
+ 1135              	 .thumb
+ 1136              	 .thumb_func
+ 1138              	_CMD_READ_MEM_ISP:
+ 1139              	.LFB540:
+ 294:../cleanflight/src/main/io/serial_4way_stk500v2.c **** 
+ 295:../cleanflight/src/main/io/serial_4way_stk500v2.c **** static uint8_t _CMD_READ_MEM_ISP(ioMem_t *pMem)
+ 296:../cleanflight/src/main/io/serial_4way_stk500v2.c **** {
+ 1140              	 .loc 1 296 0
+ 1141              	 .cfi_startproc
+ 1142              	 
+ 1143              	 
+ 1144 0000 80B5     	 push {r7,lr}
+ 1145              	.LCFI39:
+ 1146              	 .cfi_def_cfa_offset 8
+ 1147              	 .cfi_offset 7,-8
+ 1148              	 .cfi_offset 14,-4
+ 1149 0002 84B0     	 sub sp,sp,#16
+ 1150              	.LCFI40:
+ 1151              	 .cfi_def_cfa_offset 24
+ 1152 0004 00AF     	 add r7,sp,#0
+ 1153              	.LCFI41:
+ 1154              	 .cfi_def_cfa_register 7
+ 1155 0006 7860     	 str r0,[r7,#4]
+ 297:../cleanflight/src/main/io/serial_4way_stk500v2.c ****     uint8_t LenHi;
+ 298:../cleanflight/src/main/io/serial_4way_stk500v2.c ****     if (pMem->D_NUM_BYTES>0) {
+ 1156              	 .loc 1 298 0
+ 1157 0008 7B68     	 ldr r3,[r7,#4]
+ 1158 000a 1B78     	 ldrb r3,[r3]
+ 1159 000c 002B     	 cmp r3,#0
+ 1160 000e 02D0     	 beq .L82
+ 299:../cleanflight/src/main/io/serial_4way_stk500v2.c ****         LenHi=0;
+ 1161              	 .loc 1 299 0
+ 1162 0010 0023     	 movs r3,#0
+ 1163 0012 FB73     	 strb r3,[r7,#15]
+ 1164 0014 01E0     	 b .L83
+ 1165              	.L82:
+ 300:../cleanflight/src/main/io/serial_4way_stk500v2.c ****     } else {
+ 301:../cleanflight/src/main/io/serial_4way_stk500v2.c ****         LenHi=1;
+ 1166              	 .loc 1 301 0
+ 1167 0016 0123     	 movs r3,#1
+ 1168 0018 FB73     	 strb r3,[r7,#15]
+ 1169              	.L83:
+ 302:../cleanflight/src/main/io/serial_4way_stk500v2.c ****     }
+ 303:../cleanflight/src/main/io/serial_4way_stk500v2.c ****     StkSendPacketHeader();
+ 1170              	 .loc 1 303 0
+ 1171 001a FFF7FEFF 	 bl StkSendPacketHeader
+ 304:../cleanflight/src/main/io/serial_4way_stk500v2.c ****     StkSendByte(0); // hi byte Msg len
+ 1172              	 .loc 1 304 0
+ 1173 001e 0020     	 movs r0,#0
+ 1174 0020 FFF7FEFF 	 bl StkSendByte
+ 305:../cleanflight/src/main/io/serial_4way_stk500v2.c ****     StkSendByte(4); // lo byte Msg len
+ 1175              	 .loc 1 305 0
+ 1176 0024 0420     	 movs r0,#4
+ 1177 0026 FFF7FEFF 	 bl StkSendByte
+ 306:../cleanflight/src/main/io/serial_4way_stk500v2.c ****     StkSendByte(TOKEN);
+ 1178              	 .loc 1 306 0
+ 1179 002a 0E20     	 movs r0,#14
+ 1180 002c FFF7FEFF 	 bl StkSendByte
+ 307:../cleanflight/src/main/io/serial_4way_stk500v2.c ****     StkSendByte(StkCmd);
+ 1181              	 .loc 1 307 0
+ 1182 0030 0E4B     	 ldr r3,.L85
+ 1183 0032 1B78     	 ldrb r3,[r3]
+ 1184 0034 1846     	 mov r0,r3
+ 1185 0036 FFF7FEFF 	 bl StkSendByte
+ 308:../cleanflight/src/main/io/serial_4way_stk500v2.c ****     StkSendByte(LenHi);
+ 1186              	 .loc 1 308 0
+ 1187 003a FB7B     	 ldrb r3,[r7,#15]
+ 1188 003c 1846     	 mov r0,r3
+ 1189 003e FFF7FEFF 	 bl StkSendByte
+ 309:../cleanflight/src/main/io/serial_4way_stk500v2.c ****     StkSendByte(pMem->D_NUM_BYTES);
+ 1190              	 .loc 1 309 0
+ 1191 0042 7B68     	 ldr r3,[r7,#4]
+ 1192 0044 1B78     	 ldrb r3,[r3]
+ 1193 0046 1846     	 mov r0,r3
+ 1194 0048 FFF7FEFF 	 bl StkSendByte
+ 310:../cleanflight/src/main/io/serial_4way_stk500v2.c ****     StkSendByte(CmdFlashEepromRead);
+ 1195              	 .loc 1 310 0
+ 1196 004c A020     	 movs r0,#160
+ 1197 004e FFF7FEFF 	 bl StkSendByte
+ 311:../cleanflight/src/main/io/serial_4way_stk500v2.c ****     StkSendPacketFooter();
+ 1198              	 .loc 1 311 0
+ 1199 0052 FFF7FEFF 	 bl StkSendPacketFooter
+ 312:../cleanflight/src/main/io/serial_4way_stk500v2.c ****     return (StkRcvPacket(pMem->D_PTR_I));
+ 1200              	 .loc 1 312 0
+ 1201 0056 7B68     	 ldr r3,[r7,#4]
+ 1202 0058 D3F80330 	 ldr r3,[r3,#3]
+ 1203 005c 1846     	 mov r0,r3
+ 1204 005e FFF7FEFF 	 bl StkRcvPacket
+ 1205 0062 0346     	 mov r3,r0
+ 313:../cleanflight/src/main/io/serial_4way_stk500v2.c **** }
+ 1206              	 .loc 1 313 0
+ 1207 0064 1846     	 mov r0,r3
+ 1208 0066 1037     	 adds r7,r7,#16
+ 1209              	.LCFI42:
+ 1210              	 .cfi_def_cfa_offset 8
+ 1211 0068 BD46     	 mov sp,r7
+ 1212              	.LCFI43:
+ 1213              	 .cfi_def_cfa_register 13
+ 1214              	 
+ 1215 006a 80BD     	 pop {r7,pc}
+ 1216              	.L86:
+ 1217              	 .align 2
+ 1218              	.L85:
+ 1219 006c 00000000 	 .word StkCmd
+ 1220              	 .cfi_endproc
+ 1221              	.LFE540:
+ 1223              	 .section .text._CMD_PROGRAM_MEM_ISP,"ax",%progbits
+ 1224              	 .align 2
+ 1225              	 .thumb
+ 1226              	 .thumb_func
+ 1228              	_CMD_PROGRAM_MEM_ISP:
+ 1229              	.LFB541:
+ 314:../cleanflight/src/main/io/serial_4way_stk500v2.c **** 
+ 315:../cleanflight/src/main/io/serial_4way_stk500v2.c **** static uint8_t _CMD_PROGRAM_MEM_ISP(ioMem_t *pMem)
+ 316:../cleanflight/src/main/io/serial_4way_stk500v2.c **** {
+ 1230              	 .loc 1 316 0
+ 1231              	 .cfi_startproc
+ 1232              	 
+ 1233              	 
+ 1234 0000 80B5     	 push {r7,lr}
+ 1235              	.LCFI44:
+ 1236              	 .cfi_def_cfa_offset 8
+ 1237              	 .cfi_offset 7,-8
+ 1238              	 .cfi_offset 14,-4
+ 1239 0002 84B0     	 sub sp,sp,#16
+ 1240              	.LCFI45:
+ 1241              	 .cfi_def_cfa_offset 24
+ 1242 0004 00AF     	 add r7,sp,#0
+ 1243              	.LCFI46:
+ 1244              	 .cfi_def_cfa_register 7
+ 1245 0006 7860     	 str r0,[r7,#4]
+ 317:../cleanflight/src/main/io/serial_4way_stk500v2.c ****     uint8_16_u Len;
+ 318:../cleanflight/src/main/io/serial_4way_stk500v2.c ****     uint8_t LenLo = pMem->D_NUM_BYTES;
+ 1246              	 .loc 1 318 0
+ 1247 0008 7B68     	 ldr r3,[r7,#4]
+ 1248 000a 1B78     	 ldrb r3,[r3]
+ 1249 000c FB73     	 strb r3,[r7,#15]
+ 319:../cleanflight/src/main/io/serial_4way_stk500v2.c ****     uint8_t LenHi;
+ 320:../cleanflight/src/main/io/serial_4way_stk500v2.c ****     if (LenLo) {
+ 1250              	 .loc 1 320 0
+ 1251 000e FB7B     	 ldrb r3,[r7,#15]
+ 1252 0010 002B     	 cmp r3,#0
+ 1253 0012 07D0     	 beq .L88
+ 321:../cleanflight/src/main/io/serial_4way_stk500v2.c ****         LenHi = 0;
+ 1254              	 .loc 1 321 0
+ 1255 0014 0023     	 movs r3,#0
+ 1256 0016 BB73     	 strb r3,[r7,#14]
+ 322:../cleanflight/src/main/io/serial_4way_stk500v2.c ****         Len.word = LenLo + 10;
+ 1257              	 .loc 1 322 0
+ 1258 0018 FB7B     	 ldrb r3,[r7,#15]
+ 1259 001a 9BB2     	 uxth r3,r3
+ 1260 001c 0A33     	 adds r3,r3,#10
+ 1261 001e 9BB2     	 uxth r3,r3
+ 1262 0020 BB81     	 strh r3,[r7,#12]
+ 1263 0022 04E0     	 b .L89
+ 1264              	.L88:
+ 323:../cleanflight/src/main/io/serial_4way_stk500v2.c ****     } else {
+ 324:../cleanflight/src/main/io/serial_4way_stk500v2.c ****         LenHi = 1;
+ 1265              	 .loc 1 324 0
+ 1266 0024 0123     	 movs r3,#1
+ 1267 0026 BB73     	 strb r3,[r7,#14]
+ 325:../cleanflight/src/main/io/serial_4way_stk500v2.c ****         Len.word = 256 + 10;
+ 1268              	 .loc 1 325 0
+ 1269 0028 4FF48573 	 mov r3,#266
+ 1270 002c BB81     	 strh r3,[r7,#12]
+ 1271              	.L89:
+ 326:../cleanflight/src/main/io/serial_4way_stk500v2.c ****     }
+ 327:../cleanflight/src/main/io/serial_4way_stk500v2.c ****     StkSendPacketHeader();
+ 1272              	 .loc 1 327 0
+ 1273 002e FFF7FEFF 	 bl StkSendPacketHeader
+ 328:../cleanflight/src/main/io/serial_4way_stk500v2.c ****     StkSendByte(Len.bytes[1]); // high byte Msg len
+ 1274              	 .loc 1 328 0
+ 1275 0032 7B7B     	 ldrb r3,[r7,#13]
+ 1276 0034 1846     	 mov r0,r3
+ 1277 0036 FFF7FEFF 	 bl StkSendByte
+ 329:../cleanflight/src/main/io/serial_4way_stk500v2.c ****     StkSendByte(Len.bytes[0]); // low byte Msg len
+ 1278              	 .loc 1 329 0
+ 1279 003a 3B7B     	 ldrb r3,[r7,#12]
+ 1280 003c 1846     	 mov r0,r3
+ 1281 003e FFF7FEFF 	 bl StkSendByte
+ 330:../cleanflight/src/main/io/serial_4way_stk500v2.c ****     StkSendByte(TOKEN);
+ 1282              	 .loc 1 330 0
+ 1283 0042 0E20     	 movs r0,#14
+ 1284 0044 FFF7FEFF 	 bl StkSendByte
+ 331:../cleanflight/src/main/io/serial_4way_stk500v2.c ****     StkSendByte(StkCmd);
+ 1285              	 .loc 1 331 0
+ 1286 0048 1F4B     	 ldr r3,.L92
+ 1287 004a 1B78     	 ldrb r3,[r3]
+ 1288 004c 1846     	 mov r0,r3
+ 1289 004e FFF7FEFF 	 bl StkSendByte
+ 332:../cleanflight/src/main/io/serial_4way_stk500v2.c ****     StkSendByte(LenHi);
+ 1290              	 .loc 1 332 0
+ 1291 0052 BB7B     	 ldrb r3,[r7,#14]
+ 1292 0054 1846     	 mov r0,r3
+ 1293 0056 FFF7FEFF 	 bl StkSendByte
+ 333:../cleanflight/src/main/io/serial_4way_stk500v2.c ****     StkSendByte(LenLo);
+ 1294              	 .loc 1 333 0
+ 1295 005a FB7B     	 ldrb r3,[r7,#15]
+ 1296 005c 1846     	 mov r0,r3
+ 1297 005e FFF7FEFF 	 bl StkSendByte
+ 334:../cleanflight/src/main/io/serial_4way_stk500v2.c ****     StkSendByte(0); // mode
+ 1298              	 .loc 1 334 0
+ 1299 0062 0020     	 movs r0,#0
+ 1300 0064 FFF7FEFF 	 bl StkSendByte
+ 335:../cleanflight/src/main/io/serial_4way_stk500v2.c ****     StkSendByte(0); // delay
+ 1301              	 .loc 1 335 0
+ 1302 0068 0020     	 movs r0,#0
+ 1303 006a FFF7FEFF 	 bl StkSendByte
+ 336:../cleanflight/src/main/io/serial_4way_stk500v2.c ****     StkSendByte(0); // cmd1
+ 1304              	 .loc 1 336 0
+ 1305 006e 0020     	 movs r0,#0
+ 1306 0070 FFF7FEFF 	 bl StkSendByte
+ 337:../cleanflight/src/main/io/serial_4way_stk500v2.c ****     StkSendByte(0); // cmd2
+ 1307              	 .loc 1 337 0
+ 1308 0074 0020     	 movs r0,#0
+ 1309 0076 FFF7FEFF 	 bl StkSendByte
+ 338:../cleanflight/src/main/io/serial_4way_stk500v2.c ****     StkSendByte(0); // cmd3
+ 1310              	 .loc 1 338 0
+ 1311 007a 0020     	 movs r0,#0
+ 1312 007c FFF7FEFF 	 bl StkSendByte
+ 339:../cleanflight/src/main/io/serial_4way_stk500v2.c ****     StkSendByte(0); // poll1
+ 1313              	 .loc 1 339 0
+ 1314 0080 0020     	 movs r0,#0
+ 1315 0082 FFF7FEFF 	 bl StkSendByte
+ 340:../cleanflight/src/main/io/serial_4way_stk500v2.c ****     StkSendByte(0); // poll2
+ 1316              	 .loc 1 340 0
+ 1317 0086 0020     	 movs r0,#0
+ 1318 0088 FFF7FEFF 	 bl StkSendByte
+ 1319              	.L90:
+ 341:../cleanflight/src/main/io/serial_4way_stk500v2.c ****     do {
+ 342:../cleanflight/src/main/io/serial_4way_stk500v2.c ****         StkSendByte(*pMem->D_PTR_I);
+ 1320              	 .loc 1 342 0 discriminator 1
+ 1321 008c 7B68     	 ldr r3,[r7,#4]
+ 1322 008e D3F80330 	 ldr r3,[r3,#3]
+ 1323 0092 1B78     	 ldrb r3,[r3]
+ 1324 0094 1846     	 mov r0,r3
+ 1325 0096 FFF7FEFF 	 bl StkSendByte
+ 343:../cleanflight/src/main/io/serial_4way_stk500v2.c ****         pMem->D_PTR_I++;
+ 1326              	 .loc 1 343 0 discriminator 1
+ 1327 009a 7B68     	 ldr r3,[r7,#4]
+ 1328 009c D3F80330 	 ldr r3,[r3,#3]
+ 1329 00a0 5A1C     	 adds r2,r3,#1
+ 1330 00a2 7B68     	 ldr r3,[r7,#4]
+ 1331 00a4 C3F80320 	 str r2,[r3,#3]
+ 344:../cleanflight/src/main/io/serial_4way_stk500v2.c ****         LenLo--;
+ 1332              	 .loc 1 344 0 discriminator 1
+ 1333 00a8 FB7B     	 ldrb r3,[r7,#15]
+ 1334 00aa 013B     	 subs r3,r3,#1
+ 1335 00ac FB73     	 strb r3,[r7,#15]
+ 345:../cleanflight/src/main/io/serial_4way_stk500v2.c ****     } while (LenLo);
+ 1336              	 .loc 1 345 0 discriminator 1
+ 1337 00ae FB7B     	 ldrb r3,[r7,#15]
+ 1338 00b0 002B     	 cmp r3,#0
+ 1339 00b2 EBD1     	 bne .L90
+ 346:../cleanflight/src/main/io/serial_4way_stk500v2.c ****     StkSendPacketFooter();
+ 1340              	 .loc 1 346 0
+ 1341 00b4 FFF7FEFF 	 bl StkSendPacketFooter
+ 347:../cleanflight/src/main/io/serial_4way_stk500v2.c ****     return StkRcvPacket((void *)StkInBuf);
+ 1342              	 .loc 1 347 0
+ 1343 00b8 0448     	 ldr r0,.L92+4
+ 1344 00ba FFF7FEFF 	 bl StkRcvPacket
+ 1345 00be 0346     	 mov r3,r0
+ 348:../cleanflight/src/main/io/serial_4way_stk500v2.c **** }
+ 1346              	 .loc 1 348 0
+ 1347 00c0 1846     	 mov r0,r3
+ 1348 00c2 1037     	 adds r7,r7,#16
+ 1349              	.LCFI47:
+ 1350              	 .cfi_def_cfa_offset 8
+ 1351 00c4 BD46     	 mov sp,r7
+ 1352              	.LCFI48:
+ 1353              	 .cfi_def_cfa_register 13
+ 1354              	 
+ 1355 00c6 80BD     	 pop {r7,pc}
+ 1356              	.L93:
+ 1357              	 .align 2
+ 1358              	.L92:
+ 1359 00c8 00000000 	 .word StkCmd
+ 1360 00cc 00000000 	 .word StkInBuf
+ 1361              	 .cfi_endproc
+ 1362              	.LFE541:
+ 1364              	 .section .text.Stk_SignOn,"ax",%progbits
+ 1365              	 .align 2
+ 1366              	 .global Stk_SignOn
+ 1367              	 .thumb
+ 1368              	 .thumb_func
+ 1370              	Stk_SignOn:
+ 1371              	.LFB542:
+ 349:../cleanflight/src/main/io/serial_4way_stk500v2.c **** 
+ 350:../cleanflight/src/main/io/serial_4way_stk500v2.c **** uint8_t Stk_SignOn(void)
+ 351:../cleanflight/src/main/io/serial_4way_stk500v2.c **** {
+ 1372              	 .loc 1 351 0
+ 1373              	 .cfi_startproc
+ 1374              	 
+ 1375              	 
+ 1376 0000 80B5     	 push {r7,lr}
+ 1377              	.LCFI49:
+ 1378              	 .cfi_def_cfa_offset 8
+ 1379              	 .cfi_offset 7,-8
+ 1380              	 .cfi_offset 14,-4
+ 1381 0002 00AF     	 add r7,sp,#0
+ 1382              	.LCFI50:
+ 1383              	 .cfi_def_cfa_register 7
+ 352:../cleanflight/src/main/io/serial_4way_stk500v2.c ****     StkCmd=CMD_SIGN_ON;
+ 1384              	 .loc 1 352 0
+ 1385 0004 0C4B     	 ldr r3,.L96
+ 1386 0006 0122     	 movs r2,#1
+ 1387 0008 1A70     	 strb r2,[r3]
+ 353:../cleanflight/src/main/io/serial_4way_stk500v2.c ****     StkSendPacketHeader();
+ 1388              	 .loc 1 353 0
+ 1389 000a FFF7FEFF 	 bl StkSendPacketHeader
+ 354:../cleanflight/src/main/io/serial_4way_stk500v2.c ****     StkSendByte(0); // hi byte Msg len
+ 1390              	 .loc 1 354 0
+ 1391 000e 0020     	 movs r0,#0
+ 1392 0010 FFF7FEFF 	 bl StkSendByte
+ 355:../cleanflight/src/main/io/serial_4way_stk500v2.c ****     StkSendByte(1); // lo byte Msg len
+ 1393              	 .loc 1 355 0
+ 1394 0014 0120     	 movs r0,#1
+ 1395 0016 FFF7FEFF 	 bl StkSendByte
+ 356:../cleanflight/src/main/io/serial_4way_stk500v2.c ****     StkSendByte(TOKEN);
+ 1396              	 .loc 1 356 0
+ 1397 001a 0E20     	 movs r0,#14
+ 1398 001c FFF7FEFF 	 bl StkSendByte
+ 357:../cleanflight/src/main/io/serial_4way_stk500v2.c ****     StkSendByte(CMD_SIGN_ON);
+ 1399              	 .loc 1 357 0
+ 1400 0020 0120     	 movs r0,#1
+ 1401 0022 FFF7FEFF 	 bl StkSendByte
+ 358:../cleanflight/src/main/io/serial_4way_stk500v2.c ****     StkSendPacketFooter();
+ 1402              	 .loc 1 358 0
+ 1403 0026 FFF7FEFF 	 bl StkSendPacketFooter
+ 359:../cleanflight/src/main/io/serial_4way_stk500v2.c ****     return (StkRcvPacket((void *) StkInBuf));
+ 1404              	 .loc 1 359 0
+ 1405 002a 0448     	 ldr r0,.L96+4
+ 1406 002c FFF7FEFF 	 bl StkRcvPacket
+ 1407 0030 0346     	 mov r3,r0
+ 360:../cleanflight/src/main/io/serial_4way_stk500v2.c **** }
+ 1408              	 .loc 1 360 0
+ 1409 0032 1846     	 mov r0,r3
+ 1410 0034 80BD     	 pop {r7,pc}
+ 1411              	.L97:
+ 1412 0036 00BF     	 .align 2
+ 1413              	.L96:
+ 1414 0038 00000000 	 .word StkCmd
+ 1415 003c 00000000 	 .word StkInBuf
+ 1416              	 .cfi_endproc
+ 1417              	.LFE542:
+ 1419              	 .section .text.Stk_ConnectEx,"ax",%progbits
+ 1420              	 .align 2
+ 1421              	 .global Stk_ConnectEx
+ 1422              	 .thumb
+ 1423              	 .thumb_func
+ 1425              	Stk_ConnectEx:
+ 1426              	.LFB543:
+ 361:../cleanflight/src/main/io/serial_4way_stk500v2.c **** 
+ 362:../cleanflight/src/main/io/serial_4way_stk500v2.c **** uint8_t Stk_ConnectEx(uint8_32_u *pDeviceInfo)
+ 363:../cleanflight/src/main/io/serial_4way_stk500v2.c **** {
+ 1427              	 .loc 1 363 0
+ 1428              	 .cfi_startproc
+ 1429              	 
+ 1430              	 
+ 1431 0000 80B5     	 push {r7,lr}
+ 1432              	.LCFI51:
+ 1433              	 .cfi_def_cfa_offset 8
+ 1434              	 .cfi_offset 7,-8
+ 1435              	 .cfi_offset 14,-4
+ 1436 0002 82B0     	 sub sp,sp,#8
+ 1437              	.LCFI52:
+ 1438              	 .cfi_def_cfa_offset 16
+ 1439 0004 00AF     	 add r7,sp,#0
+ 1440              	.LCFI53:
+ 1441              	 .cfi_def_cfa_register 7
+ 1442 0006 7860     	 str r0,[r7,#4]
+ 364:../cleanflight/src/main/io/serial_4way_stk500v2.c ****     if (Stk_SignOn()) {
+ 1443              	 .loc 1 364 0
+ 1444 0008 FFF7FEFF 	 bl Stk_SignOn
+ 1445 000c 0346     	 mov r3,r0
+ 1446 000e 002B     	 cmp r3,#0
+ 1447 0010 16D0     	 beq .L99
+ 365:../cleanflight/src/main/io/serial_4way_stk500v2.c ****         if (_CMD_SPI_MULTI_EX(&pDeviceInfo->bytes[1], signature_r,0,1)) {
+ 1448              	 .loc 1 365 0
+ 1449 0012 7B68     	 ldr r3,[r7,#4]
+ 1450 0014 0133     	 adds r3,r3,#1
+ 1451 0016 1846     	 mov r0,r3
+ 1452 0018 3021     	 movs r1,#48
+ 1453 001a 0022     	 movs r2,#0
+ 1454 001c 0123     	 movs r3,#1
+ 1455 001e FFF7FEFF 	 bl _CMD_SPI_MULTI_EX
+ 1456 0022 0346     	 mov r3,r0
+ 1457 0024 002B     	 cmp r3,#0
+ 1458 0026 0BD0     	 beq .L99
+ 366:../cleanflight/src/main/io/serial_4way_stk500v2.c ****             if (_CMD_SPI_MULTI_EX(&pDeviceInfo->bytes[0], signature_r,0,2)) {
+ 1459              	 .loc 1 366 0
+ 1460 0028 7B68     	 ldr r3,[r7,#4]
+ 1461 002a 1846     	 mov r0,r3
+ 1462 002c 3021     	 movs r1,#48
+ 1463 002e 0022     	 movs r2,#0
+ 1464 0030 0223     	 movs r3,#2
+ 1465 0032 FFF7FEFF 	 bl _CMD_SPI_MULTI_EX
+ 1466 0036 0346     	 mov r3,r0
+ 1467 0038 002B     	 cmp r3,#0
+ 1468 003a 01D0     	 beq .L99
+ 367:../cleanflight/src/main/io/serial_4way_stk500v2.c ****                 return 1;
+ 1469              	 .loc 1 367 0
+ 1470 003c 0123     	 movs r3,#1
+ 1471 003e 00E0     	 b .L100
+ 1472              	.L99:
+ 368:../cleanflight/src/main/io/serial_4way_stk500v2.c ****             }
+ 369:../cleanflight/src/main/io/serial_4way_stk500v2.c ****         }
+ 370:../cleanflight/src/main/io/serial_4way_stk500v2.c ****     }
+ 371:../cleanflight/src/main/io/serial_4way_stk500v2.c ****     return 0;
+ 1473              	 .loc 1 371 0
+ 1474 0040 0023     	 movs r3,#0
+ 1475              	.L100:
+ 372:../cleanflight/src/main/io/serial_4way_stk500v2.c **** }
+ 1476              	 .loc 1 372 0
+ 1477 0042 1846     	 mov r0,r3
+ 1478 0044 0837     	 adds r7,r7,#8
+ 1479              	.LCFI54:
+ 1480              	 .cfi_def_cfa_offset 8
+ 1481 0046 BD46     	 mov sp,r7
+ 1482              	.LCFI55:
+ 1483              	 .cfi_def_cfa_register 13
+ 1484              	 
+ 1485 0048 80BD     	 pop {r7,pc}
+ 1486              	 .cfi_endproc
+ 1487              	.LFE543:
+ 1489 004a 00BF     	 .section .text.Stk_Chip_Erase,"ax",%progbits
+ 1490              	 .align 2
+ 1491              	 .global Stk_Chip_Erase
+ 1492              	 .thumb
+ 1493              	 .thumb_func
+ 1495              	Stk_Chip_Erase:
+ 1496              	.LFB544:
+ 373:../cleanflight/src/main/io/serial_4way_stk500v2.c **** 
+ 374:../cleanflight/src/main/io/serial_4way_stk500v2.c **** uint8_t Stk_Chip_Erase(void)
+ 375:../cleanflight/src/main/io/serial_4way_stk500v2.c **** {
+ 1497              	 .loc 1 375 0
+ 1498              	 .cfi_startproc
+ 1499              	 
+ 1500              	 
+ 1501 0000 80B5     	 push {r7,lr}
+ 1502              	.LCFI56:
+ 1503              	 .cfi_def_cfa_offset 8
+ 1504              	 .cfi_offset 7,-8
+ 1505              	 .cfi_offset 14,-4
+ 1506 0002 00AF     	 add r7,sp,#0
+ 1507              	.LCFI57:
+ 1508              	 .cfi_def_cfa_register 7
+ 376:../cleanflight/src/main/io/serial_4way_stk500v2.c ****     StkCmd = CMD_CHIP_ERASE_ISP;
+ 1509              	 .loc 1 376 0
+ 1510 0004 154B     	 ldr r3,.L103
+ 1511 0006 1222     	 movs r2,#18
+ 1512 0008 1A70     	 strb r2,[r3]
+ 377:../cleanflight/src/main/io/serial_4way_stk500v2.c ****     StkSendPacketHeader();
+ 1513              	 .loc 1 377 0
+ 1514 000a FFF7FEFF 	 bl StkSendPacketHeader
+ 378:../cleanflight/src/main/io/serial_4way_stk500v2.c ****     StkSendByte(0); // high byte Msg len
+ 1515              	 .loc 1 378 0
+ 1516 000e 0020     	 movs r0,#0
+ 1517 0010 FFF7FEFF 	 bl StkSendByte
+ 379:../cleanflight/src/main/io/serial_4way_stk500v2.c ****     StkSendByte(7); // low byte Msg len
+ 1518              	 .loc 1 379 0
+ 1519 0014 0720     	 movs r0,#7
+ 1520 0016 FFF7FEFF 	 bl StkSendByte
+ 380:../cleanflight/src/main/io/serial_4way_stk500v2.c ****     StkSendByte(TOKEN);
+ 1521              	 .loc 1 380 0
+ 1522 001a 0E20     	 movs r0,#14
+ 1523 001c FFF7FEFF 	 bl StkSendByte
+ 381:../cleanflight/src/main/io/serial_4way_stk500v2.c ****     StkSendByte(CMD_CHIP_ERASE_ISP);
+ 1524              	 .loc 1 381 0
+ 1525 0020 1220     	 movs r0,#18
+ 1526 0022 FFF7FEFF 	 bl StkSendByte
+ 382:../cleanflight/src/main/io/serial_4way_stk500v2.c ****     StkSendByte(20); // ChipErase_eraseDelay atmega8
+ 1527              	 .loc 1 382 0
+ 1528 0026 1420     	 movs r0,#20
+ 1529 0028 FFF7FEFF 	 bl StkSendByte
+ 383:../cleanflight/src/main/io/serial_4way_stk500v2.c ****     StkSendByte(0); // ChipErase_pollMethod atmega8
+ 1530              	 .loc 1 383 0
+ 1531 002c 0020     	 movs r0,#0
+ 1532 002e FFF7FEFF 	 bl StkSendByte
+ 384:../cleanflight/src/main/io/serial_4way_stk500v2.c ****     StkSendByte(0xAC);
+ 1533              	 .loc 1 384 0
+ 1534 0032 AC20     	 movs r0,#172
+ 1535 0034 FFF7FEFF 	 bl StkSendByte
+ 385:../cleanflight/src/main/io/serial_4way_stk500v2.c ****     StkSendByte(0x88);
+ 1536              	 .loc 1 385 0
+ 1537 0038 8820     	 movs r0,#136
+ 1538 003a FFF7FEFF 	 bl StkSendByte
+ 386:../cleanflight/src/main/io/serial_4way_stk500v2.c ****     StkSendByte(0x13);
+ 1539              	 .loc 1 386 0
+ 1540 003e 1320     	 movs r0,#19
+ 1541 0040 FFF7FEFF 	 bl StkSendByte
+ 387:../cleanflight/src/main/io/serial_4way_stk500v2.c ****     StkSendByte(0x76);
+ 1542              	 .loc 1 387 0
+ 1543 0044 7620     	 movs r0,#118
+ 1544 0046 FFF7FEFF 	 bl StkSendByte
+ 388:../cleanflight/src/main/io/serial_4way_stk500v2.c ****     StkSendPacketFooter();
+ 1545              	 .loc 1 388 0
+ 1546 004a FFF7FEFF 	 bl StkSendPacketFooter
+ 389:../cleanflight/src/main/io/serial_4way_stk500v2.c ****     return (StkRcvPacket(StkInBuf));
+ 1547              	 .loc 1 389 0
+ 1548 004e 0448     	 ldr r0,.L103+4
+ 1549 0050 FFF7FEFF 	 bl StkRcvPacket
+ 1550 0054 0346     	 mov r3,r0
+ 390:../cleanflight/src/main/io/serial_4way_stk500v2.c **** }
+ 1551              	 .loc 1 390 0
+ 1552 0056 1846     	 mov r0,r3
+ 1553 0058 80BD     	 pop {r7,pc}
+ 1554              	.L104:
+ 1555 005a 00BF     	 .align 2
+ 1556              	.L103:
+ 1557 005c 00000000 	 .word StkCmd
+ 1558 0060 00000000 	 .word StkInBuf
+ 1559              	 .cfi_endproc
+ 1560              	.LFE544:
+ 1562              	 .section .text.Stk_ReadFlash,"ax",%progbits
+ 1563              	 .align 2
+ 1564              	 .global Stk_ReadFlash
+ 1565              	 .thumb
+ 1566              	 .thumb_func
+ 1568              	Stk_ReadFlash:
+ 1569              	.LFB545:
+ 391:../cleanflight/src/main/io/serial_4way_stk500v2.c **** 
+ 392:../cleanflight/src/main/io/serial_4way_stk500v2.c **** uint8_t Stk_ReadFlash(ioMem_t *pMem)
+ 393:../cleanflight/src/main/io/serial_4way_stk500v2.c **** {
+ 1570              	 .loc 1 393 0
+ 1571              	 .cfi_startproc
+ 1572              	 
+ 1573              	 
+ 1574 0000 80B5     	 push {r7,lr}
+ 1575              	.LCFI58:
+ 1576              	 .cfi_def_cfa_offset 8
+ 1577              	 .cfi_offset 7,-8
+ 1578              	 .cfi_offset 14,-4
+ 1579 0002 82B0     	 sub sp,sp,#8
+ 1580              	.LCFI59:
+ 1581              	 .cfi_def_cfa_offset 16
+ 1582 0004 00AF     	 add r7,sp,#0
+ 1583              	.LCFI60:
+ 1584              	 .cfi_def_cfa_register 7
+ 1585 0006 7860     	 str r0,[r7,#4]
+ 394:../cleanflight/src/main/io/serial_4way_stk500v2.c ****     if (_CMD_LOAD_ADDRESS(pMem)) {
+ 1586              	 .loc 1 394 0
+ 1587 0008 7868     	 ldr r0,[r7,#4]
+ 1588 000a FFF7FEFF 	 bl _CMD_LOAD_ADDRESS
+ 1589 000e 0346     	 mov r3,r0
+ 1590 0010 002B     	 cmp r3,#0
+ 1591 0012 07D0     	 beq .L106
+ 395:../cleanflight/src/main/io/serial_4way_stk500v2.c ****         StkCmd = CMD_READ_FLASH_ISP;
+ 1592              	 .loc 1 395 0
+ 1593 0014 064B     	 ldr r3,.L108
+ 1594 0016 1422     	 movs r2,#20
+ 1595 0018 1A70     	 strb r2,[r3]
+ 396:../cleanflight/src/main/io/serial_4way_stk500v2.c ****         return (_CMD_READ_MEM_ISP(pMem));
+ 1596              	 .loc 1 396 0
+ 1597 001a 7868     	 ldr r0,[r7,#4]
+ 1598 001c FFF7FEFF 	 bl _CMD_READ_MEM_ISP
+ 1599 0020 0346     	 mov r3,r0
+ 1600 0022 00E0     	 b .L107
+ 1601              	.L106:
+ 397:../cleanflight/src/main/io/serial_4way_stk500v2.c ****     }
+ 398:../cleanflight/src/main/io/serial_4way_stk500v2.c ****     return 0;
+ 1602              	 .loc 1 398 0
+ 1603 0024 0023     	 movs r3,#0
+ 1604              	.L107:
+ 399:../cleanflight/src/main/io/serial_4way_stk500v2.c **** }
+ 1605              	 .loc 1 399 0
+ 1606 0026 1846     	 mov r0,r3
+ 1607 0028 0837     	 adds r7,r7,#8
+ 1608              	.LCFI61:
+ 1609              	 .cfi_def_cfa_offset 8
+ 1610 002a BD46     	 mov sp,r7
+ 1611              	.LCFI62:
+ 1612              	 .cfi_def_cfa_register 13
+ 1613              	 
+ 1614 002c 80BD     	 pop {r7,pc}
+ 1615              	.L109:
+ 1616 002e 00BF     	 .align 2
+ 1617              	.L108:
+ 1618 0030 00000000 	 .word StkCmd
+ 1619              	 .cfi_endproc
+ 1620              	.LFE545:
+ 1622              	 .section .text.Stk_ReadEEprom,"ax",%progbits
+ 1623              	 .align 2
+ 1624              	 .global Stk_ReadEEprom
+ 1625              	 .thumb
+ 1626              	 .thumb_func
+ 1628              	Stk_ReadEEprom:
+ 1629              	.LFB546:
+ 400:../cleanflight/src/main/io/serial_4way_stk500v2.c **** 
+ 401:../cleanflight/src/main/io/serial_4way_stk500v2.c **** 
+ 402:../cleanflight/src/main/io/serial_4way_stk500v2.c **** uint8_t Stk_ReadEEprom(ioMem_t *pMem)
+ 403:../cleanflight/src/main/io/serial_4way_stk500v2.c **** {
+ 1630              	 .loc 1 403 0
+ 1631              	 .cfi_startproc
+ 1632              	 
+ 1633              	 
+ 1634 0000 80B5     	 push {r7,lr}
+ 1635              	.LCFI63:
+ 1636              	 .cfi_def_cfa_offset 8
+ 1637              	 .cfi_offset 7,-8
+ 1638              	 .cfi_offset 14,-4
+ 1639 0002 82B0     	 sub sp,sp,#8
+ 1640              	.LCFI64:
+ 1641              	 .cfi_def_cfa_offset 16
+ 1642 0004 00AF     	 add r7,sp,#0
+ 1643              	.LCFI65:
+ 1644              	 .cfi_def_cfa_register 7
+ 1645 0006 7860     	 str r0,[r7,#4]
+ 404:../cleanflight/src/main/io/serial_4way_stk500v2.c ****     if (_CMD_LOAD_ADDRESS(pMem)) {
+ 1646              	 .loc 1 404 0
+ 1647 0008 7868     	 ldr r0,[r7,#4]
+ 1648 000a FFF7FEFF 	 bl _CMD_LOAD_ADDRESS
+ 1649 000e 0346     	 mov r3,r0
+ 1650 0010 002B     	 cmp r3,#0
+ 1651 0012 07D0     	 beq .L111
+ 405:../cleanflight/src/main/io/serial_4way_stk500v2.c ****         StkCmd = CMD_READ_EEPROM_ISP;
+ 1652              	 .loc 1 405 0
+ 1653 0014 064B     	 ldr r3,.L113
+ 1654 0016 1622     	 movs r2,#22
+ 1655 0018 1A70     	 strb r2,[r3]
+ 406:../cleanflight/src/main/io/serial_4way_stk500v2.c ****         return (_CMD_READ_MEM_ISP(pMem));
+ 1656              	 .loc 1 406 0
+ 1657 001a 7868     	 ldr r0,[r7,#4]
+ 1658 001c FFF7FEFF 	 bl _CMD_READ_MEM_ISP
+ 1659 0020 0346     	 mov r3,r0
+ 1660 0022 00E0     	 b .L112
+ 1661              	.L111:
+ 407:../cleanflight/src/main/io/serial_4way_stk500v2.c ****     }
+ 408:../cleanflight/src/main/io/serial_4way_stk500v2.c ****     return 0;
+ 1662              	 .loc 1 408 0
+ 1663 0024 0023     	 movs r3,#0
+ 1664              	.L112:
+ 409:../cleanflight/src/main/io/serial_4way_stk500v2.c **** }
+ 1665              	 .loc 1 409 0
+ 1666 0026 1846     	 mov r0,r3
+ 1667 0028 0837     	 adds r7,r7,#8
+ 1668              	.LCFI66:
+ 1669              	 .cfi_def_cfa_offset 8
+ 1670 002a BD46     	 mov sp,r7
+ 1671              	.LCFI67:
+ 1672              	 .cfi_def_cfa_register 13
+ 1673              	 
+ 1674 002c 80BD     	 pop {r7,pc}
+ 1675              	.L114:
+ 1676 002e 00BF     	 .align 2
+ 1677              	.L113:
+ 1678 0030 00000000 	 .word StkCmd
+ 1679              	 .cfi_endproc
+ 1680              	.LFE546:
+ 1682              	 .section .text.Stk_WriteFlash,"ax",%progbits
+ 1683              	 .align 2
+ 1684              	 .global Stk_WriteFlash
+ 1685              	 .thumb
+ 1686              	 .thumb_func
+ 1688              	Stk_WriteFlash:
+ 1689              	.LFB547:
+ 410:../cleanflight/src/main/io/serial_4way_stk500v2.c **** 
+ 411:../cleanflight/src/main/io/serial_4way_stk500v2.c **** uint8_t Stk_WriteFlash(ioMem_t *pMem)
+ 412:../cleanflight/src/main/io/serial_4way_stk500v2.c **** {
+ 1690              	 .loc 1 412 0
+ 1691              	 .cfi_startproc
+ 1692              	 
+ 1693              	 
+ 1694 0000 80B5     	 push {r7,lr}
+ 1695              	.LCFI68:
+ 1696              	 .cfi_def_cfa_offset 8
+ 1697              	 .cfi_offset 7,-8
+ 1698              	 .cfi_offset 14,-4
+ 1699 0002 82B0     	 sub sp,sp,#8
+ 1700              	.LCFI69:
+ 1701              	 .cfi_def_cfa_offset 16
+ 1702 0004 00AF     	 add r7,sp,#0
+ 1703              	.LCFI70:
+ 1704              	 .cfi_def_cfa_register 7
+ 1705 0006 7860     	 str r0,[r7,#4]
+ 413:../cleanflight/src/main/io/serial_4way_stk500v2.c ****     if (_CMD_LOAD_ADDRESS(pMem)) {
+ 1706              	 .loc 1 413 0
+ 1707 0008 7868     	 ldr r0,[r7,#4]
+ 1708 000a FFF7FEFF 	 bl _CMD_LOAD_ADDRESS
+ 1709 000e 0346     	 mov r3,r0
+ 1710 0010 002B     	 cmp r3,#0
+ 1711 0012 07D0     	 beq .L116
+ 414:../cleanflight/src/main/io/serial_4way_stk500v2.c ****         StkCmd = CMD_PROGRAM_FLASH_ISP;
+ 1712              	 .loc 1 414 0
+ 1713 0014 064B     	 ldr r3,.L118
+ 1714 0016 1322     	 movs r2,#19
+ 1715 0018 1A70     	 strb r2,[r3]
+ 415:../cleanflight/src/main/io/serial_4way_stk500v2.c ****         return (_CMD_PROGRAM_MEM_ISP(pMem));
+ 1716              	 .loc 1 415 0
+ 1717 001a 7868     	 ldr r0,[r7,#4]
+ 1718 001c FFF7FEFF 	 bl _CMD_PROGRAM_MEM_ISP
+ 1719 0020 0346     	 mov r3,r0
+ 1720 0022 00E0     	 b .L117
+ 1721              	.L116:
+ 416:../cleanflight/src/main/io/serial_4way_stk500v2.c ****     }
+ 417:../cleanflight/src/main/io/serial_4way_stk500v2.c ****     return 0;
+ 1722              	 .loc 1 417 0
+ 1723 0024 0023     	 movs r3,#0
+ 1724              	.L117:
+ 418:../cleanflight/src/main/io/serial_4way_stk500v2.c **** }
+ 1725              	 .loc 1 418 0
+ 1726 0026 1846     	 mov r0,r3
+ 1727 0028 0837     	 adds r7,r7,#8
+ 1728              	.LCFI71:
+ 1729              	 .cfi_def_cfa_offset 8
+ 1730 002a BD46     	 mov sp,r7
+ 1731              	.LCFI72:
+ 1732              	 .cfi_def_cfa_register 13
+ 1733              	 
+ 1734 002c 80BD     	 pop {r7,pc}
+ 1735              	.L119:
+ 1736 002e 00BF     	 .align 2
+ 1737              	.L118:
+ 1738 0030 00000000 	 .word StkCmd
+ 1739              	 .cfi_endproc
+ 1740              	.LFE547:
+ 1742              	 .section .text.Stk_WriteEEprom,"ax",%progbits
+ 1743              	 .align 2
+ 1744              	 .global Stk_WriteEEprom
+ 1745              	 .thumb
+ 1746              	 .thumb_func
+ 1748              	Stk_WriteEEprom:
+ 1749              	.LFB548:
+ 419:../cleanflight/src/main/io/serial_4way_stk500v2.c **** 
+ 420:../cleanflight/src/main/io/serial_4way_stk500v2.c **** uint8_t Stk_WriteEEprom(ioMem_t *pMem)
+ 421:../cleanflight/src/main/io/serial_4way_stk500v2.c **** {
+ 1750              	 .loc 1 421 0
+ 1751              	 .cfi_startproc
+ 1752              	 
+ 1753              	 
+ 1754 0000 80B5     	 push {r7,lr}
+ 1755              	.LCFI73:
+ 1756              	 .cfi_def_cfa_offset 8
+ 1757              	 .cfi_offset 7,-8
+ 1758              	 .cfi_offset 14,-4
+ 1759 0002 82B0     	 sub sp,sp,#8
+ 1760              	.LCFI74:
+ 1761              	 .cfi_def_cfa_offset 16
+ 1762 0004 00AF     	 add r7,sp,#0
+ 1763              	.LCFI75:
+ 1764              	 .cfi_def_cfa_register 7
+ 1765 0006 7860     	 str r0,[r7,#4]
+ 422:../cleanflight/src/main/io/serial_4way_stk500v2.c ****     if (_CMD_LOAD_ADDRESS(pMem)) {
+ 1766              	 .loc 1 422 0
+ 1767 0008 7868     	 ldr r0,[r7,#4]
+ 1768 000a FFF7FEFF 	 bl _CMD_LOAD_ADDRESS
+ 1769 000e 0346     	 mov r3,r0
+ 1770 0010 002B     	 cmp r3,#0
+ 1771 0012 07D0     	 beq .L121
+ 423:../cleanflight/src/main/io/serial_4way_stk500v2.c ****         StkCmd = CMD_PROGRAM_EEPROM_ISP;
+ 1772              	 .loc 1 423 0
+ 1773 0014 064B     	 ldr r3,.L123
+ 1774 0016 1522     	 movs r2,#21
+ 1775 0018 1A70     	 strb r2,[r3]
+ 424:../cleanflight/src/main/io/serial_4way_stk500v2.c ****         return (_CMD_PROGRAM_MEM_ISP(pMem));
+ 1776              	 .loc 1 424 0
+ 1777 001a 7868     	 ldr r0,[r7,#4]
+ 1778 001c FFF7FEFF 	 bl _CMD_PROGRAM_MEM_ISP
+ 1779 0020 0346     	 mov r3,r0
+ 1780 0022 00E0     	 b .L122
+ 1781              	.L121:
+ 425:../cleanflight/src/main/io/serial_4way_stk500v2.c ****     }
+ 426:../cleanflight/src/main/io/serial_4way_stk500v2.c ****     return 0;
+ 1782              	 .loc 1 426 0
+ 1783 0024 0023     	 movs r3,#0
+ 1784              	.L122:
+ 427:../cleanflight/src/main/io/serial_4way_stk500v2.c **** }
+ 1785              	 .loc 1 427 0
+ 1786 0026 1846     	 mov r0,r3
+ 1787 0028 0837     	 adds r7,r7,#8
+ 1788              	.LCFI76:
+ 1789              	 .cfi_def_cfa_offset 8
+ 1790 002a BD46     	 mov sp,r7
+ 1791              	.LCFI77:
+ 1792              	 .cfi_def_cfa_register 13
+ 1793              	 
+ 1794 002c 80BD     	 pop {r7,pc}
+ 1795              	.L124:
+ 1796 002e 00BF     	 .align 2
+ 1797              	.L123:
+ 1798 0030 00000000 	 .word StkCmd
+ 1799              	 .cfi_endproc
+ 1800              	.LFE548:
+ 1802              	 .text
+ 1803              	.Letext0:
+ 1804              	 .file 2 "d:\\xmc\\dave-ide-4.4.2-64bit\\eclipse\\arm-gcc-49\\arm-none-eabi\\include\\machine\\_default_types.h"
+ 1805              	 .file 3 "d:\\xmc\\dave-ide-4.4.2-64bit\\eclipse\\arm-gcc-49\\arm-none-eabi\\include\\stdint.h"
+ 1806              	 .file 4 "D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/lib/main/XMC4000/XMCLib/inc/xmc_usic.h"
+ 1807              	 .file 5 "D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/drivers/io_types.h"
+ 1808              	 .file 6 "D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/drivers/serial.h"
+ 1809              	 .file 7 "D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/common/time.h"
+ 1810              	 .file 8 "D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/drivers/resource.h"
+ 1811              	 .file 9 "D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/io/serial.h"
+ 1812              	 .file 10 "D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/io/serial_4way_impl.h"
+ 1813              	 .file 11 "D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/io/serial_4way.h"
+ 1814              	 .file 12 "D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/lib/main/CMSIS/Core/Include/core_cm4.h"
+ 1815              	 .file 13 "D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/lib/main/XMC4000/system_XMC4700.h"
+DEFINED SYMBOLS
+                            *ABS*:00000000 serial_4way_stk500v2.c
+    {standard input}:20     .bss.StkInBuf:00000000 $d
+    {standard input}:23     .bss.StkInBuf:00000000 StkInBuf
+    {standard input}:26     .bss.LastBitTime:00000000 $d
+    {standard input}:29     .bss.LastBitTime:00000000 LastBitTime
+    {standard input}:32     .bss.HiLoTsh:00000000 $d
+    {standard input}:35     .bss.HiLoTsh:00000000 HiLoTsh
+    {standard input}:40     .bss.SeqNumber:00000000 SeqNumber
+    {standard input}:41     .bss.SeqNumber:00000000 $d
+    {standard input}:45     .bss.StkCmd:00000000 StkCmd
+    {standard input}:46     .bss.StkCmd:00000000 $d
+    {standard input}:50     .bss.ckSumIn:00000000 ckSumIn
+    {standard input}:51     .bss.ckSumIn:00000000 $d
+    {standard input}:55     .bss.ckSumOut:00000000 ckSumOut
+    {standard input}:56     .bss.ckSumOut:00000000 $d
+    {standard input}:58     .text.StkSendByte:00000000 $t
+    {standard input}:62     .text.StkSendByte:00000000 StkSendByte
+    {standard input}:178    .text.StkSendByte:000000a4 $d
+    {standard input}:184    .text.StkSendPacketHeader:00000000 $t
+    {standard input}:188    .text.StkSendPacketHeader:00000000 StkSendPacketHeader
+    {standard input}:239    .text.StkSendPacketHeader:00000044 $d
+    {standard input}:246    .text.StkSendPacketFooter:00000000 $t
+    {standard input}:250    .text.StkSendPacketFooter:00000000 StkSendPacketFooter
+    {standard input}:287    .text.StkSendPacketFooter:0000002c $d
+    {standard input}:293    .text.ReadBit:00000000 $t
+    {standard input}:297    .text.ReadBit:00000000 ReadBit
+    {standard input}:444    .text.ReadBit:000000c8 $d
+    {standard input}:451    .text.ReadByte:00000000 $t
+    {standard input}:455    .text.ReadByte:00000000 ReadByte
+    {standard input}:557    .text.ReadByte:00000078 $d
+    {standard input}:562    .text.StkReadLeader:00000000 $t
+    {standard input}:566    .text.StkReadLeader:00000000 StkReadLeader
+    {standard input}:712    .text.StkReadLeader:000000b4 $d
+    {standard input}:719    .text.StkRcvPacket:00000000 $t
+    {standard input}:723    .text.StkRcvPacket:00000000 StkRcvPacket
+    {standard input}:896    .text.StkRcvPacket:00000108 $d
+    {standard input}:903    .text._CMD_SPI_MULTI_EX:00000000 $t
+    {standard input}:907    .text._CMD_SPI_MULTI_EX:00000000 _CMD_SPI_MULTI_EX
+    {standard input}:1032   .text._CMD_SPI_MULTI_EX:000000b4 $d
+    {standard input}:1038   .text._CMD_LOAD_ADDRESS:00000000 $t
+    {standard input}:1042   .text._CMD_LOAD_ADDRESS:00000000 _CMD_LOAD_ADDRESS
+    {standard input}:1128   .text._CMD_LOAD_ADDRESS:00000074 $d
+    {standard input}:1134   .text._CMD_READ_MEM_ISP:00000000 $t
+    {standard input}:1138   .text._CMD_READ_MEM_ISP:00000000 _CMD_READ_MEM_ISP
+    {standard input}:1219   .text._CMD_READ_MEM_ISP:0000006c $d
+    {standard input}:1224   .text._CMD_PROGRAM_MEM_ISP:00000000 $t
+    {standard input}:1228   .text._CMD_PROGRAM_MEM_ISP:00000000 _CMD_PROGRAM_MEM_ISP
+    {standard input}:1359   .text._CMD_PROGRAM_MEM_ISP:000000c8 $d
+    {standard input}:1365   .text.Stk_SignOn:00000000 $t
+    {standard input}:1370   .text.Stk_SignOn:00000000 Stk_SignOn
+    {standard input}:1414   .text.Stk_SignOn:00000038 $d
+    {standard input}:1420   .text.Stk_ConnectEx:00000000 $t
+    {standard input}:1425   .text.Stk_ConnectEx:00000000 Stk_ConnectEx
+    {standard input}:1490   .text.Stk_Chip_Erase:00000000 $t
+    {standard input}:1495   .text.Stk_Chip_Erase:00000000 Stk_Chip_Erase
+    {standard input}:1557   .text.Stk_Chip_Erase:0000005c $d
+    {standard input}:1563   .text.Stk_ReadFlash:00000000 $t
+    {standard input}:1568   .text.Stk_ReadFlash:00000000 Stk_ReadFlash
+    {standard input}:1618   .text.Stk_ReadFlash:00000030 $d
+    {standard input}:1623   .text.Stk_ReadEEprom:00000000 $t
+    {standard input}:1628   .text.Stk_ReadEEprom:00000000 Stk_ReadEEprom
+    {standard input}:1678   .text.Stk_ReadEEprom:00000030 $d
+    {standard input}:1683   .text.Stk_WriteFlash:00000000 $t
+    {standard input}:1688   .text.Stk_WriteFlash:00000000 Stk_WriteFlash
+    {standard input}:1738   .text.Stk_WriteFlash:00000030 $d
+    {standard input}:1743   .text.Stk_WriteEEprom:00000000 $t
+    {standard input}:1748   .text.Stk_WriteEEprom:00000000 Stk_WriteEEprom
+    {standard input}:1798   .text.Stk_WriteEEprom:00000030 $d
+                     .debug_frame:00000010 $d
+
+UNDEFINED SYMBOLS
+setEscHi
+delayMicroseconds
+setEscLo
+selected_esc
+setEscOutput
+setEscInput
+micros
+isEscHi
+isEscLo

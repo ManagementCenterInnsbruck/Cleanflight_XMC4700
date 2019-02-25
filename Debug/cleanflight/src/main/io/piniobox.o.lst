@@ -1,0 +1,276 @@
+   1              	 .syntax unified
+   2              	 .cpu cortex-m4
+   3              	 .eabi_attribute 27,3
+   4              	 .fpu fpv4-sp-d16
+   5              	 .eabi_attribute 20,1
+   6              	 .eabi_attribute 21,1
+   7              	 .eabi_attribute 23,3
+   8              	 .eabi_attribute 24,1
+   9              	 .eabi_attribute 25,1
+  10              	 .eabi_attribute 26,1
+  11              	 .eabi_attribute 30,6
+  12              	 .eabi_attribute 34,1
+  13              	 .eabi_attribute 18,4
+  14              	 .thumb
+  15              	 .file "piniobox.c"
+  16              	 .text
+  17              	.Ltext0:
+  18              	 .cfi_sections .debug_frame
+  19              	 .section .bss.pinioBoxRuntimeConfig,"aw",%nobits
+  20              	 .align 2
+  23              	pinioBoxRuntimeConfig:
+  24 0000 00000000 	 .space 4
+  25              	 .section .text.pinioBoxInit,"ax",%progbits
+  26              	 .align 2
+  27              	 .global pinioBoxInit
+  28              	 .thumb
+  29              	 .thumb_func
+  31              	pinioBoxInit:
+  32              	.LFB534:
+  33              	 .file 1 "../cleanflight/src/main/io/piniobox.c"
+   1:../cleanflight/src/main/io/piniobox.c **** /*
+   2:../cleanflight/src/main/io/piniobox.c ****  * This file is part of Cleanflight and Betaflight.
+   3:../cleanflight/src/main/io/piniobox.c ****  *
+   4:../cleanflight/src/main/io/piniobox.c ****  * Cleanflight and Betaflight are free software. You can redistribute
+   5:../cleanflight/src/main/io/piniobox.c ****  * this software and/or modify this software under the terms of the
+   6:../cleanflight/src/main/io/piniobox.c ****  * GNU General Public License as published by the Free Software
+   7:../cleanflight/src/main/io/piniobox.c ****  * Foundation, either version 3 of the License, or (at your option)
+   8:../cleanflight/src/main/io/piniobox.c ****  * any later version.
+   9:../cleanflight/src/main/io/piniobox.c ****  *
+  10:../cleanflight/src/main/io/piniobox.c ****  * Cleanflight and Betaflight are distributed in the hope that they
+  11:../cleanflight/src/main/io/piniobox.c ****  * will be useful, but WITHOUT ANY WARRANTY; without even the implied
+  12:../cleanflight/src/main/io/piniobox.c ****  * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+  13:../cleanflight/src/main/io/piniobox.c ****  * See the GNU General Public License for more details.
+  14:../cleanflight/src/main/io/piniobox.c ****  *
+  15:../cleanflight/src/main/io/piniobox.c ****  * You should have received a copy of the GNU General Public License
+  16:../cleanflight/src/main/io/piniobox.c ****  * along with this software.
+  17:../cleanflight/src/main/io/piniobox.c ****  *
+  18:../cleanflight/src/main/io/piniobox.c ****  * If not, see <http://www.gnu.org/licenses/>.
+  19:../cleanflight/src/main/io/piniobox.c ****  */
+  20:../cleanflight/src/main/io/piniobox.c **** 
+  21:../cleanflight/src/main/io/piniobox.c **** #include <stdint.h>
+  22:../cleanflight/src/main/io/piniobox.c **** 
+  23:../cleanflight/src/main/io/piniobox.c **** #include "platform.h"
+  24:../cleanflight/src/main/io/piniobox.c **** 
+  25:../cleanflight/src/main/io/piniobox.c **** #ifdef USE_PINIOBOX
+  26:../cleanflight/src/main/io/piniobox.c **** 
+  27:../cleanflight/src/main/io/piniobox.c **** #include "build/debug.h"
+  28:../cleanflight/src/main/io/piniobox.c **** 
+  29:../cleanflight/src/main/io/piniobox.c **** #include "common/utils.h"
+  30:../cleanflight/src/main/io/piniobox.c **** #include "common/time.h"
+  31:../cleanflight/src/main/io/piniobox.c **** 
+  32:../cleanflight/src/main/io/piniobox.c **** #include "interface/msp_box.h"
+  33:../cleanflight/src/main/io/piniobox.c **** 
+  34:../cleanflight/src/main/io/piniobox.c **** #include "pg/pinio.h"
+  35:../cleanflight/src/main/io/piniobox.c **** #include "pg/piniobox.h"
+  36:../cleanflight/src/main/io/piniobox.c **** 
+  37:../cleanflight/src/main/io/piniobox.c **** #include "piniobox.h"
+  38:../cleanflight/src/main/io/piniobox.c **** 
+  39:../cleanflight/src/main/io/piniobox.c **** typedef struct pinioBoxRuntimeConfig_s {
+  40:../cleanflight/src/main/io/piniobox.c ****     uint8_t boxId[PINIO_COUNT];
+  41:../cleanflight/src/main/io/piniobox.c **** } pinioBoxRuntimeConfig_t;
+  42:../cleanflight/src/main/io/piniobox.c **** 
+  43:../cleanflight/src/main/io/piniobox.c **** static pinioBoxRuntimeConfig_t pinioBoxRuntimeConfig;
+  44:../cleanflight/src/main/io/piniobox.c **** 
+  45:../cleanflight/src/main/io/piniobox.c **** void pinioBoxInit(const pinioBoxConfig_t *pinioBoxConfig)
+  46:../cleanflight/src/main/io/piniobox.c **** {
+  34              	 .loc 1 46 0
+  35              	 .cfi_startproc
+  36              	 
+  37              	 
+  38 0000 80B5     	 push {r7,lr}
+  39              	.LCFI0:
+  40              	 .cfi_def_cfa_offset 8
+  41              	 .cfi_offset 7,-8
+  42              	 .cfi_offset 14,-4
+  43 0002 84B0     	 sub sp,sp,#16
+  44              	.LCFI1:
+  45              	 .cfi_def_cfa_offset 24
+  46 0004 00AF     	 add r7,sp,#0
+  47              	.LCFI2:
+  48              	 .cfi_def_cfa_register 7
+  49 0006 7860     	 str r0,[r7,#4]
+  50              	.LBB2:
+  47:../cleanflight/src/main/io/piniobox.c ****     // Convert permanentId to boxId_e
+  48:../cleanflight/src/main/io/piniobox.c **** 
+  49:../cleanflight/src/main/io/piniobox.c ****     for (int i = 0; i < PINIO_COUNT; i++) {
+  51              	 .loc 1 49 0
+  52 0008 0023     	 movs r3,#0
+  53 000a FB60     	 str r3,[r7,#12]
+  54 000c 15E0     	 b .L2
+  55              	.L5:
+  56              	.LBB3:
+  50:../cleanflight/src/main/io/piniobox.c ****         const box_t *box = findBoxByPermanentId(pinioBoxConfig->permanentId[i]);
+  57              	 .loc 1 50 0
+  58 000e 7A68     	 ldr r2,[r7,#4]
+  59 0010 FB68     	 ldr r3,[r7,#12]
+  60 0012 1344     	 add r3,r3,r2
+  61 0014 1B78     	 ldrb r3,[r3]
+  62 0016 1846     	 mov r0,r3
+  63 0018 FFF7FEFF 	 bl findBoxByPermanentId
+  64 001c B860     	 str r0,[r7,#8]
+  51:../cleanflight/src/main/io/piniobox.c **** 
+  52:../cleanflight/src/main/io/piniobox.c ****         pinioBoxRuntimeConfig.boxId[i] = box ? box->boxId : BOXID_NONE;
+  65              	 .loc 1 52 0
+  66 001e BB68     	 ldr r3,[r7,#8]
+  67 0020 002B     	 cmp r3,#0
+  68 0022 02D0     	 beq .L3
+  69              	 .loc 1 52 0 is_stmt 0 discriminator 1
+  70 0024 BB68     	 ldr r3,[r7,#8]
+  71 0026 1A78     	 ldrb r2,[r3]
+  72 0028 00E0     	 b .L4
+  73              	.L3:
+  74              	 .loc 1 52 0 discriminator 2
+  75 002a FF22     	 movs r2,#255
+  76              	.L4:
+  77              	 .loc 1 52 0 discriminator 4
+  78 002c 0649     	 ldr r1,.L6
+  79 002e FB68     	 ldr r3,[r7,#12]
+  80 0030 0B44     	 add r3,r3,r1
+  81 0032 1A70     	 strb r2,[r3]
+  82              	.LBE3:
+  49:../cleanflight/src/main/io/piniobox.c ****         const box_t *box = findBoxByPermanentId(pinioBoxConfig->permanentId[i]);
+  83              	 .loc 1 49 0 is_stmt 1 discriminator 4
+  84 0034 FB68     	 ldr r3,[r7,#12]
+  85 0036 0133     	 adds r3,r3,#1
+  86 0038 FB60     	 str r3,[r7,#12]
+  87              	.L2:
+  49:../cleanflight/src/main/io/piniobox.c ****         const box_t *box = findBoxByPermanentId(pinioBoxConfig->permanentId[i]);
+  88              	 .loc 1 49 0 is_stmt 0 discriminator 2
+  89 003a FB68     	 ldr r3,[r7,#12]
+  90 003c 032B     	 cmp r3,#3
+  91 003e E6DD     	 ble .L5
+  92              	.LBE2:
+  53:../cleanflight/src/main/io/piniobox.c ****     }
+  54:../cleanflight/src/main/io/piniobox.c **** }
+  93              	 .loc 1 54 0 is_stmt 1
+  94 0040 1037     	 adds r7,r7,#16
+  95              	.LCFI3:
+  96              	 .cfi_def_cfa_offset 8
+  97 0042 BD46     	 mov sp,r7
+  98              	.LCFI4:
+  99              	 .cfi_def_cfa_register 13
+ 100              	 
+ 101 0044 80BD     	 pop {r7,pc}
+ 102              	.L7:
+ 103 0046 00BF     	 .align 2
+ 104              	.L6:
+ 105 0048 00000000 	 .word pinioBoxRuntimeConfig
+ 106              	 .cfi_endproc
+ 107              	.LFE534:
+ 109              	 .section .text.pinioBoxUpdate,"ax",%progbits
+ 110              	 .align 2
+ 111              	 .global pinioBoxUpdate
+ 112              	 .thumb
+ 113              	 .thumb_func
+ 115              	pinioBoxUpdate:
+ 116              	.LFB535:
+  55:../cleanflight/src/main/io/piniobox.c **** 
+  56:../cleanflight/src/main/io/piniobox.c **** void pinioBoxUpdate(timeUs_t currentTimeUs)
+  57:../cleanflight/src/main/io/piniobox.c **** {
+ 117              	 .loc 1 57 0
+ 118              	 .cfi_startproc
+ 119              	 
+ 120              	 
+ 121 0000 80B5     	 push {r7,lr}
+ 122              	.LCFI5:
+ 123              	 .cfi_def_cfa_offset 8
+ 124              	 .cfi_offset 7,-8
+ 125              	 .cfi_offset 14,-4
+ 126 0002 84B0     	 sub sp,sp,#16
+ 127              	.LCFI6:
+ 128              	 .cfi_def_cfa_offset 24
+ 129 0004 00AF     	 add r7,sp,#0
+ 130              	.LCFI7:
+ 131              	 .cfi_def_cfa_register 7
+ 132 0006 7860     	 str r0,[r7,#4]
+ 133              	.LBB4:
+  58:../cleanflight/src/main/io/piniobox.c ****     UNUSED(currentTimeUs);
+  59:../cleanflight/src/main/io/piniobox.c **** 
+  60:../cleanflight/src/main/io/piniobox.c ****     for (int i = 0; i < PINIO_COUNT; i++) {
+ 134              	 .loc 1 60 0
+ 135 0008 0023     	 movs r3,#0
+ 136 000a FB60     	 str r3,[r7,#12]
+ 137 000c 14E0     	 b .L9
+ 138              	.L11:
+  61:../cleanflight/src/main/io/piniobox.c ****         if (pinioBoxRuntimeConfig.boxId[i] != BOXID_NONE) {
+ 139              	 .loc 1 61 0
+ 140 000e 0D4A     	 ldr r2,.L12
+ 141 0010 FB68     	 ldr r3,[r7,#12]
+ 142 0012 1344     	 add r3,r3,r2
+ 143 0014 1B78     	 ldrb r3,[r3]
+ 144 0016 FF2B     	 cmp r3,#255
+ 145 0018 0BD0     	 beq .L10
+  62:../cleanflight/src/main/io/piniobox.c ****             pinioSet(i, getBoxIdState(pinioBoxRuntimeConfig.boxId[i]));
+ 146              	 .loc 1 62 0
+ 147 001a 0A4A     	 ldr r2,.L12
+ 148 001c FB68     	 ldr r3,[r7,#12]
+ 149 001e 1344     	 add r3,r3,r2
+ 150 0020 1B78     	 ldrb r3,[r3]
+ 151 0022 1846     	 mov r0,r3
+ 152 0024 FFF7FEFF 	 bl getBoxIdState
+ 153 0028 0346     	 mov r3,r0
+ 154 002a F868     	 ldr r0,[r7,#12]
+ 155 002c 1946     	 mov r1,r3
+ 156 002e FFF7FEFF 	 bl pinioSet
+ 157              	.L10:
+  60:../cleanflight/src/main/io/piniobox.c ****         if (pinioBoxRuntimeConfig.boxId[i] != BOXID_NONE) {
+ 158              	 .loc 1 60 0 discriminator 2
+ 159 0032 FB68     	 ldr r3,[r7,#12]
+ 160 0034 0133     	 adds r3,r3,#1
+ 161 0036 FB60     	 str r3,[r7,#12]
+ 162              	.L9:
+  60:../cleanflight/src/main/io/piniobox.c ****         if (pinioBoxRuntimeConfig.boxId[i] != BOXID_NONE) {
+ 163              	 .loc 1 60 0 is_stmt 0 discriminator 1
+ 164 0038 FB68     	 ldr r3,[r7,#12]
+ 165 003a 032B     	 cmp r3,#3
+ 166 003c E7DD     	 ble .L11
+ 167              	.LBE4:
+  63:../cleanflight/src/main/io/piniobox.c ****         }
+  64:../cleanflight/src/main/io/piniobox.c ****     }
+  65:../cleanflight/src/main/io/piniobox.c **** }
+ 168              	 .loc 1 65 0 is_stmt 1
+ 169 003e 1037     	 adds r7,r7,#16
+ 170              	.LCFI8:
+ 171              	 .cfi_def_cfa_offset 8
+ 172 0040 BD46     	 mov sp,r7
+ 173              	.LCFI9:
+ 174              	 .cfi_def_cfa_register 13
+ 175              	 
+ 176 0042 80BD     	 pop {r7,pc}
+ 177              	.L13:
+ 178              	 .align 2
+ 179              	.L12:
+ 180 0044 00000000 	 .word pinioBoxRuntimeConfig
+ 181              	 .cfi_endproc
+ 182              	.LFE535:
+ 184              	 .text
+ 185              	.Letext0:
+ 186              	 .file 2 "d:\\xmc\\dave-ide-4.4.2-64bit\\eclipse\\arm-gcc-49\\arm-none-eabi\\include\\machine\\_default_types.h"
+ 187              	 .file 3 "d:\\xmc\\dave-ide-4.4.2-64bit\\eclipse\\arm-gcc-49\\arm-none-eabi\\include\\stdint.h"
+ 188              	 .file 4 "D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/lib/main/XMC4000/XMCLib/inc/xmc_usic.h"
+ 189              	 .file 5 "D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/common/time.h"
+ 190              	 .file 6 "D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/build/debug.h"
+ 191              	 .file 7 "D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/fc/rc_modes.h"
+ 192              	 .file 8 "D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/interface/msp_box.h"
+ 193              	 .file 9 "D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/drivers/io_types.h"
+ 194              	 .file 10 "D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/pg/pinio.h"
+ 195              	 .file 11 "D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/pg/piniobox.h"
+ 196              	 .file 12 "D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/lib/main/CMSIS/Core/Include/core_cm4.h"
+ 197              	 .file 13 "D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/lib/main/XMC4000/system_XMC4700.h"
+DEFINED SYMBOLS
+                            *ABS*:00000000 piniobox.c
+    {standard input}:20     .bss.pinioBoxRuntimeConfig:00000000 $d
+    {standard input}:23     .bss.pinioBoxRuntimeConfig:00000000 pinioBoxRuntimeConfig
+    {standard input}:26     .text.pinioBoxInit:00000000 $t
+    {standard input}:31     .text.pinioBoxInit:00000000 pinioBoxInit
+    {standard input}:105    .text.pinioBoxInit:00000048 $d
+    {standard input}:110    .text.pinioBoxUpdate:00000000 $t
+    {standard input}:115    .text.pinioBoxUpdate:00000000 pinioBoxUpdate
+    {standard input}:180    .text.pinioBoxUpdate:00000044 $d
+                     .debug_frame:00000010 $d
+
+UNDEFINED SYMBOLS
+findBoxByPermanentId
+getBoxIdState
+pinioSet

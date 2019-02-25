@@ -1,0 +1,529 @@
+   1              	 .syntax unified
+   2              	 .cpu cortex-m4
+   3              	 .eabi_attribute 27,3
+   4              	 .fpu fpv4-sp-d16
+   5              	 .eabi_attribute 20,1
+   6              	 .eabi_attribute 21,1
+   7              	 .eabi_attribute 23,3
+   8              	 .eabi_attribute 24,1
+   9              	 .eabi_attribute 25,1
+  10              	 .eabi_attribute 26,1
+  11              	 .eabi_attribute 30,6
+  12              	 .eabi_attribute 34,1
+  13              	 .eabi_attribute 18,4
+  14              	 .thumb
+  15              	 .file "accgyro_mpu6500.c"
+  16              	 .text
+  17              	.Ltext0:
+  18              	 .cfi_sections .debug_frame
+  19              	 .section .text.mpu6500AccInit,"ax",%progbits
+  20              	 .align 2
+  21              	 .global mpu6500AccInit
+  22              	 .thumb
+  23              	 .thumb_func
+  25              	mpu6500AccInit:
+  26              	.LFB535:
+  27              	 .file 1 "../cleanflight/src/main/drivers/accgyro/accgyro_mpu6500.c"
+   1:../cleanflight/src/main/drivers/accgyro/accgyro_mpu6500.c **** /*
+   2:../cleanflight/src/main/drivers/accgyro/accgyro_mpu6500.c ****  * This file is part of Cleanflight and Betaflight.
+   3:../cleanflight/src/main/drivers/accgyro/accgyro_mpu6500.c ****  *
+   4:../cleanflight/src/main/drivers/accgyro/accgyro_mpu6500.c ****  * Cleanflight and Betaflight are free software. You can redistribute
+   5:../cleanflight/src/main/drivers/accgyro/accgyro_mpu6500.c ****  * this software and/or modify this software under the terms of the
+   6:../cleanflight/src/main/drivers/accgyro/accgyro_mpu6500.c ****  * GNU General Public License as published by the Free Software
+   7:../cleanflight/src/main/drivers/accgyro/accgyro_mpu6500.c ****  * Foundation, either version 3 of the License, or (at your option)
+   8:../cleanflight/src/main/drivers/accgyro/accgyro_mpu6500.c ****  * any later version.
+   9:../cleanflight/src/main/drivers/accgyro/accgyro_mpu6500.c ****  *
+  10:../cleanflight/src/main/drivers/accgyro/accgyro_mpu6500.c ****  * Cleanflight and Betaflight are distributed in the hope that they
+  11:../cleanflight/src/main/drivers/accgyro/accgyro_mpu6500.c ****  * will be useful, but WITHOUT ANY WARRANTY; without even the implied
+  12:../cleanflight/src/main/drivers/accgyro/accgyro_mpu6500.c ****  * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+  13:../cleanflight/src/main/drivers/accgyro/accgyro_mpu6500.c ****  * See the GNU General Public License for more details.
+  14:../cleanflight/src/main/drivers/accgyro/accgyro_mpu6500.c ****  *
+  15:../cleanflight/src/main/drivers/accgyro/accgyro_mpu6500.c ****  * You should have received a copy of the GNU General Public License
+  16:../cleanflight/src/main/drivers/accgyro/accgyro_mpu6500.c ****  * along with this software.
+  17:../cleanflight/src/main/drivers/accgyro/accgyro_mpu6500.c ****  *
+  18:../cleanflight/src/main/drivers/accgyro/accgyro_mpu6500.c ****  * If not, see <http://www.gnu.org/licenses/>.
+  19:../cleanflight/src/main/drivers/accgyro/accgyro_mpu6500.c ****  */
+  20:../cleanflight/src/main/drivers/accgyro/accgyro_mpu6500.c **** 
+  21:../cleanflight/src/main/drivers/accgyro/accgyro_mpu6500.c **** #include <stdbool.h>
+  22:../cleanflight/src/main/drivers/accgyro/accgyro_mpu6500.c **** #include <stdint.h>
+  23:../cleanflight/src/main/drivers/accgyro/accgyro_mpu6500.c **** #include <stdlib.h>
+  24:../cleanflight/src/main/drivers/accgyro/accgyro_mpu6500.c **** 
+  25:../cleanflight/src/main/drivers/accgyro/accgyro_mpu6500.c **** #include "platform.h"
+  26:../cleanflight/src/main/drivers/accgyro/accgyro_mpu6500.c **** 
+  27:../cleanflight/src/main/drivers/accgyro/accgyro_mpu6500.c **** #include "common/axis.h"
+  28:../cleanflight/src/main/drivers/accgyro/accgyro_mpu6500.c **** #include "common/maths.h"
+  29:../cleanflight/src/main/drivers/accgyro/accgyro_mpu6500.c **** 
+  30:../cleanflight/src/main/drivers/accgyro/accgyro_mpu6500.c **** #include "drivers/exti.h"
+  31:../cleanflight/src/main/drivers/accgyro/accgyro_mpu6500.c **** #include "drivers/sensor.h"
+  32:../cleanflight/src/main/drivers/accgyro/accgyro_mpu6500.c **** #include "drivers/time.h"
+  33:../cleanflight/src/main/drivers/accgyro/accgyro_mpu6500.c **** 
+  34:../cleanflight/src/main/drivers/accgyro/accgyro_mpu6500.c **** #include "accgyro.h"
+  35:../cleanflight/src/main/drivers/accgyro/accgyro_mpu6500.c **** #include "accgyro_mpu.h"
+  36:../cleanflight/src/main/drivers/accgyro/accgyro_mpu6500.c **** #include "accgyro_mpu6500.h"
+  37:../cleanflight/src/main/drivers/accgyro/accgyro_mpu6500.c **** 
+  38:../cleanflight/src/main/drivers/accgyro/accgyro_mpu6500.c **** void mpu6500AccInit(accDev_t *acc)
+  39:../cleanflight/src/main/drivers/accgyro/accgyro_mpu6500.c **** {
+  28              	 .loc 1 39 0
+  29              	 .cfi_startproc
+  30              	 
+  31              	 
+  32              	 
+  33 0000 80B4     	 push {r7}
+  34              	.LCFI0:
+  35              	 .cfi_def_cfa_offset 4
+  36              	 .cfi_offset 7,-4
+  37 0002 83B0     	 sub sp,sp,#12
+  38              	.LCFI1:
+  39              	 .cfi_def_cfa_offset 16
+  40 0004 00AF     	 add r7,sp,#0
+  41              	.LCFI2:
+  42              	 .cfi_def_cfa_register 7
+  43 0006 7860     	 str r0,[r7,#4]
+  40:../cleanflight/src/main/drivers/accgyro/accgyro_mpu6500.c ****     acc->acc_1G = 512 * 4;
+  44              	 .loc 1 40 0
+  45 0008 7B68     	 ldr r3,[r7,#4]
+  46 000a 0022     	 movs r2,#0
+  47 000c 5A74     	 strb r2,[r3,#17]
+  48 000e 0022     	 movs r2,#0
+  49 0010 42F00802 	 orr r2,r2,#8
+  50 0014 9A74     	 strb r2,[r3,#18]
+  41:../cleanflight/src/main/drivers/accgyro/accgyro_mpu6500.c **** }
+  51              	 .loc 1 41 0
+  52 0016 0C37     	 adds r7,r7,#12
+  53              	.LCFI3:
+  54              	 .cfi_def_cfa_offset 4
+  55 0018 BD46     	 mov sp,r7
+  56              	.LCFI4:
+  57              	 .cfi_def_cfa_register 13
+  58              	 
+  59 001a 5DF8047B 	 ldr r7,[sp],#4
+  60              	.LCFI5:
+  61              	 .cfi_restore 7
+  62              	 .cfi_def_cfa_offset 0
+  63 001e 7047     	 bx lr
+  64              	 .cfi_endproc
+  65              	.LFE535:
+  67              	 .section .text.mpu6500AccDetect,"ax",%progbits
+  68              	 .align 2
+  69              	 .global mpu6500AccDetect
+  70              	 .thumb
+  71              	 .thumb_func
+  73              	mpu6500AccDetect:
+  74              	.LFB536:
+  42:../cleanflight/src/main/drivers/accgyro/accgyro_mpu6500.c **** 
+  43:../cleanflight/src/main/drivers/accgyro/accgyro_mpu6500.c **** bool mpu6500AccDetect(accDev_t *acc)
+  44:../cleanflight/src/main/drivers/accgyro/accgyro_mpu6500.c **** {
+  75              	 .loc 1 44 0
+  76              	 .cfi_startproc
+  77              	 
+  78              	 
+  79              	 
+  80 0000 80B4     	 push {r7}
+  81              	.LCFI6:
+  82              	 .cfi_def_cfa_offset 4
+  83              	 .cfi_offset 7,-4
+  84 0002 83B0     	 sub sp,sp,#12
+  85              	.LCFI7:
+  86              	 .cfi_def_cfa_offset 16
+  87 0004 00AF     	 add r7,sp,#0
+  88              	.LCFI8:
+  89              	 .cfi_def_cfa_register 7
+  90 0006 7860     	 str r0,[r7,#4]
+  45:../cleanflight/src/main/drivers/accgyro/accgyro_mpu6500.c ****     if (acc->mpuDetectionResult.sensor != MPU_65xx_I2C) {
+  91              	 .loc 1 45 0
+  92 0008 7B68     	 ldr r3,[r7,#4]
+  93 000a 5B7E     	 ldrb r3,[r3,#25]
+  94 000c 042B     	 cmp r3,#4
+  95 000e 01D0     	 beq .L3
+  46:../cleanflight/src/main/drivers/accgyro/accgyro_mpu6500.c ****         return false;
+  96              	 .loc 1 46 0
+  97 0010 0023     	 movs r3,#0
+  98 0012 06E0     	 b .L4
+  99              	.L3:
+  47:../cleanflight/src/main/drivers/accgyro/accgyro_mpu6500.c ****     }
+  48:../cleanflight/src/main/drivers/accgyro/accgyro_mpu6500.c **** 
+  49:../cleanflight/src/main/drivers/accgyro/accgyro_mpu6500.c ****     acc->initFn = mpu6500AccInit;
+ 100              	 .loc 1 49 0
+ 101 0014 7B68     	 ldr r3,[r7,#4]
+ 102 0016 064A     	 ldr r2,.L5
+ 103 0018 1A60     	 str r2,[r3]
+  50:../cleanflight/src/main/drivers/accgyro/accgyro_mpu6500.c ****     acc->readFn = mpuAccRead;
+ 104              	 .loc 1 50 0
+ 105 001a 7B68     	 ldr r3,[r7,#4]
+ 106 001c 054A     	 ldr r2,.L5+4
+ 107 001e 5A60     	 str r2,[r3,#4]
+  51:../cleanflight/src/main/drivers/accgyro/accgyro_mpu6500.c **** 
+  52:../cleanflight/src/main/drivers/accgyro/accgyro_mpu6500.c ****     return true;
+ 108              	 .loc 1 52 0
+ 109 0020 0123     	 movs r3,#1
+ 110              	.L4:
+  53:../cleanflight/src/main/drivers/accgyro/accgyro_mpu6500.c **** }
+ 111              	 .loc 1 53 0
+ 112 0022 1846     	 mov r0,r3
+ 113 0024 0C37     	 adds r7,r7,#12
+ 114              	.LCFI9:
+ 115              	 .cfi_def_cfa_offset 4
+ 116 0026 BD46     	 mov sp,r7
+ 117              	.LCFI10:
+ 118              	 .cfi_def_cfa_register 13
+ 119              	 
+ 120 0028 5DF8047B 	 ldr r7,[sp],#4
+ 121              	.LCFI11:
+ 122              	 .cfi_restore 7
+ 123              	 .cfi_def_cfa_offset 0
+ 124 002c 7047     	 bx lr
+ 125              	.L6:
+ 126 002e 00BF     	 .align 2
+ 127              	.L5:
+ 128 0030 00000000 	 .word mpu6500AccInit
+ 129 0034 00000000 	 .word mpuAccRead
+ 130              	 .cfi_endproc
+ 131              	.LFE536:
+ 133              	 .section .text.mpu6500GyroInit,"ax",%progbits
+ 134              	 .align 2
+ 135              	 .global mpu6500GyroInit
+ 136              	 .thumb
+ 137              	 .thumb_func
+ 139              	mpu6500GyroInit:
+ 140              	.LFB537:
+  54:../cleanflight/src/main/drivers/accgyro/accgyro_mpu6500.c **** 
+  55:../cleanflight/src/main/drivers/accgyro/accgyro_mpu6500.c **** void mpu6500GyroInit(gyroDev_t *gyro)
+  56:../cleanflight/src/main/drivers/accgyro/accgyro_mpu6500.c **** {
+ 141              	 .loc 1 56 0
+ 142              	 .cfi_startproc
+ 143              	 
+ 144              	 
+ 145 0000 B0B5     	 push {r4,r5,r7,lr}
+ 146              	.LCFI12:
+ 147              	 .cfi_def_cfa_offset 16
+ 148              	 .cfi_offset 4,-16
+ 149              	 .cfi_offset 5,-12
+ 150              	 .cfi_offset 7,-8
+ 151              	 .cfi_offset 14,-4
+ 152 0002 84B0     	 sub sp,sp,#16
+ 153              	.LCFI13:
+ 154              	 .cfi_def_cfa_offset 32
+ 155 0004 00AF     	 add r7,sp,#0
+ 156              	.LCFI14:
+ 157              	 .cfi_def_cfa_register 7
+ 158 0006 7860     	 str r0,[r7,#4]
+  57:../cleanflight/src/main/drivers/accgyro/accgyro_mpu6500.c ****     mpuGyroInit(gyro);
+ 159              	 .loc 1 57 0
+ 160 0008 7868     	 ldr r0,[r7,#4]
+ 161 000a FFF7FEFF 	 bl mpuGyroInit
+  58:../cleanflight/src/main/drivers/accgyro/accgyro_mpu6500.c **** 
+  59:../cleanflight/src/main/drivers/accgyro/accgyro_mpu6500.c ****     int gyro_range = INV_FSR_2000DPS;
+ 162              	 .loc 1 59 0
+ 163 000e 0323     	 movs r3,#3
+ 164 0010 FB60     	 str r3,[r7,#12]
+  60:../cleanflight/src/main/drivers/accgyro/accgyro_mpu6500.c ****     int accel_range = INV_FSR_16G;
+ 165              	 .loc 1 60 0
+ 166 0012 0323     	 movs r3,#3
+ 167 0014 BB60     	 str r3,[r7,#8]
+  61:../cleanflight/src/main/drivers/accgyro/accgyro_mpu6500.c **** 
+  62:../cleanflight/src/main/drivers/accgyro/accgyro_mpu6500.c ****     if (gyro->mpuDetectionResult.sensor == ICM_20601_SPI) {
+ 168              	 .loc 1 62 0
+ 169 0016 7B68     	 ldr r3,[r7,#4]
+ 170 0018 93F85930 	 ldrb r3,[r3,#89]
+ 171 001c 072B     	 cmp r3,#7
+ 172 001e 0AD1     	 bne .L8
+  63:../cleanflight/src/main/drivers/accgyro/accgyro_mpu6500.c ****         gyro_range = gyro->gyro_high_fsr ? ICM_HIGH_RANGE_FSR_4000DPS : ICM_HIGH_RANGE_FSR_2000DPS;
+ 173              	 .loc 1 63 0
+ 174 0020 7B68     	 ldr r3,[r7,#4]
+ 175 0022 93F85E30 	 ldrb r3,[r3,#94]
+ 176 0026 002B     	 cmp r3,#0
+ 177 0028 01D0     	 beq .L9
+ 178              	 .loc 1 63 0 is_stmt 0 discriminator 1
+ 179 002a 0323     	 movs r3,#3
+ 180 002c 00E0     	 b .L10
+ 181              	.L9:
+ 182              	 .loc 1 63 0 discriminator 2
+ 183 002e 0223     	 movs r3,#2
+ 184              	.L10:
+ 185              	 .loc 1 63 0 discriminator 4
+ 186 0030 FB60     	 str r3,[r7,#12]
+  64:../cleanflight/src/main/drivers/accgyro/accgyro_mpu6500.c ****         accel_range = ICM_HIGH_RANGE_FSR_16G;
+ 187              	 .loc 1 64 0 is_stmt 1 discriminator 4
+ 188 0032 0223     	 movs r3,#2
+ 189 0034 BB60     	 str r3,[r7,#8]
+ 190              	.L8:
+  65:../cleanflight/src/main/drivers/accgyro/accgyro_mpu6500.c ****     }
+  66:../cleanflight/src/main/drivers/accgyro/accgyro_mpu6500.c **** 
+  67:../cleanflight/src/main/drivers/accgyro/accgyro_mpu6500.c ****     busWriteRegister(&gyro->bus, MPU_RA_PWR_MGMT_1, MPU6500_BIT_RESET);
+ 191              	 .loc 1 67 0
+ 192 0036 7B68     	 ldr r3,[r7,#4]
+ 193 0038 1033     	 adds r3,r3,#16
+ 194 003a 1846     	 mov r0,r3
+ 195 003c 6B21     	 movs r1,#107
+ 196 003e 8022     	 movs r2,#128
+ 197 0040 FFF7FEFF 	 bl busWriteRegister
+  68:../cleanflight/src/main/drivers/accgyro/accgyro_mpu6500.c ****     delay(100);
+ 198              	 .loc 1 68 0
+ 199 0044 6420     	 movs r0,#100
+ 200 0046 FFF7FEFF 	 bl delay
+  69:../cleanflight/src/main/drivers/accgyro/accgyro_mpu6500.c ****     busWriteRegister(&gyro->bus, MPU_RA_SIGNAL_PATH_RESET, 0x07);
+ 201              	 .loc 1 69 0
+ 202 004a 7B68     	 ldr r3,[r7,#4]
+ 203 004c 1033     	 adds r3,r3,#16
+ 204 004e 1846     	 mov r0,r3
+ 205 0050 6821     	 movs r1,#104
+ 206 0052 0722     	 movs r2,#7
+ 207 0054 FFF7FEFF 	 bl busWriteRegister
+  70:../cleanflight/src/main/drivers/accgyro/accgyro_mpu6500.c ****     delay(100);
+ 208              	 .loc 1 70 0
+ 209 0058 6420     	 movs r0,#100
+ 210 005a FFF7FEFF 	 bl delay
+  71:../cleanflight/src/main/drivers/accgyro/accgyro_mpu6500.c ****     busWriteRegister(&gyro->bus, MPU_RA_PWR_MGMT_1, 0);
+ 211              	 .loc 1 71 0
+ 212 005e 7B68     	 ldr r3,[r7,#4]
+ 213 0060 1033     	 adds r3,r3,#16
+ 214 0062 1846     	 mov r0,r3
+ 215 0064 6B21     	 movs r1,#107
+ 216 0066 0022     	 movs r2,#0
+ 217 0068 FFF7FEFF 	 bl busWriteRegister
+  72:../cleanflight/src/main/drivers/accgyro/accgyro_mpu6500.c ****     delay(100);
+ 218              	 .loc 1 72 0
+ 219 006c 6420     	 movs r0,#100
+ 220 006e FFF7FEFF 	 bl delay
+  73:../cleanflight/src/main/drivers/accgyro/accgyro_mpu6500.c ****     busWriteRegister(&gyro->bus, MPU_RA_PWR_MGMT_1, INV_CLK_PLL);
+ 221              	 .loc 1 73 0
+ 222 0072 7B68     	 ldr r3,[r7,#4]
+ 223 0074 1033     	 adds r3,r3,#16
+ 224 0076 1846     	 mov r0,r3
+ 225 0078 6B21     	 movs r1,#107
+ 226 007a 0122     	 movs r2,#1
+ 227 007c FFF7FEFF 	 bl busWriteRegister
+  74:../cleanflight/src/main/drivers/accgyro/accgyro_mpu6500.c ****     delay(15);
+ 228              	 .loc 1 74 0
+ 229 0080 0F20     	 movs r0,#15
+ 230 0082 FFF7FEFF 	 bl delay
+  75:../cleanflight/src/main/drivers/accgyro/accgyro_mpu6500.c ****     busWriteRegister(&gyro->bus, MPU_RA_GYRO_CONFIG, gyro_range << 3 | mpuGyroFCHOICE(gyro));
+ 231              	 .loc 1 75 0
+ 232 0086 7B68     	 ldr r3,[r7,#4]
+ 233 0088 03F11004 	 add r4,r3,#16
+ 234 008c FB68     	 ldr r3,[r7,#12]
+ 235 008e DB00     	 lsls r3,r3,#3
+ 236 0090 DDB2     	 uxtb r5,r3
+ 237 0092 7868     	 ldr r0,[r7,#4]
+ 238 0094 FFF7FEFF 	 bl mpuGyroFCHOICE
+ 239 0098 0346     	 mov r3,r0
+ 240 009a DBB2     	 uxtb r3,r3
+ 241 009c 2A46     	 mov r2,r5
+ 242 009e 1343     	 orrs r3,r3,r2
+ 243 00a0 DBB2     	 uxtb r3,r3
+ 244 00a2 DBB2     	 uxtb r3,r3
+ 245 00a4 2046     	 mov r0,r4
+ 246 00a6 1B21     	 movs r1,#27
+ 247 00a8 1A46     	 mov r2,r3
+ 248 00aa FFF7FEFF 	 bl busWriteRegister
+  76:../cleanflight/src/main/drivers/accgyro/accgyro_mpu6500.c ****     delay(15);
+ 249              	 .loc 1 76 0
+ 250 00ae 0F20     	 movs r0,#15
+ 251 00b0 FFF7FEFF 	 bl delay
+  77:../cleanflight/src/main/drivers/accgyro/accgyro_mpu6500.c ****     busWriteRegister(&gyro->bus, MPU_RA_ACCEL_CONFIG, accel_range << 3);
+ 252              	 .loc 1 77 0
+ 253 00b4 7B68     	 ldr r3,[r7,#4]
+ 254 00b6 03F11002 	 add r2,r3,#16
+ 255 00ba BB68     	 ldr r3,[r7,#8]
+ 256 00bc DBB2     	 uxtb r3,r3
+ 257 00be DB00     	 lsls r3,r3,#3
+ 258 00c0 DBB2     	 uxtb r3,r3
+ 259 00c2 1046     	 mov r0,r2
+ 260 00c4 1C21     	 movs r1,#28
+ 261 00c6 1A46     	 mov r2,r3
+ 262 00c8 FFF7FEFF 	 bl busWriteRegister
+  78:../cleanflight/src/main/drivers/accgyro/accgyro_mpu6500.c ****     delay(15);
+ 263              	 .loc 1 78 0
+ 264 00cc 0F20     	 movs r0,#15
+ 265 00ce FFF7FEFF 	 bl delay
+  79:../cleanflight/src/main/drivers/accgyro/accgyro_mpu6500.c ****     busWriteRegister(&gyro->bus, MPU_RA_CONFIG, mpuGyroDLPF(gyro));
+ 266              	 .loc 1 79 0
+ 267 00d2 7B68     	 ldr r3,[r7,#4]
+ 268 00d4 03F11004 	 add r4,r3,#16
+ 269 00d8 7868     	 ldr r0,[r7,#4]
+ 270 00da FFF7FEFF 	 bl mpuGyroDLPF
+ 271 00de 0346     	 mov r3,r0
+ 272 00e0 2046     	 mov r0,r4
+ 273 00e2 1A21     	 movs r1,#26
+ 274 00e4 1A46     	 mov r2,r3
+ 275 00e6 FFF7FEFF 	 bl busWriteRegister
+  80:../cleanflight/src/main/drivers/accgyro/accgyro_mpu6500.c ****     delay(15);
+ 276              	 .loc 1 80 0
+ 277 00ea 0F20     	 movs r0,#15
+ 278 00ec FFF7FEFF 	 bl delay
+  81:../cleanflight/src/main/drivers/accgyro/accgyro_mpu6500.c ****     busWriteRegister(&gyro->bus, MPU_RA_SMPLRT_DIV, gyro->mpuDividerDrops); // Get Divider Drops
+ 279              	 .loc 1 81 0
+ 280 00f0 7B68     	 ldr r3,[r7,#4]
+ 281 00f2 03F11002 	 add r2,r3,#16
+ 282 00f6 7B68     	 ldr r3,[r7,#4]
+ 283 00f8 93F86130 	 ldrb r3,[r3,#97]
+ 284 00fc 1046     	 mov r0,r2
+ 285 00fe 1921     	 movs r1,#25
+ 286 0100 1A46     	 mov r2,r3
+ 287 0102 FFF7FEFF 	 bl busWriteRegister
+  82:../cleanflight/src/main/drivers/accgyro/accgyro_mpu6500.c ****     delay(100);
+ 288              	 .loc 1 82 0
+ 289 0106 6420     	 movs r0,#100
+ 290 0108 FFF7FEFF 	 bl delay
+  83:../cleanflight/src/main/drivers/accgyro/accgyro_mpu6500.c **** 
+  84:../cleanflight/src/main/drivers/accgyro/accgyro_mpu6500.c ****     // Data ready interrupt configuration
+  85:../cleanflight/src/main/drivers/accgyro/accgyro_mpu6500.c **** #ifdef USE_MPU9250_MAG
+  86:../cleanflight/src/main/drivers/accgyro/accgyro_mpu6500.c ****     busWriteRegister(&gyro->bus, MPU_RA_INT_PIN_CFG, MPU6500_BIT_INT_ANYRD_2CLEAR | MPU6500_BIT_BYP
+ 291              	 .loc 1 86 0
+ 292 010c 7B68     	 ldr r3,[r7,#4]
+ 293 010e 1033     	 adds r3,r3,#16
+ 294 0110 1846     	 mov r0,r3
+ 295 0112 3721     	 movs r1,#55
+ 296 0114 1222     	 movs r2,#18
+ 297 0116 FFF7FEFF 	 bl busWriteRegister
+  87:../cleanflight/src/main/drivers/accgyro/accgyro_mpu6500.c **** #else
+  88:../cleanflight/src/main/drivers/accgyro/accgyro_mpu6500.c ****     busWriteRegister(&gyro->bus, MPU_RA_INT_PIN_CFG, MPU6500_BIT_INT_ANYRD_2CLEAR);  // INT_ANYRD_2
+  89:../cleanflight/src/main/drivers/accgyro/accgyro_mpu6500.c **** #endif
+  90:../cleanflight/src/main/drivers/accgyro/accgyro_mpu6500.c ****     delay(15);
+ 298              	 .loc 1 90 0
+ 299 011a 0F20     	 movs r0,#15
+ 300 011c FFF7FEFF 	 bl delay
+  91:../cleanflight/src/main/drivers/accgyro/accgyro_mpu6500.c **** 
+  92:../cleanflight/src/main/drivers/accgyro/accgyro_mpu6500.c **** #ifdef USE_MPU_DATA_READY_SIGNAL
+  93:../cleanflight/src/main/drivers/accgyro/accgyro_mpu6500.c ****     busWriteRegister(&gyro->bus, MPU_RA_INT_ENABLE, MPU6500_BIT_RAW_RDY_EN); // RAW_RDY_EN interrup
+  94:../cleanflight/src/main/drivers/accgyro/accgyro_mpu6500.c **** #endif
+  95:../cleanflight/src/main/drivers/accgyro/accgyro_mpu6500.c ****     delay(15);
+ 301              	 .loc 1 95 0
+ 302 0120 0F20     	 movs r0,#15
+ 303 0122 FFF7FEFF 	 bl delay
+  96:../cleanflight/src/main/drivers/accgyro/accgyro_mpu6500.c **** }
+ 304              	 .loc 1 96 0
+ 305 0126 1037     	 adds r7,r7,#16
+ 306              	.LCFI15:
+ 307              	 .cfi_def_cfa_offset 16
+ 308 0128 BD46     	 mov sp,r7
+ 309              	.LCFI16:
+ 310              	 .cfi_def_cfa_register 13
+ 311              	 
+ 312 012a B0BD     	 pop {r4,r5,r7,pc}
+ 313              	 .cfi_endproc
+ 314              	.LFE537:
+ 316              	 .section .text.mpu6500GyroDetect,"ax",%progbits
+ 317              	 .align 2
+ 318              	 .global mpu6500GyroDetect
+ 319              	 .thumb
+ 320              	 .thumb_func
+ 322              	mpu6500GyroDetect:
+ 323              	.LFB538:
+  97:../cleanflight/src/main/drivers/accgyro/accgyro_mpu6500.c **** 
+  98:../cleanflight/src/main/drivers/accgyro/accgyro_mpu6500.c **** bool mpu6500GyroDetect(gyroDev_t *gyro)
+  99:../cleanflight/src/main/drivers/accgyro/accgyro_mpu6500.c **** {
+ 324              	 .loc 1 99 0
+ 325              	 .cfi_startproc
+ 326              	 
+ 327              	 
+ 328              	 
+ 329 0000 80B4     	 push {r7}
+ 330              	.LCFI17:
+ 331              	 .cfi_def_cfa_offset 4
+ 332              	 .cfi_offset 7,-4
+ 333 0002 83B0     	 sub sp,sp,#12
+ 334              	.LCFI18:
+ 335              	 .cfi_def_cfa_offset 16
+ 336 0004 00AF     	 add r7,sp,#0
+ 337              	.LCFI19:
+ 338              	 .cfi_def_cfa_register 7
+ 339 0006 7860     	 str r0,[r7,#4]
+ 100:../cleanflight/src/main/drivers/accgyro/accgyro_mpu6500.c ****     if (gyro->mpuDetectionResult.sensor != MPU_65xx_I2C) {
+ 340              	 .loc 1 100 0
+ 341 0008 7B68     	 ldr r3,[r7,#4]
+ 342 000a 93F85930 	 ldrb r3,[r3,#89]
+ 343 000e 042B     	 cmp r3,#4
+ 344 0010 01D0     	 beq .L12
+ 101:../cleanflight/src/main/drivers/accgyro/accgyro_mpu6500.c ****         return false;
+ 345              	 .loc 1 101 0
+ 346 0012 0023     	 movs r3,#0
+ 347 0014 0AE0     	 b .L13
+ 348              	.L12:
+ 102:../cleanflight/src/main/drivers/accgyro/accgyro_mpu6500.c ****     }
+ 103:../cleanflight/src/main/drivers/accgyro/accgyro_mpu6500.c **** 
+ 104:../cleanflight/src/main/drivers/accgyro/accgyro_mpu6500.c ****     gyro->initFn = mpu6500GyroInit;
+ 349              	 .loc 1 104 0
+ 350 0016 7B68     	 ldr r3,[r7,#4]
+ 351 0018 074A     	 ldr r2,.L14
+ 352 001a 1A60     	 str r2,[r3]
+ 105:../cleanflight/src/main/drivers/accgyro/accgyro_mpu6500.c ****     gyro->readFn = mpuGyroRead;
+ 353              	 .loc 1 105 0
+ 354 001c 7B68     	 ldr r3,[r7,#4]
+ 355 001e 074A     	 ldr r2,.L14+4
+ 356 0020 5A60     	 str r2,[r3,#4]
+ 106:../cleanflight/src/main/drivers/accgyro/accgyro_mpu6500.c **** 
+ 107:../cleanflight/src/main/drivers/accgyro/accgyro_mpu6500.c ****     // 16.4 dps/lsb scalefactor
+ 108:../cleanflight/src/main/drivers/accgyro/accgyro_mpu6500.c ****     gyro->scale = 1.0f / 16.4f;
+ 357              	 .loc 1 108 0
+ 358 0022 7B68     	 ldr r3,[r7,#4]
+ 359 0024 1933     	 adds r3,r3,#25
+ 360 0026 064A     	 ldr r2,.L14+8
+ 361 0028 1A60     	 str r2,[r3]
+ 109:../cleanflight/src/main/drivers/accgyro/accgyro_mpu6500.c **** 
+ 110:../cleanflight/src/main/drivers/accgyro/accgyro_mpu6500.c ****     return true;
+ 362              	 .loc 1 110 0
+ 363 002a 0123     	 movs r3,#1
+ 364              	.L13:
+ 111:../cleanflight/src/main/drivers/accgyro/accgyro_mpu6500.c **** }
+ 365              	 .loc 1 111 0
+ 366 002c 1846     	 mov r0,r3
+ 367 002e 0C37     	 adds r7,r7,#12
+ 368              	.LCFI20:
+ 369              	 .cfi_def_cfa_offset 4
+ 370 0030 BD46     	 mov sp,r7
+ 371              	.LCFI21:
+ 372              	 .cfi_def_cfa_register 13
+ 373              	 
+ 374 0032 5DF8047B 	 ldr r7,[sp],#4
+ 375              	.LCFI22:
+ 376              	 .cfi_restore 7
+ 377              	 .cfi_def_cfa_offset 0
+ 378 0036 7047     	 bx lr
+ 379              	.L15:
+ 380              	 .align 2
+ 381              	.L14:
+ 382 0038 00000000 	 .word mpu6500GyroInit
+ 383 003c 00000000 	 .word mpuGyroRead
+ 384 0040 90C1793D 	 .word 1031389584
+ 385              	 .cfi_endproc
+ 386              	.LFE538:
+ 388              	 .text
+ 389              	.Letext0:
+ 390              	 .file 2 "d:\\xmc\\dave-ide-4.4.2-64bit\\eclipse\\arm-gcc-49\\arm-none-eabi\\include\\machine\\_default_types.h"
+ 391              	 .file 3 "d:\\xmc\\dave-ide-4.4.2-64bit\\eclipse\\arm-gcc-49\\arm-none-eabi\\include\\stdint.h"
+ 392              	 .file 4 "D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/lib/main/XMC4000/xmc4700.h"
+ 393              	 .file 5 "D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/platform.h"
+ 394              	 .file 6 "D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/drivers/io_types.h"
+ 395              	 .file 7 "D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/drivers/exti.h"
+ 396              	 .file 8 "D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/drivers/sensor.h"
+ 397              	 .file 9 "../cleanflight/src/main/drivers/accgyro/accgyro.h"
+ 398              	 .file 10 "D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/common/time.h"
+ 399              	 .file 11 "D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/drivers/bus_i2c.h"
+ 400              	 .file 12 "D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/drivers/bus.h"
+ 401              	 .file 13 "D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/drivers/accgyro/accgyro_mpu.h"
+ 402              	 .file 14 "D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/sensors/gyro.h"
+ 403              	 .file 15 "D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/lib/main/CMSIS/Core/Include/core_cm4.h"
+ 404              	 .file 16 "D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/lib/main/XMC4000/system_XMC4700.h"
+DEFINED SYMBOLS
+                            *ABS*:00000000 accgyro_mpu6500.c
+    {standard input}:20     .text.mpu6500AccInit:00000000 $t
+    {standard input}:25     .text.mpu6500AccInit:00000000 mpu6500AccInit
+    {standard input}:68     .text.mpu6500AccDetect:00000000 $t
+    {standard input}:73     .text.mpu6500AccDetect:00000000 mpu6500AccDetect
+    {standard input}:128    .text.mpu6500AccDetect:00000030 $d
+    {standard input}:134    .text.mpu6500GyroInit:00000000 $t
+    {standard input}:139    .text.mpu6500GyroInit:00000000 mpu6500GyroInit
+    {standard input}:317    .text.mpu6500GyroDetect:00000000 $t
+    {standard input}:322    .text.mpu6500GyroDetect:00000000 mpu6500GyroDetect
+    {standard input}:382    .text.mpu6500GyroDetect:00000038 $d
+                     .debug_frame:00000010 $d
+
+UNDEFINED SYMBOLS
+mpuAccRead
+mpuGyroInit
+busWriteRegister
+delay
+mpuGyroFCHOICE
+mpuGyroDLPF
+mpuGyroRead

@@ -1,0 +1,468 @@
+   1              	 .syntax unified
+   2              	 .cpu cortex-m4
+   3              	 .eabi_attribute 27,3
+   4              	 .fpu fpv4-sp-d16
+   5              	 .eabi_attribute 20,1
+   6              	 .eabi_attribute 21,1
+   7              	 .eabi_attribute 23,3
+   8              	 .eabi_attribute 24,1
+   9              	 .eabi_attribute 25,1
+  10              	 .eabi_attribute 26,1
+  11              	 .eabi_attribute 30,6
+  12              	 .eabi_attribute 34,1
+  13              	 .eabi_attribute 18,4
+  14              	 .thumb
+  15              	 .file "vtx_string.c"
+  16              	 .text
+  17              	.Ltext0:
+  18              	 .cfi_sections .debug_frame
+  19              	 .global vtx58frequencyTable
+  20              	 .section .rodata.vtx58frequencyTable,"a",%progbits
+  21              	 .align 2
+  24              	vtx58frequencyTable:
+  25 0000 E916     	 .short 5865
+  26 0002 D516     	 .short 5845
+  27 0004 C116     	 .short 5825
+  28 0006 AD16     	 .short 5805
+  29 0008 9916     	 .short 5785
+  30 000a 8516     	 .short 5765
+  31 000c 7116     	 .short 5745
+  32 000e 5D16     	 .short 5725
+  33 0010 6516     	 .short 5733
+  34 0012 7816     	 .short 5752
+  35 0014 8B16     	 .short 5771
+  36 0016 9E16     	 .short 5790
+  37 0018 B116     	 .short 5809
+  38 001a C416     	 .short 5828
+  39 001c D716     	 .short 5847
+  40 001e EA16     	 .short 5866
+  41 0020 4916     	 .short 5705
+  42 0022 3516     	 .short 5685
+  43 0024 2116     	 .short 5665
+  44 0026 0D16     	 .short 5645
+  45 0028 FD16     	 .short 5885
+  46 002a 1117     	 .short 5905
+  47 002c 2517     	 .short 5925
+  48 002e 3917     	 .short 5945
+  49 0030 6C16     	 .short 5740
+  50 0032 8016     	 .short 5760
+  51 0034 9416     	 .short 5780
+  52 0036 A816     	 .short 5800
+  53 0038 BC16     	 .short 5820
+  54 003a D016     	 .short 5840
+  55 003c E416     	 .short 5860
+  56 003e F816     	 .short 5880
+  57 0040 1A16     	 .short 5658
+  58 0042 3F16     	 .short 5695
+  59 0044 6416     	 .short 5732
+  60 0046 8916     	 .short 5769
+  61 0048 AE16     	 .short 5806
+  62 004a D316     	 .short 5843
+  63 004c F816     	 .short 5880
+  64 004e 1D17     	 .short 5917
+  65              	 .global vtx58BandNames
+  66              	 .section .rodata
+  67              	 .align 2
+  68              	.LC0:
+  69 0000 2D2D2D2D 	 .ascii "--------\000"
+  69      2D2D2D2D 
+  69      00
+  70 0009 000000   	 .align 2
+  71              	.LC1:
+  72 000c 424F5343 	 .ascii "BOSCAM A\000"
+  72      414D2041 
+  72      00
+  73 0015 000000   	 .align 2
+  74              	.LC2:
+  75 0018 424F5343 	 .ascii "BOSCAM B\000"
+  75      414D2042 
+  75      00
+  76 0021 000000   	 .align 2
+  77              	.LC3:
+  78 0024 424F5343 	 .ascii "BOSCAM E\000"
+  78      414D2045 
+  78      00
+  79 002d 000000   	 .align 2
+  80              	.LC4:
+  81 0030 46415453 	 .ascii "FATSHARK\000"
+  81      4841524B 
+  81      00
+  82 0039 000000   	 .align 2
+  83              	.LC5:
+  84 003c 52414345 	 .ascii "RACEBAND\000"
+  84      42414E44 
+  84      00
+  85              	 .section .rodata.vtx58BandNames,"a",%progbits
+  86              	 .align 2
+  89              	vtx58BandNames:
+  90 0000 00000000 	 .word .LC0
+  91 0004 0C000000 	 .word .LC1
+  92 0008 18000000 	 .word .LC2
+  93 000c 24000000 	 .word .LC3
+  94 0010 30000000 	 .word .LC4
+  95 0014 3C000000 	 .word .LC5
+  96              	 .global vtx58BandLetter
+  97              	 .section .rodata.vtx58BandLetter,"a",%progbits
+  98              	 .align 2
+ 101              	vtx58BandLetter:
+ 102 0000 2D414245 	 .ascii "-ABEFR\000"
+ 102      465200
+ 103              	 .global vtx58ChannelNames
+ 104 0007 00       	 .section .rodata
+ 105 0045 000000   	 .align 2
+ 106              	.LC6:
+ 107 0048 2D00     	 .ascii "-\000"
+ 108 004a 0000     	 .align 2
+ 109              	.LC7:
+ 110 004c 3100     	 .ascii "1\000"
+ 111 004e 0000     	 .align 2
+ 112              	.LC8:
+ 113 0050 3200     	 .ascii "2\000"
+ 114 0052 0000     	 .align 2
+ 115              	.LC9:
+ 116 0054 3300     	 .ascii "3\000"
+ 117 0056 0000     	 .align 2
+ 118              	.LC10:
+ 119 0058 3400     	 .ascii "4\000"
+ 120 005a 0000     	 .align 2
+ 121              	.LC11:
+ 122 005c 3500     	 .ascii "5\000"
+ 123 005e 0000     	 .align 2
+ 124              	.LC12:
+ 125 0060 3600     	 .ascii "6\000"
+ 126 0062 0000     	 .align 2
+ 127              	.LC13:
+ 128 0064 3700     	 .ascii "7\000"
+ 129 0066 0000     	 .align 2
+ 130              	.LC14:
+ 131 0068 3800     	 .ascii "8\000"
+ 132 006a 0000     	 .section .rodata.vtx58ChannelNames,"a",%progbits
+ 133              	 .align 2
+ 136              	vtx58ChannelNames:
+ 137 0000 48000000 	 .word .LC6
+ 138 0004 4C000000 	 .word .LC7
+ 139 0008 50000000 	 .word .LC8
+ 140 000c 54000000 	 .word .LC9
+ 141 0010 58000000 	 .word .LC10
+ 142 0014 5C000000 	 .word .LC11
+ 143 0018 60000000 	 .word .LC12
+ 144 001c 64000000 	 .word .LC13
+ 145 0020 68000000 	 .word .LC14
+ 146              	 .section .text.vtx58_Freq2Bandchan,"ax",%progbits
+ 147              	 .align 2
+ 148              	 .global vtx58_Freq2Bandchan
+ 149              	 .thumb
+ 150              	 .thumb_func
+ 152              	vtx58_Freq2Bandchan:
+ 153              	.LFB521:
+ 154              	 .file 1 "../cleanflight/src/main/io/vtx_string.c"
+   1:../cleanflight/src/main/io/vtx_string.c **** /*
+   2:../cleanflight/src/main/io/vtx_string.c ****  * This file is part of Cleanflight and Betaflight.
+   3:../cleanflight/src/main/io/vtx_string.c ****  *
+   4:../cleanflight/src/main/io/vtx_string.c ****  * Cleanflight and Betaflight are free software. You can redistribute
+   5:../cleanflight/src/main/io/vtx_string.c ****  * this software and/or modify this software under the terms of the
+   6:../cleanflight/src/main/io/vtx_string.c ****  * GNU General Public License as published by the Free Software
+   7:../cleanflight/src/main/io/vtx_string.c ****  * Foundation, either version 3 of the License, or (at your option)
+   8:../cleanflight/src/main/io/vtx_string.c ****  * any later version.
+   9:../cleanflight/src/main/io/vtx_string.c ****  *
+  10:../cleanflight/src/main/io/vtx_string.c ****  * Cleanflight and Betaflight are distributed in the hope that they
+  11:../cleanflight/src/main/io/vtx_string.c ****  * will be useful, but WITHOUT ANY WARRANTY; without even the implied
+  12:../cleanflight/src/main/io/vtx_string.c ****  * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+  13:../cleanflight/src/main/io/vtx_string.c ****  * See the GNU General Public License for more details.
+  14:../cleanflight/src/main/io/vtx_string.c ****  *
+  15:../cleanflight/src/main/io/vtx_string.c ****  * You should have received a copy of the GNU General Public License
+  16:../cleanflight/src/main/io/vtx_string.c ****  * along with this software.
+  17:../cleanflight/src/main/io/vtx_string.c ****  *
+  18:../cleanflight/src/main/io/vtx_string.c ****  * If not, see <http://www.gnu.org/licenses/>.
+  19:../cleanflight/src/main/io/vtx_string.c ****  */
+  20:../cleanflight/src/main/io/vtx_string.c **** 
+  21:../cleanflight/src/main/io/vtx_string.c **** /* Created by jflyper */
+  22:../cleanflight/src/main/io/vtx_string.c **** 
+  23:../cleanflight/src/main/io/vtx_string.c **** #include <stdbool.h>
+  24:../cleanflight/src/main/io/vtx_string.c **** #include <stdint.h>
+  25:../cleanflight/src/main/io/vtx_string.c **** 
+  26:../cleanflight/src/main/io/vtx_string.c **** #include "platform.h"
+  27:../cleanflight/src/main/io/vtx_string.c **** 
+  28:../cleanflight/src/main/io/vtx_string.c **** #include "build/debug.h"
+  29:../cleanflight/src/main/io/vtx_string.c **** 
+  30:../cleanflight/src/main/io/vtx_string.c **** #if defined(USE_VTX_COMMON)
+  31:../cleanflight/src/main/io/vtx_string.c **** 
+  32:../cleanflight/src/main/io/vtx_string.c **** #define VTX_STRING_BAND_COUNT 5
+  33:../cleanflight/src/main/io/vtx_string.c **** #define VTX_STRING_CHAN_COUNT 8
+  34:../cleanflight/src/main/io/vtx_string.c **** 
+  35:../cleanflight/src/main/io/vtx_string.c **** const uint16_t vtx58frequencyTable[VTX_STRING_BAND_COUNT][VTX_STRING_CHAN_COUNT] =
+  36:../cleanflight/src/main/io/vtx_string.c **** {
+  37:../cleanflight/src/main/io/vtx_string.c ****     { 5865, 5845, 5825, 5805, 5785, 5765, 5745, 5725 }, // Boscam A
+  38:../cleanflight/src/main/io/vtx_string.c ****     { 5733, 5752, 5771, 5790, 5809, 5828, 5847, 5866 }, // Boscam B
+  39:../cleanflight/src/main/io/vtx_string.c ****     { 5705, 5685, 5665, 5645, 5885, 5905, 5925, 5945 }, // Boscam E
+  40:../cleanflight/src/main/io/vtx_string.c ****     { 5740, 5760, 5780, 5800, 5820, 5840, 5860, 5880 }, // FatShark
+  41:../cleanflight/src/main/io/vtx_string.c ****     { 5658, 5695, 5732, 5769, 5806, 5843, 5880, 5917 }, // RaceBand
+  42:../cleanflight/src/main/io/vtx_string.c **** };
+  43:../cleanflight/src/main/io/vtx_string.c **** 
+  44:../cleanflight/src/main/io/vtx_string.c **** const char * const vtx58BandNames[] = {
+  45:../cleanflight/src/main/io/vtx_string.c ****     "--------",
+  46:../cleanflight/src/main/io/vtx_string.c ****     "BOSCAM A",
+  47:../cleanflight/src/main/io/vtx_string.c ****     "BOSCAM B",
+  48:../cleanflight/src/main/io/vtx_string.c ****     "BOSCAM E",
+  49:../cleanflight/src/main/io/vtx_string.c ****     "FATSHARK",
+  50:../cleanflight/src/main/io/vtx_string.c ****     "RACEBAND",
+  51:../cleanflight/src/main/io/vtx_string.c **** };
+  52:../cleanflight/src/main/io/vtx_string.c **** 
+  53:../cleanflight/src/main/io/vtx_string.c **** const char vtx58BandLetter[] = "-ABEFR";
+  54:../cleanflight/src/main/io/vtx_string.c **** 
+  55:../cleanflight/src/main/io/vtx_string.c **** const char * const vtx58ChannelNames[] = {
+  56:../cleanflight/src/main/io/vtx_string.c ****     "-", "1", "2", "3", "4", "5", "6", "7", "8",
+  57:../cleanflight/src/main/io/vtx_string.c **** };
+  58:../cleanflight/src/main/io/vtx_string.c **** 
+  59:../cleanflight/src/main/io/vtx_string.c **** //Converts frequency (in MHz) to band and channel values.
+  60:../cleanflight/src/main/io/vtx_string.c **** bool vtx58_Freq2Bandchan(uint16_t freq, uint8_t *pBand, uint8_t *pChannel)
+  61:../cleanflight/src/main/io/vtx_string.c **** {
+ 155              	 .loc 1 61 0
+ 156              	 .cfi_startproc
+ 157              	 
+ 158              	 
+ 159              	 
+ 160 0000 80B4     	 push {r7}
+ 161              	.LCFI0:
+ 162              	 .cfi_def_cfa_offset 4
+ 163              	 .cfi_offset 7,-4
+ 164 0002 87B0     	 sub sp,sp,#28
+ 165              	.LCFI1:
+ 166              	 .cfi_def_cfa_offset 32
+ 167 0004 00AF     	 add r7,sp,#0
+ 168              	.LCFI2:
+ 169              	 .cfi_def_cfa_register 7
+ 170 0006 0346     	 mov r3,r0
+ 171 0008 B960     	 str r1,[r7,#8]
+ 172 000a 7A60     	 str r2,[r7,#4]
+ 173 000c FB81     	 strh r3,[r7,#14]
+ 174              	.LBB2:
+  62:../cleanflight/src/main/io/vtx_string.c ****     // Use reverse lookup order so that 5880Mhz
+  63:../cleanflight/src/main/io/vtx_string.c ****     // get Raceband 7 instead of Fatshark 8.
+  64:../cleanflight/src/main/io/vtx_string.c ****     for (int band = VTX_STRING_BAND_COUNT - 1 ; band >= 0 ; band--) {
+ 175              	 .loc 1 64 0
+ 176 000e 0423     	 movs r3,#4
+ 177 0010 7B61     	 str r3,[r7,#20]
+ 178 0012 23E0     	 b .L2
+ 179              	.L7:
+ 180              	.LBB3:
+  65:../cleanflight/src/main/io/vtx_string.c ****         for (int channel = 0 ; channel < VTX_STRING_CHAN_COUNT ; channel++) {
+ 181              	 .loc 1 65 0
+ 182 0014 0023     	 movs r3,#0
+ 183 0016 3B61     	 str r3,[r7,#16]
+ 184 0018 1AE0     	 b .L3
+ 185              	.L6:
+  66:../cleanflight/src/main/io/vtx_string.c ****             if (vtx58frequencyTable[band][channel] == freq) {
+ 186              	 .loc 1 66 0
+ 187 001a 1849     	 ldr r1,.L8
+ 188 001c 7B69     	 ldr r3,[r7,#20]
+ 189 001e DA00     	 lsls r2,r3,#3
+ 190 0020 3B69     	 ldr r3,[r7,#16]
+ 191 0022 1344     	 add r3,r3,r2
+ 192 0024 31F81330 	 ldrh r3,[r1,r3,lsl#1]
+ 193 0028 FA89     	 ldrh r2,[r7,#14]
+ 194 002a 9A42     	 cmp r2,r3
+ 195 002c 0DD1     	 bne .L4
+  67:../cleanflight/src/main/io/vtx_string.c ****                 *pBand = band + 1;
+ 196              	 .loc 1 67 0
+ 197 002e 7B69     	 ldr r3,[r7,#20]
+ 198 0030 DBB2     	 uxtb r3,r3
+ 199 0032 0133     	 adds r3,r3,#1
+ 200 0034 DAB2     	 uxtb r2,r3
+ 201 0036 BB68     	 ldr r3,[r7,#8]
+ 202 0038 1A70     	 strb r2,[r3]
+  68:../cleanflight/src/main/io/vtx_string.c ****                 *pChannel = channel + 1;
+ 203              	 .loc 1 68 0
+ 204 003a 3B69     	 ldr r3,[r7,#16]
+ 205 003c DBB2     	 uxtb r3,r3
+ 206 003e 0133     	 adds r3,r3,#1
+ 207 0040 DAB2     	 uxtb r2,r3
+ 208 0042 7B68     	 ldr r3,[r7,#4]
+ 209 0044 1A70     	 strb r2,[r3]
+  69:../cleanflight/src/main/io/vtx_string.c ****                 return true;
+ 210              	 .loc 1 69 0
+ 211 0046 0123     	 movs r3,#1
+ 212 0048 12E0     	 b .L5
+ 213              	.L4:
+  65:../cleanflight/src/main/io/vtx_string.c ****             if (vtx58frequencyTable[band][channel] == freq) {
+ 214              	 .loc 1 65 0 discriminator 2
+ 215 004a 3B69     	 ldr r3,[r7,#16]
+ 216 004c 0133     	 adds r3,r3,#1
+ 217 004e 3B61     	 str r3,[r7,#16]
+ 218              	.L3:
+  65:../cleanflight/src/main/io/vtx_string.c ****             if (vtx58frequencyTable[band][channel] == freq) {
+ 219              	 .loc 1 65 0 is_stmt 0 discriminator 1
+ 220 0050 3B69     	 ldr r3,[r7,#16]
+ 221 0052 072B     	 cmp r3,#7
+ 222 0054 E1DD     	 ble .L6
+ 223              	.LBE3:
+  64:../cleanflight/src/main/io/vtx_string.c ****         for (int channel = 0 ; channel < VTX_STRING_CHAN_COUNT ; channel++) {
+ 224              	 .loc 1 64 0 is_stmt 1 discriminator 2
+ 225 0056 7B69     	 ldr r3,[r7,#20]
+ 226 0058 013B     	 subs r3,r3,#1
+ 227 005a 7B61     	 str r3,[r7,#20]
+ 228              	.L2:
+  64:../cleanflight/src/main/io/vtx_string.c ****         for (int channel = 0 ; channel < VTX_STRING_CHAN_COUNT ; channel++) {
+ 229              	 .loc 1 64 0 is_stmt 0 discriminator 1
+ 230 005c 7B69     	 ldr r3,[r7,#20]
+ 231 005e 002B     	 cmp r3,#0
+ 232 0060 D8DA     	 bge .L7
+ 233              	.LBE2:
+  70:../cleanflight/src/main/io/vtx_string.c ****             }
+  71:../cleanflight/src/main/io/vtx_string.c ****         }
+  72:../cleanflight/src/main/io/vtx_string.c ****     }
+  73:../cleanflight/src/main/io/vtx_string.c **** 
+  74:../cleanflight/src/main/io/vtx_string.c ****     *pBand = 0;
+ 234              	 .loc 1 74 0 is_stmt 1
+ 235 0062 BB68     	 ldr r3,[r7,#8]
+ 236 0064 0022     	 movs r2,#0
+ 237 0066 1A70     	 strb r2,[r3]
+  75:../cleanflight/src/main/io/vtx_string.c ****     *pChannel = 0;
+ 238              	 .loc 1 75 0
+ 239 0068 7B68     	 ldr r3,[r7,#4]
+ 240 006a 0022     	 movs r2,#0
+ 241 006c 1A70     	 strb r2,[r3]
+  76:../cleanflight/src/main/io/vtx_string.c **** 
+  77:../cleanflight/src/main/io/vtx_string.c ****     return false;
+ 242              	 .loc 1 77 0
+ 243 006e 0023     	 movs r3,#0
+ 244              	.L5:
+  78:../cleanflight/src/main/io/vtx_string.c **** }
+ 245              	 .loc 1 78 0
+ 246 0070 1846     	 mov r0,r3
+ 247 0072 1C37     	 adds r7,r7,#28
+ 248              	.LCFI3:
+ 249              	 .cfi_def_cfa_offset 4
+ 250 0074 BD46     	 mov sp,r7
+ 251              	.LCFI4:
+ 252              	 .cfi_def_cfa_register 13
+ 253              	 
+ 254 0076 5DF8047B 	 ldr r7,[sp],#4
+ 255              	.LCFI5:
+ 256              	 .cfi_restore 7
+ 257              	 .cfi_def_cfa_offset 0
+ 258 007a 7047     	 bx lr
+ 259              	.L9:
+ 260              	 .align 2
+ 261              	.L8:
+ 262 007c 00000000 	 .word vtx58frequencyTable
+ 263              	 .cfi_endproc
+ 264              	.LFE521:
+ 266              	 .section .text.vtx58_Bandchan2Freq,"ax",%progbits
+ 267              	 .align 2
+ 268              	 .global vtx58_Bandchan2Freq
+ 269              	 .thumb
+ 270              	 .thumb_func
+ 272              	vtx58_Bandchan2Freq:
+ 273              	.LFB522:
+  79:../cleanflight/src/main/io/vtx_string.c **** 
+  80:../cleanflight/src/main/io/vtx_string.c **** //Converts band and channel values to a frequency (in MHz) value.
+  81:../cleanflight/src/main/io/vtx_string.c **** // band:  Band value (1 to 5).
+  82:../cleanflight/src/main/io/vtx_string.c **** // channel:  Channel value (1 to 8).
+  83:../cleanflight/src/main/io/vtx_string.c **** // Returns frequency value (in MHz), or 0 if band/channel out of range.
+  84:../cleanflight/src/main/io/vtx_string.c **** uint16_t vtx58_Bandchan2Freq(uint8_t band, uint8_t channel)
+  85:../cleanflight/src/main/io/vtx_string.c **** {
+ 274              	 .loc 1 85 0
+ 275              	 .cfi_startproc
+ 276              	 
+ 277              	 
+ 278              	 
+ 279 0000 80B4     	 push {r7}
+ 280              	.LCFI6:
+ 281              	 .cfi_def_cfa_offset 4
+ 282              	 .cfi_offset 7,-4
+ 283 0002 83B0     	 sub sp,sp,#12
+ 284              	.LCFI7:
+ 285              	 .cfi_def_cfa_offset 16
+ 286 0004 00AF     	 add r7,sp,#0
+ 287              	.LCFI8:
+ 288              	 .cfi_def_cfa_register 7
+ 289 0006 0346     	 mov r3,r0
+ 290 0008 0A46     	 mov r2,r1
+ 291 000a FB71     	 strb r3,[r7,#7]
+ 292 000c 1346     	 mov r3,r2
+ 293 000e BB71     	 strb r3,[r7,#6]
+  86:../cleanflight/src/main/io/vtx_string.c ****     if (band > 0 && band <= VTX_STRING_BAND_COUNT &&
+ 294              	 .loc 1 86 0
+ 295 0010 FB79     	 ldrb r3,[r7,#7]
+ 296 0012 002B     	 cmp r3,#0
+ 297 0014 12D0     	 beq .L11
+ 298              	 .loc 1 86 0 is_stmt 0 discriminator 1
+ 299 0016 FB79     	 ldrb r3,[r7,#7]
+ 300 0018 052B     	 cmp r3,#5
+ 301 001a 0FD8     	 bhi .L11
+ 302              	 .loc 1 86 0 discriminator 2
+ 303 001c BB79     	 ldrb r3,[r7,#6]
+ 304 001e 002B     	 cmp r3,#0
+ 305 0020 0CD0     	 beq .L11
+  87:../cleanflight/src/main/io/vtx_string.c ****                           channel > 0 && channel <= VTX_STRING_CHAN_COUNT) {
+ 306              	 .loc 1 87 0 is_stmt 1
+ 307 0022 BB79     	 ldrb r3,[r7,#6]
+ 308 0024 082B     	 cmp r3,#8
+ 309 0026 09D8     	 bhi .L11
+  88:../cleanflight/src/main/io/vtx_string.c ****         return vtx58frequencyTable[band - 1][channel - 1];
+ 310              	 .loc 1 88 0
+ 311 0028 FB79     	 ldrb r3,[r7,#7]
+ 312 002a 5A1E     	 subs r2,r3,#1
+ 313 002c BB79     	 ldrb r3,[r7,#6]
+ 314 002e 013B     	 subs r3,r3,#1
+ 315 0030 0649     	 ldr r1,.L13
+ 316 0032 D200     	 lsls r2,r2,#3
+ 317 0034 1344     	 add r3,r3,r2
+ 318 0036 31F81330 	 ldrh r3,[r1,r3,lsl#1]
+ 319 003a 00E0     	 b .L12
+ 320              	.L11:
+  89:../cleanflight/src/main/io/vtx_string.c ****     }
+  90:../cleanflight/src/main/io/vtx_string.c ****     return 0;
+ 321              	 .loc 1 90 0
+ 322 003c 0023     	 movs r3,#0
+ 323              	.L12:
+  91:../cleanflight/src/main/io/vtx_string.c **** }
+ 324              	 .loc 1 91 0
+ 325 003e 1846     	 mov r0,r3
+ 326 0040 0C37     	 adds r7,r7,#12
+ 327              	.LCFI9:
+ 328              	 .cfi_def_cfa_offset 4
+ 329 0042 BD46     	 mov sp,r7
+ 330              	.LCFI10:
+ 331              	 .cfi_def_cfa_register 13
+ 332              	 
+ 333 0044 5DF8047B 	 ldr r7,[sp],#4
+ 334              	.LCFI11:
+ 335              	 .cfi_restore 7
+ 336              	 .cfi_def_cfa_offset 0
+ 337 0048 7047     	 bx lr
+ 338              	.L14:
+ 339 004a 00BF     	 .align 2
+ 340              	.L13:
+ 341 004c 00000000 	 .word vtx58frequencyTable
+ 342              	 .cfi_endproc
+ 343              	.LFE522:
+ 345              	 .text
+ 346              	.Letext0:
+ 347              	 .file 2 "d:\\xmc\\dave-ide-4.4.2-64bit\\eclipse\\arm-gcc-49\\arm-none-eabi\\include\\machine\\_default_types.h"
+ 348              	 .file 3 "d:\\xmc\\dave-ide-4.4.2-64bit\\eclipse\\arm-gcc-49\\arm-none-eabi\\include\\stdint.h"
+ 349              	 .file 4 "D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/lib/main/XMC4000/XMCLib/inc/xmc_usic.h"
+ 350              	 .file 5 "D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/lib/main/CMSIS/Core/Include/core_cm4.h"
+ 351              	 .file 6 "D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/lib/main/XMC4000/system_XMC4700.h"
+ 352              	 .file 7 "D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/build/debug.h"
+DEFINED SYMBOLS
+                            *ABS*:00000000 vtx_string.c
+    {standard input}:24     .rodata.vtx58frequencyTable:00000000 vtx58frequencyTable
+    {standard input}:21     .rodata.vtx58frequencyTable:00000000 $d
+    {standard input}:89     .rodata.vtx58BandNames:00000000 vtx58BandNames
+    {standard input}:67     .rodata:00000000 $d
+    {standard input}:86     .rodata.vtx58BandNames:00000000 $d
+    {standard input}:101    .rodata.vtx58BandLetter:00000000 vtx58BandLetter
+    {standard input}:98     .rodata.vtx58BandLetter:00000000 $d
+    {standard input}:136    .rodata.vtx58ChannelNames:00000000 vtx58ChannelNames
+    {standard input}:133    .rodata.vtx58ChannelNames:00000000 $d
+    {standard input}:147    .text.vtx58_Freq2Bandchan:00000000 $t
+    {standard input}:152    .text.vtx58_Freq2Bandchan:00000000 vtx58_Freq2Bandchan
+    {standard input}:262    .text.vtx58_Freq2Bandchan:0000007c $d
+    {standard input}:267    .text.vtx58_Bandchan2Freq:00000000 $t
+    {standard input}:272    .text.vtx58_Bandchan2Freq:00000000 vtx58_Bandchan2Freq
+    {standard input}:341    .text.vtx58_Bandchan2Freq:0000004c $d
+                     .debug_frame:00000010 $d
+
+NO UNDEFINED SYMBOLS

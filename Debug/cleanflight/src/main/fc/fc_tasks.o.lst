@@ -1,0 +1,2166 @@
+   1              	 .syntax unified
+   2              	 .cpu cortex-m4
+   3              	 .eabi_attribute 27,3
+   4              	 .fpu fpv4-sp-d16
+   5              	 .eabi_attribute 20,1
+   6              	 .eabi_attribute 21,1
+   7              	 .eabi_attribute 23,3
+   8              	 .eabi_attribute 24,1
+   9              	 .eabi_attribute 25,1
+  10              	 .eabi_attribute 26,1
+  11              	 .eabi_attribute 30,6
+  12              	 .eabi_attribute 34,1
+  13              	 .eabi_attribute 18,4
+  14              	 .thumb
+  15              	 .file "fc_tasks.c"
+  16              	 .text
+  17              	.Ltext0:
+  18              	 .cfi_sections .debug_frame
+  19              	 .comm pCurrentDisplay,4,4
+  20              	 .section .text.constrain,"ax",%progbits
+  21              	 .align 2
+  22              	 .thumb
+  23              	 .thumb_func
+  25              	constrain:
+  26              	.LFB551:
+  27              	 .file 1 "D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/common/maths.h"
+   1:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/common\maths.h **** /*
+   2:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/common\maths.h ****  * This file is part of Cleanflight and Betaflight.
+   3:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/common\maths.h ****  *
+   4:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/common\maths.h ****  * Cleanflight and Betaflight are free software. You can redistribute
+   5:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/common\maths.h ****  * this software and/or modify this software under the terms of the
+   6:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/common\maths.h ****  * GNU General Public License as published by the Free Software
+   7:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/common\maths.h ****  * Foundation, either version 3 of the License, or (at your option)
+   8:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/common\maths.h ****  * any later version.
+   9:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/common\maths.h ****  *
+  10:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/common\maths.h ****  * Cleanflight and Betaflight are distributed in the hope that they
+  11:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/common\maths.h ****  * will be useful, but WITHOUT ANY WARRANTY; without even the implied
+  12:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/common\maths.h ****  * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+  13:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/common\maths.h ****  * See the GNU General Public License for more details.
+  14:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/common\maths.h ****  *
+  15:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/common\maths.h ****  * You should have received a copy of the GNU General Public License
+  16:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/common\maths.h ****  * along with this software.
+  17:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/common\maths.h ****  *
+  18:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/common\maths.h ****  * If not, see <http://www.gnu.org/licenses/>.
+  19:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/common\maths.h ****  */
+  20:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/common\maths.h **** 
+  21:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/common\maths.h **** #pragma once
+  22:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/common\maths.h **** 
+  23:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/common\maths.h **** #include <stdint.h>
+  24:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/common\maths.h **** 
+  25:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/common\maths.h **** #ifndef sq
+  26:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/common\maths.h **** #define sq(x) ((x)*(x))
+  27:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/common\maths.h **** #endif
+  28:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/common\maths.h **** #define power3(x) ((x)*(x)*(x))
+  29:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/common\maths.h **** 
+  30:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/common\maths.h **** // Undefine this for use libc sinf/cosf. Keep this defined to use fast sin/cos approximations
+  31:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/common\maths.h **** #define FAST_MATH             // order 9 approximation
+  32:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/common\maths.h **** #define VERY_FAST_MATH      // order 7 approximation
+  33:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/common\maths.h **** 
+  34:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/common\maths.h **** // Use floating point M_PI instead explicitly.
+  35:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/common\maths.h **** #define M_PIf       3.14159265358979323846f
+  36:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/common\maths.h **** 
+  37:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/common\maths.h **** #define RAD    (M_PIf / 180.0f)
+  38:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/common\maths.h **** #define DEGREES_TO_DECIDEGREES(angle) ((angle) * 10)
+  39:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/common\maths.h **** #define DECIDEGREES_TO_DEGREES(angle) ((angle) / 10)
+  40:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/common\maths.h **** #define DECIDEGREES_TO_RADIANS(angle) ((angle) / 10.0f * 0.0174532925f)
+  41:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/common\maths.h **** #define DEGREES_TO_RADIANS(angle) ((angle) * 0.0174532925f)
+  42:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/common\maths.h **** 
+  43:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/common\maths.h **** #define CM_S_TO_KM_H(centimetersPerSecond) ((centimetersPerSecond) * 36 / 1000)
+  44:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/common\maths.h **** #define CM_S_TO_MPH(centimetersPerSecond) ((centimetersPerSecond) * 10000 / 5080 / 88)
+  45:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/common\maths.h **** 
+  46:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/common\maths.h **** #define MIN(a,b) \
+  47:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/common\maths.h ****   __extension__ ({ __typeof__ (a) _a = (a); \
+  48:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/common\maths.h ****   __typeof__ (b) _b = (b); \
+  49:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/common\maths.h ****   _a < _b ? _a : _b; })
+  50:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/common\maths.h **** #define MAX(a,b) \
+  51:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/common\maths.h ****   __extension__ ({ __typeof__ (a) _a = (a); \
+  52:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/common\maths.h ****   __typeof__ (b) _b = (b); \
+  53:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/common\maths.h ****   _a > _b ? _a : _b; })
+  54:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/common\maths.h **** #define ABS(x) \
+  55:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/common\maths.h ****   __extension__ ({ __typeof__ (x) _x = (x); \
+  56:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/common\maths.h ****   _x > 0 ? _x : -_x; })
+  57:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/common\maths.h **** 
+  58:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/common\maths.h **** #define Q12 (1 << 12)
+  59:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/common\maths.h **** 
+  60:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/common\maths.h **** #define HZ_TO_INTERVAL_US(x) (1000000 / (x))
+  61:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/common\maths.h **** 
+  62:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/common\maths.h **** typedef int32_t fix12_t;
+  63:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/common\maths.h **** 
+  64:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/common\maths.h **** typedef struct stdev_s
+  65:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/common\maths.h **** {
+  66:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/common\maths.h ****     float m_oldM, m_newM, m_oldS, m_newS;
+  67:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/common\maths.h ****     int m_n;
+  68:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/common\maths.h **** } stdev_t;
+  69:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/common\maths.h **** 
+  70:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/common\maths.h **** // Floating point 3 vector.
+  71:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/common\maths.h **** typedef struct fp_vector {
+  72:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/common\maths.h ****     float X;
+  73:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/common\maths.h ****     float Y;
+  74:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/common\maths.h ****     float Z;
+  75:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/common\maths.h **** } t_fp_vector_def;
+  76:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/common\maths.h **** 
+  77:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/common\maths.h **** typedef union u_fp_vector {
+  78:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/common\maths.h ****     float A[3];
+  79:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/common\maths.h ****     t_fp_vector_def V;
+  80:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/common\maths.h **** } t_fp_vector;
+  81:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/common\maths.h **** 
+  82:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/common\maths.h **** // Floating point Euler angles.
+  83:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/common\maths.h **** // Be carefull, could be either of degrees or radians.
+  84:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/common\maths.h **** typedef struct fp_angles {
+  85:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/common\maths.h ****     float roll;
+  86:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/common\maths.h ****     float pitch;
+  87:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/common\maths.h ****     float yaw;
+  88:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/common\maths.h **** } fp_angles_def;
+  89:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/common\maths.h **** 
+  90:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/common\maths.h **** typedef union {
+  91:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/common\maths.h ****     float raw[3];
+  92:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/common\maths.h ****     fp_angles_def angles;
+  93:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/common\maths.h **** } fp_angles_t;
+  94:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/common\maths.h **** 
+  95:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/common\maths.h **** int gcd(int num, int denom);
+  96:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/common\maths.h **** float powerf(float base, int exp);
+  97:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/common\maths.h **** int32_t applyDeadband(int32_t value, int32_t deadband);
+  98:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/common\maths.h **** float fapplyDeadband(float value, float deadband);
+  99:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/common\maths.h **** 
+ 100:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/common\maths.h **** void devClear(stdev_t *dev);
+ 101:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/common\maths.h **** void devPush(stdev_t *dev, float x);
+ 102:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/common\maths.h **** float devVariance(stdev_t *dev);
+ 103:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/common\maths.h **** float devStandardDeviation(stdev_t *dev);
+ 104:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/common\maths.h **** float degreesToRadians(int16_t degrees);
+ 105:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/common\maths.h **** 
+ 106:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/common\maths.h **** int scaleRange(int x, int srcFrom, int srcTo, int destFrom, int destTo);
+ 107:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/common\maths.h **** float scaleRangef(float x, float srcFrom, float srcTo, float destFrom, float destTo);
+ 108:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/common\maths.h **** 
+ 109:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/common\maths.h **** void normalizeV(struct fp_vector *src, struct fp_vector *dest);
+ 110:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/common\maths.h **** 
+ 111:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/common\maths.h **** void rotateV(struct fp_vector *v, fp_angles_t *delta);
+ 112:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/common\maths.h **** void buildRotationMatrix(fp_angles_t *delta, float matrix[3][3]);
+ 113:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/common\maths.h **** 
+ 114:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/common\maths.h **** int32_t quickMedianFilter3(int32_t * v);
+ 115:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/common\maths.h **** int32_t quickMedianFilter5(int32_t * v);
+ 116:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/common\maths.h **** int32_t quickMedianFilter7(int32_t * v);
+ 117:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/common\maths.h **** int32_t quickMedianFilter9(int32_t * v);
+ 118:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/common\maths.h **** 
+ 119:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/common\maths.h **** float quickMedianFilter3f(float * v);
+ 120:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/common\maths.h **** float quickMedianFilter5f(float * v);
+ 121:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/common\maths.h **** float quickMedianFilter7f(float * v);
+ 122:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/common\maths.h **** float quickMedianFilter9f(float * v);
+ 123:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/common\maths.h **** 
+ 124:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/common\maths.h **** #if defined(FAST_MATH) || defined(VERY_FAST_MATH)
+ 125:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/common\maths.h **** float sin_approx(float x);
+ 126:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/common\maths.h **** float cos_approx(float x);
+ 127:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/common\maths.h **** float atan2_approx(float y, float x);
+ 128:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/common\maths.h **** float acos_approx(float x);
+ 129:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/common\maths.h **** #define tan_approx(x)       (sin_approx(x) / cos_approx(x))
+ 130:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/common\maths.h **** float exp_approx(float val);
+ 131:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/common\maths.h **** float log_approx(float val);
+ 132:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/common\maths.h **** float pow_approx(float a, float b);
+ 133:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/common\maths.h **** #else
+ 134:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/common\maths.h **** #define sin_approx(x)   sinf(x)
+ 135:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/common\maths.h **** #define cos_approx(x)   cosf(x)
+ 136:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/common\maths.h **** #define atan2_approx(y,x)   atan2f(y,x)
+ 137:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/common\maths.h **** #define acos_approx(x)      acosf(x)
+ 138:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/common\maths.h **** #define tan_approx(x)       tanf(x)
+ 139:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/common\maths.h **** #define exp_approx(x)       expf(x)
+ 140:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/common\maths.h **** #define log_approx(x)       logf(x)
+ 141:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/common\maths.h **** #define pow_approx(a, b)    powf(b, a)
+ 142:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/common\maths.h **** #endif
+ 143:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/common\maths.h **** 
+ 144:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/common\maths.h **** void arraySubInt32(int32_t *dest, int32_t *array1, int32_t *array2, int count);
+ 145:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/common\maths.h **** 
+ 146:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/common\maths.h **** int16_t qPercent(fix12_t q);
+ 147:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/common\maths.h **** int16_t qMultiply(fix12_t q, int16_t input);
+ 148:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/common\maths.h **** fix12_t qConstruct(int16_t num, int16_t den);
+ 149:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/common\maths.h **** 
+ 150:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/common\maths.h **** static inline int constrain(int amt, int low, int high)
+ 151:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/common\maths.h **** {
+  28              	 .loc 1 151 0
+  29              	 .cfi_startproc
+  30              	 
+  31              	 
+  32              	 
+  33 0000 80B4     	 push {r7}
+  34              	.LCFI0:
+  35              	 .cfi_def_cfa_offset 4
+  36              	 .cfi_offset 7,-4
+  37 0002 85B0     	 sub sp,sp,#20
+  38              	.LCFI1:
+  39              	 .cfi_def_cfa_offset 24
+  40 0004 00AF     	 add r7,sp,#0
+  41              	.LCFI2:
+  42              	 .cfi_def_cfa_register 7
+  43 0006 F860     	 str r0,[r7,#12]
+  44 0008 B960     	 str r1,[r7,#8]
+  45 000a 7A60     	 str r2,[r7,#4]
+ 152:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/common\maths.h ****     if (amt < low)
+  46              	 .loc 1 152 0
+  47 000c FA68     	 ldr r2,[r7,#12]
+  48 000e BB68     	 ldr r3,[r7,#8]
+  49 0010 9A42     	 cmp r2,r3
+  50 0012 01DA     	 bge .L2
+ 153:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/common\maths.h ****         return low;
+  51              	 .loc 1 153 0
+  52 0014 BB68     	 ldr r3,[r7,#8]
+  53 0016 06E0     	 b .L3
+  54              	.L2:
+ 154:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/common\maths.h ****     else if (amt > high)
+  55              	 .loc 1 154 0
+  56 0018 FA68     	 ldr r2,[r7,#12]
+  57 001a 7B68     	 ldr r3,[r7,#4]
+  58 001c 9A42     	 cmp r2,r3
+  59 001e 01DD     	 ble .L4
+ 155:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/common\maths.h ****         return high;
+  60              	 .loc 1 155 0
+  61 0020 7B68     	 ldr r3,[r7,#4]
+  62 0022 00E0     	 b .L3
+  63              	.L4:
+ 156:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/common\maths.h ****     else
+ 157:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/common\maths.h ****         return amt;
+  64              	 .loc 1 157 0
+  65 0024 FB68     	 ldr r3,[r7,#12]
+  66              	.L3:
+ 158:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/common\maths.h **** }
+  67              	 .loc 1 158 0
+  68 0026 1846     	 mov r0,r3
+  69 0028 1437     	 adds r7,r7,#20
+  70              	.LCFI3:
+  71              	 .cfi_def_cfa_offset 4
+  72 002a BD46     	 mov sp,r7
+  73              	.LCFI4:
+  74              	 .cfi_def_cfa_register 13
+  75              	 
+  76 002c 5DF8047B 	 ldr r7,[sp],#4
+  77              	.LCFI5:
+  78              	 .cfi_restore 7
+  79              	 .cfi_def_cfa_offset 0
+  80 0030 7047     	 bx lr
+  81              	 .cfi_endproc
+  82              	.LFE551:
+  84              	 .comm colors,4,4
+  85              	 .comm modeColors,4,4
+  86              	 .comm specialColors,11,4
+  87 0032 00BF     	 .section .text.serialConfig,"ax",%progbits
+  88              	 .align 2
+  89              	 .thumb
+  90              	 .thumb_func
+  92              	serialConfig:
+  93              	.LFB588:
+  94              	 .file 2 "D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/io/serial.h"
+   1:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/io\serial.h **** /*
+   2:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/io\serial.h ****  * This file is part of Cleanflight and Betaflight.
+   3:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/io\serial.h ****  *
+   4:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/io\serial.h ****  * Cleanflight and Betaflight are free software. You can redistribute
+   5:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/io\serial.h ****  * this software and/or modify this software under the terms of the
+   6:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/io\serial.h ****  * GNU General Public License as published by the Free Software
+   7:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/io\serial.h ****  * Foundation, either version 3 of the License, or (at your option)
+   8:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/io\serial.h ****  * any later version.
+   9:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/io\serial.h ****  *
+  10:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/io\serial.h ****  * Cleanflight and Betaflight are distributed in the hope that they
+  11:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/io\serial.h ****  * will be useful, but WITHOUT ANY WARRANTY; without even the implied
+  12:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/io\serial.h ****  * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+  13:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/io\serial.h ****  * See the GNU General Public License for more details.
+  14:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/io\serial.h ****  *
+  15:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/io\serial.h ****  * You should have received a copy of the GNU General Public License
+  16:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/io\serial.h ****  * along with this software.
+  17:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/io\serial.h ****  *
+  18:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/io\serial.h ****  * If not, see <http://www.gnu.org/licenses/>.
+  19:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/io\serial.h ****  */
+  20:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/io\serial.h **** 
+  21:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/io\serial.h **** #pragma once
+  22:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/io\serial.h **** 
+  23:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/io\serial.h **** #include <stdint.h>
+  24:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/io\serial.h **** #include <stdbool.h>
+  25:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/io\serial.h **** 
+  26:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/io\serial.h **** #include "pg/pg.h"
+  27:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/io\serial.h **** #include "drivers/serial.h"
+  28:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/io\serial.h **** 
+  29:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/io\serial.h **** typedef enum {
+  30:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/io\serial.h ****     PORTSHARING_UNUSED = 0,
+  31:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/io\serial.h ****     PORTSHARING_NOT_SHARED,
+  32:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/io\serial.h ****     PORTSHARING_SHARED
+  33:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/io\serial.h **** } portSharing_e;
+  34:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/io\serial.h **** 
+  35:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/io\serial.h **** typedef enum {
+  36:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/io\serial.h ****     FUNCTION_NONE                = 0,
+  37:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/io\serial.h ****     FUNCTION_MSP                 = (1 << 0),  // 1
+  38:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/io\serial.h ****     FUNCTION_GPS                 = (1 << 1),  // 2
+  39:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/io\serial.h ****     FUNCTION_TELEMETRY_FRSKY_HUB = (1 << 2),  // 4
+  40:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/io\serial.h ****     FUNCTION_TELEMETRY_HOTT      = (1 << 3),  // 8
+  41:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/io\serial.h ****     FUNCTION_TELEMETRY_LTM       = (1 << 4),  // 16
+  42:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/io\serial.h ****     FUNCTION_TELEMETRY_SMARTPORT = (1 << 5),  // 32
+  43:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/io\serial.h ****     FUNCTION_RX_SERIAL           = (1 << 6),  // 64
+  44:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/io\serial.h ****     FUNCTION_BLACKBOX            = (1 << 7),  // 128
+  45:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/io\serial.h ****     FUNCTION_TELEMETRY_MAVLINK   = (1 << 9),  // 512
+  46:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/io\serial.h ****     FUNCTION_ESC_SENSOR          = (1 << 10), // 1024
+  47:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/io\serial.h ****     FUNCTION_VTX_SMARTAUDIO      = (1 << 11), // 2048
+  48:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/io\serial.h ****     FUNCTION_TELEMETRY_IBUS      = (1 << 12), // 4096
+  49:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/io\serial.h ****     FUNCTION_VTX_TRAMP           = (1 << 13), // 8192
+  50:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/io\serial.h ****     FUNCTION_RCDEVICE            = (1 << 14), // 16384
+  51:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/io\serial.h ****     FUNCTION_LIDAR_TF            = (1 << 15), // 32768
+  52:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/io\serial.h **** } serialPortFunction_e;
+  53:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/io\serial.h **** 
+  54:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/io\serial.h **** #define TELEMETRY_SHAREABLE_PORT_FUNCTIONS_MASK (FUNCTION_TELEMETRY_FRSKY_HUB | FUNCTION_TELEMETRY_
+  55:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/io\serial.h **** #define TELEMETRY_PORT_FUNCTIONS_MASK (TELEMETRY_SHAREABLE_PORT_FUNCTIONS_MASK | FUNCTION_TELEMETRY
+  56:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/io\serial.h **** 
+  57:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/io\serial.h **** typedef enum {
+  58:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/io\serial.h ****     BAUD_AUTO = 0,
+  59:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/io\serial.h ****     BAUD_9600,
+  60:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/io\serial.h ****     BAUD_19200,
+  61:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/io\serial.h ****     BAUD_38400,
+  62:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/io\serial.h ****     BAUD_57600,
+  63:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/io\serial.h ****     BAUD_115200,
+  64:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/io\serial.h ****     BAUD_230400,
+  65:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/io\serial.h ****     BAUD_250000,
+  66:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/io\serial.h ****     BAUD_400000,
+  67:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/io\serial.h ****     BAUD_460800,
+  68:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/io\serial.h ****     BAUD_500000,
+  69:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/io\serial.h ****     BAUD_921600,
+  70:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/io\serial.h ****     BAUD_1000000,
+  71:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/io\serial.h ****     BAUD_1500000,
+  72:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/io\serial.h ****     BAUD_2000000,
+  73:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/io\serial.h ****     BAUD_2470000
+  74:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/io\serial.h **** } baudRate_e;
+  75:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/io\serial.h **** 
+  76:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/io\serial.h **** extern const uint32_t baudRates[];
+  77:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/io\serial.h **** 
+  78:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/io\serial.h **** // serial port identifiers are now fixed, these values are used by MSP commands.
+  79:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/io\serial.h **** typedef enum {
+  80:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/io\serial.h ****     SERIAL_PORT_NONE = -1,
+  81:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/io\serial.h ****     SERIAL_PORT_USART1 = 0,
+  82:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/io\serial.h ****     SERIAL_PORT_USART2,
+  83:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/io\serial.h ****     SERIAL_PORT_USART3,
+  84:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/io\serial.h ****     SERIAL_PORT_UART4,
+  85:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/io\serial.h ****     SERIAL_PORT_UART5,
+  86:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/io\serial.h ****     SERIAL_PORT_USART6,
+  87:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/io\serial.h ****     SERIAL_PORT_USART7,
+  88:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/io\serial.h ****     SERIAL_PORT_USART8,
+  89:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/io\serial.h ****     SERIAL_PORT_USB_VCP = 20,
+  90:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/io\serial.h ****     SERIAL_PORT_SOFTSERIAL1 = 30,
+  91:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/io\serial.h ****     SERIAL_PORT_SOFTSERIAL2,
+  92:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/io\serial.h **** 	SERIAL_PORT_SPIS1 = 40,
+  93:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/io\serial.h **** 	SERIAL_PORT_SPIS2,
+  94:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/io\serial.h **** 	SERIAL_PORT_SPIS3,
+  95:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/io\serial.h **** 	SERIAL_PORT_SPIS4,
+  96:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/io\serial.h **** 	SERIAL_PORT_SPIS5,
+  97:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/io\serial.h **** 	SERIAL_PORT_SPIS6,
+  98:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/io\serial.h **** } serialPortIdentifier_e;
+  99:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/io\serial.h **** 
+ 100:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/io\serial.h **** extern const serialPortIdentifier_e serialPortIdentifiers[SERIAL_PORT_COUNT];
+ 101:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/io\serial.h **** 
+ 102:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/io\serial.h **** #define SERIAL_PORT_IDENTIFIER_TO_INDEX(x) (((x) <= SERIAL_PORT_USART8) ? (x) : (RESOURCE_SOFT_OFFS
+ 103:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/io\serial.h **** 
+ 104:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/io\serial.h **** #define SERIAL_PORT_IDENTIFIER_TO_UARTDEV(x) ((x) - SERIAL_PORT_USART1 + UARTDEV_1)
+ 105:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/io\serial.h **** 
+ 106:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/io\serial.h **** //
+ 107:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/io\serial.h **** // runtime
+ 108:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/io\serial.h **** //
+ 109:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/io\serial.h **** typedef struct serialPortUsage_s {
+ 110:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/io\serial.h ****     serialPort_t *serialPort;
+ 111:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/io\serial.h ****     serialPortFunction_e function;
+ 112:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/io\serial.h ****     serialPortIdentifier_e identifier;
+ 113:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/io\serial.h **** } serialPortUsage_t;
+ 114:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/io\serial.h **** 
+ 115:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/io\serial.h **** serialPort_t *findSharedSerialPort(uint16_t functionMask, serialPortFunction_e sharedWithFunction);
+ 116:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/io\serial.h **** 
+ 117:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/io\serial.h **** //
+ 118:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/io\serial.h **** // configuration
+ 119:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/io\serial.h **** //
+ 120:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/io\serial.h **** typedef struct serialPortConfig_s {
+ 121:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/io\serial.h ****     uint16_t functionMask;
+ 122:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/io\serial.h ****     serialPortIdentifier_e identifier;
+ 123:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/io\serial.h ****     uint8_t msp_baudrateIndex;
+ 124:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/io\serial.h ****     uint8_t gps_baudrateIndex;
+ 125:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/io\serial.h ****     uint8_t blackbox_baudrateIndex;
+ 126:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/io\serial.h ****     uint8_t telemetry_baudrateIndex; // not used for all telemetry systems, e.g. HoTT only works at
+ 127:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/io\serial.h **** } serialPortConfig_t;
+ 128:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/io\serial.h **** 
+ 129:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/io\serial.h **** typedef struct serialConfig_s {
+ 130:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/io\serial.h ****     serialPortConfig_t portConfigs[SERIAL_PORT_COUNT];
+ 131:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/io\serial.h ****     uint16_t serial_update_rate_hz;
+ 132:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/io\serial.h ****     uint8_t reboot_character;               // which byte is used to reboot. Default 'R', could be 
+ 133:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/io\serial.h **** } serialConfig_t;
+ 134:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/io\serial.h **** 
+ 135:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/io\serial.h **** PG_DECLARE(serialConfig_t, serialConfig);
+  95              	 .loc 2 135 0
+  96              	 .cfi_startproc
+  97              	 
+  98              	 
+  99              	 
+ 100 0000 80B4     	 push {r7}
+ 101              	.LCFI6:
+ 102              	 .cfi_def_cfa_offset 4
+ 103              	 .cfi_offset 7,-4
+ 104 0002 00AF     	 add r7,sp,#0
+ 105              	.LCFI7:
+ 106              	 .cfi_def_cfa_register 7
+ 107              	 .loc 2 135 0
+ 108 0004 024B     	 ldr r3,.L7
+ 109 0006 1846     	 mov r0,r3
+ 110 0008 BD46     	 mov sp,r7
+ 111              	.LCFI8:
+ 112              	 .cfi_def_cfa_register 13
+ 113              	 
+ 114 000a 5DF8047B 	 ldr r7,[sp],#4
+ 115              	.LCFI9:
+ 116              	 .cfi_restore 7
+ 117              	 .cfi_def_cfa_offset 0
+ 118 000e 7047     	 bx lr
+ 119              	.L8:
+ 120              	 .align 2
+ 121              	.L7:
+ 122 0010 00000000 	 .word serialConfig_System
+ 123              	 .cfi_endproc
+ 124              	.LFE588:
+ 126              	 .comm switchStates,3,4
+ 127              	 .section .text.accelerometerConfigMutable,"ax",%progbits
+ 128              	 .align 2
+ 129              	 .thumb
+ 130              	 .thumb_func
+ 132              	accelerometerConfigMutable:
+ 133              	.LFB603:
+ 134              	 .file 3 "D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/sensors/acceleration.h"
+   1:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/sensors\acceleration.h **** /*
+   2:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/sensors\acceleration.h ****  * This file is part of Cleanflight and Betaflight.
+   3:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/sensors\acceleration.h ****  *
+   4:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/sensors\acceleration.h ****  * Cleanflight and Betaflight are free software. You can redistribute
+   5:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/sensors\acceleration.h ****  * this software and/or modify this software under the terms of the
+   6:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/sensors\acceleration.h ****  * GNU General Public License as published by the Free Software
+   7:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/sensors\acceleration.h ****  * Foundation, either version 3 of the License, or (at your option)
+   8:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/sensors\acceleration.h ****  * any later version.
+   9:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/sensors\acceleration.h ****  *
+  10:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/sensors\acceleration.h ****  * Cleanflight and Betaflight are distributed in the hope that they
+  11:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/sensors\acceleration.h ****  * will be useful, but WITHOUT ANY WARRANTY; without even the implied
+  12:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/sensors\acceleration.h ****  * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+  13:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/sensors\acceleration.h ****  * See the GNU General Public License for more details.
+  14:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/sensors\acceleration.h ****  *
+  15:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/sensors\acceleration.h ****  * You should have received a copy of the GNU General Public License
+  16:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/sensors\acceleration.h ****  * along with this software.
+  17:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/sensors\acceleration.h ****  *
+  18:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/sensors\acceleration.h ****  * If not, see <http://www.gnu.org/licenses/>.
+  19:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/sensors\acceleration.h ****  */
+  20:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/sensors\acceleration.h **** 
+  21:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/sensors\acceleration.h **** #pragma once
+  22:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/sensors\acceleration.h **** 
+  23:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/sensors\acceleration.h **** #include "common/time.h"
+  24:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/sensors\acceleration.h **** #include "pg/pg.h"
+  25:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/sensors\acceleration.h **** #include "drivers/accgyro/accgyro.h"
+  26:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/sensors\acceleration.h **** #include "sensors/sensors.h"
+  27:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/sensors\acceleration.h **** 
+  28:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/sensors\acceleration.h **** // Type of accelerometer used/detected
+  29:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/sensors\acceleration.h **** typedef enum {
+  30:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/sensors\acceleration.h ****     ACC_DEFAULT,
+  31:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/sensors\acceleration.h ****     ACC_NONE,
+  32:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/sensors\acceleration.h ****     ACC_ADXL345,
+  33:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/sensors\acceleration.h ****     ACC_MPU6050,
+  34:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/sensors\acceleration.h ****     ACC_MMA8452,
+  35:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/sensors\acceleration.h ****     ACC_BMA280,
+  36:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/sensors\acceleration.h ****     ACC_LSM303DLHC,
+  37:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/sensors\acceleration.h ****     ACC_MPU6000,
+  38:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/sensors\acceleration.h ****     ACC_MPU6500,
+  39:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/sensors\acceleration.h ****     ACC_MPU9250,
+  40:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/sensors\acceleration.h ****     ACC_ICM20601,
+  41:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/sensors\acceleration.h ****     ACC_ICM20602,
+  42:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/sensors\acceleration.h ****     ACC_ICM20608G,
+  43:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/sensors\acceleration.h ****     ACC_ICM20649,
+  44:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/sensors\acceleration.h ****     ACC_ICM20689,
+  45:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/sensors\acceleration.h ****     ACC_BMI160,
+  46:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/sensors\acceleration.h ****     ACC_FAKE
+  47:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/sensors\acceleration.h **** } accelerationSensor_e;
+  48:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/sensors\acceleration.h **** 
+  49:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/sensors\acceleration.h **** typedef struct acc_s {
+  50:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/sensors\acceleration.h ****     accDev_t dev;
+  51:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/sensors\acceleration.h ****     uint32_t accSamplingInterval;
+  52:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/sensors\acceleration.h ****     float accADC[XYZ_AXIS_COUNT];
+  53:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/sensors\acceleration.h ****     bool isAccelUpdatedAtLeastOnce;
+  54:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/sensors\acceleration.h **** } acc_t;
+  55:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/sensors\acceleration.h **** 
+  56:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/sensors\acceleration.h **** extern acc_t acc;
+  57:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/sensors\acceleration.h **** 
+  58:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/sensors\acceleration.h **** typedef struct rollAndPitchTrims_s {
+  59:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/sensors\acceleration.h ****     int16_t roll;
+  60:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/sensors\acceleration.h ****     int16_t pitch;
+  61:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/sensors\acceleration.h **** } rollAndPitchTrims_t_def;
+  62:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/sensors\acceleration.h **** 
+  63:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/sensors\acceleration.h **** typedef union rollAndPitchTrims_u {
+  64:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/sensors\acceleration.h ****     int16_t raw[2];
+  65:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/sensors\acceleration.h ****     rollAndPitchTrims_t_def values;
+  66:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/sensors\acceleration.h **** } rollAndPitchTrims_t;
+  67:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/sensors\acceleration.h **** 
+  68:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/sensors\acceleration.h **** 
+  69:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/sensors\acceleration.h **** typedef struct accelerometerConfig_s {
+  70:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/sensors\acceleration.h ****     uint16_t acc_lpf_hz;                    // cutoff frequency for the low pass filter used on the
+  71:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/sensors\acceleration.h ****     sensor_align_e acc_align;               // acc alignment
+  72:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/sensors\acceleration.h ****     uint8_t acc_hardware;                   // Which acc hardware to use on boards with more than o
+  73:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/sensors\acceleration.h ****     bool acc_high_fsr;
+  74:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/sensors\acceleration.h ****     flightDynamicsTrims_t accZero;
+  75:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/sensors\acceleration.h ****     rollAndPitchTrims_t accelerometerTrims;
+  76:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/sensors\acceleration.h **** } accelerometerConfig_t;
+  77:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/sensors\acceleration.h **** 
+  78:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/sensors\acceleration.h **** PG_DECLARE(accelerometerConfig_t, accelerometerConfig);
+ 135              	 .loc 3 78 0
+ 136              	 .cfi_startproc
+ 137              	 
+ 138              	 
+ 139              	 
+ 140 0000 80B4     	 push {r7}
+ 141              	.LCFI10:
+ 142              	 .cfi_def_cfa_offset 4
+ 143              	 .cfi_offset 7,-4
+ 144 0002 00AF     	 add r7,sp,#0
+ 145              	.LCFI11:
+ 146              	 .cfi_def_cfa_register 7
+ 147              	 .loc 3 78 0
+ 148 0004 024B     	 ldr r3,.L11
+ 149 0006 1846     	 mov r0,r3
+ 150 0008 BD46     	 mov sp,r7
+ 151              	.LCFI12:
+ 152              	 .cfi_def_cfa_register 13
+ 153              	 
+ 154 000a 5DF8047B 	 ldr r7,[sp],#4
+ 155              	.LCFI13:
+ 156              	 .cfi_restore 7
+ 157              	 .cfi_def_cfa_offset 0
+ 158 000e 7047     	 bx lr
+ 159              	.L12:
+ 160              	 .align 2
+ 161              	.L11:
+ 162 0010 00000000 	 .word accelerometerConfig_System
+ 163              	 .cfi_endproc
+ 164              	.LFE603:
+ 166              	 .section .text.batteryConfig,"ax",%progbits
+ 167              	 .align 2
+ 168              	 .thumb
+ 169              	 .thumb_func
+ 171              	batteryConfig:
+ 172              	.LFB613:
+ 173              	 .file 4 "D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/sensors/battery.h"
+   1:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/sensors\battery.h **** /*
+   2:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/sensors\battery.h ****  * This file is part of Cleanflight and Betaflight.
+   3:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/sensors\battery.h ****  *
+   4:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/sensors\battery.h ****  * Cleanflight and Betaflight are free software. You can redistribute
+   5:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/sensors\battery.h ****  * this software and/or modify this software under the terms of the
+   6:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/sensors\battery.h ****  * GNU General Public License as published by the Free Software
+   7:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/sensors\battery.h ****  * Foundation, either version 3 of the License, or (at your option)
+   8:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/sensors\battery.h ****  * any later version.
+   9:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/sensors\battery.h ****  *
+  10:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/sensors\battery.h ****  * Cleanflight and Betaflight are distributed in the hope that they
+  11:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/sensors\battery.h ****  * will be useful, but WITHOUT ANY WARRANTY; without even the implied
+  12:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/sensors\battery.h ****  * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+  13:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/sensors\battery.h ****  * See the GNU General Public License for more details.
+  14:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/sensors\battery.h ****  *
+  15:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/sensors\battery.h ****  * You should have received a copy of the GNU General Public License
+  16:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/sensors\battery.h ****  * along with this software.
+  17:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/sensors\battery.h ****  *
+  18:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/sensors\battery.h ****  * If not, see <http://www.gnu.org/licenses/>.
+  19:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/sensors\battery.h ****  */
+  20:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/sensors\battery.h **** 
+  21:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/sensors\battery.h **** #pragma once
+  22:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/sensors\battery.h **** 
+  23:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/sensors\battery.h **** #include "pg/pg.h"
+  24:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/sensors\battery.h **** 
+  25:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/sensors\battery.h **** #include "common/filter.h"
+  26:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/sensors\battery.h **** #include "common/time.h"
+  27:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/sensors\battery.h **** #include "sensors/current.h"
+  28:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/sensors\battery.h **** #include "sensors/voltage.h"
+  29:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/sensors\battery.h **** 
+  30:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/sensors\battery.h **** typedef struct batteryConfig_s {
+  31:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/sensors\battery.h ****     // voltage
+  32:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/sensors\battery.h ****     uint8_t vbatmaxcellvoltage;             // maximum voltage per cell, used for auto-detecting ba
+  33:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/sensors\battery.h ****     uint8_t vbatmincellvoltage;             // minimum voltage per cell, this triggers battery crit
+  34:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/sensors\battery.h ****     uint8_t vbatwarningcellvoltage;         // warning voltage per cell, this triggers battery warn
+  35:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/sensors\battery.h ****     uint8_t vbatnotpresentcellvoltage;      // Between vbatmaxcellvoltage and 2*this is considered 
+  36:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/sensors\battery.h ****     uint8_t lvcPercentage;                  // Percentage of throttle when lvc is triggered
+  37:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/sensors\battery.h ****     voltageMeterSource_e voltageMeterSource; // source of battery voltage meter used, either ADC or
+  38:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/sensors\battery.h **** 
+  39:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/sensors\battery.h ****     // current
+  40:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/sensors\battery.h ****     currentMeterSource_e currentMeterSource; // source of battery current meter used, either ADC, V
+  41:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/sensors\battery.h ****     uint16_t batteryCapacity;               // mAh
+  42:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/sensors\battery.h **** 
+  43:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/sensors\battery.h ****     // warnings / alerts
+  44:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/sensors\battery.h ****     bool useVBatAlerts;                     // Issue alerts based on VBat readings
+  45:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/sensors\battery.h ****     bool useConsumptionAlerts;              // Issue alerts based on total power consumption
+  46:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/sensors\battery.h ****     uint8_t consumptionWarningPercentage;   // Percentage of remaining capacity that should trigger
+  47:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/sensors\battery.h ****     uint8_t vbathysteresis;                 // hysteresis for alarm, default 1 = 0.1V
+  48:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/sensors\battery.h **** 
+  49:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/sensors\battery.h ****     uint8_t vbatfullcellvoltage;            // Cell voltage at which the battery is deemed to be "f
+  50:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/sensors\battery.h **** 
+  51:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/sensors\battery.h **** } batteryConfig_t;
+  52:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/sensors\battery.h **** 
+  53:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/sensors\battery.h **** typedef struct lowVoltageCutoff_s {
+  54:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/sensors\battery.h ****     bool enabled;
+  55:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/sensors\battery.h ****     uint8_t percentage;
+  56:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/sensors\battery.h ****     timeUs_t startTime;
+  57:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/sensors\battery.h **** } lowVoltageCutoff_t;
+  58:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/sensors\battery.h **** 
+  59:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/sensors\battery.h **** PG_DECLARE(batteryConfig_t, batteryConfig);
+ 174              	 .loc 4 59 0
+ 175              	 .cfi_startproc
+ 176              	 
+ 177              	 
+ 178              	 
+ 179 0000 80B4     	 push {r7}
+ 180              	.LCFI14:
+ 181              	 .cfi_def_cfa_offset 4
+ 182              	 .cfi_offset 7,-4
+ 183 0002 00AF     	 add r7,sp,#0
+ 184              	.LCFI15:
+ 185              	 .cfi_def_cfa_register 7
+ 186              	 .loc 4 59 0
+ 187 0004 024B     	 ldr r3,.L15
+ 188 0006 1846     	 mov r0,r3
+ 189 0008 BD46     	 mov sp,r7
+ 190              	.LCFI16:
+ 191              	 .cfi_def_cfa_register 13
+ 192              	 
+ 193 000a 5DF8047B 	 ldr r7,[sp],#4
+ 194              	.LCFI17:
+ 195              	 .cfi_restore 7
+ 196              	 .cfi_def_cfa_offset 0
+ 197 000e 7047     	 bx lr
+ 198              	.L16:
+ 199              	 .align 2
+ 200              	.L15:
+ 201 0010 00000000 	 .word batteryConfig_System
+ 202              	 .cfi_endproc
+ 203              	.LFE613:
+ 205              	 .section .text.taskMain,"ax",%progbits
+ 206              	 .align 2
+ 207              	 .thumb
+ 208              	 .thumb_func
+ 210              	taskMain:
+ 211              	.LFB623:
+ 212              	 .file 5 "../cleanflight/src/main/fc/fc_tasks.c"
+   1:../cleanflight/src/main/fc/fc_tasks.c **** /*
+   2:../cleanflight/src/main/fc/fc_tasks.c ****  * This file is part of Cleanflight and Betaflight.
+   3:../cleanflight/src/main/fc/fc_tasks.c ****  *
+   4:../cleanflight/src/main/fc/fc_tasks.c ****  * Cleanflight and Betaflight are free software. You can redistribute
+   5:../cleanflight/src/main/fc/fc_tasks.c ****  * this software and/or modify this software under the terms of the
+   6:../cleanflight/src/main/fc/fc_tasks.c ****  * GNU General Public License as published by the Free Software
+   7:../cleanflight/src/main/fc/fc_tasks.c ****  * Foundation, either version 3 of the License, or (at your option)
+   8:../cleanflight/src/main/fc/fc_tasks.c ****  * any later version.
+   9:../cleanflight/src/main/fc/fc_tasks.c ****  *
+  10:../cleanflight/src/main/fc/fc_tasks.c ****  * Cleanflight and Betaflight are distributed in the hope that they
+  11:../cleanflight/src/main/fc/fc_tasks.c ****  * will be useful, but WITHOUT ANY WARRANTY; without even the implied
+  12:../cleanflight/src/main/fc/fc_tasks.c ****  * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+  13:../cleanflight/src/main/fc/fc_tasks.c ****  * See the GNU General Public License for more details.
+  14:../cleanflight/src/main/fc/fc_tasks.c ****  *
+  15:../cleanflight/src/main/fc/fc_tasks.c ****  * You should have received a copy of the GNU General Public License
+  16:../cleanflight/src/main/fc/fc_tasks.c ****  * along with this software.
+  17:../cleanflight/src/main/fc/fc_tasks.c ****  *
+  18:../cleanflight/src/main/fc/fc_tasks.c ****  * If not, see <http://www.gnu.org/licenses/>.
+  19:../cleanflight/src/main/fc/fc_tasks.c ****  */
+  20:../cleanflight/src/main/fc/fc_tasks.c **** 
+  21:../cleanflight/src/main/fc/fc_tasks.c **** #include <stdbool.h>
+  22:../cleanflight/src/main/fc/fc_tasks.c **** #include <stdlib.h>
+  23:../cleanflight/src/main/fc/fc_tasks.c **** #include <stdint.h>
+  24:../cleanflight/src/main/fc/fc_tasks.c **** 
+  25:../cleanflight/src/main/fc/fc_tasks.c **** #include "platform.h"
+  26:../cleanflight/src/main/fc/fc_tasks.c **** 
+  27:../cleanflight/src/main/fc/fc_tasks.c **** #include "build/debug.h"
+  28:../cleanflight/src/main/fc/fc_tasks.c **** 
+  29:../cleanflight/src/main/fc/fc_tasks.c **** #include "cms/cms.h"
+  30:../cleanflight/src/main/fc/fc_tasks.c **** 
+  31:../cleanflight/src/main/fc/fc_tasks.c **** #include "common/color.h"
+  32:../cleanflight/src/main/fc/fc_tasks.c **** #include "common/utils.h"
+  33:../cleanflight/src/main/fc/fc_tasks.c **** 
+  34:../cleanflight/src/main/fc/fc_tasks.c **** #include "config/feature.h"
+  35:../cleanflight/src/main/fc/fc_tasks.c **** 
+  36:../cleanflight/src/main/fc/fc_tasks.c **** #include "drivers/accgyro/accgyro.h"
+  37:../cleanflight/src/main/fc/fc_tasks.c **** #include "drivers/camera_control.h"
+  38:../cleanflight/src/main/fc/fc_tasks.c **** #include "drivers/compass/compass.h"
+  39:../cleanflight/src/main/fc/fc_tasks.c **** #include "drivers/sensor.h"
+  40:../cleanflight/src/main/fc/fc_tasks.c **** #include "drivers/serial.h"
+  41:../cleanflight/src/main/fc/fc_tasks.c **** #include "drivers/serial_usb_vcp.h"
+  42:../cleanflight/src/main/fc/fc_tasks.c **** #include "drivers/stack_check.h"
+  43:../cleanflight/src/main/fc/fc_tasks.c **** #include "drivers/transponder_ir.h"
+  44:../cleanflight/src/main/fc/fc_tasks.c **** #include "drivers/usb_io.h"
+  45:../cleanflight/src/main/fc/fc_tasks.c **** #include "drivers/vtx_common.h"
+  46:../cleanflight/src/main/fc/fc_tasks.c **** 
+  47:../cleanflight/src/main/fc/fc_tasks.c **** #include "fc/config.h"
+  48:../cleanflight/src/main/fc/fc_tasks.c **** #include "fc/fc_core.h"
+  49:../cleanflight/src/main/fc/fc_tasks.c **** #include "fc/fc_rc.h"
+  50:../cleanflight/src/main/fc/fc_tasks.c **** #include "fc/fc_dispatch.h"
+  51:../cleanflight/src/main/fc/fc_tasks.c **** #include "fc/rc_controls.h"
+  52:../cleanflight/src/main/fc/fc_tasks.c **** #include "fc/runtime_config.h"
+  53:../cleanflight/src/main/fc/fc_tasks.c **** 
+  54:../cleanflight/src/main/fc/fc_tasks.c **** #include "flight/position.h"
+  55:../cleanflight/src/main/fc/fc_tasks.c **** #include "flight/imu.h"
+  56:../cleanflight/src/main/fc/fc_tasks.c **** #include "flight/mixer.h"
+  57:../cleanflight/src/main/fc/fc_tasks.c **** #include "flight/pid.h"
+  58:../cleanflight/src/main/fc/fc_tasks.c **** 
+  59:../cleanflight/src/main/fc/fc_tasks.c **** #include "interface/cli.h"
+  60:../cleanflight/src/main/fc/fc_tasks.c **** #include "interface/msp.h"
+  61:../cleanflight/src/main/fc/fc_tasks.c **** 
+  62:../cleanflight/src/main/fc/fc_tasks.c **** #include "io/asyncfatfs/asyncfatfs.h"
+  63:../cleanflight/src/main/fc/fc_tasks.c **** #include "io/beeper.h"
+  64:../cleanflight/src/main/fc/fc_tasks.c **** #include "io/dashboard.h"
+  65:../cleanflight/src/main/fc/fc_tasks.c **** #include "io/gps.h"
+  66:../cleanflight/src/main/fc/fc_tasks.c **** #include "io/ledstrip.h"
+  67:../cleanflight/src/main/fc/fc_tasks.c **** #include "io/osd.h"
+  68:../cleanflight/src/main/fc/fc_tasks.c **** #include "io/osd_slave.h"
+  69:../cleanflight/src/main/fc/fc_tasks.c **** #include "io/piniobox.h"
+  70:../cleanflight/src/main/fc/fc_tasks.c **** #include "io/serial.h"
+  71:../cleanflight/src/main/fc/fc_tasks.c **** #include "io/transponder_ir.h"
+  72:../cleanflight/src/main/fc/fc_tasks.c **** #include "io/vtx_tramp.h" // Will be gone
+  73:../cleanflight/src/main/fc/fc_tasks.c **** #include "io/rcdevice_cam.h"
+  74:../cleanflight/src/main/fc/fc_tasks.c **** #include "io/usb_cdc_hid.h"
+  75:../cleanflight/src/main/fc/fc_tasks.c **** #include "io/vtx.h"
+  76:../cleanflight/src/main/fc/fc_tasks.c **** 
+  77:../cleanflight/src/main/fc/fc_tasks.c **** #include "msp/msp_serial.h"
+  78:../cleanflight/src/main/fc/fc_tasks.c **** 
+  79:../cleanflight/src/main/fc/fc_tasks.c **** #include "pg/rx.h"
+  80:../cleanflight/src/main/fc/fc_tasks.c **** 
+  81:../cleanflight/src/main/fc/fc_tasks.c **** #include "rx/rx.h"
+  82:../cleanflight/src/main/fc/fc_tasks.c **** 
+  83:../cleanflight/src/main/fc/fc_tasks.c **** #include "sensors/acceleration.h"
+  84:../cleanflight/src/main/fc/fc_tasks.c **** #include "sensors/adcinternal.h"
+  85:../cleanflight/src/main/fc/fc_tasks.c **** #include "sensors/barometer.h"
+  86:../cleanflight/src/main/fc/fc_tasks.c **** #include "sensors/battery.h"
+  87:../cleanflight/src/main/fc/fc_tasks.c **** #include "sensors/compass.h"
+  88:../cleanflight/src/main/fc/fc_tasks.c **** #include "sensors/esc_sensor.h"
+  89:../cleanflight/src/main/fc/fc_tasks.c **** #include "sensors/gyro.h"
+  90:../cleanflight/src/main/fc/fc_tasks.c **** #include "sensors/sensors.h"
+  91:../cleanflight/src/main/fc/fc_tasks.c **** #include "sensors/rangefinder.h"
+  92:../cleanflight/src/main/fc/fc_tasks.c **** 
+  93:../cleanflight/src/main/fc/fc_tasks.c **** #include "scheduler/scheduler.h"
+  94:../cleanflight/src/main/fc/fc_tasks.c **** 
+  95:../cleanflight/src/main/fc/fc_tasks.c **** #include "telemetry/telemetry.h"
+  96:../cleanflight/src/main/fc/fc_tasks.c **** 
+  97:../cleanflight/src/main/fc/fc_tasks.c **** #ifdef USE_BST
+  98:../cleanflight/src/main/fc/fc_tasks.c **** #include "i2c_bst.h"
+  99:../cleanflight/src/main/fc/fc_tasks.c **** #endif
+ 100:../cleanflight/src/main/fc/fc_tasks.c **** 
+ 101:../cleanflight/src/main/fc/fc_tasks.c **** #ifdef USE_USB_CDC_HID
+ 102:../cleanflight/src/main/fc/fc_tasks.c **** //TODO: Make it platform independent in the future
+ 103:../cleanflight/src/main/fc/fc_tasks.c **** #ifdef STM32F4
+ 104:../cleanflight/src/main/fc/fc_tasks.c **** #include "vcpf4/usbd_cdc_vcp.h"
+ 105:../cleanflight/src/main/fc/fc_tasks.c **** #include "usbd_hid_core.h"
+ 106:../cleanflight/src/main/fc/fc_tasks.c **** #elif defined(STM32F7)
+ 107:../cleanflight/src/main/fc/fc_tasks.c **** #include "usbd_cdc_interface.h"
+ 108:../cleanflight/src/main/fc/fc_tasks.c **** #include "usbd_hid.h"
+ 109:../cleanflight/src/main/fc/fc_tasks.c **** #endif
+ 110:../cleanflight/src/main/fc/fc_tasks.c **** #endif
+ 111:../cleanflight/src/main/fc/fc_tasks.c **** 
+ 112:../cleanflight/src/main/fc/fc_tasks.c **** #include "fc_tasks.h"
+ 113:../cleanflight/src/main/fc/fc_tasks.c **** 
+ 114:../cleanflight/src/main/fc/fc_tasks.c **** static void taskMain(timeUs_t currentTimeUs)
+ 115:../cleanflight/src/main/fc/fc_tasks.c **** {
+ 213              	 .loc 5 115 0
+ 214              	 .cfi_startproc
+ 215              	 
+ 216              	 
+ 217 0000 80B5     	 push {r7,lr}
+ 218              	.LCFI18:
+ 219              	 .cfi_def_cfa_offset 8
+ 220              	 .cfi_offset 7,-8
+ 221              	 .cfi_offset 14,-4
+ 222 0002 82B0     	 sub sp,sp,#8
+ 223              	.LCFI19:
+ 224              	 .cfi_def_cfa_offset 16
+ 225 0004 00AF     	 add r7,sp,#0
+ 226              	.LCFI20:
+ 227              	 .cfi_def_cfa_register 7
+ 228 0006 7860     	 str r0,[r7,#4]
+ 116:../cleanflight/src/main/fc/fc_tasks.c ****     UNUSED(currentTimeUs);
+ 117:../cleanflight/src/main/fc/fc_tasks.c **** 
+ 118:../cleanflight/src/main/fc/fc_tasks.c **** #ifdef USE_SDCARD
+ 119:../cleanflight/src/main/fc/fc_tasks.c ****     afatfs_poll();
+ 229              	 .loc 5 119 0
+ 230 0008 FFF7FEFF 	 bl afatfs_poll
+ 120:../cleanflight/src/main/fc/fc_tasks.c **** #endif
+ 121:../cleanflight/src/main/fc/fc_tasks.c **** }
+ 231              	 .loc 5 121 0
+ 232 000c 0837     	 adds r7,r7,#8
+ 233              	.LCFI21:
+ 234              	 .cfi_def_cfa_offset 8
+ 235 000e BD46     	 mov sp,r7
+ 236              	.LCFI22:
+ 237              	 .cfi_def_cfa_register 13
+ 238              	 
+ 239 0010 80BD     	 pop {r7,pc}
+ 240              	 .cfi_endproc
+ 241              	.LFE623:
+ 243 0012 00BF     	 .section .text.taskHandleSerial,"ax",%progbits
+ 244              	 .align 2
+ 245              	 .thumb
+ 246              	 .thumb_func
+ 248              	taskHandleSerial:
+ 249              	.LFB624:
+ 122:../cleanflight/src/main/fc/fc_tasks.c **** 
+ 123:../cleanflight/src/main/fc/fc_tasks.c **** #ifdef USE_OSD_SLAVE
+ 124:../cleanflight/src/main/fc/fc_tasks.c **** static bool taskSerialCheck(timeUs_t currentTimeUs, timeDelta_t currentDeltaTimeUs)
+ 125:../cleanflight/src/main/fc/fc_tasks.c **** {
+ 126:../cleanflight/src/main/fc/fc_tasks.c ****     UNUSED(currentTimeUs);
+ 127:../cleanflight/src/main/fc/fc_tasks.c ****     UNUSED(currentDeltaTimeUs);
+ 128:../cleanflight/src/main/fc/fc_tasks.c **** 
+ 129:../cleanflight/src/main/fc/fc_tasks.c ****     return mspSerialWaiting();
+ 130:../cleanflight/src/main/fc/fc_tasks.c **** }
+ 131:../cleanflight/src/main/fc/fc_tasks.c **** #endif
+ 132:../cleanflight/src/main/fc/fc_tasks.c **** 
+ 133:../cleanflight/src/main/fc/fc_tasks.c **** static void taskHandleSerial(timeUs_t currentTimeUs)
+ 134:../cleanflight/src/main/fc/fc_tasks.c **** {
+ 250              	 .loc 5 134 0
+ 251              	 .cfi_startproc
+ 252              	 
+ 253              	 
+ 254 0000 80B5     	 push {r7,lr}
+ 255              	.LCFI23:
+ 256              	 .cfi_def_cfa_offset 8
+ 257              	 .cfi_offset 7,-8
+ 258              	 .cfi_offset 14,-4
+ 259 0002 84B0     	 sub sp,sp,#16
+ 260              	.LCFI24:
+ 261              	 .cfi_def_cfa_offset 24
+ 262 0004 00AF     	 add r7,sp,#0
+ 263              	.LCFI25:
+ 264              	 .cfi_def_cfa_register 7
+ 265 0006 7860     	 str r0,[r7,#4]
+ 135:../cleanflight/src/main/fc/fc_tasks.c ****     UNUSED(currentTimeUs);
+ 136:../cleanflight/src/main/fc/fc_tasks.c **** 
+ 137:../cleanflight/src/main/fc/fc_tasks.c **** #if defined(USE_VCP)
+ 138:../cleanflight/src/main/fc/fc_tasks.c ****     DEBUG_SET(DEBUG_USB, 0, usbCableIsInserted());
+ 266              	 .loc 5 138 0
+ 267 0008 164B     	 ldr r3,.L23
+ 268 000a 1B78     	 ldrb r3,[r3]
+ 269 000c 232B     	 cmp r3,#35
+ 270 000e 05D1     	 bne .L19
+ 271              	 .loc 5 138 0 is_stmt 0 discriminator 1
+ 272 0010 FFF7FEFF 	 bl usbCableIsInserted
+ 273 0014 0346     	 mov r3,r0
+ 274 0016 9AB2     	 uxth r2,r3
+ 275 0018 134B     	 ldr r3,.L23+4
+ 276 001a 1A80     	 strh r2,[r3]
+ 277              	.L19:
+ 139:../cleanflight/src/main/fc/fc_tasks.c ****     DEBUG_SET(DEBUG_USB, 1, usbVcpIsConnected());
+ 278              	 .loc 5 139 0 is_stmt 1
+ 279 001c 114B     	 ldr r3,.L23
+ 280 001e 1B78     	 ldrb r3,[r3]
+ 281 0020 232B     	 cmp r3,#35
+ 282 0022 05D1     	 bne .L20
+ 283              	 .loc 5 139 0 is_stmt 0 discriminator 1
+ 284 0024 FFF7FEFF 	 bl usbVcpIsConnected
+ 285 0028 0346     	 mov r3,r0
+ 286 002a 9AB2     	 uxth r2,r3
+ 287 002c 0E4B     	 ldr r3,.L23+4
+ 288 002e 5A80     	 strh r2,[r3,#2]
+ 289              	.L20:
+ 140:../cleanflight/src/main/fc/fc_tasks.c **** #endif
+ 141:../cleanflight/src/main/fc/fc_tasks.c **** 
+ 142:../cleanflight/src/main/fc/fc_tasks.c **** #ifdef USE_CLI
+ 143:../cleanflight/src/main/fc/fc_tasks.c ****     // in cli mode, all serial stuff goes to here. enter cli mode by sending #
+ 144:../cleanflight/src/main/fc/fc_tasks.c ****     if (cliMode) {
+ 290              	 .loc 5 144 0 is_stmt 1
+ 291 0030 0E4B     	 ldr r3,.L23+8
+ 292 0032 1B78     	 ldrb r3,[r3]
+ 293 0034 002B     	 cmp r3,#0
+ 294 0036 02D0     	 beq .L21
+ 145:../cleanflight/src/main/fc/fc_tasks.c ****         cliProcess();
+ 295              	 .loc 5 145 0
+ 296 0038 FFF7FEFF 	 bl cliProcess
+ 146:../cleanflight/src/main/fc/fc_tasks.c ****         return;
+ 297              	 .loc 5 146 0
+ 298 003c 0EE0     	 b .L18
+ 299              	.L21:
+ 147:../cleanflight/src/main/fc/fc_tasks.c ****     }
+ 148:../cleanflight/src/main/fc/fc_tasks.c **** #endif
+ 149:../cleanflight/src/main/fc/fc_tasks.c **** #ifndef OSD_SLAVE
+ 150:../cleanflight/src/main/fc/fc_tasks.c ****     bool evaluateMspData = ARMING_FLAG(ARMED) ? MSP_SKIP_NON_MSP_DATA : MSP_EVALUATE_NON_MSP_DATA;
+ 300              	 .loc 5 150 0
+ 301 003e 0C4B     	 ldr r3,.L23+12
+ 302 0040 1B78     	 ldrb r3,[r3]
+ 303 0042 03F00103 	 and r3,r3,#1
+ 304 0046 002B     	 cmp r3,#0
+ 305 0048 14BF     	 ite ne
+ 306 004a 0123     	 movne r3,#1
+ 307 004c 0023     	 moveq r3,#0
+ 308 004e FB73     	 strb r3,[r7,#15]
+ 151:../cleanflight/src/main/fc/fc_tasks.c **** #else
+ 152:../cleanflight/src/main/fc/fc_tasks.c ****     bool evaluateMspData = osdSlaveIsLocked ?  MSP_SKIP_NON_MSP_DATA : MSP_EVALUATE_NON_MSP_DATA;;
+ 153:../cleanflight/src/main/fc/fc_tasks.c **** #endif
+ 154:../cleanflight/src/main/fc/fc_tasks.c ****     mspSerialProcess(evaluateMspData, mspFcProcessCommand, mspFcProcessReply);
+ 309              	 .loc 5 154 0
+ 310 0050 FB7B     	 ldrb r3,[r7,#15]
+ 311 0052 1846     	 mov r0,r3
+ 312 0054 0749     	 ldr r1,.L23+16
+ 313 0056 084A     	 ldr r2,.L23+20
+ 314 0058 FFF7FEFF 	 bl mspSerialProcess
+ 315              	.L18:
+ 155:../cleanflight/src/main/fc/fc_tasks.c **** }
+ 316              	 .loc 5 155 0
+ 317 005c 1037     	 adds r7,r7,#16
+ 318              	.LCFI26:
+ 319              	 .cfi_def_cfa_offset 8
+ 320 005e BD46     	 mov sp,r7
+ 321              	.LCFI27:
+ 322              	 .cfi_def_cfa_register 13
+ 323              	 
+ 324 0060 80BD     	 pop {r7,pc}
+ 325              	.L24:
+ 326 0062 00BF     	 .align 2
+ 327              	.L23:
+ 328 0064 00000000 	 .word debugMode
+ 329 0068 00000000 	 .word debug
+ 330 006c 00000000 	 .word cliMode
+ 331 0070 00000000 	 .word armingFlags
+ 332 0074 00000000 	 .word mspFcProcessCommand
+ 333 0078 00000000 	 .word mspFcProcessReply
+ 334              	 .cfi_endproc
+ 335              	.LFE624:
+ 337              	 .section .text.taskBatteryAlerts,"ax",%progbits
+ 338              	 .align 2
+ 339              	 .thumb
+ 340              	 .thumb_func
+ 342              	taskBatteryAlerts:
+ 343              	.LFB625:
+ 156:../cleanflight/src/main/fc/fc_tasks.c **** 
+ 157:../cleanflight/src/main/fc/fc_tasks.c **** static void taskBatteryAlerts(timeUs_t currentTimeUs)
+ 158:../cleanflight/src/main/fc/fc_tasks.c **** {
+ 344              	 .loc 5 158 0
+ 345              	 .cfi_startproc
+ 346              	 
+ 347              	 
+ 348 0000 80B5     	 push {r7,lr}
+ 349              	.LCFI28:
+ 350              	 .cfi_def_cfa_offset 8
+ 351              	 .cfi_offset 7,-8
+ 352              	 .cfi_offset 14,-4
+ 353 0002 82B0     	 sub sp,sp,#8
+ 354              	.LCFI29:
+ 355              	 .cfi_def_cfa_offset 16
+ 356 0004 00AF     	 add r7,sp,#0
+ 357              	.LCFI30:
+ 358              	 .cfi_def_cfa_register 7
+ 359 0006 7860     	 str r0,[r7,#4]
+ 159:../cleanflight/src/main/fc/fc_tasks.c ****     if (!ARMING_FLAG(ARMED)) {
+ 360              	 .loc 5 159 0
+ 361 0008 074B     	 ldr r3,.L27
+ 362 000a 1B78     	 ldrb r3,[r3]
+ 363 000c 03F00103 	 and r3,r3,#1
+ 364 0010 002B     	 cmp r3,#0
+ 365 0012 01D1     	 bne .L26
+ 160:../cleanflight/src/main/fc/fc_tasks.c ****         // the battery *might* fall out in flight, but if that happens the FC will likely be off to
+ 161:../cleanflight/src/main/fc/fc_tasks.c ****         batteryUpdatePresence();
+ 366              	 .loc 5 161 0
+ 367 0014 FFF7FEFF 	 bl batteryUpdatePresence
+ 368              	.L26:
+ 162:../cleanflight/src/main/fc/fc_tasks.c ****     }
+ 163:../cleanflight/src/main/fc/fc_tasks.c ****     batteryUpdateStates(currentTimeUs);
+ 369              	 .loc 5 163 0
+ 370 0018 7868     	 ldr r0,[r7,#4]
+ 371 001a FFF7FEFF 	 bl batteryUpdateStates
+ 164:../cleanflight/src/main/fc/fc_tasks.c ****     batteryUpdateAlarms();
+ 372              	 .loc 5 164 0
+ 373 001e FFF7FEFF 	 bl batteryUpdateAlarms
+ 165:../cleanflight/src/main/fc/fc_tasks.c **** }
+ 374              	 .loc 5 165 0
+ 375 0022 0837     	 adds r7,r7,#8
+ 376              	.LCFI31:
+ 377              	 .cfi_def_cfa_offset 8
+ 378 0024 BD46     	 mov sp,r7
+ 379              	.LCFI32:
+ 380              	 .cfi_def_cfa_register 13
+ 381              	 
+ 382 0026 80BD     	 pop {r7,pc}
+ 383              	.L28:
+ 384              	 .align 2
+ 385              	.L27:
+ 386 0028 00000000 	 .word armingFlags
+ 387              	 .cfi_endproc
+ 388              	.LFE625:
+ 390              	 .section .text.taskUpdateAccelerometer,"ax",%progbits
+ 391              	 .align 2
+ 392              	 .thumb
+ 393              	 .thumb_func
+ 395              	taskUpdateAccelerometer:
+ 396              	.LFB626:
+ 166:../cleanflight/src/main/fc/fc_tasks.c **** 
+ 167:../cleanflight/src/main/fc/fc_tasks.c **** #ifndef USE_OSD_SLAVE
+ 168:../cleanflight/src/main/fc/fc_tasks.c **** static void taskUpdateAccelerometer(timeUs_t currentTimeUs)
+ 169:../cleanflight/src/main/fc/fc_tasks.c **** {
+ 397              	 .loc 5 169 0
+ 398              	 .cfi_startproc
+ 399              	 
+ 400              	 
+ 401 0000 80B5     	 push {r7,lr}
+ 402              	.LCFI33:
+ 403              	 .cfi_def_cfa_offset 8
+ 404              	 .cfi_offset 7,-8
+ 405              	 .cfi_offset 14,-4
+ 406 0002 82B0     	 sub sp,sp,#8
+ 407              	.LCFI34:
+ 408              	 .cfi_def_cfa_offset 16
+ 409 0004 00AF     	 add r7,sp,#0
+ 410              	.LCFI35:
+ 411              	 .cfi_def_cfa_register 7
+ 412 0006 7860     	 str r0,[r7,#4]
+ 170:../cleanflight/src/main/fc/fc_tasks.c ****     accUpdate(currentTimeUs, &accelerometerConfigMutable()->accelerometerTrims);
+ 413              	 .loc 5 170 0
+ 414 0008 FFF7FEFF 	 bl accelerometerConfigMutable
+ 415 000c 0346     	 mov r3,r0
+ 416 000e 0B33     	 adds r3,r3,#11
+ 417 0010 7868     	 ldr r0,[r7,#4]
+ 418 0012 1946     	 mov r1,r3
+ 419 0014 FFF7FEFF 	 bl accUpdate
+ 171:../cleanflight/src/main/fc/fc_tasks.c **** }
+ 420              	 .loc 5 171 0
+ 421 0018 0837     	 adds r7,r7,#8
+ 422              	.LCFI36:
+ 423              	 .cfi_def_cfa_offset 8
+ 424 001a BD46     	 mov sp,r7
+ 425              	.LCFI37:
+ 426              	 .cfi_def_cfa_register 13
+ 427              	 
+ 428 001c 80BD     	 pop {r7,pc}
+ 429              	 .cfi_endproc
+ 430              	.LFE626:
+ 432 001e 00BF     	 .section .text.taskUpdateRxMain,"ax",%progbits
+ 433              	 .align 2
+ 434              	 .thumb
+ 435              	 .thumb_func
+ 437              	taskUpdateRxMain:
+ 438              	.LFB627:
+ 172:../cleanflight/src/main/fc/fc_tasks.c **** 
+ 173:../cleanflight/src/main/fc/fc_tasks.c **** static void taskUpdateRxMain(timeUs_t currentTimeUs)
+ 174:../cleanflight/src/main/fc/fc_tasks.c **** {
+ 439              	 .loc 5 174 0
+ 440              	 .cfi_startproc
+ 441              	 
+ 442              	 
+ 443 0000 80B5     	 push {r7,lr}
+ 444              	.LCFI38:
+ 445              	 .cfi_def_cfa_offset 8
+ 446              	 .cfi_offset 7,-8
+ 447              	 .cfi_offset 14,-4
+ 448 0002 82B0     	 sub sp,sp,#8
+ 449              	.LCFI39:
+ 450              	 .cfi_def_cfa_offset 16
+ 451 0004 00AF     	 add r7,sp,#0
+ 452              	.LCFI40:
+ 453              	 .cfi_def_cfa_register 7
+ 454 0006 7860     	 str r0,[r7,#4]
+ 175:../cleanflight/src/main/fc/fc_tasks.c ****     if (!processRx(currentTimeUs)) {
+ 455              	 .loc 5 175 0
+ 456 0008 7868     	 ldr r0,[r7,#4]
+ 457 000a FFF7FEFF 	 bl processRx
+ 458 000e 0346     	 mov r3,r0
+ 459 0010 83F00103 	 eor r3,r3,#1
+ 460 0014 DBB2     	 uxtb r3,r3
+ 461 0016 002B     	 cmp r3,#0
+ 462 0018 00D0     	 beq .L31
+ 176:../cleanflight/src/main/fc/fc_tasks.c ****         return;
+ 463              	 .loc 5 176 0
+ 464 001a 18E0     	 b .L30
+ 465              	.L31:
+ 177:../cleanflight/src/main/fc/fc_tasks.c ****     }
+ 178:../cleanflight/src/main/fc/fc_tasks.c **** 
+ 179:../cleanflight/src/main/fc/fc_tasks.c ****     static timeUs_t lastRxTimeUs;
+ 180:../cleanflight/src/main/fc/fc_tasks.c ****     currentRxRefreshRate = constrain(currentTimeUs - lastRxTimeUs, 1000, 30000);
+ 466              	 .loc 5 180 0
+ 467 001c 0D4B     	 ldr r3,.L33
+ 468 001e 1B68     	 ldr r3,[r3]
+ 469 0020 7A68     	 ldr r2,[r7,#4]
+ 470 0022 D31A     	 subs r3,r2,r3
+ 471 0024 1846     	 mov r0,r3
+ 472 0026 4FF47A71 	 mov r1,#1000
+ 473 002a 47F23052 	 movw r2,#30000
+ 474 002e FFF7FEFF 	 bl constrain
+ 475 0032 0346     	 mov r3,r0
+ 476 0034 9AB2     	 uxth r2,r3
+ 477 0036 084B     	 ldr r3,.L33+4
+ 478 0038 1A80     	 strh r2,[r3]
+ 181:../cleanflight/src/main/fc/fc_tasks.c ****     lastRxTimeUs = currentTimeUs;
+ 479              	 .loc 5 181 0
+ 480 003a 064A     	 ldr r2,.L33
+ 481 003c 7B68     	 ldr r3,[r7,#4]
+ 482 003e 1360     	 str r3,[r2]
+ 182:../cleanflight/src/main/fc/fc_tasks.c ****     isRXDataNew = true;
+ 483              	 .loc 5 182 0
+ 484 0040 064B     	 ldr r3,.L33+8
+ 485 0042 0122     	 movs r2,#1
+ 486 0044 1A70     	 strb r2,[r3]
+ 183:../cleanflight/src/main/fc/fc_tasks.c **** 
+ 184:../cleanflight/src/main/fc/fc_tasks.c **** #ifdef USE_USB_CDC_HID
+ 185:../cleanflight/src/main/fc/fc_tasks.c ****     if (!ARMING_FLAG(ARMED)) {
+ 186:../cleanflight/src/main/fc/fc_tasks.c ****         sendRcDataToHid();
+ 187:../cleanflight/src/main/fc/fc_tasks.c ****     }
+ 188:../cleanflight/src/main/fc/fc_tasks.c **** #endif
+ 189:../cleanflight/src/main/fc/fc_tasks.c **** 
+ 190:../cleanflight/src/main/fc/fc_tasks.c ****     // updateRcCommands sets rcCommand, which is needed by updateAltHoldState and updateSonarAltHol
+ 191:../cleanflight/src/main/fc/fc_tasks.c ****     updateRcCommands();
+ 487              	 .loc 5 191 0
+ 488 0046 FFF7FEFF 	 bl updateRcCommands
+ 192:../cleanflight/src/main/fc/fc_tasks.c ****     updateArmingStatus();
+ 489              	 .loc 5 192 0
+ 490 004a FFF7FEFF 	 bl updateArmingStatus
+ 491              	.L30:
+ 193:../cleanflight/src/main/fc/fc_tasks.c **** }
+ 492              	 .loc 5 193 0
+ 493 004e 0837     	 adds r7,r7,#8
+ 494              	.LCFI41:
+ 495              	 .cfi_def_cfa_offset 8
+ 496 0050 BD46     	 mov sp,r7
+ 497              	.LCFI42:
+ 498              	 .cfi_def_cfa_register 13
+ 499              	 
+ 500 0052 80BD     	 pop {r7,pc}
+ 501              	.L34:
+ 502              	 .align 2
+ 503              	.L33:
+ 504 0054 00000000 	 .word lastRxTimeUs.16559
+ 505 0058 00000000 	 .word currentRxRefreshRate
+ 506 005c 00000000 	 .word isRXDataNew
+ 507              	 .cfi_endproc
+ 508              	.LFE627:
+ 510              	 .section .text.taskUpdateBaro,"ax",%progbits
+ 511              	 .align 2
+ 512              	 .thumb
+ 513              	 .thumb_func
+ 515              	taskUpdateBaro:
+ 516              	.LFB628:
+ 194:../cleanflight/src/main/fc/fc_tasks.c **** #endif
+ 195:../cleanflight/src/main/fc/fc_tasks.c **** 
+ 196:../cleanflight/src/main/fc/fc_tasks.c **** #ifdef USE_BARO
+ 197:../cleanflight/src/main/fc/fc_tasks.c **** static void taskUpdateBaro(timeUs_t currentTimeUs)
+ 198:../cleanflight/src/main/fc/fc_tasks.c **** {
+ 517              	 .loc 5 198 0
+ 518              	 .cfi_startproc
+ 519              	 
+ 520              	 
+ 521 0000 80B5     	 push {r7,lr}
+ 522              	.LCFI43:
+ 523              	 .cfi_def_cfa_offset 8
+ 524              	 .cfi_offset 7,-8
+ 525              	 .cfi_offset 14,-4
+ 526 0002 84B0     	 sub sp,sp,#16
+ 527              	.LCFI44:
+ 528              	 .cfi_def_cfa_offset 24
+ 529 0004 00AF     	 add r7,sp,#0
+ 530              	.LCFI45:
+ 531              	 .cfi_def_cfa_register 7
+ 532 0006 7860     	 str r0,[r7,#4]
+ 199:../cleanflight/src/main/fc/fc_tasks.c ****     UNUSED(currentTimeUs);
+ 200:../cleanflight/src/main/fc/fc_tasks.c **** 
+ 201:../cleanflight/src/main/fc/fc_tasks.c ****     if (sensors(SENSOR_BARO)) {
+ 533              	 .loc 5 201 0
+ 534 0008 0420     	 movs r0,#4
+ 535 000a FFF7FEFF 	 bl sensors
+ 536 000e 0346     	 mov r3,r0
+ 537 0010 002B     	 cmp r3,#0
+ 538 0012 09D0     	 beq .L35
+ 539              	.LBB2:
+ 202:../cleanflight/src/main/fc/fc_tasks.c ****         const uint32_t newDeadline = baroUpdate();
+ 540              	 .loc 5 202 0
+ 541 0014 FFF7FEFF 	 bl baroUpdate
+ 542 0018 F860     	 str r0,[r7,#12]
+ 203:../cleanflight/src/main/fc/fc_tasks.c ****         if (newDeadline != 0) {
+ 543              	 .loc 5 203 0
+ 544 001a FB68     	 ldr r3,[r7,#12]
+ 545 001c 002B     	 cmp r3,#0
+ 546 001e 03D0     	 beq .L35
+ 204:../cleanflight/src/main/fc/fc_tasks.c ****             rescheduleTask(TASK_SELF, newDeadline);
+ 547              	 .loc 5 204 0
+ 548 0020 1620     	 movs r0,#22
+ 549 0022 F968     	 ldr r1,[r7,#12]
+ 550 0024 FFF7FEFF 	 bl rescheduleTask
+ 551              	.L35:
+ 552              	.LBE2:
+ 205:../cleanflight/src/main/fc/fc_tasks.c ****         }
+ 206:../cleanflight/src/main/fc/fc_tasks.c ****     }
+ 207:../cleanflight/src/main/fc/fc_tasks.c **** }
+ 553              	 .loc 5 207 0
+ 554 0028 1037     	 adds r7,r7,#16
+ 555              	.LCFI46:
+ 556              	 .cfi_def_cfa_offset 8
+ 557 002a BD46     	 mov sp,r7
+ 558              	.LCFI47:
+ 559              	 .cfi_def_cfa_register 13
+ 560              	 
+ 561 002c 80BD     	 pop {r7,pc}
+ 562              	 .cfi_endproc
+ 563              	.LFE628:
+ 565 002e 00BF     	 .section .text.taskCalculateAltitude,"ax",%progbits
+ 566              	 .align 2
+ 567              	 .thumb
+ 568              	 .thumb_func
+ 570              	taskCalculateAltitude:
+ 571              	.LFB629:
+ 208:../cleanflight/src/main/fc/fc_tasks.c **** #endif
+ 209:../cleanflight/src/main/fc/fc_tasks.c **** 
+ 210:../cleanflight/src/main/fc/fc_tasks.c **** #if defined(USE_BARO) || defined(USE_GPS)
+ 211:../cleanflight/src/main/fc/fc_tasks.c **** static void taskCalculateAltitude(timeUs_t currentTimeUs)
+ 212:../cleanflight/src/main/fc/fc_tasks.c **** {
+ 572              	 .loc 5 212 0
+ 573              	 .cfi_startproc
+ 574              	 
+ 575              	 
+ 576 0000 80B5     	 push {r7,lr}
+ 577              	.LCFI48:
+ 578              	 .cfi_def_cfa_offset 8
+ 579              	 .cfi_offset 7,-8
+ 580              	 .cfi_offset 14,-4
+ 581 0002 82B0     	 sub sp,sp,#8
+ 582              	.LCFI49:
+ 583              	 .cfi_def_cfa_offset 16
+ 584 0004 00AF     	 add r7,sp,#0
+ 585              	.LCFI50:
+ 586              	 .cfi_def_cfa_register 7
+ 587 0006 7860     	 str r0,[r7,#4]
+ 213:../cleanflight/src/main/fc/fc_tasks.c ****     calculateEstimatedAltitude(currentTimeUs);
+ 588              	 .loc 5 213 0
+ 589 0008 7868     	 ldr r0,[r7,#4]
+ 590 000a FFF7FEFF 	 bl calculateEstimatedAltitude
+ 214:../cleanflight/src/main/fc/fc_tasks.c **** }
+ 591              	 .loc 5 214 0
+ 592 000e 0837     	 adds r7,r7,#8
+ 593              	.LCFI51:
+ 594              	 .cfi_def_cfa_offset 8
+ 595 0010 BD46     	 mov sp,r7
+ 596              	.LCFI52:
+ 597              	 .cfi_def_cfa_register 13
+ 598              	 
+ 599 0012 80BD     	 pop {r7,pc}
+ 600              	 .cfi_endproc
+ 601              	.LFE629:
+ 603              	 .section .text.fcTasksInit,"ax",%progbits
+ 604              	 .align 2
+ 605              	 .global fcTasksInit
+ 606              	 .thumb
+ 607              	 .thumb_func
+ 609              	fcTasksInit:
+ 610              	.LFB630:
+ 215:../cleanflight/src/main/fc/fc_tasks.c **** #endif // USE_BARO || USE_GPS
+ 216:../cleanflight/src/main/fc/fc_tasks.c **** 
+ 217:../cleanflight/src/main/fc/fc_tasks.c **** #ifdef USE_TELEMETRY
+ 218:../cleanflight/src/main/fc/fc_tasks.c **** static void taskTelemetry(timeUs_t currentTimeUs)
+ 219:../cleanflight/src/main/fc/fc_tasks.c **** {
+ 220:../cleanflight/src/main/fc/fc_tasks.c ****     if (!cliMode && feature(FEATURE_TELEMETRY)) {
+ 221:../cleanflight/src/main/fc/fc_tasks.c ****         subTaskTelemetryPollSensors(currentTimeUs);
+ 222:../cleanflight/src/main/fc/fc_tasks.c **** 
+ 223:../cleanflight/src/main/fc/fc_tasks.c ****         telemetryProcess(currentTimeUs);
+ 224:../cleanflight/src/main/fc/fc_tasks.c ****     }
+ 225:../cleanflight/src/main/fc/fc_tasks.c **** }
+ 226:../cleanflight/src/main/fc/fc_tasks.c **** #endif
+ 227:../cleanflight/src/main/fc/fc_tasks.c **** 
+ 228:../cleanflight/src/main/fc/fc_tasks.c **** #ifdef USE_CAMERA_CONTROL
+ 229:../cleanflight/src/main/fc/fc_tasks.c **** static void taskCameraControl(uint32_t currentTime)
+ 230:../cleanflight/src/main/fc/fc_tasks.c **** {
+ 231:../cleanflight/src/main/fc/fc_tasks.c ****     if (ARMING_FLAG(ARMED)) {
+ 232:../cleanflight/src/main/fc/fc_tasks.c ****         return;
+ 233:../cleanflight/src/main/fc/fc_tasks.c ****     }
+ 234:../cleanflight/src/main/fc/fc_tasks.c **** 
+ 235:../cleanflight/src/main/fc/fc_tasks.c ****     cameraControlProcess(currentTime);
+ 236:../cleanflight/src/main/fc/fc_tasks.c **** }
+ 237:../cleanflight/src/main/fc/fc_tasks.c **** #endif
+ 238:../cleanflight/src/main/fc/fc_tasks.c **** 
+ 239:../cleanflight/src/main/fc/fc_tasks.c **** void fcTasksInit(void)
+ 240:../cleanflight/src/main/fc/fc_tasks.c **** {
+ 611              	 .loc 5 240 0
+ 612              	 .cfi_startproc
+ 613              	 
+ 614              	 
+ 615 0000 80B5     	 push {r7,lr}
+ 616              	.LCFI53:
+ 617              	 .cfi_def_cfa_offset 8
+ 618              	 .cfi_offset 7,-8
+ 619              	 .cfi_offset 14,-4
+ 620 0002 82B0     	 sub sp,sp,#8
+ 621              	.LCFI54:
+ 622              	 .cfi_def_cfa_offset 16
+ 623 0004 00AF     	 add r7,sp,#0
+ 624              	.LCFI55:
+ 625              	 .cfi_def_cfa_register 7
+ 241:../cleanflight/src/main/fc/fc_tasks.c ****     schedulerInit();
+ 626              	 .loc 5 241 0
+ 627 0006 FFF7FEFF 	 bl schedulerInit
+ 242:../cleanflight/src/main/fc/fc_tasks.c **** 
+ 243:../cleanflight/src/main/fc/fc_tasks.c ****     setTaskEnabled(TASK_MAIN, true);
+ 628              	 .loc 5 243 0
+ 629 000a 0120     	 movs r0,#1
+ 630 000c 0121     	 movs r1,#1
+ 631 000e FFF7FEFF 	 bl setTaskEnabled
+ 244:../cleanflight/src/main/fc/fc_tasks.c **** 
+ 245:../cleanflight/src/main/fc/fc_tasks.c ****     setTaskEnabled(TASK_SERIAL, true);
+ 632              	 .loc 5 245 0
+ 633 0012 0620     	 movs r0,#6
+ 634 0014 0121     	 movs r1,#1
+ 635 0016 FFF7FEFF 	 bl setTaskEnabled
+ 246:../cleanflight/src/main/fc/fc_tasks.c ****     rescheduleTask(TASK_SERIAL, TASK_PERIOD_HZ(serialConfig()->serial_update_rate_hz));
+ 636              	 .loc 5 246 0
+ 637 001a FFF7FEFF 	 bl serialConfig
+ 638 001e 0346     	 mov r3,r0
+ 639 0020 B3F82330 	 ldrh r3,[r3,#35]
+ 640 0024 9BB2     	 uxth r3,r3
+ 641 0026 1A46     	 mov r2,r3
+ 642 0028 7B4B     	 ldr r3,.L55
+ 643 002a 93FBF2F3 	 sdiv r3,r3,r2
+ 644 002e 0620     	 movs r0,#6
+ 645 0030 1946     	 mov r1,r3
+ 646 0032 FFF7FEFF 	 bl rescheduleTask
+ 247:../cleanflight/src/main/fc/fc_tasks.c **** 
+ 248:../cleanflight/src/main/fc/fc_tasks.c ****     const bool useBatteryVoltage = batteryConfig()->voltageMeterSource != VOLTAGE_METER_NONE;
+ 647              	 .loc 5 248 0
+ 648 0036 FFF7FEFF 	 bl batteryConfig
+ 649 003a 0346     	 mov r3,r0
+ 650 003c 5B79     	 ldrb r3,[r3,#5]
+ 651 003e 002B     	 cmp r3,#0
+ 652 0040 14BF     	 ite ne
+ 653 0042 0123     	 movne r3,#1
+ 654 0044 0023     	 moveq r3,#0
+ 655 0046 FB71     	 strb r3,[r7,#7]
+ 249:../cleanflight/src/main/fc/fc_tasks.c ****     setTaskEnabled(TASK_BATTERY_VOLTAGE, useBatteryVoltage);
+ 656              	 .loc 5 249 0
+ 657 0048 FB79     	 ldrb r3,[r7,#7]
+ 658 004a 0820     	 movs r0,#8
+ 659 004c 1946     	 mov r1,r3
+ 660 004e FFF7FEFF 	 bl setTaskEnabled
+ 250:../cleanflight/src/main/fc/fc_tasks.c ****     const bool useBatteryCurrent = batteryConfig()->currentMeterSource != CURRENT_METER_NONE;
+ 661              	 .loc 5 250 0
+ 662 0052 FFF7FEFF 	 bl batteryConfig
+ 663 0056 0346     	 mov r3,r0
+ 664 0058 9B79     	 ldrb r3,[r3,#6]
+ 665 005a 002B     	 cmp r3,#0
+ 666 005c 14BF     	 ite ne
+ 667 005e 0123     	 movne r3,#1
+ 668 0060 0023     	 moveq r3,#0
+ 669 0062 BB71     	 strb r3,[r7,#6]
+ 251:../cleanflight/src/main/fc/fc_tasks.c ****     setTaskEnabled(TASK_BATTERY_CURRENT, useBatteryCurrent);
+ 670              	 .loc 5 251 0
+ 671 0064 BB79     	 ldrb r3,[r7,#6]
+ 672 0066 0920     	 movs r0,#9
+ 673 0068 1946     	 mov r1,r3
+ 674 006a FFF7FEFF 	 bl setTaskEnabled
+ 252:../cleanflight/src/main/fc/fc_tasks.c **** #ifdef USE_OSD_SLAVE
+ 253:../cleanflight/src/main/fc/fc_tasks.c ****     const bool useBatteryAlerts = batteryConfig()->useVBatAlerts || batteryConfig()->useConsumption
+ 254:../cleanflight/src/main/fc/fc_tasks.c **** #else
+ 255:../cleanflight/src/main/fc/fc_tasks.c ****     const bool useBatteryAlerts = batteryConfig()->useVBatAlerts || batteryConfig()->useConsumption
+ 675              	 .loc 5 255 0
+ 676 006e FFF7FEFF 	 bl batteryConfig
+ 677 0072 0346     	 mov r3,r0
+ 678 0074 5B7A     	 ldrb r3,[r3,#9]
+ 679 0076 002B     	 cmp r3,#0
+ 680 0078 0CD1     	 bne .L39
+ 681              	 .loc 5 255 0 is_stmt 0 discriminator 2
+ 682 007a FFF7FEFF 	 bl batteryConfig
+ 683 007e 0346     	 mov r3,r0
+ 684 0080 9B7A     	 ldrb r3,[r3,#10]
+ 685 0082 002B     	 cmp r3,#0
+ 686 0084 06D1     	 bne .L39
+ 687              	 .loc 5 255 0 discriminator 4
+ 688 0086 4FF48020 	 mov r0,#262144
+ 689 008a FFF7FEFF 	 bl feature
+ 690 008e 0346     	 mov r3,r0
+ 691 0090 002B     	 cmp r3,#0
+ 692 0092 01D0     	 beq .L40
+ 693              	.L39:
+ 694              	 .loc 5 255 0 discriminator 5
+ 695 0094 0123     	 movs r3,#1
+ 696 0096 00E0     	 b .L41
+ 697              	.L40:
+ 698              	 .loc 5 255 0 discriminator 6
+ 699 0098 0023     	 movs r3,#0
+ 700              	.L41:
+ 701              	 .loc 5 255 0 discriminator 8
+ 702 009a 7B71     	 strb r3,[r7,#5]
+ 703 009c 7B79     	 ldrb r3,[r7,#5]
+ 704 009e 03F00103 	 and r3,r3,#1
+ 705 00a2 7B71     	 strb r3,[r7,#5]
+ 256:../cleanflight/src/main/fc/fc_tasks.c **** #endif
+ 257:../cleanflight/src/main/fc/fc_tasks.c ****     setTaskEnabled(TASK_BATTERY_ALERTS, (useBatteryVoltage || useBatteryCurrent) && useBatteryAlert
+ 706              	 .loc 5 257 0 is_stmt 1 discriminator 8
+ 707 00a4 FB79     	 ldrb r3,[r7,#7]
+ 708 00a6 002B     	 cmp r3,#0
+ 709 00a8 02D1     	 bne .L42
+ 710              	 .loc 5 257 0 is_stmt 0 discriminator 2
+ 711 00aa BB79     	 ldrb r3,[r7,#6]
+ 712 00ac 002B     	 cmp r3,#0
+ 713 00ae 04D0     	 beq .L43
+ 714              	.L42:
+ 715              	 .loc 5 257 0 discriminator 3
+ 716 00b0 7B79     	 ldrb r3,[r7,#5]
+ 717 00b2 002B     	 cmp r3,#0
+ 718 00b4 01D0     	 beq .L43
+ 719              	 .loc 5 257 0 discriminator 5
+ 720 00b6 0123     	 movs r3,#1
+ 721 00b8 00E0     	 b .L44
+ 722              	.L43:
+ 723              	 .loc 5 257 0 discriminator 6
+ 724 00ba 0023     	 movs r3,#0
+ 725              	.L44:
+ 726              	 .loc 5 257 0 discriminator 8
+ 727 00bc 03F00103 	 and r3,r3,#1
+ 728 00c0 DBB2     	 uxtb r3,r3
+ 729 00c2 0A20     	 movs r0,#10
+ 730 00c4 1946     	 mov r1,r3
+ 731 00c6 FFF7FEFF 	 bl setTaskEnabled
+ 258:../cleanflight/src/main/fc/fc_tasks.c **** 
+ 259:../cleanflight/src/main/fc/fc_tasks.c **** #ifdef USE_TRANSPONDER
+ 260:../cleanflight/src/main/fc/fc_tasks.c ****     setTaskEnabled(TASK_TRANSPONDER, feature(FEATURE_TRANSPONDER));
+ 261:../cleanflight/src/main/fc/fc_tasks.c **** #endif
+ 262:../cleanflight/src/main/fc/fc_tasks.c **** 
+ 263:../cleanflight/src/main/fc/fc_tasks.c **** #ifdef STACK_CHECK
+ 264:../cleanflight/src/main/fc/fc_tasks.c ****     setTaskEnabled(TASK_STACK_CHECK, true);
+ 265:../cleanflight/src/main/fc/fc_tasks.c **** #endif
+ 266:../cleanflight/src/main/fc/fc_tasks.c **** 
+ 267:../cleanflight/src/main/fc/fc_tasks.c **** #ifdef USE_OSD_SLAVE
+ 268:../cleanflight/src/main/fc/fc_tasks.c ****     setTaskEnabled(TASK_OSD_SLAVE, osdSlaveInitialized());
+ 269:../cleanflight/src/main/fc/fc_tasks.c **** #else
+ 270:../cleanflight/src/main/fc/fc_tasks.c ****     if (sensors(SENSOR_GYRO)) {
+ 732              	 .loc 5 270 0 is_stmt 1 discriminator 8
+ 733 00ca 0120     	 movs r0,#1
+ 734 00cc FFF7FEFF 	 bl sensors
+ 735 00d0 0346     	 mov r3,r0
+ 736 00d2 002B     	 cmp r3,#0
+ 737 00d4 09D0     	 beq .L45
+ 271:../cleanflight/src/main/fc/fc_tasks.c ****         rescheduleTask(TASK_GYROPID, gyro.targetLooptime);
+ 738              	 .loc 5 271 0
+ 739 00d6 514B     	 ldr r3,.L55+4
+ 740 00d8 1B68     	 ldr r3,[r3]
+ 741 00da 0220     	 movs r0,#2
+ 742 00dc 1946     	 mov r1,r3
+ 743 00de FFF7FEFF 	 bl rescheduleTask
+ 272:../cleanflight/src/main/fc/fc_tasks.c ****         setTaskEnabled(TASK_GYROPID, true);
+ 744              	 .loc 5 272 0
+ 745 00e2 0220     	 movs r0,#2
+ 746 00e4 0121     	 movs r1,#1
+ 747 00e6 FFF7FEFF 	 bl setTaskEnabled
+ 748              	.L45:
+ 273:../cleanflight/src/main/fc/fc_tasks.c ****     }
+ 274:../cleanflight/src/main/fc/fc_tasks.c **** 
+ 275:../cleanflight/src/main/fc/fc_tasks.c ****     if (sensors(SENSOR_ACC)) {
+ 749              	 .loc 5 275 0
+ 750 00ea 0220     	 movs r0,#2
+ 751 00ec FFF7FEFF 	 bl sensors
+ 752 00f0 0346     	 mov r3,r0
+ 753 00f2 002B     	 cmp r3,#0
+ 754 00f4 0ED0     	 beq .L46
+ 276:../cleanflight/src/main/fc/fc_tasks.c ****         setTaskEnabled(TASK_ACCEL, true);
+ 755              	 .loc 5 276 0
+ 756 00f6 0320     	 movs r0,#3
+ 757 00f8 0121     	 movs r1,#1
+ 758 00fa FFF7FEFF 	 bl setTaskEnabled
+ 277:../cleanflight/src/main/fc/fc_tasks.c ****         rescheduleTask(TASK_ACCEL, acc.accSamplingInterval);
+ 759              	 .loc 5 277 0
+ 760 00fe 484B     	 ldr r3,.L55+8
+ 761 0100 D3F82130 	 ldr r3,[r3,#33]
+ 762 0104 0320     	 movs r0,#3
+ 763 0106 1946     	 mov r1,r3
+ 764 0108 FFF7FEFF 	 bl rescheduleTask
+ 278:../cleanflight/src/main/fc/fc_tasks.c ****         setTaskEnabled(TASK_ATTITUDE, true);
+ 765              	 .loc 5 278 0
+ 766 010c 0420     	 movs r0,#4
+ 767 010e 0121     	 movs r1,#1
+ 768 0110 FFF7FEFF 	 bl setTaskEnabled
+ 769              	.L46:
+ 279:../cleanflight/src/main/fc/fc_tasks.c ****     }
+ 280:../cleanflight/src/main/fc/fc_tasks.c **** 
+ 281:../cleanflight/src/main/fc/fc_tasks.c ****     setTaskEnabled(TASK_RX, true);
+ 770              	 .loc 5 281 0
+ 771 0114 0520     	 movs r0,#5
+ 772 0116 0121     	 movs r1,#1
+ 773 0118 FFF7FEFF 	 bl setTaskEnabled
+ 282:../cleanflight/src/main/fc/fc_tasks.c **** 
+ 283:../cleanflight/src/main/fc/fc_tasks.c ****     setTaskEnabled(TASK_DISPATCH, dispatchIsEnabled());
+ 774              	 .loc 5 283 0
+ 775 011c FFF7FEFF 	 bl dispatchIsEnabled
+ 776 0120 0346     	 mov r3,r0
+ 777 0122 0720     	 movs r0,#7
+ 778 0124 1946     	 mov r1,r3
+ 779 0126 FFF7FEFF 	 bl setTaskEnabled
+ 284:../cleanflight/src/main/fc/fc_tasks.c **** 
+ 285:../cleanflight/src/main/fc/fc_tasks.c **** #ifdef USE_BEEPER
+ 286:../cleanflight/src/main/fc/fc_tasks.c ****     setTaskEnabled(TASK_BEEPER, true);
+ 287:../cleanflight/src/main/fc/fc_tasks.c **** #endif
+ 288:../cleanflight/src/main/fc/fc_tasks.c **** #ifdef USE_GPS
+ 289:../cleanflight/src/main/fc/fc_tasks.c ****     setTaskEnabled(TASK_GPS, feature(FEATURE_GPS));
+ 780              	 .loc 5 289 0
+ 781 012a 8020     	 movs r0,#128
+ 782 012c FFF7FEFF 	 bl feature
+ 783 0130 0346     	 mov r3,r0
+ 784 0132 0B20     	 movs r0,#11
+ 785 0134 1946     	 mov r1,r3
+ 786 0136 FFF7FEFF 	 bl setTaskEnabled
+ 290:../cleanflight/src/main/fc/fc_tasks.c **** #endif
+ 291:../cleanflight/src/main/fc/fc_tasks.c **** #ifdef USE_MAG
+ 292:../cleanflight/src/main/fc/fc_tasks.c ****     setTaskEnabled(TASK_COMPASS, sensors(SENSOR_MAG));
+ 787              	 .loc 5 292 0
+ 788 013a 0820     	 movs r0,#8
+ 789 013c FFF7FEFF 	 bl sensors
+ 790 0140 0346     	 mov r3,r0
+ 791 0142 0C20     	 movs r0,#12
+ 792 0144 1946     	 mov r1,r3
+ 793 0146 FFF7FEFF 	 bl setTaskEnabled
+ 293:../cleanflight/src/main/fc/fc_tasks.c **** #endif
+ 294:../cleanflight/src/main/fc/fc_tasks.c **** #ifdef USE_BARO
+ 295:../cleanflight/src/main/fc/fc_tasks.c ****     setTaskEnabled(TASK_BARO, sensors(SENSOR_BARO));
+ 794              	 .loc 5 295 0
+ 795 014a 0420     	 movs r0,#4
+ 796 014c FFF7FEFF 	 bl sensors
+ 797 0150 0346     	 mov r3,r0
+ 798 0152 0D20     	 movs r0,#13
+ 799 0154 1946     	 mov r1,r3
+ 800 0156 FFF7FEFF 	 bl setTaskEnabled
+ 296:../cleanflight/src/main/fc/fc_tasks.c **** #endif
+ 297:../cleanflight/src/main/fc/fc_tasks.c **** #if defined(USE_BARO) || defined(USE_GPS)
+ 298:../cleanflight/src/main/fc/fc_tasks.c ****     setTaskEnabled(TASK_ALTITUDE, sensors(SENSOR_BARO) || feature(FEATURE_GPS));
+ 801              	 .loc 5 298 0
+ 802 015a 0420     	 movs r0,#4
+ 803 015c FFF7FEFF 	 bl sensors
+ 804 0160 0346     	 mov r3,r0
+ 805 0162 002B     	 cmp r3,#0
+ 806 0164 05D1     	 bne .L47
+ 807              	 .loc 5 298 0 is_stmt 0 discriminator 2
+ 808 0166 8020     	 movs r0,#128
+ 809 0168 FFF7FEFF 	 bl feature
+ 810 016c 0346     	 mov r3,r0
+ 811 016e 002B     	 cmp r3,#0
+ 812 0170 01D0     	 beq .L48
+ 813              	.L47:
+ 814              	 .loc 5 298 0 discriminator 3
+ 815 0172 0123     	 movs r3,#1
+ 816 0174 00E0     	 b .L49
+ 817              	.L48:
+ 818              	 .loc 5 298 0 discriminator 4
+ 819 0176 0023     	 movs r3,#0
+ 820              	.L49:
+ 821              	 .loc 5 298 0 discriminator 6
+ 822 0178 03F00103 	 and r3,r3,#1
+ 823 017c DBB2     	 uxtb r3,r3
+ 824 017e 0E20     	 movs r0,#14
+ 825 0180 1946     	 mov r1,r3
+ 826 0182 FFF7FEFF 	 bl setTaskEnabled
+ 299:../cleanflight/src/main/fc/fc_tasks.c **** #endif
+ 300:../cleanflight/src/main/fc/fc_tasks.c **** #ifdef USE_DASHBOARD
+ 301:../cleanflight/src/main/fc/fc_tasks.c ****     setTaskEnabled(TASK_DASHBOARD, feature(FEATURE_DASHBOARD));
+ 827              	 .loc 5 301 0 is_stmt 1 discriminator 6
+ 828 0186 4FF40030 	 mov r0,#131072
+ 829 018a FFF7FEFF 	 bl feature
+ 830 018e 0346     	 mov r3,r0
+ 831 0190 0F20     	 movs r0,#15
+ 832 0192 1946     	 mov r1,r3
+ 833 0194 FFF7FEFF 	 bl setTaskEnabled
+ 302:../cleanflight/src/main/fc/fc_tasks.c **** #endif
+ 303:../cleanflight/src/main/fc/fc_tasks.c **** #ifdef USE_TELEMETRY
+ 304:../cleanflight/src/main/fc/fc_tasks.c ****     if (feature(FEATURE_TELEMETRY)) {
+ 305:../cleanflight/src/main/fc/fc_tasks.c ****         setTaskEnabled(TASK_TELEMETRY, true);
+ 306:../cleanflight/src/main/fc/fc_tasks.c ****         if (rxConfig()->serialrx_provider == SERIALRX_JETIEXBUS) {
+ 307:../cleanflight/src/main/fc/fc_tasks.c ****             // Reschedule telemetry to 500hz for Jeti Exbus
+ 308:../cleanflight/src/main/fc/fc_tasks.c ****             rescheduleTask(TASK_TELEMETRY, TASK_PERIOD_HZ(500));
+ 309:../cleanflight/src/main/fc/fc_tasks.c ****         } else if (rxConfig()->serialrx_provider == SERIALRX_CRSF) {
+ 310:../cleanflight/src/main/fc/fc_tasks.c ****             // Reschedule telemetry to 500hz, 2ms for CRSF
+ 311:../cleanflight/src/main/fc/fc_tasks.c ****             rescheduleTask(TASK_TELEMETRY, TASK_PERIOD_HZ(500));
+ 312:../cleanflight/src/main/fc/fc_tasks.c ****         }
+ 313:../cleanflight/src/main/fc/fc_tasks.c ****     }
+ 314:../cleanflight/src/main/fc/fc_tasks.c **** #endif
+ 315:../cleanflight/src/main/fc/fc_tasks.c **** #ifdef USE_LED_STRIP
+ 316:../cleanflight/src/main/fc/fc_tasks.c ****     setTaskEnabled(TASK_LEDSTRIP, feature(FEATURE_LED_STRIP));
+ 317:../cleanflight/src/main/fc/fc_tasks.c **** #endif
+ 318:../cleanflight/src/main/fc/fc_tasks.c **** #ifdef USE_TRANSPONDER
+ 319:../cleanflight/src/main/fc/fc_tasks.c ****     setTaskEnabled(TASK_TRANSPONDER, feature(FEATURE_TRANSPONDER));
+ 320:../cleanflight/src/main/fc/fc_tasks.c **** #endif
+ 321:../cleanflight/src/main/fc/fc_tasks.c **** #ifdef USE_OSD
+ 322:../cleanflight/src/main/fc/fc_tasks.c ****     setTaskEnabled(TASK_OSD, feature(FEATURE_OSD) && osdInitialized());
+ 834              	 .loc 5 322 0 discriminator 6
+ 835 0198 4FF48020 	 mov r0,#262144
+ 836 019c FFF7FEFF 	 bl feature
+ 837 01a0 0346     	 mov r3,r0
+ 838 01a2 002B     	 cmp r3,#0
+ 839 01a4 06D0     	 beq .L50
+ 840              	 .loc 5 322 0 is_stmt 0 discriminator 1
+ 841 01a6 FFF7FEFF 	 bl osdInitialized
+ 842 01aa 0346     	 mov r3,r0
+ 843 01ac 002B     	 cmp r3,#0
+ 844 01ae 01D0     	 beq .L50
+ 845              	 .loc 5 322 0 discriminator 3
+ 846 01b0 0123     	 movs r3,#1
+ 847 01b2 00E0     	 b .L51
+ 848              	.L50:
+ 849              	 .loc 5 322 0 discriminator 4
+ 850 01b4 0023     	 movs r3,#0
+ 851              	.L51:
+ 852              	 .loc 5 322 0 discriminator 6
+ 853 01b6 03F00103 	 and r3,r3,#1
+ 854 01ba DBB2     	 uxtb r3,r3
+ 855 01bc 1020     	 movs r0,#16
+ 856 01be 1946     	 mov r1,r3
+ 857 01c0 FFF7FEFF 	 bl setTaskEnabled
+ 323:../cleanflight/src/main/fc/fc_tasks.c **** #endif
+ 324:../cleanflight/src/main/fc/fc_tasks.c **** #ifdef USE_BST
+ 325:../cleanflight/src/main/fc/fc_tasks.c ****     setTaskEnabled(TASK_BST_MASTER_PROCESS, true);
+ 326:../cleanflight/src/main/fc/fc_tasks.c **** #endif
+ 327:../cleanflight/src/main/fc/fc_tasks.c **** #ifdef USE_ESC_SENSOR
+ 328:../cleanflight/src/main/fc/fc_tasks.c ****     setTaskEnabled(TASK_ESC_SENSOR, feature(FEATURE_ESC_SENSOR));
+ 329:../cleanflight/src/main/fc/fc_tasks.c **** #endif
+ 330:../cleanflight/src/main/fc/fc_tasks.c **** #ifdef USE_ADC_INTERNAL
+ 331:../cleanflight/src/main/fc/fc_tasks.c ****     setTaskEnabled(TASK_ADC_INTERNAL, true);
+ 332:../cleanflight/src/main/fc/fc_tasks.c **** #endif
+ 333:../cleanflight/src/main/fc/fc_tasks.c **** #ifdef USE_PINIOBOX
+ 334:../cleanflight/src/main/fc/fc_tasks.c ****     setTaskEnabled(TASK_PINIOBOX, true);
+ 858              	 .loc 5 334 0 is_stmt 1 discriminator 6
+ 859 01c4 1420     	 movs r0,#20
+ 860 01c6 0121     	 movs r1,#1
+ 861 01c8 FFF7FEFF 	 bl setTaskEnabled
+ 335:../cleanflight/src/main/fc/fc_tasks.c **** #endif
+ 336:../cleanflight/src/main/fc/fc_tasks.c **** #ifdef USE_CMS
+ 337:../cleanflight/src/main/fc/fc_tasks.c **** #ifdef USE_MSP_DISPLAYPORT
+ 338:../cleanflight/src/main/fc/fc_tasks.c ****     setTaskEnabled(TASK_CMS, true);
+ 339:../cleanflight/src/main/fc/fc_tasks.c **** #else
+ 340:../cleanflight/src/main/fc/fc_tasks.c ****     setTaskEnabled(TASK_CMS, feature(FEATURE_OSD) || feature(FEATURE_DASHBOARD));
+ 862              	 .loc 5 340 0 discriminator 6
+ 863 01cc 4FF48020 	 mov r0,#262144
+ 864 01d0 FFF7FEFF 	 bl feature
+ 865 01d4 0346     	 mov r3,r0
+ 866 01d6 002B     	 cmp r3,#0
+ 867 01d8 06D1     	 bne .L52
+ 868              	 .loc 5 340 0 is_stmt 0 discriminator 2
+ 869 01da 4FF40030 	 mov r0,#131072
+ 870 01de FFF7FEFF 	 bl feature
+ 871 01e2 0346     	 mov r3,r0
+ 872 01e4 002B     	 cmp r3,#0
+ 873 01e6 01D0     	 beq .L53
+ 874              	.L52:
+ 875              	 .loc 5 340 0 discriminator 3
+ 876 01e8 0123     	 movs r3,#1
+ 877 01ea 00E0     	 b .L54
+ 878              	.L53:
+ 879              	 .loc 5 340 0 discriminator 4
+ 880 01ec 0023     	 movs r3,#0
+ 881              	.L54:
+ 882              	 .loc 5 340 0 discriminator 6
+ 883 01ee 03F00103 	 and r3,r3,#1
+ 884 01f2 DBB2     	 uxtb r3,r3
+ 885 01f4 1120     	 movs r0,#17
+ 886 01f6 1946     	 mov r1,r3
+ 887 01f8 FFF7FEFF 	 bl setTaskEnabled
+ 341:../cleanflight/src/main/fc/fc_tasks.c **** #endif
+ 342:../cleanflight/src/main/fc/fc_tasks.c **** #endif
+ 343:../cleanflight/src/main/fc/fc_tasks.c **** #ifdef USE_VTX_CONTROL
+ 344:../cleanflight/src/main/fc/fc_tasks.c **** #if defined(USE_VTX_RTC6705) || defined(USE_VTX_SMARTAUDIO) || defined(USE_VTX_TRAMP)
+ 345:../cleanflight/src/main/fc/fc_tasks.c ****     setTaskEnabled(TASK_VTXCTRL, true);
+ 888              	 .loc 5 345 0 is_stmt 1 discriminator 6
+ 889 01fc 1220     	 movs r0,#18
+ 890 01fe 0121     	 movs r1,#1
+ 891 0200 FFF7FEFF 	 bl setTaskEnabled
+ 346:../cleanflight/src/main/fc/fc_tasks.c **** #endif
+ 347:../cleanflight/src/main/fc/fc_tasks.c **** #endif
+ 348:../cleanflight/src/main/fc/fc_tasks.c **** #ifdef USE_CAMERA_CONTROL
+ 349:../cleanflight/src/main/fc/fc_tasks.c ****     setTaskEnabled(TASK_CAMCTRL, true);
+ 350:../cleanflight/src/main/fc/fc_tasks.c **** #endif
+ 351:../cleanflight/src/main/fc/fc_tasks.c **** #ifdef USE_RCDEVICE
+ 352:../cleanflight/src/main/fc/fc_tasks.c ****     setTaskEnabled(TASK_RCDEVICE, rcdeviceIsEnabled());
+ 892              	 .loc 5 352 0 discriminator 6
+ 893 0204 FFF7FEFF 	 bl rcdeviceIsEnabled
+ 894 0208 0346     	 mov r3,r0
+ 895 020a 1320     	 movs r0,#19
+ 896 020c 1946     	 mov r1,r3
+ 897 020e FFF7FEFF 	 bl setTaskEnabled
+ 353:../cleanflight/src/main/fc/fc_tasks.c **** #endif
+ 354:../cleanflight/src/main/fc/fc_tasks.c **** #endif
+ 355:../cleanflight/src/main/fc/fc_tasks.c **** }
+ 898              	 .loc 5 355 0 discriminator 6
+ 899 0212 0837     	 adds r7,r7,#8
+ 900              	.LCFI56:
+ 901              	 .cfi_def_cfa_offset 8
+ 902 0214 BD46     	 mov sp,r7
+ 903              	.LCFI57:
+ 904              	 .cfi_def_cfa_register 13
+ 905              	 
+ 906 0216 80BD     	 pop {r7,pc}
+ 907              	.L56:
+ 908              	 .align 2
+ 909              	.L55:
+ 910 0218 40420F00 	 .word 1000000
+ 911 021c 00000000 	 .word gyro
+ 912 0220 00000000 	 .word acc
+ 913              	 .cfi_endproc
+ 914              	.LFE630:
+ 916              	 .global cfTasks
+ 917              	 .section .rodata
+ 918              	 .align 2
+ 919              	.LC0:
+ 920 0000 53595354 	 .ascii "SYSTEM\000"
+ 920      454D00
+ 921 0007 00       	 .align 2
+ 922              	.LC1:
+ 923 0008 4C4F4144 	 .ascii "LOAD\000"
+ 923      00
+ 924 000d 000000   	 .align 2
+ 925              	.LC2:
+ 926 0010 55504441 	 .ascii "UPDATE\000"
+ 926      544500
+ 927 0017 00       	 .align 2
+ 928              	.LC3:
+ 929 0018 50494400 	 .ascii "PID\000"
+ 930              	 .align 2
+ 931              	.LC4:
+ 932 001c 4759524F 	 .ascii "GYRO\000"
+ 932      00
+ 933 0021 000000   	 .align 2
+ 934              	.LC5:
+ 935 0024 41434300 	 .ascii "ACC\000"
+ 936              	 .align 2
+ 937              	.LC6:
+ 938 0028 41545449 	 .ascii "ATTITUDE\000"
+ 938      54554445 
+ 938      00
+ 939 0031 000000   	 .align 2
+ 940              	.LC7:
+ 941 0034 525800   	 .ascii "RX\000"
+ 942 0037 00       	 .align 2
+ 943              	.LC8:
+ 944 0038 53455249 	 .ascii "SERIAL\000"
+ 944      414C00
+ 945 003f 00       	 .align 2
+ 946              	.LC9:
+ 947 0040 44495350 	 .ascii "DISPATCH\000"
+ 947      41544348 
+ 947      00
+ 948 0049 000000   	 .align 2
+ 949              	.LC10:
+ 950 004c 42415454 	 .ascii "BATTERY_VOLTAGE\000"
+ 950      4552595F 
+ 950      564F4C54 
+ 950      41474500 
+ 951              	 .align 2
+ 952              	.LC11:
+ 953 005c 42415454 	 .ascii "BATTERY_CURRENT\000"
+ 953      4552595F 
+ 953      43555252 
+ 953      454E5400 
+ 954              	 .align 2
+ 955              	.LC12:
+ 956 006c 42415454 	 .ascii "BATTERY_ALERTS\000"
+ 956      4552595F 
+ 956      414C4552 
+ 956      545300
+ 957 007b 00       	 .align 2
+ 958              	.LC13:
+ 959 007c 47505300 	 .ascii "GPS\000"
+ 960              	 .align 2
+ 961              	.LC14:
+ 962 0080 434F4D50 	 .ascii "COMPASS\000"
+ 962      41535300 
+ 963              	 .align 2
+ 964              	.LC15:
+ 965 0088 4241524F 	 .ascii "BARO\000"
+ 965      00
+ 966 008d 000000   	 .align 2
+ 967              	.LC16:
+ 968 0090 414C5449 	 .ascii "ALTITUDE\000"
+ 968      54554445 
+ 968      00
+ 969 0099 000000   	 .align 2
+ 970              	.LC17:
+ 971 009c 44415348 	 .ascii "DASHBOARD\000"
+ 971      424F4152 
+ 971      4400
+ 972 00a6 0000     	 .align 2
+ 973              	.LC18:
+ 974 00a8 4F534400 	 .ascii "OSD\000"
+ 975              	 .align 2
+ 976              	.LC19:
+ 977 00ac 434D5300 	 .ascii "CMS\000"
+ 978              	 .align 2
+ 979              	.LC20:
+ 980 00b0 56545843 	 .ascii "VTXCTRL\000"
+ 980      54524C00 
+ 981              	 .align 2
+ 982              	.LC21:
+ 983 00b8 52434445 	 .ascii "RCDEVICE\000"
+ 983      56494345 
+ 983      00
+ 984 00c1 000000   	 .align 2
+ 985              	.LC22:
+ 986 00c4 50494E49 	 .ascii "PINIOBOX\000"
+ 986      4F424F58 
+ 986      00
+ 987 00cd 000000   	 .section .data.cfTasks,"aw",%progbits
+ 988              	 .align 2
+ 991              	cfTasks:
+ 992 0000 00000000 	 .word .LC0
+ 993 0004 08000000 	 .word .LC1
+ 994 0008 00000000 	 .space 4
+ 995 000c 00000000 	 .word taskSystemLoad
+ 996 0010 A0860100 	 .word 100000
+ 997 0014 04       	 .byte 4
+ 998 0015 00000000 	 .space 28
+ 998      00000000 
+ 998      00000000 
+ 998      00000000 
+ 998      00000000 
+ 999 0031 00000000 	 .4byte .LC0
+ 1000 0035 10000000 	 .4byte .LC2
+ 1001 0039 00000000 	 .space 4
+ 1002 003d 00000000 	 .4byte taskMain
+ 1003 0041 E8030000 	 .4byte 1000
+ 1004 0045 04       	 .byte 4
+ 1005 0046 00000000 	 .space 28
+ 1005      00000000 
+ 1005      00000000 
+ 1005      00000000 
+ 1005      00000000 
+ 1006 0062 18000000 	 .4byte .LC3
+ 1007 0066 1C000000 	 .4byte .LC4
+ 1008 006a 00000000 	 .space 4
+ 1009 006e 00000000 	 .4byte taskMainPidLoop
+ 1010 0072 E8030000 	 .4byte 1000
+ 1011 0076 06       	 .byte 6
+ 1012 0077 00000000 	 .space 28
+ 1012      00000000 
+ 1012      00000000 
+ 1012      00000000 
+ 1012      00000000 
+ 1013 0093 24000000 	 .4byte .LC5
+ 1014 0097 00000000 	 .space 8
+ 1014      00000000 
+ 1015 009f 00000000 	 .4byte taskUpdateAccelerometer
+ 1016 00a3 E8030000 	 .4byte 1000
+ 1017 00a7 03       	 .byte 3
+ 1018 00a8 00000000 	 .space 28
+ 1018      00000000 
+ 1018      00000000 
+ 1018      00000000 
+ 1018      00000000 
+ 1019 00c4 28000000 	 .word .LC6
+ 1020 00c8 00000000 	 .space 8
+ 1020      00000000 
+ 1021 00d0 00000000 	 .word imuUpdateAttitude
+ 1022 00d4 10270000 	 .word 10000
+ 1023 00d8 03       	 .byte 3
+ 1024 00d9 00000000 	 .space 28
+ 1024      00000000 
+ 1024      00000000 
+ 1024      00000000 
+ 1024      00000000 
+ 1025 00f5 34000000 	 .4byte .LC7
+ 1026 00f9 00000000 	 .space 4
+ 1027 00fd 00000000 	 .4byte rxUpdateCheck
+ 1028 0101 00000000 	 .4byte taskUpdateRxMain
+ 1029 0105 5F760000 	 .4byte 30303
+ 1030 0109 05       	 .byte 5
+ 1031 010a 00000000 	 .space 28
+ 1031      00000000 
+ 1031      00000000 
+ 1031      00000000 
+ 1031      00000000 
+ 1032 0126 38000000 	 .4byte .LC8
+ 1033 012a 00000000 	 .space 8
+ 1033      00000000 
+ 1034 0132 00000000 	 .4byte taskHandleSerial
+ 1035 0136 10270000 	 .4byte 10000
+ 1036 013a 01       	 .byte 1
+ 1037 013b 00000000 	 .space 28
+ 1037      00000000 
+ 1037      00000000 
+ 1037      00000000 
+ 1037      00000000 
+ 1038 0157 40000000 	 .4byte .LC9
+ 1039 015b 00000000 	 .space 8
+ 1039      00000000 
+ 1040 0163 00000000 	 .4byte dispatchProcess
+ 1041 0167 E8030000 	 .4byte 1000
+ 1042 016b 05       	 .byte 5
+ 1043 016c 00000000 	 .space 28
+ 1043      00000000 
+ 1043      00000000 
+ 1043      00000000 
+ 1043      00000000 
+ 1044 0188 4C000000 	 .word .LC10
+ 1045 018c 00000000 	 .space 8
+ 1045      00000000 
+ 1046 0194 00000000 	 .word batteryUpdateVoltage
+ 1047 0198 204E0000 	 .word 20000
+ 1048 019c 03       	 .byte 3
+ 1049 019d 00000000 	 .space 28
+ 1049      00000000 
+ 1049      00000000 
+ 1049      00000000 
+ 1049      00000000 
+ 1050 01b9 5C000000 	 .4byte .LC11
+ 1051 01bd 00000000 	 .space 8
+ 1051      00000000 
+ 1052 01c5 00000000 	 .4byte batteryUpdateCurrentMeter
+ 1053 01c9 204E0000 	 .4byte 20000
+ 1054 01cd 03       	 .byte 3
+ 1055 01ce 00000000 	 .space 28
+ 1055      00000000 
+ 1055      00000000 
+ 1055      00000000 
+ 1055      00000000 
+ 1056 01ea 6C000000 	 .4byte .LC12
+ 1057 01ee 00000000 	 .space 8
+ 1057      00000000 
+ 1058 01f6 00000000 	 .4byte taskBatteryAlerts
+ 1059 01fa 400D0300 	 .4byte 200000
+ 1060 01fe 03       	 .byte 3
+ 1061 01ff 00000000 	 .space 28
+ 1061      00000000 
+ 1061      00000000 
+ 1061      00000000 
+ 1061      00000000 
+ 1062 021b 7C000000 	 .4byte .LC13
+ 1063 021f 00000000 	 .space 8
+ 1063      00000000 
+ 1064 0227 00000000 	 .4byte gpsUpdate
+ 1065 022b 10270000 	 .4byte 10000
+ 1066 022f 03       	 .byte 3
+ 1067 0230 00000000 	 .space 28
+ 1067      00000000 
+ 1067      00000000 
+ 1067      00000000 
+ 1067      00000000 
+ 1068 024c 80000000 	 .word .LC14
+ 1069 0250 00000000 	 .space 8
+ 1069      00000000 
+ 1070 0258 00000000 	 .word compassUpdate
+ 1071 025c A0860100 	 .word 100000
+ 1072 0260 01       	 .byte 1
+ 1073 0261 00000000 	 .space 28
+ 1073      00000000 
+ 1073      00000000 
+ 1073      00000000 
+ 1073      00000000 
+ 1074 027d 88000000 	 .4byte .LC15
+ 1075 0281 00000000 	 .space 8
+ 1075      00000000 
+ 1076 0289 00000000 	 .4byte taskUpdateBaro
+ 1077 028d 50C30000 	 .4byte 50000
+ 1078 0291 01       	 .byte 1
+ 1079 0292 00000000 	 .space 28
+ 1079      00000000 
+ 1079      00000000 
+ 1079      00000000 
+ 1079      00000000 
+ 1080 02ae 90000000 	 .4byte .LC16
+ 1081 02b2 00000000 	 .space 8
+ 1081      00000000 
+ 1082 02ba 00000000 	 .4byte taskCalculateAltitude
+ 1083 02be A8610000 	 .4byte 25000
+ 1084 02c2 01       	 .byte 1
+ 1085 02c3 00000000 	 .space 28
+ 1085      00000000 
+ 1085      00000000 
+ 1085      00000000 
+ 1085      00000000 
+ 1086 02df 9C000000 	 .4byte .LC17
+ 1087 02e3 00000000 	 .space 8
+ 1087      00000000 
+ 1088 02eb 00000000 	 .4byte dashboardUpdate
+ 1089 02ef A0860100 	 .4byte 100000
+ 1090 02f3 01       	 .byte 1
+ 1091 02f4 00000000 	 .space 28
+ 1091      00000000 
+ 1091      00000000 
+ 1091      00000000 
+ 1091      00000000 
+ 1092 0310 A8000000 	 .word .LC18
+ 1093 0314 00000000 	 .space 8
+ 1093      00000000 
+ 1094 031c 00000000 	 .word osdUpdate
+ 1095 0320 1A410000 	 .word 16666
+ 1096 0324 01       	 .byte 1
+ 1097 0325 00000000 	 .space 28
+ 1097      00000000 
+ 1097      00000000 
+ 1097      00000000 
+ 1097      00000000 
+ 1098 0341 AC000000 	 .4byte .LC19
+ 1099 0345 00000000 	 .space 8
+ 1099      00000000 
+ 1100 034d 00000000 	 .4byte cmsHandler
+ 1101 0351 1A410000 	 .4byte 16666
+ 1102 0355 01       	 .byte 1
+ 1103 0356 00000000 	 .space 28
+ 1103      00000000 
+ 1103      00000000 
+ 1103      00000000 
+ 1103      00000000 
+ 1104 0372 B0000000 	 .4byte .LC20
+ 1105 0376 00000000 	 .space 8
+ 1105      00000000 
+ 1106 037e 00000000 	 .4byte vtxUpdate
+ 1107 0382 400D0300 	 .4byte 200000
+ 1108 0386 00       	 .byte 0
+ 1109 0387 00000000 	 .space 28
+ 1109      00000000 
+ 1109      00000000 
+ 1109      00000000 
+ 1109      00000000 
+ 1110 03a3 B8000000 	 .4byte .LC21
+ 1111 03a7 00000000 	 .space 8
+ 1111      00000000 
+ 1112 03af 00000000 	 .4byte rcdeviceUpdate
+ 1113 03b3 50C30000 	 .4byte 50000
+ 1114 03b7 03       	 .byte 3
+ 1115 03b8 00000000 	 .space 28
+ 1115      00000000 
+ 1115      00000000 
+ 1115      00000000 
+ 1115      00000000 
+ 1116 03d4 C4000000 	 .word .LC22
+ 1117 03d8 00000000 	 .space 8
+ 1117      00000000 
+ 1118 03e0 00000000 	 .word pinioBoxUpdate
+ 1119 03e4 50C30000 	 .word 50000
+ 1120 03e8 00       	 .byte 0
+ 1121 03e9 00000000 	 .space 28
+ 1121      00000000 
+ 1121      00000000 
+ 1121      00000000 
+ 1121      00000000 
+ 1122 0405 000000   	 .section .bss.lastRxTimeUs.16559,"aw",%nobits
+ 1123              	 .align 2
+ 1126              	lastRxTimeUs.16559:
+ 1127 0000 00000000 	 .space 4
+ 1128              	 .text
+ 1129              	.Letext0:
+ 1130              	 .file 6 "d:\\xmc\\dave-ide-4.4.2-64bit\\eclipse\\arm-gcc-49\\arm-none-eabi\\include\\machine\\_default_types.h"
+ 1131              	 .file 7 "d:\\xmc\\dave-ide-4.4.2-64bit\\eclipse\\arm-gcc-49\\arm-none-eabi\\include\\stdint.h"
+ 1132              	 .file 8 "D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/lib/main/XMC4000/xmc4700.h"
+ 1133              	 .file 9 "D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/lib/main/XMC4000/XMCLib/inc/xmc_usic.h"
+ 1134              	 .file 10 "D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/platform.h"
+ 1135              	 .file 11 "D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/drivers/display.h"
+ 1136              	 .file 12 "D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/common/time.h"
+ 1137              	 .file 13 "D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/build/debug.h"
+ 1138              	 .file 14 "D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/common/color.h"
+ 1139              	 .file 15 "D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/config/feature.h"
+ 1140              	 .file 16 "D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/drivers/io_types.h"
+ 1141              	 .file 17 "D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/drivers/bus_i2c.h"
+ 1142              	 .file 18 "D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/drivers/bus.h"
+ 1143              	 .file 19 "D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/drivers/sensor.h"
+ 1144              	 .file 20 "D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/drivers/accgyro/accgyro.h"
+ 1145              	 .file 21 "D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/drivers/accgyro/accgyro_mpu.h"
+ 1146              	 .file 22 "D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/sensors/gyro.h"
+ 1147              	 .file 23 "D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/drivers/camera_control.h"
+ 1148              	 .file 24 "D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/drivers/resource.h"
+ 1149              	 .file 25 "D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/drivers/serial.h"
+ 1150              	 .file 26 "D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/drivers/transponder_ir.h"
+ 1151              	 .file 27 "D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/fc/config.h"
+ 1152              	 .file 28 "D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/fc/fc_core.h"
+ 1153              	 .file 29 "D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/fc/rc_controls.h"
+ 1154              	 .file 30 "D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/fc/runtime_config.h"
+ 1155              	 .file 31 "D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/flight/imu.h"
+ 1156              	 .file 32 "D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/drivers/pwm_output.h"
+ 1157              	 .file 33 "D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/flight/mixer.h"
+ 1158              	 .file 34 "D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/flight/pid.h"
+ 1159              	 .file 35 "D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/io/gps.h"
+ 1160              	 .file 36 "D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/io/ledstrip.h"
+ 1161              	 .file 37 "D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/io/osd.h"
+ 1162              	 .file 38 "D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/fc/rc_modes.h"
+ 1163              	 .file 39 "D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/pg/piniobox.h"
+ 1164              	 .file 40 "D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/io/transponder_ir.h"
+ 1165              	 .file 41 "D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/io/rcdevice_cam.h"
+ 1166              	 .file 42 "D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/io/vtx.h"
+ 1167              	 .file 43 "D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/msp/msp_serial.h"
+ 1168              	 .file 44 "D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/pg/rx.h"
+ 1169              	 .file 45 "D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/rx/rx.h"
+ 1170              	 .file 46 "D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/sensors/sensors.h"
+ 1171              	 .file 47 "D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/sensors/barometer.h"
+ 1172              	 .file 48 "D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/sensors/current.h"
+ 1173              	 .file 49 "D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/sensors/voltage.h"
+ 1174              	 .file 50 "D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/sensors/compass.h"
+ 1175              	 .file 51 "D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/sensors/esc_sensor.h"
+ 1176              	 .file 52 "D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/sensors/rangefinder.h"
+ 1177              	 .file 53 "D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/scheduler/scheduler.h"
+ 1178              	 .file 54 "D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/telemetry/telemetry.h"
+ 1179              	 .file 55 "D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/lib/main/CMSIS/Core/Include/core_cm4.h"
+ 1180              	 .file 56 "D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/lib/main/XMC4000/system_XMC4700.h"
+ 1181              	 .file 57 "D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/cms/cms.h"
+ 1182              	 .file 58 "D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/fc/fc_rc.h"
+ 1183              	 .file 59 "D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/interface/cli.h"
+DEFINED SYMBOLS
+                            *ABS*:00000000 fc_tasks.c
+                            *COM*:00000004 pCurrentDisplay
+    {standard input}:21     .text.constrain:00000000 $t
+    {standard input}:25     .text.constrain:00000000 constrain
+                            *COM*:00000004 colors
+                            *COM*:00000004 modeColors
+                            *COM*:0000000b specialColors
+    {standard input}:88     .text.serialConfig:00000000 $t
+    {standard input}:92     .text.serialConfig:00000000 serialConfig
+    {standard input}:122    .text.serialConfig:00000010 $d
+                            *COM*:00000003 switchStates
+    {standard input}:128    .text.accelerometerConfigMutable:00000000 $t
+    {standard input}:132    .text.accelerometerConfigMutable:00000000 accelerometerConfigMutable
+    {standard input}:162    .text.accelerometerConfigMutable:00000010 $d
+    {standard input}:167    .text.batteryConfig:00000000 $t
+    {standard input}:171    .text.batteryConfig:00000000 batteryConfig
+    {standard input}:201    .text.batteryConfig:00000010 $d
+    {standard input}:206    .text.taskMain:00000000 $t
+    {standard input}:210    .text.taskMain:00000000 taskMain
+    {standard input}:244    .text.taskHandleSerial:00000000 $t
+    {standard input}:248    .text.taskHandleSerial:00000000 taskHandleSerial
+    {standard input}:328    .text.taskHandleSerial:00000064 $d
+    {standard input}:338    .text.taskBatteryAlerts:00000000 $t
+    {standard input}:342    .text.taskBatteryAlerts:00000000 taskBatteryAlerts
+    {standard input}:386    .text.taskBatteryAlerts:00000028 $d
+    {standard input}:391    .text.taskUpdateAccelerometer:00000000 $t
+    {standard input}:395    .text.taskUpdateAccelerometer:00000000 taskUpdateAccelerometer
+    {standard input}:433    .text.taskUpdateRxMain:00000000 $t
+    {standard input}:437    .text.taskUpdateRxMain:00000000 taskUpdateRxMain
+    {standard input}:504    .text.taskUpdateRxMain:00000054 $d
+    {standard input}:1126   .bss.lastRxTimeUs.16559:00000000 lastRxTimeUs.16559
+    {standard input}:511    .text.taskUpdateBaro:00000000 $t
+    {standard input}:515    .text.taskUpdateBaro:00000000 taskUpdateBaro
+    {standard input}:566    .text.taskCalculateAltitude:00000000 $t
+    {standard input}:570    .text.taskCalculateAltitude:00000000 taskCalculateAltitude
+    {standard input}:604    .text.fcTasksInit:00000000 $t
+    {standard input}:609    .text.fcTasksInit:00000000 fcTasksInit
+    {standard input}:910    .text.fcTasksInit:00000218 $d
+    {standard input}:991    .data.cfTasks:00000000 cfTasks
+    {standard input}:918    .rodata:00000000 $d
+    {standard input}:988    .data.cfTasks:00000000 $d
+    {standard input}:1123   .bss.lastRxTimeUs.16559:00000000 $d
+                     .debug_frame:00000010 $d
+
+UNDEFINED SYMBOLS
+serialConfig_System
+accelerometerConfig_System
+batteryConfig_System
+afatfs_poll
+usbCableIsInserted
+usbVcpIsConnected
+cliProcess
+mspSerialProcess
+debugMode
+debug
+cliMode
+armingFlags
+mspFcProcessCommand
+mspFcProcessReply
+batteryUpdatePresence
+batteryUpdateStates
+batteryUpdateAlarms
+accUpdate
+processRx
+updateRcCommands
+updateArmingStatus
+currentRxRefreshRate
+isRXDataNew
+sensors
+baroUpdate
+rescheduleTask
+calculateEstimatedAltitude
+schedulerInit
+setTaskEnabled
+feature
+dispatchIsEnabled
+osdInitialized
+rcdeviceIsEnabled
+gyro
+acc
+taskSystemLoad
+taskMainPidLoop
+imuUpdateAttitude
+rxUpdateCheck
+dispatchProcess
+batteryUpdateVoltage
+batteryUpdateCurrentMeter
+gpsUpdate
+compassUpdate
+dashboardUpdate
+osdUpdate
+cmsHandler
+vtxUpdate
+rcdeviceUpdate
+pinioBoxUpdate

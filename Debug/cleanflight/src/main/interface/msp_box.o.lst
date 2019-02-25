@@ -1,0 +1,1998 @@
+   1              	 .syntax unified
+   2              	 .cpu cortex-m4
+   3              	 .eabi_attribute 27,3
+   4              	 .fpu fpv4-sp-d16
+   5              	 .eabi_attribute 20,1
+   6              	 .eabi_attribute 21,1
+   7              	 .eabi_attribute 23,3
+   8              	 .eabi_attribute 24,1
+   9              	 .eabi_attribute 25,1
+  10              	 .eabi_attribute 26,1
+  11              	 .eabi_attribute 30,6
+  12              	 .eabi_attribute 34,1
+  13              	 .eabi_attribute 18,4
+  14              	 .thumb
+  15              	 .file "msp_box.c"
+  16              	 .text
+  17              	.Ltext0:
+  18              	 .cfi_sections .debug_frame
+  19              	 .section .text.mixerConfig,"ax",%progbits
+  20              	 .align 2
+  21              	 .thumb
+  22              	 .thumb_func
+  24              	mixerConfig:
+  25              	.LFB536:
+  26              	 .file 1 "D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/flight/mixer.h"
+   1:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/flight\mixer.h **** /*
+   2:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/flight\mixer.h ****  * This file is part of Cleanflight and Betaflight.
+   3:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/flight\mixer.h ****  *
+   4:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/flight\mixer.h ****  * Cleanflight and Betaflight are free software. You can redistribute
+   5:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/flight\mixer.h ****  * this software and/or modify this software under the terms of the
+   6:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/flight\mixer.h ****  * GNU General Public License as published by the Free Software
+   7:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/flight\mixer.h ****  * Foundation, either version 3 of the License, or (at your option)
+   8:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/flight\mixer.h ****  * any later version.
+   9:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/flight\mixer.h ****  *
+  10:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/flight\mixer.h ****  * Cleanflight and Betaflight are distributed in the hope that they
+  11:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/flight\mixer.h ****  * will be useful, but WITHOUT ANY WARRANTY; without even the implied
+  12:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/flight\mixer.h ****  * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+  13:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/flight\mixer.h ****  * See the GNU General Public License for more details.
+  14:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/flight\mixer.h ****  *
+  15:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/flight\mixer.h ****  * You should have received a copy of the GNU General Public License
+  16:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/flight\mixer.h ****  * along with this software.
+  17:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/flight\mixer.h ****  *
+  18:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/flight\mixer.h ****  * If not, see <http://www.gnu.org/licenses/>.
+  19:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/flight\mixer.h ****  */
+  20:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/flight\mixer.h **** 
+  21:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/flight\mixer.h **** #pragma once
+  22:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/flight\mixer.h **** 
+  23:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/flight\mixer.h **** #include "platform.h"
+  24:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/flight\mixer.h **** 
+  25:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/flight\mixer.h **** #include "common/time.h"
+  26:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/flight\mixer.h **** #include "pg/pg.h"
+  27:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/flight\mixer.h **** #include "drivers/pwm_output_counts.h"
+  28:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/flight\mixer.h **** #include "drivers/io_types.h"
+  29:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/flight\mixer.h **** #include "drivers/pwm_output.h"
+  30:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/flight\mixer.h **** 
+  31:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/flight\mixer.h **** #define QUAD_MOTOR_COUNT 4
+  32:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/flight\mixer.h **** #define BRUSHED_MOTORS_PWM_RATE 16000
+  33:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/flight\mixer.h **** #define BRUSHLESS_MOTORS_PWM_RATE 480
+  34:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/flight\mixer.h **** 
+  35:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/flight\mixer.h **** // Digital protocol has fixed values
+  36:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/flight\mixer.h **** #define DSHOT_DISARM_COMMAND      0
+  37:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/flight\mixer.h **** #define DSHOT_MIN_THROTTLE       48
+  38:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/flight\mixer.h **** #define DSHOT_MAX_THROTTLE     2047
+  39:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/flight\mixer.h **** #define DSHOT_3D_DEADBAND_LOW  1047
+  40:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/flight\mixer.h **** #define DSHOT_3D_DEADBAND_HIGH 1048
+  41:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/flight\mixer.h **** 
+  42:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/flight\mixer.h **** // Note: this is called MultiType/MULTITYPE_* in baseflight.
+  43:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/flight\mixer.h **** typedef enum mixerMode
+  44:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/flight\mixer.h **** {
+  45:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/flight\mixer.h ****     MIXER_TRI = 1,
+  46:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/flight\mixer.h ****     MIXER_QUADP = 2,
+  47:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/flight\mixer.h ****     MIXER_QUADX = 3,
+  48:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/flight\mixer.h ****     MIXER_BICOPTER = 4,
+  49:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/flight\mixer.h ****     MIXER_GIMBAL = 5,
+  50:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/flight\mixer.h ****     MIXER_Y6 = 6,
+  51:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/flight\mixer.h ****     MIXER_HEX6 = 7,
+  52:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/flight\mixer.h ****     MIXER_FLYING_WING = 8,
+  53:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/flight\mixer.h ****     MIXER_Y4 = 9,
+  54:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/flight\mixer.h ****     MIXER_HEX6X = 10,
+  55:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/flight\mixer.h ****     MIXER_OCTOX8 = 11,
+  56:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/flight\mixer.h ****     MIXER_OCTOFLATP = 12,
+  57:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/flight\mixer.h ****     MIXER_OCTOFLATX = 13,
+  58:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/flight\mixer.h ****     MIXER_AIRPLANE = 14,        // airplane / singlecopter / dualcopter (not yet properly supported
+  59:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/flight\mixer.h ****     MIXER_HELI_120_CCPM = 15,
+  60:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/flight\mixer.h ****     MIXER_HELI_90_DEG = 16,
+  61:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/flight\mixer.h ****     MIXER_VTAIL4 = 17,
+  62:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/flight\mixer.h ****     MIXER_HEX6H = 18,
+  63:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/flight\mixer.h ****     MIXER_RX_TO_SERVO = 19,    // PPM -> servo relay
+  64:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/flight\mixer.h ****     MIXER_DUALCOPTER = 20,
+  65:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/flight\mixer.h ****     MIXER_SINGLECOPTER = 21,
+  66:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/flight\mixer.h ****     MIXER_ATAIL4 = 22,
+  67:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/flight\mixer.h ****     MIXER_CUSTOM = 23,
+  68:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/flight\mixer.h ****     MIXER_CUSTOM_AIRPLANE = 24,
+  69:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/flight\mixer.h ****     MIXER_CUSTOM_TRI = 25,
+  70:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/flight\mixer.h ****     MIXER_QUADX_1234 = 26
+  71:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/flight\mixer.h **** } mixerMode_e;
+  72:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/flight\mixer.h **** 
+  73:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/flight\mixer.h **** // Custom mixer data per motor
+  74:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/flight\mixer.h **** typedef struct motorMixer_s {
+  75:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/flight\mixer.h ****     float throttle;
+  76:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/flight\mixer.h ****     float roll;
+  77:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/flight\mixer.h ****     float pitch;
+  78:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/flight\mixer.h ****     float yaw;
+  79:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/flight\mixer.h **** } motorMixer_t;
+  80:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/flight\mixer.h **** 
+  81:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/flight\mixer.h **** PG_DECLARE_ARRAY(motorMixer_t, MAX_SUPPORTED_MOTORS, customMotorMixer);
+  82:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/flight\mixer.h **** 
+  83:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/flight\mixer.h **** // Custom mixer configuration
+  84:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/flight\mixer.h **** typedef struct mixer_s {
+  85:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/flight\mixer.h ****     uint8_t motorCount;
+  86:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/flight\mixer.h ****     uint8_t useServo;
+  87:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/flight\mixer.h ****     const motorMixer_t *motor;
+  88:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/flight\mixer.h **** } mixer_t;
+  89:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/flight\mixer.h **** 
+  90:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/flight\mixer.h **** typedef struct mixerConfig_s {
+  91:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/flight\mixer.h ****     uint8_t mixerMode;
+  92:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/flight\mixer.h ****     bool yaw_motors_reversed;
+  93:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/flight\mixer.h ****     uint8_t crashflip_motor_percent;
+  94:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/flight\mixer.h **** } mixerConfig_t;
+  95:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/flight\mixer.h **** 
+  96:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/flight\mixer.h **** PG_DECLARE(mixerConfig_t, mixerConfig);
+  27              	 .loc 1 96 0
+  28              	 .cfi_startproc
+  29              	 
+  30              	 
+  31              	 
+  32 0000 80B4     	 push {r7}
+  33              	.LCFI0:
+  34              	 .cfi_def_cfa_offset 4
+  35              	 .cfi_offset 7,-4
+  36 0002 00AF     	 add r7,sp,#0
+  37              	.LCFI1:
+  38              	 .cfi_def_cfa_register 7
+  39              	 .loc 1 96 0
+  40 0004 024B     	 ldr r3,.L3
+  41 0006 1846     	 mov r0,r3
+  42 0008 BD46     	 mov sp,r7
+  43              	.LCFI2:
+  44              	 .cfi_def_cfa_register 13
+  45              	 
+  46 000a 5DF8047B 	 ldr r7,[sp],#4
+  47              	.LCFI3:
+  48              	 .cfi_restore 7
+  49              	 .cfi_def_cfa_offset 0
+  50 000e 7047     	 bx lr
+  51              	.L4:
+  52              	 .align 2
+  53              	.L3:
+  54 0010 00000000 	 .word mixerConfig_System
+  55              	 .cfi_endproc
+  56              	.LFE536:
+  58              	 .section .text.pinioBoxConfig,"ax",%progbits
+  59              	 .align 2
+  60              	 .thumb
+  61              	 .thumb_func
+  63              	pinioBoxConfig:
+  64              	.LFB549:
+  65              	 .file 2 "D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/pg/piniobox.h"
+   1:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/pg\piniobox.h **** /*
+   2:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/pg\piniobox.h ****  * This file is part of Cleanflight and Betaflight.
+   3:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/pg\piniobox.h ****  *
+   4:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/pg\piniobox.h ****  * Cleanflight and Betaflight are free software. You can redistribute
+   5:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/pg\piniobox.h ****  * this software and/or modify this software under the terms of the
+   6:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/pg\piniobox.h ****  * GNU General Public License as published by the Free Software
+   7:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/pg\piniobox.h ****  * Foundation, either version 3 of the License, or (at your option)
+   8:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/pg\piniobox.h ****  * any later version.
+   9:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/pg\piniobox.h ****  *
+  10:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/pg\piniobox.h ****  * Cleanflight and Betaflight are distributed in the hope that they
+  11:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/pg\piniobox.h ****  * will be useful, but WITHOUT ANY WARRANTY; without even the implied
+  12:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/pg\piniobox.h ****  * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+  13:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/pg\piniobox.h ****  * See the GNU General Public License for more details.
+  14:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/pg\piniobox.h ****  *
+  15:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/pg\piniobox.h ****  * You should have received a copy of the GNU General Public License
+  16:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/pg\piniobox.h ****  * along with this software.
+  17:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/pg\piniobox.h ****  *
+  18:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/pg\piniobox.h ****  * If not, see <http://www.gnu.org/licenses/>.
+  19:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/pg\piniobox.h ****  */
+  20:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/pg\piniobox.h **** 
+  21:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/pg\piniobox.h **** #pragma once
+  22:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/pg\piniobox.h **** 
+  23:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/pg\piniobox.h **** #include "drivers/pinio.h"
+  24:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/pg\piniobox.h **** #include "fc/rc_modes.h"
+  25:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/pg\piniobox.h **** #include "pg/pg.h"
+  26:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/pg\piniobox.h **** 
+  27:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/pg\piniobox.h **** typedef struct pinioBoxConfig_s {
+  28:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/pg\piniobox.h ****     uint8_t permanentId[PINIO_COUNT];
+  29:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/pg\piniobox.h **** } pinioBoxConfig_t;
+  30:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/pg\piniobox.h **** 
+  31:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/pg\piniobox.h **** PG_DECLARE(pinioBoxConfig_t, pinioBoxConfig);
+  66              	 .loc 2 31 0
+  67              	 .cfi_startproc
+  68              	 
+  69              	 
+  70              	 
+  71 0000 80B4     	 push {r7}
+  72              	.LCFI4:
+  73              	 .cfi_def_cfa_offset 4
+  74              	 .cfi_offset 7,-4
+  75 0002 00AF     	 add r7,sp,#0
+  76              	.LCFI5:
+  77              	 .cfi_def_cfa_register 7
+  78              	 .loc 2 31 0
+  79 0004 024B     	 ldr r3,.L7
+  80 0006 1846     	 mov r0,r3
+  81 0008 BD46     	 mov sp,r7
+  82              	.LCFI6:
+  83              	 .cfi_def_cfa_register 13
+  84              	 
+  85 000a 5DF8047B 	 ldr r7,[sp],#4
+  86              	.LCFI7:
+  87              	 .cfi_restore 7
+  88              	 .cfi_def_cfa_offset 0
+  89 000e 7047     	 bx lr
+  90              	.L8:
+  91              	 .align 2
+  92              	.L7:
+  93 0010 00000000 	 .word pinioBoxConfig_System
+  94              	 .cfi_endproc
+  95              	.LFE549:
+  97              	 .section .rodata
+  98              	 .align 2
+  99              	.LC0:
+ 100 0000 41524D00 	 .ascii "ARM\000"
+ 101              	 .align 2
+ 102              	.LC1:
+ 103 0004 414E474C 	 .ascii "ANGLE\000"
+ 103      4500
+ 104 000a 0000     	 .align 2
+ 105              	.LC2:
+ 106 000c 484F5249 	 .ascii "HORIZON\000"
+ 106      5A4F4E00 
+ 107              	 .align 2
+ 108              	.LC3:
+ 109 0014 4241524F 	 .ascii "BARO\000"
+ 109      00
+ 110 0019 000000   	 .align 2
+ 111              	.LC4:
+ 112 001c 414E5449 	 .ascii "ANTI GRAVITY\000"
+ 112      20475241 
+ 112      56495459 
+ 112      00
+ 113 0029 000000   	 .align 2
+ 114              	.LC5:
+ 115 002c 4D414700 	 .ascii "MAG\000"
+ 116              	 .align 2
+ 117              	.LC6:
+ 118 0030 48454144 	 .ascii "HEADFREE\000"
+ 118      46524545 
+ 118      00
+ 119 0039 000000   	 .align 2
+ 120              	.LC7:
+ 121 003c 48454144 	 .ascii "HEADADJ\000"
+ 121      41444A00 
+ 122              	 .align 2
+ 123              	.LC8:
+ 124 0044 43414D53 	 .ascii "CAMSTAB\000"
+ 124      54414200 
+ 125              	 .align 2
+ 126              	.LC9:
+ 127 004c 47505320 	 .ascii "GPS HOME\000"
+ 127      484F4D45 
+ 127      00
+ 128 0055 000000   	 .align 2
+ 129              	.LC10:
+ 130 0058 47505320 	 .ascii "GPS HOLD\000"
+ 130      484F4C44 
+ 130      00
+ 131 0061 000000   	 .align 2
+ 132              	.LC11:
+ 133 0064 50415353 	 .ascii "PASSTHRU\000"
+ 133      54485255 
+ 133      00
+ 134 006d 000000   	 .align 2
+ 135              	.LC12:
+ 136 0070 42454550 	 .ascii "BEEPER\000"
+ 136      455200
+ 137 0077 00       	 .align 2
+ 138              	.LC13:
+ 139 0078 4C45444C 	 .ascii "LEDLOW\000"
+ 139      4F5700
+ 140 007f 00       	 .align 2
+ 141              	.LC14:
+ 142 0080 43414C49 	 .ascii "CALIB\000"
+ 142      4200
+ 143 0086 0000     	 .align 2
+ 144              	.LC15:
+ 145 0088 4F534420 	 .ascii "OSD DISABLE SW\000"
+ 145      44495341 
+ 145      424C4520 
+ 145      535700
+ 146 0097 00       	 .align 2
+ 147              	.LC16:
+ 148 0098 54454C45 	 .ascii "TELEMETRY\000"
+ 148      4D455452 
+ 148      5900
+ 149 00a2 0000     	 .align 2
+ 150              	.LC17:
+ 151 00a4 53455256 	 .ascii "SERVO1\000"
+ 151      4F3100
+ 152 00ab 00       	 .align 2
+ 153              	.LC18:
+ 154 00ac 53455256 	 .ascii "SERVO2\000"
+ 154      4F3200
+ 155 00b3 00       	 .align 2
+ 156              	.LC19:
+ 157 00b4 53455256 	 .ascii "SERVO3\000"
+ 157      4F3300
+ 158 00bb 00       	 .align 2
+ 159              	.LC20:
+ 160 00bc 424C4143 	 .ascii "BLACKBOX\000"
+ 160      4B424F58 
+ 160      00
+ 161 00c5 000000   	 .align 2
+ 162              	.LC21:
+ 163 00c8 4641494C 	 .ascii "FAILSAFE\000"
+ 163      53414645 
+ 163      00
+ 164 00d1 000000   	 .align 2
+ 165              	.LC22:
+ 166 00d4 41495220 	 .ascii "AIR MODE\000"
+ 166      4D4F4445 
+ 166      00
+ 167 00dd 000000   	 .align 2
+ 168              	.LC23:
+ 169 00e0 44495341 	 .ascii "DISABLE / SWITCH 3D\000"
+ 169      424C4520 
+ 169      2F205357 
+ 169      49544348 
+ 169      20334400 
+ 170              	 .align 2
+ 171              	.LC24:
+ 172 00f4 46505620 	 .ascii "FPV ANGLE MIX\000"
+ 172      414E474C 
+ 172      45204D49 
+ 172      5800
+ 173 0102 0000     	 .align 2
+ 174              	.LC25:
+ 175 0104 424C4143 	 .ascii "BLACKBOX ERASE (>30s)\000"
+ 175      4B424F58 
+ 175      20455241 
+ 175      53452028 
+ 175      3E333073 
+ 176 011a 0000     	 .align 2
+ 177              	.LC26:
+ 178 011c 43414D45 	 .ascii "CAMERA CONTROL 1\000"
+ 178      52412043 
+ 178      4F4E5452 
+ 178      4F4C2031 
+ 178      00
+ 179 012d 000000   	 .align 2
+ 180              	.LC27:
+ 181 0130 43414D45 	 .ascii "CAMERA CONTROL 2\000"
+ 181      52412043 
+ 181      4F4E5452 
+ 181      4F4C2032 
+ 181      00
+ 182 0141 000000   	 .align 2
+ 183              	.LC28:
+ 184 0144 43414D45 	 .ascii "CAMERA CONTROL 3\000"
+ 184      52412043 
+ 184      4F4E5452 
+ 184      4F4C2033 
+ 184      00
+ 185 0155 000000   	 .align 2
+ 186              	.LC29:
+ 187 0158 464C4950 	 .ascii "FLIP OVER AFTER CRASH\000"
+ 187      204F5645 
+ 187      52204146 
+ 187      54455220 
+ 187      43524153 
+ 188 016e 0000     	 .align 2
+ 189              	.LC30:
+ 190 0170 50524541 	 .ascii "PREARM\000"
+ 190      524D00
+ 191 0177 00       	 .align 2
+ 192              	.LC31:
+ 193 0178 42454550 	 .ascii "BEEP GPS SATELLITE COUNT\000"
+ 193      20475053 
+ 193      20534154 
+ 193      454C4C49 
+ 193      54452043 
+ 194 0191 000000   	 .align 2
+ 195              	.LC32:
+ 196 0194 56545820 	 .ascii "VTX PIT MODE\000"
+ 196      50495420 
+ 196      4D4F4445 
+ 196      00
+ 197 01a1 000000   	 .align 2
+ 198              	.LC33:
+ 199 01a4 55534552 	 .ascii "USER1\000"
+ 199      3100
+ 200 01aa 0000     	 .align 2
+ 201              	.LC34:
+ 202 01ac 55534552 	 .ascii "USER2\000"
+ 202      3200
+ 203 01b2 0000     	 .align 2
+ 204              	.LC35:
+ 205 01b4 55534552 	 .ascii "USER3\000"
+ 205      3300
+ 206 01ba 0000     	 .align 2
+ 207              	.LC36:
+ 208 01bc 55534552 	 .ascii "USER4\000"
+ 208      3400
+ 209 01c2 0000     	 .align 2
+ 210              	.LC37:
+ 211 01c4 50494420 	 .ascii "PID AUDIO\000"
+ 211      41554449 
+ 211      4F00
+ 212 01ce 0000     	 .align 2
+ 213              	.LC38:
+ 214 01d0 50415241 	 .ascii "PARALYZE\000"
+ 214      4C595A45 
+ 214      00
+ 215 01d9 000000   	 .align 2
+ 216              	.LC39:
+ 217 01dc 47505320 	 .ascii "GPS RESCUE\000"
+ 217      52455343 
+ 217      554500
+ 218 01e7 00       	 .align 2
+ 219              	.LC40:
+ 220 01e8 4143524F 	 .ascii "ACRO TRAINER\000"
+ 220      20545241 
+ 220      494E4552 
+ 220      00
+ 221 01f5 000000   	 .section .rodata.boxes,"a",%progbits
+ 222              	 .align 2
+ 225              	boxes:
+ 226 0000 00       	 .byte 0
+ 227 0001 00000000 	 .4byte .LC0
+ 228 0005 00       	 .byte 0
+ 229 0006 01       	 .byte 1
+ 230 0007 04000000 	 .4byte .LC1
+ 231 000b 01       	 .byte 1
+ 232 000c 02       	 .byte 2
+ 233 000d 0C000000 	 .4byte .LC2
+ 234 0011 02       	 .byte 2
+ 235 0012 04       	 .byte 4
+ 236 0013 14000000 	 .4byte .LC3
+ 237 0017 03       	 .byte 3
+ 238 0018 0B       	 .byte 11
+ 239 0019 1C000000 	 .4byte .LC4
+ 240 001d 04       	 .byte 4
+ 241 001e 03       	 .byte 3
+ 242 001f 2C000000 	 .4byte .LC5
+ 243 0023 05       	 .byte 5
+ 244 0024 07       	 .byte 7
+ 245 0025 30000000 	 .4byte .LC6
+ 246 0029 06       	 .byte 6
+ 247 002a 0C       	 .byte 12
+ 248 002b 3C000000 	 .4byte .LC7
+ 249 002f 07       	 .byte 7
+ 250 0030 0D       	 .byte 13
+ 251 0031 44000000 	 .4byte .LC8
+ 252 0035 08       	 .byte 8
+ 253 0036 05       	 .byte 5
+ 254 0037 4C000000 	 .4byte .LC9
+ 255 003b 0A       	 .byte 10
+ 256 003c 06       	 .byte 6
+ 257 003d 58000000 	 .4byte .LC10
+ 258 0041 0B       	 .byte 11
+ 259 0042 08       	 .byte 8
+ 260 0043 64000000 	 .4byte .LC11
+ 261 0047 0C       	 .byte 12
+ 262 0048 0E       	 .byte 14
+ 263 0049 70000000 	 .4byte .LC12
+ 264 004d 0D       	 .byte 13
+ 265 004e 0F       	 .byte 15
+ 266 004f 78000000 	 .4byte .LC13
+ 267 0053 0F       	 .byte 15
+ 268 0054 10       	 .byte 16
+ 269 0055 80000000 	 .4byte .LC14
+ 270 0059 11       	 .byte 17
+ 271 005a 11       	 .byte 17
+ 272 005b 88000000 	 .4byte .LC15
+ 273 005f 13       	 .byte 19
+ 274 0060 12       	 .byte 18
+ 275 0061 98000000 	 .4byte .LC16
+ 276 0065 14       	 .byte 20
+ 277 0066 13       	 .byte 19
+ 278 0067 A4000000 	 .4byte .LC17
+ 279 006b 17       	 .byte 23
+ 280 006c 14       	 .byte 20
+ 281 006d AC000000 	 .4byte .LC18
+ 282 0071 18       	 .byte 24
+ 283 0072 15       	 .byte 21
+ 284 0073 B4000000 	 .4byte .LC19
+ 285 0077 19       	 .byte 25
+ 286 0078 16       	 .byte 22
+ 287 0079 BC000000 	 .4byte .LC20
+ 288 007d 1A       	 .byte 26
+ 289 007e 09       	 .byte 9
+ 290 007f C8000000 	 .4byte .LC21
+ 291 0083 1B       	 .byte 27
+ 292 0084 17       	 .byte 23
+ 293 0085 D4000000 	 .4byte .LC22
+ 294 0089 1C       	 .byte 28
+ 295 008a 18       	 .byte 24
+ 296 008b E0000000 	 .4byte .LC23
+ 297 008f 1D       	 .byte 29
+ 298 0090 19       	 .byte 25
+ 299 0091 F4000000 	 .4byte .LC24
+ 300 0095 1E       	 .byte 30
+ 301 0096 1A       	 .byte 26
+ 302 0097 04010000 	 .4byte .LC25
+ 303 009b 1F       	 .byte 31
+ 304 009c 1B       	 .byte 27
+ 305 009d 1C010000 	 .4byte .LC26
+ 306 00a1 20       	 .byte 32
+ 307 00a2 1C       	 .byte 28
+ 308 00a3 30010000 	 .4byte .LC27
+ 309 00a7 21       	 .byte 33
+ 310 00a8 1D       	 .byte 29
+ 311 00a9 44010000 	 .4byte .LC28
+ 312 00ad 22       	 .byte 34
+ 313 00ae 1E       	 .byte 30
+ 314 00af 58010000 	 .4byte .LC29
+ 315 00b3 23       	 .byte 35
+ 316 00b4 1F       	 .byte 31
+ 317 00b5 70010000 	 .4byte .LC30
+ 318 00b9 24       	 .byte 36
+ 319 00ba 20       	 .byte 32
+ 320 00bb 78010000 	 .4byte .LC31
+ 321 00bf 25       	 .byte 37
+ 322 00c0 21       	 .byte 33
+ 323 00c1 94010000 	 .4byte .LC32
+ 324 00c5 27       	 .byte 39
+ 325 00c6 23       	 .byte 35
+ 326 00c7 A4010000 	 .4byte .LC33
+ 327 00cb 28       	 .byte 40
+ 328 00cc 24       	 .byte 36
+ 329 00cd AC010000 	 .4byte .LC34
+ 330 00d1 29       	 .byte 41
+ 331 00d2 25       	 .byte 37
+ 332 00d3 B4010000 	 .4byte .LC35
+ 333 00d7 2A       	 .byte 42
+ 334 00d8 26       	 .byte 38
+ 335 00d9 BC010000 	 .4byte .LC36
+ 336 00dd 2B       	 .byte 43
+ 337 00de 27       	 .byte 39
+ 338 00df C4010000 	 .4byte .LC37
+ 339 00e3 2C       	 .byte 44
+ 340 00e4 22       	 .byte 34
+ 341 00e5 D0010000 	 .4byte .LC38
+ 342 00e9 2D       	 .byte 45
+ 343 00ea 0A       	 .byte 10
+ 344 00eb DC010000 	 .4byte .LC39
+ 345 00ef 2E       	 .byte 46
+ 346 00f0 28       	 .byte 40
+ 347 00f1 E8010000 	 .4byte .LC40
+ 348 00f5 2F       	 .byte 47
+ 349 00f6 0000     	 .section .bss.activeBoxIds,"aw",%nobits
+ 350              	 .align 2
+ 353              	activeBoxIds:
+ 354 0000 00000000 	 .space 8
+ 354      00000000 
+ 355              	 .section .text.findBoxByBoxId,"ax",%progbits
+ 356              	 .align 2
+ 357              	 .global findBoxByBoxId
+ 358              	 .thumb
+ 359              	 .thumb_func
+ 361              	findBoxByBoxId:
+ 362              	.LFB551:
+ 363              	 .file 3 "../cleanflight/src/main/interface/msp_box.c"
+   1:../cleanflight/src/main/interface/msp_box.c **** /*
+   2:../cleanflight/src/main/interface/msp_box.c ****  * This file is part of Cleanflight and Betaflight.
+   3:../cleanflight/src/main/interface/msp_box.c ****  *
+   4:../cleanflight/src/main/interface/msp_box.c ****  * Cleanflight and Betaflight are free software. You can redistribute
+   5:../cleanflight/src/main/interface/msp_box.c ****  * this software and/or modify this software under the terms of the
+   6:../cleanflight/src/main/interface/msp_box.c ****  * GNU General Public License as published by the Free Software
+   7:../cleanflight/src/main/interface/msp_box.c ****  * Foundation, either version 3 of the License, or (at your option)
+   8:../cleanflight/src/main/interface/msp_box.c ****  * any later version.
+   9:../cleanflight/src/main/interface/msp_box.c ****  *
+  10:../cleanflight/src/main/interface/msp_box.c ****  * Cleanflight and Betaflight are distributed in the hope that they
+  11:../cleanflight/src/main/interface/msp_box.c ****  * will be useful, but WITHOUT ANY WARRANTY; without even the implied
+  12:../cleanflight/src/main/interface/msp_box.c ****  * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+  13:../cleanflight/src/main/interface/msp_box.c ****  * See the GNU General Public License for more details.
+  14:../cleanflight/src/main/interface/msp_box.c ****  *
+  15:../cleanflight/src/main/interface/msp_box.c ****  * You should have received a copy of the GNU General Public License
+  16:../cleanflight/src/main/interface/msp_box.c ****  * along with this software.
+  17:../cleanflight/src/main/interface/msp_box.c ****  *
+  18:../cleanflight/src/main/interface/msp_box.c ****  * If not, see <http://www.gnu.org/licenses/>.
+  19:../cleanflight/src/main/interface/msp_box.c ****  */
+  20:../cleanflight/src/main/interface/msp_box.c **** 
+  21:../cleanflight/src/main/interface/msp_box.c **** #include <stdbool.h>
+  22:../cleanflight/src/main/interface/msp_box.c **** #include <stdint.h>
+  23:../cleanflight/src/main/interface/msp_box.c **** #include <string.h>
+  24:../cleanflight/src/main/interface/msp_box.c **** 
+  25:../cleanflight/src/main/interface/msp_box.c **** #include "platform.h"
+  26:../cleanflight/src/main/interface/msp_box.c **** 
+  27:../cleanflight/src/main/interface/msp_box.c **** #include "common/bitarray.h"
+  28:../cleanflight/src/main/interface/msp_box.c **** #include "common/streambuf.h"
+  29:../cleanflight/src/main/interface/msp_box.c **** #include "common/utils.h"
+  30:../cleanflight/src/main/interface/msp_box.c **** 
+  31:../cleanflight/src/main/interface/msp_box.c **** #include "config/feature.h"
+  32:../cleanflight/src/main/interface/msp_box.c **** 
+  33:../cleanflight/src/main/interface/msp_box.c **** #include "fc/config.h"
+  34:../cleanflight/src/main/interface/msp_box.c **** #include "fc/runtime_config.h"
+  35:../cleanflight/src/main/interface/msp_box.c **** 
+  36:../cleanflight/src/main/interface/msp_box.c **** #include "flight/mixer.h"
+  37:../cleanflight/src/main/interface/msp_box.c **** 
+  38:../cleanflight/src/main/interface/msp_box.c **** #include "interface/msp_box.h"
+  39:../cleanflight/src/main/interface/msp_box.c **** 
+  40:../cleanflight/src/main/interface/msp_box.c **** #include "sensors/sensors.h"
+  41:../cleanflight/src/main/interface/msp_box.c **** 
+  42:../cleanflight/src/main/interface/msp_box.c **** #include "telemetry/telemetry.h"
+  43:../cleanflight/src/main/interface/msp_box.c **** 
+  44:../cleanflight/src/main/interface/msp_box.c **** #include "pg/piniobox.h"
+  45:../cleanflight/src/main/interface/msp_box.c **** 
+  46:../cleanflight/src/main/interface/msp_box.c **** 
+  47:../cleanflight/src/main/interface/msp_box.c **** #ifndef USE_OSD_SLAVE
+  48:../cleanflight/src/main/interface/msp_box.c **** // permanent IDs must uniquely identify BOX meaning, DO NOT REUSE THEM!
+  49:../cleanflight/src/main/interface/msp_box.c **** static const box_t boxes[CHECKBOX_ITEM_COUNT] = {
+  50:../cleanflight/src/main/interface/msp_box.c ****     { BOXARM, "ARM", 0 },
+  51:../cleanflight/src/main/interface/msp_box.c ****     { BOXANGLE, "ANGLE", 1 },
+  52:../cleanflight/src/main/interface/msp_box.c ****     { BOXHORIZON, "HORIZON", 2 },
+  53:../cleanflight/src/main/interface/msp_box.c ****     { BOXBARO, "BARO", 3 },
+  54:../cleanflight/src/main/interface/msp_box.c ****     { BOXANTIGRAVITY, "ANTI GRAVITY", 4 },
+  55:../cleanflight/src/main/interface/msp_box.c ****     { BOXMAG, "MAG", 5 },
+  56:../cleanflight/src/main/interface/msp_box.c ****     { BOXHEADFREE, "HEADFREE", 6 },
+  57:../cleanflight/src/main/interface/msp_box.c ****     { BOXHEADADJ, "HEADADJ", 7 },
+  58:../cleanflight/src/main/interface/msp_box.c ****     { BOXCAMSTAB, "CAMSTAB", 8 },
+  59:../cleanflight/src/main/interface/msp_box.c **** //    { BOXCAMTRIG, "CAMTRIG", 9 },
+  60:../cleanflight/src/main/interface/msp_box.c ****     { BOXGPSHOME, "GPS HOME", 10 },
+  61:../cleanflight/src/main/interface/msp_box.c ****     { BOXGPSHOLD, "GPS HOLD", 11 },
+  62:../cleanflight/src/main/interface/msp_box.c ****     { BOXPASSTHRU, "PASSTHRU", 12 },
+  63:../cleanflight/src/main/interface/msp_box.c ****     { BOXBEEPERON, "BEEPER", 13 },
+  64:../cleanflight/src/main/interface/msp_box.c **** //    { BOXLEDMAX, "LEDMAX", 14 }, (removed)
+  65:../cleanflight/src/main/interface/msp_box.c ****     { BOXLEDLOW, "LEDLOW", 15 },
+  66:../cleanflight/src/main/interface/msp_box.c **** //    { BOXLLIGHTS, "LLIGHTS", 16 }, (removed)
+  67:../cleanflight/src/main/interface/msp_box.c ****     { BOXCALIB, "CALIB", 17 },
+  68:../cleanflight/src/main/interface/msp_box.c **** //    { BOXGOV, "GOVERNOR", 18 }, (removed)
+  69:../cleanflight/src/main/interface/msp_box.c ****     { BOXOSD, "OSD DISABLE SW", 19 },
+  70:../cleanflight/src/main/interface/msp_box.c ****     { BOXTELEMETRY, "TELEMETRY", 20 },
+  71:../cleanflight/src/main/interface/msp_box.c **** //    { BOXGTUNE, "GTUNE", 21 }, (removed)
+  72:../cleanflight/src/main/interface/msp_box.c **** //    { BOXRANGEFINDER, "RANGEFINDER", 22 }, (removed)
+  73:../cleanflight/src/main/interface/msp_box.c ****     { BOXSERVO1, "SERVO1", 23 },
+  74:../cleanflight/src/main/interface/msp_box.c ****     { BOXSERVO2, "SERVO2", 24 },
+  75:../cleanflight/src/main/interface/msp_box.c ****     { BOXSERVO3, "SERVO3", 25 },
+  76:../cleanflight/src/main/interface/msp_box.c ****     { BOXBLACKBOX, "BLACKBOX", 26 },
+  77:../cleanflight/src/main/interface/msp_box.c ****     { BOXFAILSAFE, "FAILSAFE", 27 },
+  78:../cleanflight/src/main/interface/msp_box.c ****     { BOXAIRMODE, "AIR MODE", 28 },
+  79:../cleanflight/src/main/interface/msp_box.c ****     { BOX3D, "DISABLE / SWITCH 3D", 29},
+  80:../cleanflight/src/main/interface/msp_box.c ****     { BOXFPVANGLEMIX, "FPV ANGLE MIX", 30},
+  81:../cleanflight/src/main/interface/msp_box.c ****     { BOXBLACKBOXERASE, "BLACKBOX ERASE (>30s)", 31 },
+  82:../cleanflight/src/main/interface/msp_box.c ****     { BOXCAMERA1, "CAMERA CONTROL 1", 32},
+  83:../cleanflight/src/main/interface/msp_box.c ****     { BOXCAMERA2, "CAMERA CONTROL 2", 33},
+  84:../cleanflight/src/main/interface/msp_box.c ****     { BOXCAMERA3, "CAMERA CONTROL 3", 34 },
+  85:../cleanflight/src/main/interface/msp_box.c ****     { BOXFLIPOVERAFTERCRASH, "FLIP OVER AFTER CRASH", 35 },
+  86:../cleanflight/src/main/interface/msp_box.c ****     { BOXPREARM, "PREARM", 36 },
+  87:../cleanflight/src/main/interface/msp_box.c ****     { BOXBEEPGPSCOUNT, "BEEP GPS SATELLITE COUNT", 37 },
+  88:../cleanflight/src/main/interface/msp_box.c **** //    { BOX3DONASWITCH, "3D ON A SWITCH", 38 }, (removed)
+  89:../cleanflight/src/main/interface/msp_box.c ****     { BOXVTXPITMODE, "VTX PIT MODE", 39 },
+  90:../cleanflight/src/main/interface/msp_box.c ****     { BOXUSER1, "USER1", 40 },
+  91:../cleanflight/src/main/interface/msp_box.c ****     { BOXUSER2, "USER2", 41 },
+  92:../cleanflight/src/main/interface/msp_box.c ****     { BOXUSER3, "USER3", 42 },
+  93:../cleanflight/src/main/interface/msp_box.c ****     { BOXUSER4, "USER4", 43 },
+  94:../cleanflight/src/main/interface/msp_box.c ****     { BOXPIDAUDIO, "PID AUDIO", 44 },
+  95:../cleanflight/src/main/interface/msp_box.c ****     { BOXPARALYZE, "PARALYZE", 45 },
+  96:../cleanflight/src/main/interface/msp_box.c ****     { BOXGPSRESCUE, "GPS RESCUE", 46 },
+  97:../cleanflight/src/main/interface/msp_box.c ****     { BOXACROTRAINER, "ACRO TRAINER", 47 },
+  98:../cleanflight/src/main/interface/msp_box.c **** };
+  99:../cleanflight/src/main/interface/msp_box.c **** 
+ 100:../cleanflight/src/main/interface/msp_box.c **** // mask of enabled IDs, calculated on startup based on enabled features. boxId_e is used as bit ind
+ 101:../cleanflight/src/main/interface/msp_box.c **** 
+ 102:../cleanflight/src/main/interface/msp_box.c **** static boxBitmask_t activeBoxIds;
+ 103:../cleanflight/src/main/interface/msp_box.c **** 
+ 104:../cleanflight/src/main/interface/msp_box.c **** const box_t *findBoxByBoxId(boxId_e boxId)
+ 105:../cleanflight/src/main/interface/msp_box.c **** {
+ 364              	 .loc 3 105 0
+ 365              	 .cfi_startproc
+ 366              	 
+ 367              	 
+ 368              	 
+ 369 0000 80B4     	 push {r7}
+ 370              	.LCFI8:
+ 371              	 .cfi_def_cfa_offset 4
+ 372              	 .cfi_offset 7,-4
+ 373 0002 85B0     	 sub sp,sp,#20
+ 374              	.LCFI9:
+ 375              	 .cfi_def_cfa_offset 24
+ 376 0004 00AF     	 add r7,sp,#0
+ 377              	.LCFI10:
+ 378              	 .cfi_def_cfa_register 7
+ 379 0006 0346     	 mov r3,r0
+ 380 0008 FB71     	 strb r3,[r7,#7]
+ 381              	.LBB2:
+ 106:../cleanflight/src/main/interface/msp_box.c ****     for (unsigned i = 0; i < ARRAYLEN(boxes); i++) {
+ 382              	 .loc 3 106 0
+ 383 000a 0023     	 movs r3,#0
+ 384 000c FB60     	 str r3,[r7,#12]
+ 385 000e 11E0     	 b .L10
+ 386              	.L13:
+ 387              	.LBB3:
+ 107:../cleanflight/src/main/interface/msp_box.c ****         const box_t *candidate = &boxes[i];
+ 388              	 .loc 3 107 0
+ 389 0010 FA68     	 ldr r2,[r7,#12]
+ 390 0012 1346     	 mov r3,r2
+ 391 0014 5B00     	 lsls r3,r3,#1
+ 392 0016 1344     	 add r3,r3,r2
+ 393 0018 5B00     	 lsls r3,r3,#1
+ 394 001a 0B4A     	 ldr r2,.L14
+ 395 001c 1344     	 add r3,r3,r2
+ 396 001e BB60     	 str r3,[r7,#8]
+ 108:../cleanflight/src/main/interface/msp_box.c ****         if (candidate->boxId == boxId)
+ 397              	 .loc 3 108 0
+ 398 0020 BB68     	 ldr r3,[r7,#8]
+ 399 0022 1B78     	 ldrb r3,[r3]
+ 400 0024 FA79     	 ldrb r2,[r7,#7]
+ 401 0026 9A42     	 cmp r2,r3
+ 402 0028 01D1     	 bne .L11
+ 109:../cleanflight/src/main/interface/msp_box.c ****             return candidate;
+ 403              	 .loc 3 109 0
+ 404 002a BB68     	 ldr r3,[r7,#8]
+ 405 002c 06E0     	 b .L12
+ 406              	.L11:
+ 407              	.LBE3:
+ 106:../cleanflight/src/main/interface/msp_box.c ****         const box_t *candidate = &boxes[i];
+ 408              	 .loc 3 106 0 discriminator 2
+ 409 002e FB68     	 ldr r3,[r7,#12]
+ 410 0030 0133     	 adds r3,r3,#1
+ 411 0032 FB60     	 str r3,[r7,#12]
+ 412              	.L10:
+ 106:../cleanflight/src/main/interface/msp_box.c ****         const box_t *candidate = &boxes[i];
+ 413              	 .loc 3 106 0 is_stmt 0 discriminator 1
+ 414 0034 FB68     	 ldr r3,[r7,#12]
+ 415 0036 282B     	 cmp r3,#40
+ 416 0038 EAD9     	 bls .L13
+ 417              	.LBE2:
+ 110:../cleanflight/src/main/interface/msp_box.c ****     }
+ 111:../cleanflight/src/main/interface/msp_box.c ****     return NULL;
+ 418              	 .loc 3 111 0 is_stmt 1
+ 419 003a 0023     	 movs r3,#0
+ 420              	.L12:
+ 112:../cleanflight/src/main/interface/msp_box.c **** }
+ 421              	 .loc 3 112 0
+ 422 003c 1846     	 mov r0,r3
+ 423 003e 1437     	 adds r7,r7,#20
+ 424              	.LCFI11:
+ 425              	 .cfi_def_cfa_offset 4
+ 426 0040 BD46     	 mov sp,r7
+ 427              	.LCFI12:
+ 428              	 .cfi_def_cfa_register 13
+ 429              	 
+ 430 0042 5DF8047B 	 ldr r7,[sp],#4
+ 431              	.LCFI13:
+ 432              	 .cfi_restore 7
+ 433              	 .cfi_def_cfa_offset 0
+ 434 0046 7047     	 bx lr
+ 435              	.L15:
+ 436              	 .align 2
+ 437              	.L14:
+ 438 0048 00000000 	 .word boxes
+ 439              	 .cfi_endproc
+ 440              	.LFE551:
+ 442              	 .section .text.findBoxByPermanentId,"ax",%progbits
+ 443              	 .align 2
+ 444              	 .global findBoxByPermanentId
+ 445              	 .thumb
+ 446              	 .thumb_func
+ 448              	findBoxByPermanentId:
+ 449              	.LFB552:
+ 113:../cleanflight/src/main/interface/msp_box.c **** 
+ 114:../cleanflight/src/main/interface/msp_box.c **** const box_t *findBoxByPermanentId(uint8_t permanentId)
+ 115:../cleanflight/src/main/interface/msp_box.c **** {
+ 450              	 .loc 3 115 0
+ 451              	 .cfi_startproc
+ 452              	 
+ 453              	 
+ 454              	 
+ 455 0000 80B4     	 push {r7}
+ 456              	.LCFI14:
+ 457              	 .cfi_def_cfa_offset 4
+ 458              	 .cfi_offset 7,-4
+ 459 0002 85B0     	 sub sp,sp,#20
+ 460              	.LCFI15:
+ 461              	 .cfi_def_cfa_offset 24
+ 462 0004 00AF     	 add r7,sp,#0
+ 463              	.LCFI16:
+ 464              	 .cfi_def_cfa_register 7
+ 465 0006 0346     	 mov r3,r0
+ 466 0008 FB71     	 strb r3,[r7,#7]
+ 467              	.LBB4:
+ 116:../cleanflight/src/main/interface/msp_box.c ****     for (unsigned i = 0; i < ARRAYLEN(boxes); i++) {
+ 468              	 .loc 3 116 0
+ 469 000a 0023     	 movs r3,#0
+ 470 000c FB60     	 str r3,[r7,#12]
+ 471 000e 11E0     	 b .L17
+ 472              	.L20:
+ 473              	.LBB5:
+ 117:../cleanflight/src/main/interface/msp_box.c ****         const box_t *candidate = &boxes[i];
+ 474              	 .loc 3 117 0
+ 475 0010 FA68     	 ldr r2,[r7,#12]
+ 476 0012 1346     	 mov r3,r2
+ 477 0014 5B00     	 lsls r3,r3,#1
+ 478 0016 1344     	 add r3,r3,r2
+ 479 0018 5B00     	 lsls r3,r3,#1
+ 480 001a 0B4A     	 ldr r2,.L21
+ 481 001c 1344     	 add r3,r3,r2
+ 482 001e BB60     	 str r3,[r7,#8]
+ 118:../cleanflight/src/main/interface/msp_box.c ****         if (candidate->permanentId == permanentId)
+ 483              	 .loc 3 118 0
+ 484 0020 BB68     	 ldr r3,[r7,#8]
+ 485 0022 5B79     	 ldrb r3,[r3,#5]
+ 486 0024 FA79     	 ldrb r2,[r7,#7]
+ 487 0026 9A42     	 cmp r2,r3
+ 488 0028 01D1     	 bne .L18
+ 119:../cleanflight/src/main/interface/msp_box.c ****             return candidate;
+ 489              	 .loc 3 119 0
+ 490 002a BB68     	 ldr r3,[r7,#8]
+ 491 002c 06E0     	 b .L19
+ 492              	.L18:
+ 493              	.LBE5:
+ 116:../cleanflight/src/main/interface/msp_box.c ****         const box_t *candidate = &boxes[i];
+ 494              	 .loc 3 116 0 discriminator 2
+ 495 002e FB68     	 ldr r3,[r7,#12]
+ 496 0030 0133     	 adds r3,r3,#1
+ 497 0032 FB60     	 str r3,[r7,#12]
+ 498              	.L17:
+ 116:../cleanflight/src/main/interface/msp_box.c ****         const box_t *candidate = &boxes[i];
+ 499              	 .loc 3 116 0 is_stmt 0 discriminator 1
+ 500 0034 FB68     	 ldr r3,[r7,#12]
+ 501 0036 282B     	 cmp r3,#40
+ 502 0038 EAD9     	 bls .L20
+ 503              	.LBE4:
+ 120:../cleanflight/src/main/interface/msp_box.c ****     }
+ 121:../cleanflight/src/main/interface/msp_box.c ****     return NULL;
+ 504              	 .loc 3 121 0 is_stmt 1
+ 505 003a 0023     	 movs r3,#0
+ 506              	.L19:
+ 122:../cleanflight/src/main/interface/msp_box.c **** }
+ 507              	 .loc 3 122 0
+ 508 003c 1846     	 mov r0,r3
+ 509 003e 1437     	 adds r7,r7,#20
+ 510              	.LCFI17:
+ 511              	 .cfi_def_cfa_offset 4
+ 512 0040 BD46     	 mov sp,r7
+ 513              	.LCFI18:
+ 514              	 .cfi_def_cfa_register 13
+ 515              	 
+ 516 0042 5DF8047B 	 ldr r7,[sp],#4
+ 517              	.LCFI19:
+ 518              	 .cfi_restore 7
+ 519              	 .cfi_def_cfa_offset 0
+ 520 0046 7047     	 bx lr
+ 521              	.L22:
+ 522              	 .align 2
+ 523              	.L21:
+ 524 0048 00000000 	 .word boxes
+ 525              	 .cfi_endproc
+ 526              	.LFE552:
+ 528              	 .section .text.activeBoxIdGet,"ax",%progbits
+ 529              	 .align 2
+ 530              	 .thumb
+ 531              	 .thumb_func
+ 533              	activeBoxIdGet:
+ 534              	.LFB553:
+ 123:../cleanflight/src/main/interface/msp_box.c **** 
+ 124:../cleanflight/src/main/interface/msp_box.c **** static bool activeBoxIdGet(boxId_e boxId)
+ 125:../cleanflight/src/main/interface/msp_box.c **** {
+ 535              	 .loc 3 125 0
+ 536              	 .cfi_startproc
+ 537              	 
+ 538              	 
+ 539 0000 80B5     	 push {r7,lr}
+ 540              	.LCFI20:
+ 541              	 .cfi_def_cfa_offset 8
+ 542              	 .cfi_offset 7,-8
+ 543              	 .cfi_offset 14,-4
+ 544 0002 82B0     	 sub sp,sp,#8
+ 545              	.LCFI21:
+ 546              	 .cfi_def_cfa_offset 16
+ 547 0004 00AF     	 add r7,sp,#0
+ 548              	.LCFI22:
+ 549              	 .cfi_def_cfa_register 7
+ 550 0006 0346     	 mov r3,r0
+ 551 0008 FB71     	 strb r3,[r7,#7]
+ 126:../cleanflight/src/main/interface/msp_box.c ****     if (boxId > sizeof(activeBoxIds) * 8)
+ 552              	 .loc 3 126 0
+ 553 000a FB79     	 ldrb r3,[r7,#7]
+ 554 000c 402B     	 cmp r3,#64
+ 555 000e 01D9     	 bls .L24
+ 127:../cleanflight/src/main/interface/msp_box.c ****         return false;
+ 556              	 .loc 3 127 0
+ 557 0010 0023     	 movs r3,#0
+ 558 0012 05E0     	 b .L25
+ 559              	.L24:
+ 128:../cleanflight/src/main/interface/msp_box.c ****     return bitArrayGet(&activeBoxIds, boxId);
+ 560              	 .loc 3 128 0
+ 561 0014 FB79     	 ldrb r3,[r7,#7]
+ 562 0016 0448     	 ldr r0,.L26
+ 563 0018 1946     	 mov r1,r3
+ 564 001a FFF7FEFF 	 bl bitArrayGet
+ 565 001e 0346     	 mov r3,r0
+ 566              	.L25:
+ 129:../cleanflight/src/main/interface/msp_box.c **** }
+ 567              	 .loc 3 129 0
+ 568 0020 1846     	 mov r0,r3
+ 569 0022 0837     	 adds r7,r7,#8
+ 570              	.LCFI23:
+ 571              	 .cfi_def_cfa_offset 8
+ 572 0024 BD46     	 mov sp,r7
+ 573              	.LCFI24:
+ 574              	 .cfi_def_cfa_register 13
+ 575              	 
+ 576 0026 80BD     	 pop {r7,pc}
+ 577              	.L27:
+ 578              	 .align 2
+ 579              	.L26:
+ 580 0028 00000000 	 .word activeBoxIds
+ 581              	 .cfi_endproc
+ 582              	.LFE553:
+ 584              	 .section .text.serializeBoxNameFn,"ax",%progbits
+ 585              	 .align 2
+ 586              	 .global serializeBoxNameFn
+ 587              	 .thumb
+ 588              	 .thumb_func
+ 590              	serializeBoxNameFn:
+ 591              	.LFB554:
+ 130:../cleanflight/src/main/interface/msp_box.c **** 
+ 131:../cleanflight/src/main/interface/msp_box.c **** void serializeBoxNameFn(sbuf_t *dst, const box_t *box)
+ 132:../cleanflight/src/main/interface/msp_box.c **** {
+ 592              	 .loc 3 132 0
+ 593              	 .cfi_startproc
+ 594              	 
+ 595              	 
+ 596 0000 80B5     	 push {r7,lr}
+ 597              	.LCFI25:
+ 598              	 .cfi_def_cfa_offset 8
+ 599              	 .cfi_offset 7,-8
+ 600              	 .cfi_offset 14,-4
+ 601 0002 82B0     	 sub sp,sp,#8
+ 602              	.LCFI26:
+ 603              	 .cfi_def_cfa_offset 16
+ 604 0004 00AF     	 add r7,sp,#0
+ 605              	.LCFI27:
+ 606              	 .cfi_def_cfa_register 7
+ 607 0006 7860     	 str r0,[r7,#4]
+ 608 0008 3960     	 str r1,[r7]
+ 133:../cleanflight/src/main/interface/msp_box.c ****     sbufWriteString(dst, box->boxName);
+ 609              	 .loc 3 133 0
+ 610 000a 3B68     	 ldr r3,[r7]
+ 611 000c D3F80130 	 ldr r3,[r3,#1]
+ 612 0010 7868     	 ldr r0,[r7,#4]
+ 613 0012 1946     	 mov r1,r3
+ 614 0014 FFF7FEFF 	 bl sbufWriteString
+ 134:../cleanflight/src/main/interface/msp_box.c ****     sbufWriteU8(dst, ';');
+ 615              	 .loc 3 134 0
+ 616 0018 7868     	 ldr r0,[r7,#4]
+ 617 001a 3B21     	 movs r1,#59
+ 618 001c FFF7FEFF 	 bl sbufWriteU8
+ 135:../cleanflight/src/main/interface/msp_box.c **** }
+ 619              	 .loc 3 135 0
+ 620 0020 0837     	 adds r7,r7,#8
+ 621              	.LCFI28:
+ 622              	 .cfi_def_cfa_offset 8
+ 623 0022 BD46     	 mov sp,r7
+ 624              	.LCFI29:
+ 625              	 .cfi_def_cfa_register 13
+ 626              	 
+ 627 0024 80BD     	 pop {r7,pc}
+ 628              	 .cfi_endproc
+ 629              	.LFE554:
+ 631 0026 00BF     	 .section .text.serializeBoxPermanentIdFn,"ax",%progbits
+ 632              	 .align 2
+ 633              	 .global serializeBoxPermanentIdFn
+ 634              	 .thumb
+ 635              	 .thumb_func
+ 637              	serializeBoxPermanentIdFn:
+ 638              	.LFB555:
+ 136:../cleanflight/src/main/interface/msp_box.c **** 
+ 137:../cleanflight/src/main/interface/msp_box.c **** void serializeBoxPermanentIdFn(sbuf_t *dst, const box_t *box)
+ 138:../cleanflight/src/main/interface/msp_box.c **** {
+ 639              	 .loc 3 138 0
+ 640              	 .cfi_startproc
+ 641              	 
+ 642              	 
+ 643 0000 80B5     	 push {r7,lr}
+ 644              	.LCFI30:
+ 645              	 .cfi_def_cfa_offset 8
+ 646              	 .cfi_offset 7,-8
+ 647              	 .cfi_offset 14,-4
+ 648 0002 82B0     	 sub sp,sp,#8
+ 649              	.LCFI31:
+ 650              	 .cfi_def_cfa_offset 16
+ 651 0004 00AF     	 add r7,sp,#0
+ 652              	.LCFI32:
+ 653              	 .cfi_def_cfa_register 7
+ 654 0006 7860     	 str r0,[r7,#4]
+ 655 0008 3960     	 str r1,[r7]
+ 139:../cleanflight/src/main/interface/msp_box.c ****     sbufWriteU8(dst, box->permanentId);
+ 656              	 .loc 3 139 0
+ 657 000a 3B68     	 ldr r3,[r7]
+ 658 000c 5B79     	 ldrb r3,[r3,#5]
+ 659 000e 7868     	 ldr r0,[r7,#4]
+ 660 0010 1946     	 mov r1,r3
+ 661 0012 FFF7FEFF 	 bl sbufWriteU8
+ 140:../cleanflight/src/main/interface/msp_box.c **** }
+ 662              	 .loc 3 140 0
+ 663 0016 0837     	 adds r7,r7,#8
+ 664              	.LCFI33:
+ 665              	 .cfi_def_cfa_offset 8
+ 666 0018 BD46     	 mov sp,r7
+ 667              	.LCFI34:
+ 668              	 .cfi_def_cfa_register 13
+ 669              	 
+ 670 001a 80BD     	 pop {r7,pc}
+ 671              	 .cfi_endproc
+ 672              	.LFE555:
+ 674              	 .section .text.serializeBoxReply,"ax",%progbits
+ 675              	 .align 2
+ 676              	 .global serializeBoxReply
+ 677              	 .thumb
+ 678              	 .thumb_func
+ 680              	serializeBoxReply:
+ 681              	.LFB556:
+ 141:../cleanflight/src/main/interface/msp_box.c **** 
+ 142:../cleanflight/src/main/interface/msp_box.c **** // serialize 'page' of boxNames.
+ 143:../cleanflight/src/main/interface/msp_box.c **** // Each page contains at most 32 boxes
+ 144:../cleanflight/src/main/interface/msp_box.c **** void serializeBoxReply(sbuf_t *dst, int page, serializeBoxFn *serializeBox)
+ 145:../cleanflight/src/main/interface/msp_box.c **** {
+ 682              	 .loc 3 145 0
+ 683              	 .cfi_startproc
+ 684              	 
+ 685              	 
+ 686 0000 80B5     	 push {r7,lr}
+ 687              	.LCFI35:
+ 688              	 .cfi_def_cfa_offset 8
+ 689              	 .cfi_offset 7,-8
+ 690              	 .cfi_offset 14,-4
+ 691 0002 88B0     	 sub sp,sp,#32
+ 692              	.LCFI36:
+ 693              	 .cfi_def_cfa_offset 40
+ 694 0004 00AF     	 add r7,sp,#0
+ 695              	.LCFI37:
+ 696              	 .cfi_def_cfa_register 7
+ 697 0006 F860     	 str r0,[r7,#12]
+ 698 0008 B960     	 str r1,[r7,#8]
+ 699 000a 7A60     	 str r2,[r7,#4]
+ 146:../cleanflight/src/main/interface/msp_box.c ****     unsigned boxIdx = 0;
+ 700              	 .loc 3 146 0
+ 701 000c 0023     	 movs r3,#0
+ 702 000e FB61     	 str r3,[r7,#28]
+ 147:../cleanflight/src/main/interface/msp_box.c ****     unsigned pageStart = page * 32;
+ 703              	 .loc 3 147 0
+ 704 0010 BB68     	 ldr r3,[r7,#8]
+ 705 0012 5B01     	 lsls r3,r3,#5
+ 706 0014 7B61     	 str r3,[r7,#20]
+ 148:../cleanflight/src/main/interface/msp_box.c ****     unsigned pageEnd = pageStart + 32;
+ 707              	 .loc 3 148 0
+ 708 0016 7B69     	 ldr r3,[r7,#20]
+ 709 0018 2033     	 adds r3,r3,#32
+ 710 001a 3B61     	 str r3,[r7,#16]
+ 711              	.LBB6:
+ 149:../cleanflight/src/main/interface/msp_box.c ****     for (boxId_e id = 0; id < CHECKBOX_ITEM_COUNT; id++) {
+ 712              	 .loc 3 149 0
+ 713 001c 0023     	 movs r3,#0
+ 714 001e FB76     	 strb r3,[r7,#27]
+ 715 0020 1DE0     	 b .L31
+ 716              	.L34:
+ 150:../cleanflight/src/main/interface/msp_box.c ****         if (activeBoxIdGet(id)) {
+ 717              	 .loc 3 150 0
+ 718 0022 FB7E     	 ldrb r3,[r7,#27]
+ 719 0024 1846     	 mov r0,r3
+ 720 0026 FFF7FEFF 	 bl activeBoxIdGet
+ 721 002a 0346     	 mov r3,r0
+ 722 002c 002B     	 cmp r3,#0
+ 723 002e 13D0     	 beq .L32
+ 151:../cleanflight/src/main/interface/msp_box.c ****             if (boxIdx >= pageStart && boxIdx < pageEnd) {
+ 724              	 .loc 3 151 0
+ 725 0030 FA69     	 ldr r2,[r7,#28]
+ 726 0032 7B69     	 ldr r3,[r7,#20]
+ 727 0034 9A42     	 cmp r2,r3
+ 728 0036 0CD3     	 bcc .L33
+ 729              	 .loc 3 151 0 is_stmt 0 discriminator 1
+ 730 0038 FA69     	 ldr r2,[r7,#28]
+ 731 003a 3B69     	 ldr r3,[r7,#16]
+ 732 003c 9A42     	 cmp r2,r3
+ 733 003e 08D2     	 bcs .L33
+ 152:../cleanflight/src/main/interface/msp_box.c ****                 (*serializeBox)(dst, findBoxByBoxId(id));
+ 734              	 .loc 3 152 0 is_stmt 1
+ 735 0040 FB7E     	 ldrb r3,[r7,#27]
+ 736 0042 1846     	 mov r0,r3
+ 737 0044 FFF7FEFF 	 bl findBoxByBoxId
+ 738 0048 0246     	 mov r2,r0
+ 739 004a 7B68     	 ldr r3,[r7,#4]
+ 740 004c F868     	 ldr r0,[r7,#12]
+ 741 004e 1146     	 mov r1,r2
+ 742 0050 9847     	 blx r3
+ 743              	.L33:
+ 153:../cleanflight/src/main/interface/msp_box.c ****             }
+ 154:../cleanflight/src/main/interface/msp_box.c ****             boxIdx++;                 // count active boxes
+ 744              	 .loc 3 154 0
+ 745 0052 FB69     	 ldr r3,[r7,#28]
+ 746 0054 0133     	 adds r3,r3,#1
+ 747 0056 FB61     	 str r3,[r7,#28]
+ 748              	.L32:
+ 149:../cleanflight/src/main/interface/msp_box.c ****         if (activeBoxIdGet(id)) {
+ 749              	 .loc 3 149 0 discriminator 2
+ 750 0058 FB7E     	 ldrb r3,[r7,#27]
+ 751 005a 0133     	 adds r3,r3,#1
+ 752 005c FB76     	 strb r3,[r7,#27]
+ 753              	.L31:
+ 149:../cleanflight/src/main/interface/msp_box.c ****         if (activeBoxIdGet(id)) {
+ 754              	 .loc 3 149 0 is_stmt 0 discriminator 1
+ 755 005e FB7E     	 ldrb r3,[r7,#27]
+ 756 0060 282B     	 cmp r3,#40
+ 757 0062 DED9     	 bls .L34
+ 758              	.LBE6:
+ 155:../cleanflight/src/main/interface/msp_box.c ****         }
+ 156:../cleanflight/src/main/interface/msp_box.c ****     }
+ 157:../cleanflight/src/main/interface/msp_box.c **** }
+ 759              	 .loc 3 157 0 is_stmt 1
+ 760 0064 2037     	 adds r7,r7,#32
+ 761              	.LCFI38:
+ 762              	 .cfi_def_cfa_offset 8
+ 763 0066 BD46     	 mov sp,r7
+ 764              	.LCFI39:
+ 765              	 .cfi_def_cfa_register 13
+ 766              	 
+ 767 0068 80BD     	 pop {r7,pc}
+ 768              	 .cfi_endproc
+ 769              	.LFE556:
+ 771 006a 00BF     	 .section .text.initActiveBoxIds,"ax",%progbits
+ 772              	 .align 2
+ 773              	 .global initActiveBoxIds
+ 774              	 .thumb
+ 775              	 .thumb_func
+ 777              	initActiveBoxIds:
+ 778              	.LFB557:
+ 158:../cleanflight/src/main/interface/msp_box.c **** 
+ 159:../cleanflight/src/main/interface/msp_box.c **** void initActiveBoxIds(void)
+ 160:../cleanflight/src/main/interface/msp_box.c **** {
+ 779              	 .loc 3 160 0
+ 780              	 .cfi_startproc
+ 781              	 
+ 782              	 
+ 783 0000 80B5     	 push {r7,lr}
+ 784              	.LCFI40:
+ 785              	 .cfi_def_cfa_offset 8
+ 786              	 .cfi_offset 7,-8
+ 787              	 .cfi_offset 14,-4
+ 788 0002 86B0     	 sub sp,sp,#24
+ 789              	.LCFI41:
+ 790              	 .cfi_def_cfa_offset 32
+ 791 0004 00AF     	 add r7,sp,#0
+ 792              	.LCFI42:
+ 793              	 .cfi_def_cfa_register 7
+ 161:../cleanflight/src/main/interface/msp_box.c ****     // calculate used boxes based on features and set corresponding activeBoxIds bits
+ 162:../cleanflight/src/main/interface/msp_box.c ****     boxBitmask_t ena;  // temporary variable to collect result
+ 163:../cleanflight/src/main/interface/msp_box.c ****     memset(&ena, 0, sizeof(ena));
+ 794              	 .loc 3 163 0
+ 795 0006 3B1D     	 adds r3,r7,#4
+ 796 0008 1846     	 mov r0,r3
+ 797 000a 0021     	 movs r1,#0
+ 798 000c 0822     	 movs r2,#8
+ 799 000e FFF7FEFF 	 bl memset
+ 164:../cleanflight/src/main/interface/msp_box.c **** 
+ 165:../cleanflight/src/main/interface/msp_box.c ****     // macro to enable boxId (BoxidMaskEnable). Reference to ena is hidden, local use only
+ 166:../cleanflight/src/main/interface/msp_box.c **** #define BME(boxId) do { bitArraySet(&ena, boxId); } while (0)
+ 167:../cleanflight/src/main/interface/msp_box.c ****     BME(BOXARM);
+ 800              	 .loc 3 167 0
+ 801 0012 3B1D     	 adds r3,r7,#4
+ 802 0014 1846     	 mov r0,r3
+ 803 0016 0021     	 movs r1,#0
+ 804 0018 FFF7FEFF 	 bl bitArraySet
+ 168:../cleanflight/src/main/interface/msp_box.c ****     BME(BOXPREARM);
+ 805              	 .loc 3 168 0
+ 806 001c 3B1D     	 adds r3,r7,#4
+ 807 001e 1846     	 mov r0,r3
+ 808 0020 1F21     	 movs r1,#31
+ 809 0022 FFF7FEFF 	 bl bitArraySet
+ 169:../cleanflight/src/main/interface/msp_box.c ****     if (!feature(FEATURE_AIRMODE)) {
+ 810              	 .loc 3 169 0
+ 811 0026 4FF48000 	 mov r0,#4194304
+ 812 002a FFF7FEFF 	 bl feature
+ 813 002e 0346     	 mov r3,r0
+ 814 0030 83F00103 	 eor r3,r3,#1
+ 815 0034 DBB2     	 uxtb r3,r3
+ 816 0036 002B     	 cmp r3,#0
+ 817 0038 04D0     	 beq .L36
+ 170:../cleanflight/src/main/interface/msp_box.c ****         BME(BOXAIRMODE);
+ 818              	 .loc 3 170 0
+ 819 003a 3B1D     	 adds r3,r7,#4
+ 820 003c 1846     	 mov r0,r3
+ 821 003e 1721     	 movs r1,#23
+ 822 0040 FFF7FEFF 	 bl bitArraySet
+ 823              	.L36:
+ 171:../cleanflight/src/main/interface/msp_box.c ****     }
+ 172:../cleanflight/src/main/interface/msp_box.c **** 
+ 173:../cleanflight/src/main/interface/msp_box.c ****     if (!feature(FEATURE_ANTI_GRAVITY)) {
+ 824              	 .loc 3 173 0
+ 825 0044 4FF08050 	 mov r0,#268435456
+ 826 0048 FFF7FEFF 	 bl feature
+ 827 004c 0346     	 mov r3,r0
+ 828 004e 83F00103 	 eor r3,r3,#1
+ 829 0052 DBB2     	 uxtb r3,r3
+ 830 0054 002B     	 cmp r3,#0
+ 831 0056 04D0     	 beq .L37
+ 174:../cleanflight/src/main/interface/msp_box.c ****         BME(BOXANTIGRAVITY);
+ 832              	 .loc 3 174 0
+ 833 0058 3B1D     	 adds r3,r7,#4
+ 834 005a 1846     	 mov r0,r3
+ 835 005c 0B21     	 movs r1,#11
+ 836 005e FFF7FEFF 	 bl bitArraySet
+ 837              	.L37:
+ 175:../cleanflight/src/main/interface/msp_box.c ****     }
+ 176:../cleanflight/src/main/interface/msp_box.c **** 
+ 177:../cleanflight/src/main/interface/msp_box.c ****     if (sensors(SENSOR_ACC)) {
+ 838              	 .loc 3 177 0
+ 839 0062 0220     	 movs r0,#2
+ 840 0064 FFF7FEFF 	 bl sensors
+ 841 0068 0346     	 mov r3,r0
+ 842 006a 002B     	 cmp r3,#0
+ 843 006c 13D0     	 beq .L38
+ 178:../cleanflight/src/main/interface/msp_box.c ****         BME(BOXANGLE);
+ 844              	 .loc 3 178 0
+ 845 006e 3B1D     	 adds r3,r7,#4
+ 846 0070 1846     	 mov r0,r3
+ 847 0072 0121     	 movs r1,#1
+ 848 0074 FFF7FEFF 	 bl bitArraySet
+ 179:../cleanflight/src/main/interface/msp_box.c ****         BME(BOXHORIZON);
+ 849              	 .loc 3 179 0
+ 850 0078 3B1D     	 adds r3,r7,#4
+ 851 007a 1846     	 mov r0,r3
+ 852 007c 0221     	 movs r1,#2
+ 853 007e FFF7FEFF 	 bl bitArraySet
+ 180:../cleanflight/src/main/interface/msp_box.c ****         BME(BOXHEADFREE);
+ 854              	 .loc 3 180 0
+ 855 0082 3B1D     	 adds r3,r7,#4
+ 856 0084 1846     	 mov r0,r3
+ 857 0086 0721     	 movs r1,#7
+ 858 0088 FFF7FEFF 	 bl bitArraySet
+ 181:../cleanflight/src/main/interface/msp_box.c ****         BME(BOXHEADADJ);
+ 859              	 .loc 3 181 0
+ 860 008c 3B1D     	 adds r3,r7,#4
+ 861 008e 1846     	 mov r0,r3
+ 862 0090 0C21     	 movs r1,#12
+ 863 0092 FFF7FEFF 	 bl bitArraySet
+ 864              	.L38:
+ 182:../cleanflight/src/main/interface/msp_box.c ****     }
+ 183:../cleanflight/src/main/interface/msp_box.c **** 
+ 184:../cleanflight/src/main/interface/msp_box.c **** #ifdef USE_MAG
+ 185:../cleanflight/src/main/interface/msp_box.c ****     if (sensors(SENSOR_MAG)) {
+ 865              	 .loc 3 185 0
+ 866 0096 0820     	 movs r0,#8
+ 867 0098 FFF7FEFF 	 bl sensors
+ 868 009c 0346     	 mov r3,r0
+ 869 009e 002B     	 cmp r3,#0
+ 870 00a0 04D0     	 beq .L39
+ 186:../cleanflight/src/main/interface/msp_box.c ****         BME(BOXMAG);
+ 871              	 .loc 3 186 0
+ 872 00a2 3B1D     	 adds r3,r7,#4
+ 873 00a4 1846     	 mov r0,r3
+ 874 00a6 0321     	 movs r1,#3
+ 875 00a8 FFF7FEFF 	 bl bitArraySet
+ 876              	.L39:
+ 187:../cleanflight/src/main/interface/msp_box.c ****     }
+ 188:../cleanflight/src/main/interface/msp_box.c **** #endif
+ 189:../cleanflight/src/main/interface/msp_box.c **** 
+ 190:../cleanflight/src/main/interface/msp_box.c **** #ifdef USE_GPS
+ 191:../cleanflight/src/main/interface/msp_box.c ****     if (feature(FEATURE_GPS)) {
+ 877              	 .loc 3 191 0
+ 878 00ac 8020     	 movs r0,#128
+ 879 00ae FFF7FEFF 	 bl feature
+ 880 00b2 0346     	 mov r3,r0
+ 881 00b4 002B     	 cmp r3,#0
+ 882 00b6 13D0     	 beq .L40
+ 192:../cleanflight/src/main/interface/msp_box.c **** #ifdef USE_GPS_RESCUE
+ 193:../cleanflight/src/main/interface/msp_box.c ****         if (!feature(FEATURE_3D)) {
+ 883              	 .loc 3 193 0
+ 884 00b8 4FF48050 	 mov r0,#4096
+ 885 00bc FFF7FEFF 	 bl feature
+ 886 00c0 0346     	 mov r3,r0
+ 887 00c2 83F00103 	 eor r3,r3,#1
+ 888 00c6 DBB2     	 uxtb r3,r3
+ 889 00c8 002B     	 cmp r3,#0
+ 890 00ca 04D0     	 beq .L41
+ 194:../cleanflight/src/main/interface/msp_box.c ****             BME(BOXGPSRESCUE);
+ 891              	 .loc 3 194 0
+ 892 00cc 3B1D     	 adds r3,r7,#4
+ 893 00ce 1846     	 mov r0,r3
+ 894 00d0 0A21     	 movs r1,#10
+ 895 00d2 FFF7FEFF 	 bl bitArraySet
+ 896              	.L41:
+ 195:../cleanflight/src/main/interface/msp_box.c ****         }
+ 196:../cleanflight/src/main/interface/msp_box.c **** #endif
+ 197:../cleanflight/src/main/interface/msp_box.c ****         BME(BOXBEEPGPSCOUNT);
+ 897              	 .loc 3 197 0
+ 898 00d6 3B1D     	 adds r3,r7,#4
+ 899 00d8 1846     	 mov r0,r3
+ 900 00da 2021     	 movs r1,#32
+ 901 00dc FFF7FEFF 	 bl bitArraySet
+ 902              	.L40:
+ 198:../cleanflight/src/main/interface/msp_box.c ****     }
+ 199:../cleanflight/src/main/interface/msp_box.c **** #endif
+ 200:../cleanflight/src/main/interface/msp_box.c **** 
+ 201:../cleanflight/src/main/interface/msp_box.c ****     BME(BOXFAILSAFE);
+ 903              	 .loc 3 201 0
+ 904 00e0 3B1D     	 adds r3,r7,#4
+ 905 00e2 1846     	 mov r0,r3
+ 906 00e4 0921     	 movs r1,#9
+ 907 00e6 FFF7FEFF 	 bl bitArraySet
+ 202:../cleanflight/src/main/interface/msp_box.c **** 
+ 203:../cleanflight/src/main/interface/msp_box.c ****     if (mixerConfig()->mixerMode == MIXER_FLYING_WING || mixerConfig()->mixerMode == MIXER_AIRPLANE
+ 908              	 .loc 3 203 0
+ 909 00ea FFF7FEFF 	 bl mixerConfig
+ 910 00ee 0346     	 mov r3,r0
+ 911 00f0 1B78     	 ldrb r3,[r3]
+ 912 00f2 082B     	 cmp r3,#8
+ 913 00f4 0BD0     	 beq .L42
+ 914              	 .loc 3 203 0 is_stmt 0 discriminator 1
+ 915 00f6 FFF7FEFF 	 bl mixerConfig
+ 916 00fa 0346     	 mov r3,r0
+ 917 00fc 1B78     	 ldrb r3,[r3]
+ 918 00fe 0E2B     	 cmp r3,#14
+ 919 0100 05D0     	 beq .L42
+ 920              	 .loc 3 203 0 discriminator 2
+ 921 0102 FFF7FEFF 	 bl mixerConfig
+ 922 0106 0346     	 mov r3,r0
+ 923 0108 1B78     	 ldrb r3,[r3]
+ 924 010a 182B     	 cmp r3,#24
+ 925 010c 04D1     	 bne .L43
+ 926              	.L42:
+ 204:../cleanflight/src/main/interface/msp_box.c ****         BME(BOXPASSTHRU);
+ 927              	 .loc 3 204 0 is_stmt 1
+ 928 010e 3B1D     	 adds r3,r7,#4
+ 929 0110 1846     	 mov r0,r3
+ 930 0112 0821     	 movs r1,#8
+ 931 0114 FFF7FEFF 	 bl bitArraySet
+ 932              	.L43:
+ 205:../cleanflight/src/main/interface/msp_box.c ****     }
+ 206:../cleanflight/src/main/interface/msp_box.c **** 
+ 207:../cleanflight/src/main/interface/msp_box.c ****     BME(BOXBEEPERON);
+ 933              	 .loc 3 207 0
+ 934 0118 3B1D     	 adds r3,r7,#4
+ 935 011a 1846     	 mov r0,r3
+ 936 011c 0E21     	 movs r1,#14
+ 937 011e FFF7FEFF 	 bl bitArraySet
+ 208:../cleanflight/src/main/interface/msp_box.c **** 
+ 209:../cleanflight/src/main/interface/msp_box.c **** #ifdef USE_LED_STRIP
+ 210:../cleanflight/src/main/interface/msp_box.c ****     if (feature(FEATURE_LED_STRIP)) {
+ 211:../cleanflight/src/main/interface/msp_box.c ****         BME(BOXLEDLOW);
+ 212:../cleanflight/src/main/interface/msp_box.c ****     }
+ 213:../cleanflight/src/main/interface/msp_box.c **** #endif
+ 214:../cleanflight/src/main/interface/msp_box.c **** 
+ 215:../cleanflight/src/main/interface/msp_box.c **** #ifdef USE_BLACKBOX
+ 216:../cleanflight/src/main/interface/msp_box.c ****     BME(BOXBLACKBOX);
+ 938              	 .loc 3 216 0
+ 939 0122 3B1D     	 adds r3,r7,#4
+ 940 0124 1846     	 mov r0,r3
+ 941 0126 1621     	 movs r1,#22
+ 942 0128 FFF7FEFF 	 bl bitArraySet
+ 217:../cleanflight/src/main/interface/msp_box.c **** #ifdef USE_FLASHFS
+ 218:../cleanflight/src/main/interface/msp_box.c ****     BME(BOXBLACKBOXERASE);
+ 219:../cleanflight/src/main/interface/msp_box.c **** #endif
+ 220:../cleanflight/src/main/interface/msp_box.c **** #endif
+ 221:../cleanflight/src/main/interface/msp_box.c **** 
+ 222:../cleanflight/src/main/interface/msp_box.c ****     BME(BOXFPVANGLEMIX);
+ 943              	 .loc 3 222 0
+ 944 012c 3B1D     	 adds r3,r7,#4
+ 945 012e 1846     	 mov r0,r3
+ 946 0130 1921     	 movs r1,#25
+ 947 0132 FFF7FEFF 	 bl bitArraySet
+ 223:../cleanflight/src/main/interface/msp_box.c **** 
+ 224:../cleanflight/src/main/interface/msp_box.c ****     if (feature(FEATURE_3D)) {
+ 948              	 .loc 3 224 0
+ 949 0136 4FF48050 	 mov r0,#4096
+ 950 013a FFF7FEFF 	 bl feature
+ 951 013e 0346     	 mov r3,r0
+ 952 0140 002B     	 cmp r3,#0
+ 953 0142 04D0     	 beq .L44
+ 225:../cleanflight/src/main/interface/msp_box.c ****         BME(BOX3D);
+ 954              	 .loc 3 225 0
+ 955 0144 3B1D     	 adds r3,r7,#4
+ 956 0146 1846     	 mov r0,r3
+ 957 0148 1821     	 movs r1,#24
+ 958 014a FFF7FEFF 	 bl bitArraySet
+ 959              	.L44:
+ 226:../cleanflight/src/main/interface/msp_box.c ****     }
+ 227:../cleanflight/src/main/interface/msp_box.c **** 
+ 228:../cleanflight/src/main/interface/msp_box.c ****     if (isMotorProtocolDshot()) {
+ 960              	 .loc 3 228 0
+ 961 014e FFF7FEFF 	 bl isMotorProtocolDshot
+ 962 0152 0346     	 mov r3,r0
+ 963 0154 002B     	 cmp r3,#0
+ 964 0156 04D0     	 beq .L45
+ 229:../cleanflight/src/main/interface/msp_box.c ****         BME(BOXFLIPOVERAFTERCRASH);
+ 965              	 .loc 3 229 0
+ 966 0158 3B1D     	 adds r3,r7,#4
+ 967 015a 1846     	 mov r0,r3
+ 968 015c 1E21     	 movs r1,#30
+ 969 015e FFF7FEFF 	 bl bitArraySet
+ 970              	.L45:
+ 230:../cleanflight/src/main/interface/msp_box.c ****     }
+ 231:../cleanflight/src/main/interface/msp_box.c **** 
+ 232:../cleanflight/src/main/interface/msp_box.c ****     if (feature(FEATURE_SERVO_TILT)) {
+ 971              	 .loc 3 232 0
+ 972 0162 2020     	 movs r0,#32
+ 973 0164 FFF7FEFF 	 bl feature
+ 974 0168 0346     	 mov r3,r0
+ 975 016a 002B     	 cmp r3,#0
+ 976 016c 04D0     	 beq .L46
+ 233:../cleanflight/src/main/interface/msp_box.c ****         BME(BOXCAMSTAB);
+ 977              	 .loc 3 233 0
+ 978 016e 3B1D     	 adds r3,r7,#4
+ 979 0170 1846     	 mov r0,r3
+ 980 0172 0D21     	 movs r1,#13
+ 981 0174 FFF7FEFF 	 bl bitArraySet
+ 982              	.L46:
+ 234:../cleanflight/src/main/interface/msp_box.c ****     }
+ 235:../cleanflight/src/main/interface/msp_box.c **** 
+ 236:../cleanflight/src/main/interface/msp_box.c ****     if (feature(FEATURE_INFLIGHT_ACC_CAL)) {
+ 983              	 .loc 3 236 0
+ 984 0178 0420     	 movs r0,#4
+ 985 017a FFF7FEFF 	 bl feature
+ 986 017e 0346     	 mov r3,r0
+ 987 0180 002B     	 cmp r3,#0
+ 988 0182 04D0     	 beq .L47
+ 237:../cleanflight/src/main/interface/msp_box.c ****         BME(BOXCALIB);
+ 989              	 .loc 3 237 0
+ 990 0184 3B1D     	 adds r3,r7,#4
+ 991 0186 1846     	 mov r0,r3
+ 992 0188 1021     	 movs r1,#16
+ 993 018a FFF7FEFF 	 bl bitArraySet
+ 994              	.L47:
+ 238:../cleanflight/src/main/interface/msp_box.c ****     }
+ 239:../cleanflight/src/main/interface/msp_box.c **** 
+ 240:../cleanflight/src/main/interface/msp_box.c ****     BME(BOXOSD);
+ 995              	 .loc 3 240 0
+ 996 018e 3B1D     	 adds r3,r7,#4
+ 997 0190 1846     	 mov r0,r3
+ 998 0192 1121     	 movs r1,#17
+ 999 0194 FFF7FEFF 	 bl bitArraySet
+ 241:../cleanflight/src/main/interface/msp_box.c **** 
+ 242:../cleanflight/src/main/interface/msp_box.c **** #ifdef USE_TELEMETRY
+ 243:../cleanflight/src/main/interface/msp_box.c ****     if (feature(FEATURE_TELEMETRY)) {
+ 244:../cleanflight/src/main/interface/msp_box.c ****         BME(BOXTELEMETRY);
+ 245:../cleanflight/src/main/interface/msp_box.c ****     }
+ 246:../cleanflight/src/main/interface/msp_box.c **** #endif
+ 247:../cleanflight/src/main/interface/msp_box.c **** 
+ 248:../cleanflight/src/main/interface/msp_box.c **** #ifdef USE_SERVOS
+ 249:../cleanflight/src/main/interface/msp_box.c ****     if (mixerConfig()->mixerMode == MIXER_CUSTOM_AIRPLANE) {
+ 1000              	 .loc 3 249 0
+ 1001 0198 FFF7FEFF 	 bl mixerConfig
+ 1002 019c 0346     	 mov r3,r0
+ 1003 019e 1B78     	 ldrb r3,[r3]
+ 1004 01a0 182B     	 cmp r3,#24
+ 1005 01a2 0ED1     	 bne .L48
+ 250:../cleanflight/src/main/interface/msp_box.c ****         BME(BOXSERVO1);
+ 1006              	 .loc 3 250 0
+ 1007 01a4 3B1D     	 adds r3,r7,#4
+ 1008 01a6 1846     	 mov r0,r3
+ 1009 01a8 1321     	 movs r1,#19
+ 1010 01aa FFF7FEFF 	 bl bitArraySet
+ 251:../cleanflight/src/main/interface/msp_box.c ****         BME(BOXSERVO2);
+ 1011              	 .loc 3 251 0
+ 1012 01ae 3B1D     	 adds r3,r7,#4
+ 1013 01b0 1846     	 mov r0,r3
+ 1014 01b2 1421     	 movs r1,#20
+ 1015 01b4 FFF7FEFF 	 bl bitArraySet
+ 252:../cleanflight/src/main/interface/msp_box.c ****         BME(BOXSERVO3);
+ 1016              	 .loc 3 252 0
+ 1017 01b8 3B1D     	 adds r3,r7,#4
+ 1018 01ba 1846     	 mov r0,r3
+ 1019 01bc 1521     	 movs r1,#21
+ 1020 01be FFF7FEFF 	 bl bitArraySet
+ 1021              	.L48:
+ 253:../cleanflight/src/main/interface/msp_box.c ****     }
+ 254:../cleanflight/src/main/interface/msp_box.c **** #endif
+ 255:../cleanflight/src/main/interface/msp_box.c **** 
+ 256:../cleanflight/src/main/interface/msp_box.c **** #ifdef USE_RCDEVICE
+ 257:../cleanflight/src/main/interface/msp_box.c ****     BME(BOXCAMERA1);
+ 1022              	 .loc 3 257 0
+ 1023 01c2 3B1D     	 adds r3,r7,#4
+ 1024 01c4 1846     	 mov r0,r3
+ 1025 01c6 1B21     	 movs r1,#27
+ 1026 01c8 FFF7FEFF 	 bl bitArraySet
+ 258:../cleanflight/src/main/interface/msp_box.c ****     BME(BOXCAMERA2);
+ 1027              	 .loc 3 258 0
+ 1028 01cc 3B1D     	 adds r3,r7,#4
+ 1029 01ce 1846     	 mov r0,r3
+ 1030 01d0 1C21     	 movs r1,#28
+ 1031 01d2 FFF7FEFF 	 bl bitArraySet
+ 259:../cleanflight/src/main/interface/msp_box.c ****     BME(BOXCAMERA3);
+ 1032              	 .loc 3 259 0
+ 1033 01d6 3B1D     	 adds r3,r7,#4
+ 1034 01d8 1846     	 mov r0,r3
+ 1035 01da 1D21     	 movs r1,#29
+ 1036 01dc FFF7FEFF 	 bl bitArraySet
+ 260:../cleanflight/src/main/interface/msp_box.c **** #endif
+ 261:../cleanflight/src/main/interface/msp_box.c **** 
+ 262:../cleanflight/src/main/interface/msp_box.c **** #if defined(USE_VTX_SMARTAUDIO) || defined(USE_VTX_TRAMP)
+ 263:../cleanflight/src/main/interface/msp_box.c ****     BME(BOXVTXPITMODE);
+ 1037              	 .loc 3 263 0
+ 1038 01e0 3B1D     	 adds r3,r7,#4
+ 1039 01e2 1846     	 mov r0,r3
+ 1040 01e4 2121     	 movs r1,#33
+ 1041 01e6 FFF7FEFF 	 bl bitArraySet
+ 264:../cleanflight/src/main/interface/msp_box.c **** #endif
+ 265:../cleanflight/src/main/interface/msp_box.c **** 
+ 266:../cleanflight/src/main/interface/msp_box.c ****     BME(BOXPARALYZE);
+ 1042              	 .loc 3 266 0
+ 1043 01ea 3B1D     	 adds r3,r7,#4
+ 1044 01ec 1846     	 mov r0,r3
+ 1045 01ee 2221     	 movs r1,#34
+ 1046 01f0 FFF7FEFF 	 bl bitArraySet
+ 1047              	.LBB7:
+ 267:../cleanflight/src/main/interface/msp_box.c **** 
+ 268:../cleanflight/src/main/interface/msp_box.c **** #ifdef USE_PINIOBOX
+ 269:../cleanflight/src/main/interface/msp_box.c ****     // Turn BOXUSERx only if pinioBox facility monitors them, as the facility is the only BOXUSERx 
+ 270:../cleanflight/src/main/interface/msp_box.c ****     // Note that pinioBoxConfig can be set to monitor any box.
+ 271:../cleanflight/src/main/interface/msp_box.c ****     for (int i = 0; i < PINIO_COUNT; i++) {
+ 1048              	 .loc 3 271 0
+ 1049 01f4 0023     	 movs r3,#0
+ 1050 01f6 7B61     	 str r3,[r7,#20]
+ 1051 01f8 26E0     	 b .L49
+ 1052              	.L53:
+ 272:../cleanflight/src/main/interface/msp_box.c ****         if (pinioBoxConfig()->permanentId[i] != PERMANENT_ID_NONE) {
+ 1053              	 .loc 3 272 0
+ 1054 01fa FFF7FEFF 	 bl pinioBoxConfig
+ 1055 01fe 0246     	 mov r2,r0
+ 1056 0200 7B69     	 ldr r3,[r7,#20]
+ 1057 0202 1344     	 add r3,r3,r2
+ 1058 0204 1B78     	 ldrb r3,[r3]
+ 1059 0206 FF2B     	 cmp r3,#255
+ 1060 0208 1BD0     	 beq .L50
+ 1061              	.LBB8:
+ 273:../cleanflight/src/main/interface/msp_box.c ****             const box_t *box = findBoxByPermanentId(pinioBoxConfig()->permanentId[i]);
+ 1062              	 .loc 3 273 0
+ 1063 020a FFF7FEFF 	 bl pinioBoxConfig
+ 1064 020e 0246     	 mov r2,r0
+ 1065 0210 7B69     	 ldr r3,[r7,#20]
+ 1066 0212 1344     	 add r3,r3,r2
+ 1067 0214 1B78     	 ldrb r3,[r3]
+ 1068 0216 1846     	 mov r0,r3
+ 1069 0218 FFF7FEFF 	 bl findBoxByPermanentId
+ 1070 021c F860     	 str r0,[r7,#12]
+ 274:../cleanflight/src/main/interface/msp_box.c ****             if (box) {
+ 1071              	 .loc 3 274 0
+ 1072 021e FB68     	 ldr r3,[r7,#12]
+ 1073 0220 002B     	 cmp r3,#0
+ 1074 0222 0ED0     	 beq .L50
+ 275:../cleanflight/src/main/interface/msp_box.c ****                 switch(box->boxId) {
+ 1075              	 .loc 3 275 0
+ 1076 0224 FB68     	 ldr r3,[r7,#12]
+ 1077 0226 1B78     	 ldrb r3,[r3]
+ 1078 0228 233B     	 subs r3,r3,#35
+ 1079 022a 032B     	 cmp r3,#3
+ 1080 022c 08D8     	 bhi .L58
+ 276:../cleanflight/src/main/interface/msp_box.c ****                 case BOXUSER1:
+ 277:../cleanflight/src/main/interface/msp_box.c ****                 case BOXUSER2:
+ 278:../cleanflight/src/main/interface/msp_box.c ****                 case BOXUSER3:
+ 279:../cleanflight/src/main/interface/msp_box.c ****                 case BOXUSER4:
+ 280:../cleanflight/src/main/interface/msp_box.c ****                     BME(box->boxId);
+ 1081              	 .loc 3 280 0
+ 1082 022e FB68     	 ldr r3,[r7,#12]
+ 1083 0230 1B78     	 ldrb r3,[r3]
+ 1084 0232 1A46     	 mov r2,r3
+ 1085 0234 3B1D     	 adds r3,r7,#4
+ 1086 0236 1846     	 mov r0,r3
+ 1087 0238 1146     	 mov r1,r2
+ 1088 023a FFF7FEFF 	 bl bitArraySet
+ 281:../cleanflight/src/main/interface/msp_box.c ****                     break;
+ 1089              	 .loc 3 281 0
+ 1090 023e 00E0     	 b .L50
+ 1091              	.L58:
+ 282:../cleanflight/src/main/interface/msp_box.c ****                 default:
+ 283:../cleanflight/src/main/interface/msp_box.c ****                     break;
+ 1092              	 .loc 3 283 0
+ 1093 0240 00BF     	 nop
+ 1094              	.L50:
+ 1095              	.LBE8:
+ 271:../cleanflight/src/main/interface/msp_box.c ****         if (pinioBoxConfig()->permanentId[i] != PERMANENT_ID_NONE) {
+ 1096              	 .loc 3 271 0 discriminator 2
+ 1097 0242 7B69     	 ldr r3,[r7,#20]
+ 1098 0244 0133     	 adds r3,r3,#1
+ 1099 0246 7B61     	 str r3,[r7,#20]
+ 1100              	.L49:
+ 271:../cleanflight/src/main/interface/msp_box.c ****         if (pinioBoxConfig()->permanentId[i] != PERMANENT_ID_NONE) {
+ 1101              	 .loc 3 271 0 is_stmt 0 discriminator 1
+ 1102 0248 7B69     	 ldr r3,[r7,#20]
+ 1103 024a 032B     	 cmp r3,#3
+ 1104 024c D5DD     	 ble .L53
+ 1105              	.LBE7:
+ 284:../cleanflight/src/main/interface/msp_box.c ****                 }
+ 285:../cleanflight/src/main/interface/msp_box.c ****             }
+ 286:../cleanflight/src/main/interface/msp_box.c ****         }
+ 287:../cleanflight/src/main/interface/msp_box.c ****     }
+ 288:../cleanflight/src/main/interface/msp_box.c **** #endif
+ 289:../cleanflight/src/main/interface/msp_box.c **** 
+ 290:../cleanflight/src/main/interface/msp_box.c **** #if defined(USE_PID_AUDIO)
+ 291:../cleanflight/src/main/interface/msp_box.c ****     BME(BOXPIDAUDIO);
+ 292:../cleanflight/src/main/interface/msp_box.c **** #endif
+ 293:../cleanflight/src/main/interface/msp_box.c **** 
+ 294:../cleanflight/src/main/interface/msp_box.c **** #if defined(USE_ACRO_TRAINER) && defined(USE_ACC)
+ 295:../cleanflight/src/main/interface/msp_box.c ****     if (sensors(SENSOR_ACC)) {
+ 1106              	 .loc 3 295 0 is_stmt 1
+ 1107 024e 0220     	 movs r0,#2
+ 1108 0250 FFF7FEFF 	 bl sensors
+ 1109 0254 0346     	 mov r3,r0
+ 1110 0256 002B     	 cmp r3,#0
+ 1111 0258 04D0     	 beq .L54
+ 296:../cleanflight/src/main/interface/msp_box.c ****         BME(BOXACROTRAINER);
+ 1112              	 .loc 3 296 0
+ 1113 025a 3B1D     	 adds r3,r7,#4
+ 1114 025c 1846     	 mov r0,r3
+ 1115 025e 2821     	 movs r1,#40
+ 1116 0260 FFF7FEFF 	 bl bitArraySet
+ 1117              	.L54:
+ 1118              	.LBB9:
+ 297:../cleanflight/src/main/interface/msp_box.c ****     }
+ 298:../cleanflight/src/main/interface/msp_box.c **** #endif // USE_ACRO_TRAINER
+ 299:../cleanflight/src/main/interface/msp_box.c **** 
+ 300:../cleanflight/src/main/interface/msp_box.c **** #undef BME
+ 301:../cleanflight/src/main/interface/msp_box.c ****     // check that all enabled IDs are in boxes array (check may be skipped when using findBoxById()
+ 302:../cleanflight/src/main/interface/msp_box.c ****     for (boxId_e boxId = 0;  boxId < CHECKBOX_ITEM_COUNT; boxId++)
+ 1119              	 .loc 3 302 0
+ 1120 0264 0023     	 movs r3,#0
+ 1121 0266 FB74     	 strb r3,[r7,#19]
+ 1122 0268 18E0     	 b .L55
+ 1123              	.L57:
+ 303:../cleanflight/src/main/interface/msp_box.c ****         if (bitArrayGet(&ena, boxId)
+ 1124              	 .loc 3 303 0
+ 1125 026a FB7C     	 ldrb r3,[r7,#19]
+ 1126 026c 3A1D     	 adds r2,r7,#4
+ 1127 026e 1046     	 mov r0,r2
+ 1128 0270 1946     	 mov r1,r3
+ 1129 0272 FFF7FEFF 	 bl bitArrayGet
+ 1130 0276 0346     	 mov r3,r0
+ 1131 0278 002B     	 cmp r3,#0
+ 1132 027a 0CD0     	 beq .L56
+ 304:../cleanflight/src/main/interface/msp_box.c ****             && findBoxByBoxId(boxId) == NULL)
+ 1133              	 .loc 3 304 0
+ 1134 027c FB7C     	 ldrb r3,[r7,#19]
+ 1135 027e 1846     	 mov r0,r3
+ 1136 0280 FFF7FEFF 	 bl findBoxByBoxId
+ 1137 0284 0346     	 mov r3,r0
+ 1138 0286 002B     	 cmp r3,#0
+ 1139 0288 05D1     	 bne .L56
+ 305:../cleanflight/src/main/interface/msp_box.c ****             bitArrayClr(&ena, boxId);                 // this should not happen, but handle it grac
+ 1140              	 .loc 3 305 0
+ 1141 028a FB7C     	 ldrb r3,[r7,#19]
+ 1142 028c 3A1D     	 adds r2,r7,#4
+ 1143 028e 1046     	 mov r0,r2
+ 1144 0290 1946     	 mov r1,r3
+ 1145 0292 FFF7FEFF 	 bl bitArrayClr
+ 1146              	.L56:
+ 302:../cleanflight/src/main/interface/msp_box.c ****         if (bitArrayGet(&ena, boxId)
+ 1147              	 .loc 3 302 0 discriminator 2
+ 1148 0296 FB7C     	 ldrb r3,[r7,#19]
+ 1149 0298 0133     	 adds r3,r3,#1
+ 1150 029a FB74     	 strb r3,[r7,#19]
+ 1151              	.L55:
+ 302:../cleanflight/src/main/interface/msp_box.c ****         if (bitArrayGet(&ena, boxId)
+ 1152              	 .loc 3 302 0 is_stmt 0 discriminator 1
+ 1153 029c FB7C     	 ldrb r3,[r7,#19]
+ 1154 029e 282B     	 cmp r3,#40
+ 1155 02a0 E3D9     	 bls .L57
+ 1156              	.LBE9:
+ 306:../cleanflight/src/main/interface/msp_box.c **** 
+ 307:../cleanflight/src/main/interface/msp_box.c ****     activeBoxIds = ena;                               // set global variable
+ 1157              	 .loc 3 307 0 is_stmt 1
+ 1158 02a2 054B     	 ldr r3,.L59
+ 1159 02a4 1A46     	 mov r2,r3
+ 1160 02a6 3B1D     	 adds r3,r7,#4
+ 1161 02a8 93E80300 	 ldmia r3,{r0,r1}
+ 1162 02ac 82E80300 	 stmia r2,{r0,r1}
+ 308:../cleanflight/src/main/interface/msp_box.c **** }
+ 1163              	 .loc 3 308 0
+ 1164 02b0 1837     	 adds r7,r7,#24
+ 1165              	.LCFI43:
+ 1166              	 .cfi_def_cfa_offset 8
+ 1167 02b2 BD46     	 mov sp,r7
+ 1168              	.LCFI44:
+ 1169              	 .cfi_def_cfa_register 13
+ 1170              	 
+ 1171 02b4 80BD     	 pop {r7,pc}
+ 1172              	.L60:
+ 1173 02b6 00BF     	 .align 2
+ 1174              	.L59:
+ 1175 02b8 00000000 	 .word activeBoxIds
+ 1176              	 .cfi_endproc
+ 1177              	.LFE557:
+ 1179              	 .section .text.getBoxIdState,"ax",%progbits
+ 1180              	 .align 2
+ 1181              	 .global getBoxIdState
+ 1182              	 .thumb
+ 1183              	 .thumb_func
+ 1185              	getBoxIdState:
+ 1186              	.LFB558:
+ 309:../cleanflight/src/main/interface/msp_box.c **** 
+ 310:../cleanflight/src/main/interface/msp_box.c **** // return state of given boxId box, handling ARM and FLIGHT_MODE
+ 311:../cleanflight/src/main/interface/msp_box.c **** bool getBoxIdState(boxId_e boxid)
+ 312:../cleanflight/src/main/interface/msp_box.c **** {
+ 1187              	 .loc 3 312 0
+ 1188              	 .cfi_startproc
+ 1189              	 
+ 1190              	 
+ 1191 0000 80B5     	 push {r7,lr}
+ 1192              	.LCFI45:
+ 1193              	 .cfi_def_cfa_offset 8
+ 1194              	 .cfi_offset 7,-8
+ 1195              	 .cfi_offset 14,-4
+ 1196 0002 86B0     	 sub sp,sp,#24
+ 1197              	.LCFI46:
+ 1198              	 .cfi_def_cfa_offset 32
+ 1199 0004 00AF     	 add r7,sp,#0
+ 1200              	.LCFI47:
+ 1201              	 .cfi_def_cfa_register 7
+ 1202 0006 0346     	 mov r3,r0
+ 1203 0008 FB71     	 strb r3,[r7,#7]
+ 313:../cleanflight/src/main/interface/msp_box.c ****     const uint8_t boxIdToFlightModeMap[] = BOXID_TO_FLIGHT_MODE_MAP_INITIALIZER;
+ 1204              	 .loc 3 313 0
+ 1205 000a 07F10C03 	 add r3,r7,#12
+ 1206 000e 0022     	 movs r2,#0
+ 1207 0010 1A60     	 str r2,[r3]
+ 1208 0012 0433     	 adds r3,r3,#4
+ 1209 0014 0022     	 movs r2,#0
+ 1210 0016 1A60     	 str r2,[r3]
+ 1211 0018 0433     	 adds r3,r3,#4
+ 1212 001a 0022     	 movs r2,#0
+ 1213 001c 1A80     	 strh r2,[r3]
+ 1214 001e 0233     	 adds r3,r3,#2
+ 1215 0020 0022     	 movs r2,#0
+ 1216 0022 1A70     	 strb r2,[r3]
+ 1217 0024 0133     	 adds r3,r3,#1
+ 1218 0026 0123     	 movs r3,#1
+ 1219 0028 BB73     	 strb r3,[r7,#14]
+ 1220 002a 0223     	 movs r3,#2
+ 1221 002c FB73     	 strb r3,[r7,#15]
+ 1222 002e 0323     	 movs r3,#3
+ 1223 0030 3B74     	 strb r3,[r7,#16]
+ 1224 0032 0423     	 movs r3,#4
+ 1225 0034 7B74     	 strb r3,[r7,#17]
+ 1226 0036 0523     	 movs r3,#5
+ 1227 0038 BB74     	 strb r3,[r7,#18]
+ 1228 003a 0623     	 movs r3,#6
+ 1229 003c FB74     	 strb r3,[r7,#19]
+ 1230 003e 0823     	 movs r3,#8
+ 1231 0040 3B75     	 strb r3,[r7,#20]
+ 1232 0042 0A23     	 movs r3,#10
+ 1233 0044 7B75     	 strb r3,[r7,#21]
+ 1234 0046 0B23     	 movs r3,#11
+ 1235 0048 BB75     	 strb r3,[r7,#22]
+ 314:../cleanflight/src/main/interface/msp_box.c **** 
+ 315:../cleanflight/src/main/interface/msp_box.c ****     // we assume that all boxId below BOXID_FLIGHTMODE_LAST except BOXARM are mapped to flightmode
+ 316:../cleanflight/src/main/interface/msp_box.c ****     STATIC_ASSERT(ARRAYLEN(boxIdToFlightModeMap) == BOXID_FLIGHTMODE_LAST + 1, FLIGHT_MODE_BOXID_MA
+ 317:../cleanflight/src/main/interface/msp_box.c **** 
+ 318:../cleanflight/src/main/interface/msp_box.c ****     if (boxid == BOXARM) {
+ 1236              	 .loc 3 318 0
+ 1237 004a FB79     	 ldrb r3,[r7,#7]
+ 1238 004c 002B     	 cmp r3,#0
+ 1239 004e 09D1     	 bne .L62
+ 319:../cleanflight/src/main/interface/msp_box.c ****         return ARMING_FLAG(ARMED);
+ 1240              	 .loc 3 319 0
+ 1241 0050 144B     	 ldr r3,.L66
+ 1242 0052 1B78     	 ldrb r3,[r3]
+ 1243 0054 03F00103 	 and r3,r3,#1
+ 1244 0058 002B     	 cmp r3,#0
+ 1245 005a 14BF     	 ite ne
+ 1246 005c 0123     	 movne r3,#1
+ 1247 005e 0023     	 moveq r3,#0
+ 1248 0060 DBB2     	 uxtb r3,r3
+ 1249 0062 1AE0     	 b .L65
+ 1250              	.L62:
+ 320:../cleanflight/src/main/interface/msp_box.c ****     } else if (boxid <= BOXID_FLIGHTMODE_LAST) {
+ 1251              	 .loc 3 320 0
+ 1252 0064 FB79     	 ldrb r3,[r7,#7]
+ 1253 0066 0A2B     	 cmp r3,#10
+ 1254 0068 12D8     	 bhi .L64
+ 321:../cleanflight/src/main/interface/msp_box.c ****         return FLIGHT_MODE(1 << boxIdToFlightModeMap[boxid]);
+ 1255              	 .loc 3 321 0
+ 1256 006a 0F4B     	 ldr r3,.L66+4
+ 1257 006c 1B88     	 ldrh r3,[r3]
+ 1258 006e 1A46     	 mov r2,r3
+ 1259 0070 FB79     	 ldrb r3,[r7,#7]
+ 1260 0072 07F11801 	 add r1,r7,#24
+ 1261 0076 0B44     	 add r3,r3,r1
+ 1262 0078 13F80C3C 	 ldrb r3,[r3,#-12]
+ 1263 007c 1946     	 mov r1,r3
+ 1264 007e 0123     	 movs r3,#1
+ 1265 0080 8B40     	 lsls r3,r3,r1
+ 1266 0082 1340     	 ands r3,r3,r2
+ 1267 0084 002B     	 cmp r3,#0
+ 1268 0086 14BF     	 ite ne
+ 1269 0088 0123     	 movne r3,#1
+ 1270 008a 0023     	 moveq r3,#0
+ 1271 008c DBB2     	 uxtb r3,r3
+ 1272 008e 04E0     	 b .L65
+ 1273              	.L64:
+ 322:../cleanflight/src/main/interface/msp_box.c ****     } else {
+ 323:../cleanflight/src/main/interface/msp_box.c ****         return IS_RC_MODE_ACTIVE(boxid);
+ 1274              	 .loc 3 323 0
+ 1275 0090 FB79     	 ldrb r3,[r7,#7]
+ 1276 0092 1846     	 mov r0,r3
+ 1277 0094 FFF7FEFF 	 bl IS_RC_MODE_ACTIVE
+ 1278 0098 0346     	 mov r3,r0
+ 1279              	.L65:
+ 324:../cleanflight/src/main/interface/msp_box.c ****     }
+ 325:../cleanflight/src/main/interface/msp_box.c **** }
+ 1280              	 .loc 3 325 0 discriminator 1
+ 1281 009a 1846     	 mov r0,r3
+ 1282 009c 1837     	 adds r7,r7,#24
+ 1283              	.LCFI48:
+ 1284              	 .cfi_def_cfa_offset 8
+ 1285 009e BD46     	 mov sp,r7
+ 1286              	.LCFI49:
+ 1287              	 .cfi_def_cfa_register 13
+ 1288              	 
+ 1289 00a0 80BD     	 pop {r7,pc}
+ 1290              	.L67:
+ 1291 00a2 00BF     	 .align 2
+ 1292              	.L66:
+ 1293 00a4 00000000 	 .word armingFlags
+ 1294 00a8 00000000 	 .word flightModeFlags
+ 1295              	 .cfi_endproc
+ 1296              	.LFE558:
+ 1298              	 .section .text.packFlightModeFlags,"ax",%progbits
+ 1299              	 .align 2
+ 1300              	 .global packFlightModeFlags
+ 1301              	 .thumb
+ 1302              	 .thumb_func
+ 1304              	packFlightModeFlags:
+ 1305              	.LFB559:
+ 326:../cleanflight/src/main/interface/msp_box.c **** 
+ 327:../cleanflight/src/main/interface/msp_box.c **** // pack used flightModeFlags into supplied array
+ 328:../cleanflight/src/main/interface/msp_box.c **** // returns number of bits used
+ 329:../cleanflight/src/main/interface/msp_box.c **** int packFlightModeFlags(boxBitmask_t *mspFlightModeFlags)
+ 330:../cleanflight/src/main/interface/msp_box.c **** {
+ 1306              	 .loc 3 330 0
+ 1307              	 .cfi_startproc
+ 1308              	 
+ 1309              	 
+ 1310 0000 80B5     	 push {r7,lr}
+ 1311              	.LCFI50:
+ 1312              	 .cfi_def_cfa_offset 8
+ 1313              	 .cfi_offset 7,-8
+ 1314              	 .cfi_offset 14,-4
+ 1315 0002 84B0     	 sub sp,sp,#16
+ 1316              	.LCFI51:
+ 1317              	 .cfi_def_cfa_offset 24
+ 1318 0004 00AF     	 add r7,sp,#0
+ 1319              	.LCFI52:
+ 1320              	 .cfi_def_cfa_register 7
+ 1321 0006 7860     	 str r0,[r7,#4]
+ 331:../cleanflight/src/main/interface/msp_box.c ****     // Serialize the flags in the order we delivered them, ignoring BOXNAMES and BOXINDEXES
+ 332:../cleanflight/src/main/interface/msp_box.c ****     memset(mspFlightModeFlags, 0, sizeof(boxBitmask_t));
+ 1322              	 .loc 3 332 0
+ 1323 0008 7868     	 ldr r0,[r7,#4]
+ 1324 000a 0021     	 movs r1,#0
+ 1325 000c 0822     	 movs r2,#8
+ 1326 000e FFF7FEFF 	 bl memset
+ 333:../cleanflight/src/main/interface/msp_box.c ****     // map boxId_e enabled bits to MSP status indexes
+ 334:../cleanflight/src/main/interface/msp_box.c ****     // only active boxIds are sent in status over MSP, other bits are not counted
+ 335:../cleanflight/src/main/interface/msp_box.c ****     unsigned mspBoxIdx = 0;           // index of active boxId (matches sent permanentId and boxNam
+ 1327              	 .loc 3 335 0
+ 1328 0012 0023     	 movs r3,#0
+ 1329 0014 FB60     	 str r3,[r7,#12]
+ 1330              	.LBB10:
+ 336:../cleanflight/src/main/interface/msp_box.c ****     for (boxId_e boxId = 0; boxId < CHECKBOX_ITEM_COUNT; boxId++) {
+ 1331              	 .loc 3 336 0
+ 1332 0016 0023     	 movs r3,#0
+ 1333 0018 FB72     	 strb r3,[r7,#11]
+ 1334 001a 17E0     	 b .L69
+ 1335              	.L72:
+ 337:../cleanflight/src/main/interface/msp_box.c ****         if (activeBoxIdGet(boxId)) {
+ 1336              	 .loc 3 337 0
+ 1337 001c FB7A     	 ldrb r3,[r7,#11]
+ 1338 001e 1846     	 mov r0,r3
+ 1339 0020 FFF7FEFF 	 bl activeBoxIdGet
+ 1340 0024 0346     	 mov r3,r0
+ 1341 0026 002B     	 cmp r3,#0
+ 1342 0028 0DD0     	 beq .L70
+ 338:../cleanflight/src/main/interface/msp_box.c ****             if (getBoxIdState(boxId))
+ 1343              	 .loc 3 338 0
+ 1344 002a FB7A     	 ldrb r3,[r7,#11]
+ 1345 002c 1846     	 mov r0,r3
+ 1346 002e FFF7FEFF 	 bl getBoxIdState
+ 1347 0032 0346     	 mov r3,r0
+ 1348 0034 002B     	 cmp r3,#0
+ 1349 0036 03D0     	 beq .L71
+ 339:../cleanflight/src/main/interface/msp_box.c ****                 bitArraySet(mspFlightModeFlags, mspBoxIdx);       // box is enabled
+ 1350              	 .loc 3 339 0
+ 1351 0038 7868     	 ldr r0,[r7,#4]
+ 1352 003a F968     	 ldr r1,[r7,#12]
+ 1353 003c FFF7FEFF 	 bl bitArraySet
+ 1354              	.L71:
+ 340:../cleanflight/src/main/interface/msp_box.c ****             mspBoxIdx++;                                          // box is active, count it
+ 1355              	 .loc 3 340 0
+ 1356 0040 FB68     	 ldr r3,[r7,#12]
+ 1357 0042 0133     	 adds r3,r3,#1
+ 1358 0044 FB60     	 str r3,[r7,#12]
+ 1359              	.L70:
+ 336:../cleanflight/src/main/interface/msp_box.c ****         if (activeBoxIdGet(boxId)) {
+ 1360              	 .loc 3 336 0 discriminator 2
+ 1361 0046 FB7A     	 ldrb r3,[r7,#11]
+ 1362 0048 0133     	 adds r3,r3,#1
+ 1363 004a FB72     	 strb r3,[r7,#11]
+ 1364              	.L69:
+ 336:../cleanflight/src/main/interface/msp_box.c ****         if (activeBoxIdGet(boxId)) {
+ 1365              	 .loc 3 336 0 is_stmt 0 discriminator 1
+ 1366 004c FB7A     	 ldrb r3,[r7,#11]
+ 1367 004e 282B     	 cmp r3,#40
+ 1368 0050 E4D9     	 bls .L72
+ 1369              	.LBE10:
+ 341:../cleanflight/src/main/interface/msp_box.c ****         }
+ 342:../cleanflight/src/main/interface/msp_box.c ****     }
+ 343:../cleanflight/src/main/interface/msp_box.c ****     // return count of used bits
+ 344:../cleanflight/src/main/interface/msp_box.c ****     return mspBoxIdx;
+ 1370              	 .loc 3 344 0 is_stmt 1
+ 1371 0052 FB68     	 ldr r3,[r7,#12]
+ 345:../cleanflight/src/main/interface/msp_box.c **** }
+ 1372              	 .loc 3 345 0
+ 1373 0054 1846     	 mov r0,r3
+ 1374 0056 1037     	 adds r7,r7,#16
+ 1375              	.LCFI53:
+ 1376              	 .cfi_def_cfa_offset 8
+ 1377 0058 BD46     	 mov sp,r7
+ 1378              	.LCFI54:
+ 1379              	 .cfi_def_cfa_register 13
+ 1380              	 
+ 1381 005a 80BD     	 pop {r7,pc}
+ 1382              	 .cfi_endproc
+ 1383              	.LFE559:
+ 1385              	 .text
+ 1386              	.Letext0:
+ 1387              	 .file 4 "d:\\xmc\\dave-ide-4.4.2-64bit\\eclipse\\arm-gcc-49\\arm-none-eabi\\include\\machine\\_default_types.h"
+ 1388              	 .file 5 "d:\\xmc\\dave-ide-4.4.2-64bit\\eclipse\\arm-gcc-49\\arm-none-eabi\\include\\stdint.h"
+ 1389              	 .file 6 "D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/lib/main/XMC4000/XMCLib/inc/xmc_usic.h"
+ 1390              	 .file 7 "D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/common/streambuf.h"
+ 1391              	 .file 8 "D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/config/feature.h"
+ 1392              	 .file 9 "D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/fc/config.h"
+ 1393              	 .file 10 "D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/fc/runtime_config.h"
+ 1394              	 .file 11 "D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/common/time.h"
+ 1395              	 .file 12 "D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/drivers/io_types.h"
+ 1396              	 .file 13 "D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/drivers/pwm_output.h"
+ 1397              	 .file 14 "D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/fc/rc_modes.h"
+ 1398              	 .file 15 "D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/interface/msp_box.h"
+ 1399              	 .file 16 "D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/sensors/sensors.h"
+ 1400              	 .file 17 "D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/drivers/resource.h"
+ 1401              	 .file 18 "D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/drivers/serial.h"
+ 1402              	 .file 19 "D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/io/serial.h"
+ 1403              	 .file 20 "D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/telemetry/telemetry.h"
+ 1404              	 .file 21 "D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/lib/main/CMSIS/Core/Include/core_cm4.h"
+ 1405              	 .file 22 "D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/lib/main/XMC4000/system_XMC4700.h"
+DEFINED SYMBOLS
+                            *ABS*:00000000 msp_box.c
+    {standard input}:20     .text.mixerConfig:00000000 $t
+    {standard input}:24     .text.mixerConfig:00000000 mixerConfig
+    {standard input}:54     .text.mixerConfig:00000010 $d
+    {standard input}:59     .text.pinioBoxConfig:00000000 $t
+    {standard input}:63     .text.pinioBoxConfig:00000000 pinioBoxConfig
+    {standard input}:93     .text.pinioBoxConfig:00000010 $d
+    {standard input}:98     .rodata:00000000 $d
+    {standard input}:222    .rodata.boxes:00000000 $d
+    {standard input}:225    .rodata.boxes:00000000 boxes
+    {standard input}:350    .bss.activeBoxIds:00000000 $d
+    {standard input}:353    .bss.activeBoxIds:00000000 activeBoxIds
+    {standard input}:356    .text.findBoxByBoxId:00000000 $t
+    {standard input}:361    .text.findBoxByBoxId:00000000 findBoxByBoxId
+    {standard input}:438    .text.findBoxByBoxId:00000048 $d
+    {standard input}:443    .text.findBoxByPermanentId:00000000 $t
+    {standard input}:448    .text.findBoxByPermanentId:00000000 findBoxByPermanentId
+    {standard input}:524    .text.findBoxByPermanentId:00000048 $d
+    {standard input}:529    .text.activeBoxIdGet:00000000 $t
+    {standard input}:533    .text.activeBoxIdGet:00000000 activeBoxIdGet
+    {standard input}:580    .text.activeBoxIdGet:00000028 $d
+    {standard input}:585    .text.serializeBoxNameFn:00000000 $t
+    {standard input}:590    .text.serializeBoxNameFn:00000000 serializeBoxNameFn
+    {standard input}:632    .text.serializeBoxPermanentIdFn:00000000 $t
+    {standard input}:637    .text.serializeBoxPermanentIdFn:00000000 serializeBoxPermanentIdFn
+    {standard input}:675    .text.serializeBoxReply:00000000 $t
+    {standard input}:680    .text.serializeBoxReply:00000000 serializeBoxReply
+    {standard input}:772    .text.initActiveBoxIds:00000000 $t
+    {standard input}:777    .text.initActiveBoxIds:00000000 initActiveBoxIds
+    {standard input}:1175   .text.initActiveBoxIds:000002b8 $d
+    {standard input}:1180   .text.getBoxIdState:00000000 $t
+    {standard input}:1185   .text.getBoxIdState:00000000 getBoxIdState
+    {standard input}:1293   .text.getBoxIdState:000000a4 $d
+    {standard input}:1299   .text.packFlightModeFlags:00000000 $t
+    {standard input}:1304   .text.packFlightModeFlags:00000000 packFlightModeFlags
+                     .debug_frame:00000010 $d
+
+UNDEFINED SYMBOLS
+mixerConfig_System
+pinioBoxConfig_System
+bitArrayGet
+sbufWriteString
+sbufWriteU8
+memset
+bitArraySet
+feature
+sensors
+isMotorProtocolDshot
+bitArrayClr
+IS_RC_MODE_ACTIVE
+armingFlags
+flightModeFlags

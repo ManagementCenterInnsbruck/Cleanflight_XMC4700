@@ -1,0 +1,689 @@
+   1              	 .syntax unified
+   2              	 .cpu cortex-m4
+   3              	 .eabi_attribute 27,3
+   4              	 .fpu fpv4-sp-d16
+   5              	 .eabi_attribute 20,1
+   6              	 .eabi_attribute 21,1
+   7              	 .eabi_attribute 23,3
+   8              	 .eabi_attribute 24,1
+   9              	 .eabi_attribute 25,1
+  10              	 .eabi_attribute 26,1
+  11              	 .eabi_attribute 30,6
+  12              	 .eabi_attribute 34,1
+  13              	 .eabi_attribute 18,4
+  14              	 .thumb
+  15              	 .file "boardalignment.c"
+  16              	 .text
+  17              	.Ltext0:
+  18              	 .cfi_sections .debug_frame
+  19              	 .section .data.standardBoardAlignment,"aw",%progbits
+  22              	standardBoardAlignment:
+  23 0000 01       	 .byte 1
+  24              	 .section .bss.boardRotation,"aw",%nobits
+  25              	 .align 2
+  28              	boardRotation:
+  29 0000 00000000 	 .space 36
+  29      00000000 
+  29      00000000 
+  29      00000000 
+  29      00000000 
+  30              	 .comm boardAlignment_System,12,4
+  31              	 .comm boardAlignment_Copy,12,4
+  32              	 .global boardAlignment_Registry
+  33              	 .section .pg_registry,"a",%progbits
+  34              	 .align 2
+  37              	boardAlignment_Registry:
+  38 0000 0200     	 .short 2
+  39 0002 0C00     	 .short 12
+  40 0004 00000000 	 .word boardAlignment_System
+  41 0008 00000000 	 .word boardAlignment_Copy
+  42 000c 00000000 	 .word 0
+  43 0010 00000000 	 .word 0
+  44              	 .section .text.isBoardAlignmentStandard,"ax",%progbits
+  45              	 .align 2
+  46              	 .thumb
+  47              	 .thumb_func
+  49              	isBoardAlignmentStandard:
+  50              	.LFB528:
+  51              	 .file 1 "../cleanflight/src/main/sensors/boardalignment.c"
+   1:../cleanflight/src/main/sensors/boardalignment.c **** /*
+   2:../cleanflight/src/main/sensors/boardalignment.c ****  * This file is part of Cleanflight and Betaflight.
+   3:../cleanflight/src/main/sensors/boardalignment.c ****  *
+   4:../cleanflight/src/main/sensors/boardalignment.c ****  * Cleanflight and Betaflight are free software. You can redistribute
+   5:../cleanflight/src/main/sensors/boardalignment.c ****  * this software and/or modify this software under the terms of the
+   6:../cleanflight/src/main/sensors/boardalignment.c ****  * GNU General Public License as published by the Free Software
+   7:../cleanflight/src/main/sensors/boardalignment.c ****  * Foundation, either version 3 of the License, or (at your option)
+   8:../cleanflight/src/main/sensors/boardalignment.c ****  * any later version.
+   9:../cleanflight/src/main/sensors/boardalignment.c ****  *
+  10:../cleanflight/src/main/sensors/boardalignment.c ****  * Cleanflight and Betaflight are distributed in the hope that they
+  11:../cleanflight/src/main/sensors/boardalignment.c ****  * will be useful, but WITHOUT ANY WARRANTY; without even the implied
+  12:../cleanflight/src/main/sensors/boardalignment.c ****  * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+  13:../cleanflight/src/main/sensors/boardalignment.c ****  * See the GNU General Public License for more details.
+  14:../cleanflight/src/main/sensors/boardalignment.c ****  *
+  15:../cleanflight/src/main/sensors/boardalignment.c ****  * You should have received a copy of the GNU General Public License
+  16:../cleanflight/src/main/sensors/boardalignment.c ****  * along with this software.
+  17:../cleanflight/src/main/sensors/boardalignment.c ****  *
+  18:../cleanflight/src/main/sensors/boardalignment.c ****  * If not, see <http://www.gnu.org/licenses/>.
+  19:../cleanflight/src/main/sensors/boardalignment.c ****  */
+  20:../cleanflight/src/main/sensors/boardalignment.c **** 
+  21:../cleanflight/src/main/sensors/boardalignment.c **** #include <stdbool.h>
+  22:../cleanflight/src/main/sensors/boardalignment.c **** #include <stdint.h>
+  23:../cleanflight/src/main/sensors/boardalignment.c **** #include <math.h>
+  24:../cleanflight/src/main/sensors/boardalignment.c **** #include <string.h>
+  25:../cleanflight/src/main/sensors/boardalignment.c **** 
+  26:../cleanflight/src/main/sensors/boardalignment.c **** #include "platform.h"
+  27:../cleanflight/src/main/sensors/boardalignment.c **** 
+  28:../cleanflight/src/main/sensors/boardalignment.c **** #include "common/maths.h"
+  29:../cleanflight/src/main/sensors/boardalignment.c **** #include "common/axis.h"
+  30:../cleanflight/src/main/sensors/boardalignment.c **** 
+  31:../cleanflight/src/main/sensors/boardalignment.c **** #include "pg/pg.h"
+  32:../cleanflight/src/main/sensors/boardalignment.c **** #include "pg/pg_ids.h"
+  33:../cleanflight/src/main/sensors/boardalignment.c **** 
+  34:../cleanflight/src/main/sensors/boardalignment.c **** #include "drivers/sensor.h"
+  35:../cleanflight/src/main/sensors/boardalignment.c **** 
+  36:../cleanflight/src/main/sensors/boardalignment.c **** #include "boardalignment.h"
+  37:../cleanflight/src/main/sensors/boardalignment.c **** 
+  38:../cleanflight/src/main/sensors/boardalignment.c **** static bool standardBoardAlignment = true;     // board orientation correction
+  39:../cleanflight/src/main/sensors/boardalignment.c **** static float boardRotation[3][3];              // matrix
+  40:../cleanflight/src/main/sensors/boardalignment.c **** 
+  41:../cleanflight/src/main/sensors/boardalignment.c **** // no template required since defaults are zero
+  42:../cleanflight/src/main/sensors/boardalignment.c **** PG_REGISTER(boardAlignment_t, boardAlignment, PG_BOARD_ALIGNMENT, 0);
+  43:../cleanflight/src/main/sensors/boardalignment.c **** 
+  44:../cleanflight/src/main/sensors/boardalignment.c **** static bool isBoardAlignmentStandard(const boardAlignment_t *boardAlignment)
+  45:../cleanflight/src/main/sensors/boardalignment.c **** {
+  52              	 .loc 1 45 0
+  53              	 .cfi_startproc
+  54              	 
+  55              	 
+  56              	 
+  57 0000 80B4     	 push {r7}
+  58              	.LCFI0:
+  59              	 .cfi_def_cfa_offset 4
+  60              	 .cfi_offset 7,-4
+  61 0002 83B0     	 sub sp,sp,#12
+  62              	.LCFI1:
+  63              	 .cfi_def_cfa_offset 16
+  64 0004 00AF     	 add r7,sp,#0
+  65              	.LCFI2:
+  66              	 .cfi_def_cfa_register 7
+  67 0006 7860     	 str r0,[r7,#4]
+  46:../cleanflight/src/main/sensors/boardalignment.c ****     return !boardAlignment->rollDegrees && !boardAlignment->pitchDegrees && !boardAlignment->yawDeg
+  68              	 .loc 1 46 0
+  69 0008 7B68     	 ldr r3,[r7,#4]
+  70 000a 1B68     	 ldr r3,[r3]
+  71 000c 002B     	 cmp r3,#0
+  72 000e 09D1     	 bne .L2
+  73              	 .loc 1 46 0 is_stmt 0 discriminator 1
+  74 0010 7B68     	 ldr r3,[r7,#4]
+  75 0012 5B68     	 ldr r3,[r3,#4]
+  76 0014 002B     	 cmp r3,#0
+  77 0016 05D1     	 bne .L2
+  78              	 .loc 1 46 0 discriminator 3
+  79 0018 7B68     	 ldr r3,[r7,#4]
+  80 001a 9B68     	 ldr r3,[r3,#8]
+  81 001c 002B     	 cmp r3,#0
+  82 001e 01D1     	 bne .L2
+  83              	 .loc 1 46 0 discriminator 5
+  84 0020 0123     	 movs r3,#1
+  85 0022 00E0     	 b .L3
+  86              	.L2:
+  87              	 .loc 1 46 0 discriminator 6
+  88 0024 0023     	 movs r3,#0
+  89              	.L3:
+  90              	 .loc 1 46 0 discriminator 8
+  91 0026 03F00103 	 and r3,r3,#1
+  92 002a DBB2     	 uxtb r3,r3
+  47:../cleanflight/src/main/sensors/boardalignment.c **** }
+  93              	 .loc 1 47 0 is_stmt 1 discriminator 8
+  94 002c 1846     	 mov r0,r3
+  95 002e 0C37     	 adds r7,r7,#12
+  96              	.LCFI3:
+  97              	 .cfi_def_cfa_offset 4
+  98 0030 BD46     	 mov sp,r7
+  99              	.LCFI4:
+ 100              	 .cfi_def_cfa_register 13
+ 101              	 
+ 102 0032 5DF8047B 	 ldr r7,[sp],#4
+ 103              	.LCFI5:
+ 104              	 .cfi_restore 7
+ 105              	 .cfi_def_cfa_offset 0
+ 106 0036 7047     	 bx lr
+ 107              	 .cfi_endproc
+ 108              	.LFE528:
+ 110              	 .section .text.initBoardAlignment,"ax",%progbits
+ 111              	 .align 2
+ 112              	 .global initBoardAlignment
+ 113              	 .thumb
+ 114              	 .thumb_func
+ 116              	initBoardAlignment:
+ 117              	.LFB529:
+  48:../cleanflight/src/main/sensors/boardalignment.c **** 
+  49:../cleanflight/src/main/sensors/boardalignment.c **** void initBoardAlignment(const boardAlignment_t *boardAlignment)
+  50:../cleanflight/src/main/sensors/boardalignment.c **** {
+ 118              	 .loc 1 50 0
+ 119              	 .cfi_startproc
+ 120              	 
+ 121              	 
+ 122 0000 80B5     	 push {r7,lr}
+ 123              	.LCFI6:
+ 124              	 .cfi_def_cfa_offset 8
+ 125              	 .cfi_offset 7,-8
+ 126              	 .cfi_offset 14,-4
+ 127 0002 86B0     	 sub sp,sp,#24
+ 128              	.LCFI7:
+ 129              	 .cfi_def_cfa_offset 32
+ 130 0004 00AF     	 add r7,sp,#0
+ 131              	.LCFI8:
+ 132              	 .cfi_def_cfa_register 7
+ 133 0006 7860     	 str r0,[r7,#4]
+  51:../cleanflight/src/main/sensors/boardalignment.c ****     if (isBoardAlignmentStandard(boardAlignment)) {
+ 134              	 .loc 1 51 0
+ 135 0008 7868     	 ldr r0,[r7,#4]
+ 136 000a FFF7FEFF 	 bl isBoardAlignmentStandard
+ 137 000e 0346     	 mov r3,r0
+ 138 0010 002B     	 cmp r3,#0
+ 139 0012 23D1     	 bne .L5
+  52:../cleanflight/src/main/sensors/boardalignment.c ****         return;
+  53:../cleanflight/src/main/sensors/boardalignment.c ****     }
+  54:../cleanflight/src/main/sensors/boardalignment.c **** 
+  55:../cleanflight/src/main/sensors/boardalignment.c ****     standardBoardAlignment = false;
+ 140              	 .loc 1 55 0
+ 141 0014 134B     	 ldr r3,.L8
+ 142 0016 0022     	 movs r2,#0
+ 143 0018 1A70     	 strb r2,[r3]
+  56:../cleanflight/src/main/sensors/boardalignment.c **** 
+  57:../cleanflight/src/main/sensors/boardalignment.c ****     fp_angles_t rotationAngles;
+  58:../cleanflight/src/main/sensors/boardalignment.c ****     rotationAngles.angles.roll  = degreesToRadians(boardAlignment->rollDegrees );
+ 144              	 .loc 1 58 0
+ 145 001a 7B68     	 ldr r3,[r7,#4]
+ 146 001c 1B68     	 ldr r3,[r3]
+ 147 001e 9BB2     	 uxth r3,r3
+ 148 0020 1BB2     	 sxth r3,r3
+ 149 0022 1846     	 mov r0,r3
+ 150 0024 FFF7FEFF 	 bl degreesToRadians
+ 151 0028 0346     	 mov r3,r0
+ 152 002a FB60     	 str r3,[r7,#12]
+  59:../cleanflight/src/main/sensors/boardalignment.c ****     rotationAngles.angles.pitch = degreesToRadians(boardAlignment->pitchDegrees);
+ 153              	 .loc 1 59 0
+ 154 002c 7B68     	 ldr r3,[r7,#4]
+ 155 002e 5B68     	 ldr r3,[r3,#4]
+ 156 0030 9BB2     	 uxth r3,r3
+ 157 0032 1BB2     	 sxth r3,r3
+ 158 0034 1846     	 mov r0,r3
+ 159 0036 FFF7FEFF 	 bl degreesToRadians
+ 160 003a 0346     	 mov r3,r0
+ 161 003c 3B61     	 str r3,[r7,#16]
+  60:../cleanflight/src/main/sensors/boardalignment.c ****     rotationAngles.angles.yaw   = degreesToRadians(boardAlignment->yawDegrees  );
+ 162              	 .loc 1 60 0
+ 163 003e 7B68     	 ldr r3,[r7,#4]
+ 164 0040 9B68     	 ldr r3,[r3,#8]
+ 165 0042 9BB2     	 uxth r3,r3
+ 166 0044 1BB2     	 sxth r3,r3
+ 167 0046 1846     	 mov r0,r3
+ 168 0048 FFF7FEFF 	 bl degreesToRadians
+ 169 004c 0346     	 mov r3,r0
+ 170 004e 7B61     	 str r3,[r7,#20]
+  61:../cleanflight/src/main/sensors/boardalignment.c **** 
+  62:../cleanflight/src/main/sensors/boardalignment.c ****     buildRotationMatrix(&rotationAngles, boardRotation);
+ 171              	 .loc 1 62 0
+ 172 0050 07F10C03 	 add r3,r7,#12
+ 173 0054 1846     	 mov r0,r3
+ 174 0056 0449     	 ldr r1,.L8+4
+ 175 0058 FFF7FEFF 	 bl buildRotationMatrix
+ 176              	.L5:
+  63:../cleanflight/src/main/sensors/boardalignment.c **** }
+ 177              	 .loc 1 63 0
+ 178 005c 1837     	 adds r7,r7,#24
+ 179              	.LCFI9:
+ 180              	 .cfi_def_cfa_offset 8
+ 181 005e BD46     	 mov sp,r7
+ 182              	.LCFI10:
+ 183              	 .cfi_def_cfa_register 13
+ 184              	 
+ 185 0060 80BD     	 pop {r7,pc}
+ 186              	.L9:
+ 187 0062 00BF     	 .align 2
+ 188              	.L8:
+ 189 0064 00000000 	 .word standardBoardAlignment
+ 190 0068 00000000 	 .word boardRotation
+ 191              	 .cfi_endproc
+ 192              	.LFE529:
+ 194              	 .section .text.alignBoard,"ax",%progbits
+ 195              	 .align 2
+ 196              	 .thumb
+ 197              	 .thumb_func
+ 199              	alignBoard:
+ 200              	.LFB530:
+  64:../cleanflight/src/main/sensors/boardalignment.c **** 
+  65:../cleanflight/src/main/sensors/boardalignment.c **** static void alignBoard(float *vec)
+  66:../cleanflight/src/main/sensors/boardalignment.c **** {
+ 201              	 .loc 1 66 0
+ 202              	 .cfi_startproc
+ 203              	 
+ 204              	 
+ 205              	 
+ 206 0000 80B4     	 push {r7}
+ 207              	.LCFI11:
+ 208              	 .cfi_def_cfa_offset 4
+ 209              	 .cfi_offset 7,-4
+ 210 0002 87B0     	 sub sp,sp,#28
+ 211              	.LCFI12:
+ 212              	 .cfi_def_cfa_offset 32
+ 213 0004 00AF     	 add r7,sp,#0
+ 214              	.LCFI13:
+ 215              	 .cfi_def_cfa_register 7
+ 216 0006 7860     	 str r0,[r7,#4]
+  67:../cleanflight/src/main/sensors/boardalignment.c ****     float x = vec[X];
+ 217              	 .loc 1 67 0
+ 218 0008 7B68     	 ldr r3,[r7,#4]
+ 219 000a 1B68     	 ldr r3,[r3]
+ 220 000c 7B61     	 str r3,[r7,#20]
+  68:../cleanflight/src/main/sensors/boardalignment.c ****     float y = vec[Y];
+ 221              	 .loc 1 68 0
+ 222 000e 7B68     	 ldr r3,[r7,#4]
+ 223 0010 5B68     	 ldr r3,[r3,#4]
+ 224 0012 3B61     	 str r3,[r7,#16]
+  69:../cleanflight/src/main/sensors/boardalignment.c ****     float z = vec[Z];
+ 225              	 .loc 1 69 0
+ 226 0014 7B68     	 ldr r3,[r7,#4]
+ 227 0016 9B68     	 ldr r3,[r3,#8]
+ 228 0018 FB60     	 str r3,[r7,#12]
+  70:../cleanflight/src/main/sensors/boardalignment.c **** 
+  71:../cleanflight/src/main/sensors/boardalignment.c ****     vec[X] = (boardRotation[0][X] * x + boardRotation[1][X] * y + boardRotation[2][X] * z);
+ 229              	 .loc 1 71 0
+ 230 001a 2D4B     	 ldr r3,.L11
+ 231 001c 93ED007A 	 flds s14,[r3]
+ 232 0020 D7ED057A 	 flds s15,[r7,#20]
+ 233 0024 27EE277A 	 fmuls s14,s14,s15
+ 234 0028 294B     	 ldr r3,.L11
+ 235 002a D3ED036A 	 flds s13,[r3,#12]
+ 236 002e D7ED047A 	 flds s15,[r7,#16]
+ 237 0032 66EEA77A 	 fmuls s15,s13,s15
+ 238 0036 37EE277A 	 fadds s14,s14,s15
+ 239 003a 254B     	 ldr r3,.L11
+ 240 003c D3ED066A 	 flds s13,[r3,#24]
+ 241 0040 D7ED037A 	 flds s15,[r7,#12]
+ 242 0044 66EEA77A 	 fmuls s15,s13,s15
+ 243 0048 77EE277A 	 fadds s15,s14,s15
+ 244 004c 7B68     	 ldr r3,[r7,#4]
+ 245 004e C3ED007A 	 fsts s15,[r3]
+  72:../cleanflight/src/main/sensors/boardalignment.c ****     vec[Y] = (boardRotation[0][Y] * x + boardRotation[1][Y] * y + boardRotation[2][Y] * z);
+ 246              	 .loc 1 72 0
+ 247 0052 7B68     	 ldr r3,[r7,#4]
+ 248 0054 0433     	 adds r3,r3,#4
+ 249 0056 1E4A     	 ldr r2,.L11
+ 250 0058 92ED017A 	 flds s14,[r2,#4]
+ 251 005c D7ED057A 	 flds s15,[r7,#20]
+ 252 0060 27EE277A 	 fmuls s14,s14,s15
+ 253 0064 1A4A     	 ldr r2,.L11
+ 254 0066 D2ED046A 	 flds s13,[r2,#16]
+ 255 006a D7ED047A 	 flds s15,[r7,#16]
+ 256 006e 66EEA77A 	 fmuls s15,s13,s15
+ 257 0072 37EE277A 	 fadds s14,s14,s15
+ 258 0076 164A     	 ldr r2,.L11
+ 259 0078 D2ED076A 	 flds s13,[r2,#28]
+ 260 007c D7ED037A 	 flds s15,[r7,#12]
+ 261 0080 66EEA77A 	 fmuls s15,s13,s15
+ 262 0084 77EE277A 	 fadds s15,s14,s15
+ 263 0088 C3ED007A 	 fsts s15,[r3]
+  73:../cleanflight/src/main/sensors/boardalignment.c ****     vec[Z] = (boardRotation[0][Z] * x + boardRotation[1][Z] * y + boardRotation[2][Z] * z);
+ 264              	 .loc 1 73 0
+ 265 008c 7B68     	 ldr r3,[r7,#4]
+ 266 008e 0833     	 adds r3,r3,#8
+ 267 0090 0F4A     	 ldr r2,.L11
+ 268 0092 92ED027A 	 flds s14,[r2,#8]
+ 269 0096 D7ED057A 	 flds s15,[r7,#20]
+ 270 009a 27EE277A 	 fmuls s14,s14,s15
+ 271 009e 0C4A     	 ldr r2,.L11
+ 272 00a0 D2ED056A 	 flds s13,[r2,#20]
+ 273 00a4 D7ED047A 	 flds s15,[r7,#16]
+ 274 00a8 66EEA77A 	 fmuls s15,s13,s15
+ 275 00ac 37EE277A 	 fadds s14,s14,s15
+ 276 00b0 074A     	 ldr r2,.L11
+ 277 00b2 D2ED086A 	 flds s13,[r2,#32]
+ 278 00b6 D7ED037A 	 flds s15,[r7,#12]
+ 279 00ba 66EEA77A 	 fmuls s15,s13,s15
+ 280 00be 77EE277A 	 fadds s15,s14,s15
+ 281 00c2 C3ED007A 	 fsts s15,[r3]
+  74:../cleanflight/src/main/sensors/boardalignment.c **** }
+ 282              	 .loc 1 74 0
+ 283 00c6 1C37     	 adds r7,r7,#28
+ 284              	.LCFI14:
+ 285              	 .cfi_def_cfa_offset 4
+ 286 00c8 BD46     	 mov sp,r7
+ 287              	.LCFI15:
+ 288              	 .cfi_def_cfa_register 13
+ 289              	 
+ 290 00ca 5DF8047B 	 ldr r7,[sp],#4
+ 291              	.LCFI16:
+ 292              	 .cfi_restore 7
+ 293              	 .cfi_def_cfa_offset 0
+ 294 00ce 7047     	 bx lr
+ 295              	.L12:
+ 296              	 .align 2
+ 297              	.L11:
+ 298 00d0 00000000 	 .word boardRotation
+ 299              	 .cfi_endproc
+ 300              	.LFE530:
+ 302              	 .section .text.alignSensors,"ax",%progbits
+ 303              	 .align 2
+ 304              	 .global alignSensors
+ 305              	 .thumb
+ 306              	 .thumb_func
+ 308              	alignSensors:
+ 309              	.LFB531:
+  75:../cleanflight/src/main/sensors/boardalignment.c **** 
+  76:../cleanflight/src/main/sensors/boardalignment.c **** FAST_CODE void alignSensors(float *dest, uint8_t rotation)
+  77:../cleanflight/src/main/sensors/boardalignment.c **** {
+ 310              	 .loc 1 77 0
+ 311              	 .cfi_startproc
+ 312              	 
+ 313              	 
+ 314 0000 80B5     	 push {r7,lr}
+ 315              	.LCFI17:
+ 316              	 .cfi_def_cfa_offset 8
+ 317              	 .cfi_offset 7,-8
+ 318              	 .cfi_offset 14,-4
+ 319 0002 86B0     	 sub sp,sp,#24
+ 320              	.LCFI18:
+ 321              	 .cfi_def_cfa_offset 32
+ 322 0004 00AF     	 add r7,sp,#0
+ 323              	.LCFI19:
+ 324              	 .cfi_def_cfa_register 7
+ 325 0006 7860     	 str r0,[r7,#4]
+ 326 0008 0B46     	 mov r3,r1
+ 327 000a FB70     	 strb r3,[r7,#3]
+  78:../cleanflight/src/main/sensors/boardalignment.c ****     const float x = dest[X];
+ 328              	 .loc 1 78 0
+ 329 000c 7B68     	 ldr r3,[r7,#4]
+ 330 000e 1B68     	 ldr r3,[r3]
+ 331 0010 7B61     	 str r3,[r7,#20]
+  79:../cleanflight/src/main/sensors/boardalignment.c ****     const float y = dest[Y];
+ 332              	 .loc 1 79 0
+ 333 0012 7B68     	 ldr r3,[r7,#4]
+ 334 0014 5B68     	 ldr r3,[r3,#4]
+ 335 0016 3B61     	 str r3,[r7,#16]
+  80:../cleanflight/src/main/sensors/boardalignment.c ****     const float z = dest[Z];
+ 336              	 .loc 1 80 0
+ 337 0018 7B68     	 ldr r3,[r7,#4]
+ 338 001a 9B68     	 ldr r3,[r3,#8]
+ 339 001c FB60     	 str r3,[r7,#12]
+  81:../cleanflight/src/main/sensors/boardalignment.c **** 
+  82:../cleanflight/src/main/sensors/boardalignment.c ****     switch (rotation) {
+ 340              	 .loc 1 82 0
+ 341 001e FB78     	 ldrb r3,[r7,#3]
+ 342 0020 023B     	 subs r3,r3,#2
+ 343 0022 062B     	 cmp r3,#6
+ 344 0024 10D8     	 bhi .L14
+ 345 0026 01A2     	 adr r2,.L16
+ 346 0028 52F823F0 	 ldr pc,[r2,r3,lsl#2]
+ 347              	 .p2align 2
+ 348              	.L16:
+ 349 002c 61000000 	 .word .L15+1
+ 350 0030 81000000 	 .word .L17+1
+ 351 0034 A9000000 	 .word .L18+1
+ 352 0038 C9000000 	 .word .L19+1
+ 353 003c F1000000 	 .word .L20+1
+ 354 0040 11010000 	 .word .L21+1
+ 355 0044 39010000 	 .word .L22+1
+ 356              	 .p2align 1
+ 357              	.L14:
+  83:../cleanflight/src/main/sensors/boardalignment.c ****     default:
+  84:../cleanflight/src/main/sensors/boardalignment.c ****     case CW0_DEG:
+  85:../cleanflight/src/main/sensors/boardalignment.c ****         dest[X] = x;
+ 358              	 .loc 1 85 0
+ 359 0048 7B68     	 ldr r3,[r7,#4]
+ 360 004a 7A69     	 ldr r2,[r7,#20]
+ 361 004c 1A60     	 str r2,[r3]
+  86:../cleanflight/src/main/sensors/boardalignment.c ****         dest[Y] = y;
+ 362              	 .loc 1 86 0
+ 363 004e 7B68     	 ldr r3,[r7,#4]
+ 364 0050 0433     	 adds r3,r3,#4
+ 365 0052 3A69     	 ldr r2,[r7,#16]
+ 366 0054 1A60     	 str r2,[r3]
+  87:../cleanflight/src/main/sensors/boardalignment.c ****         dest[Z] = z;
+ 367              	 .loc 1 87 0
+ 368 0056 7B68     	 ldr r3,[r7,#4]
+ 369 0058 0833     	 adds r3,r3,#8
+ 370 005a FA68     	 ldr r2,[r7,#12]
+ 371 005c 1A60     	 str r2,[r3]
+  88:../cleanflight/src/main/sensors/boardalignment.c ****         break;
+ 372              	 .loc 1 88 0
+ 373 005e 83E0     	 b .L23
+ 374              	.L15:
+  89:../cleanflight/src/main/sensors/boardalignment.c ****     case CW90_DEG:
+  90:../cleanflight/src/main/sensors/boardalignment.c ****         dest[X] = y;
+ 375              	 .loc 1 90 0
+ 376 0060 7B68     	 ldr r3,[r7,#4]
+ 377 0062 3A69     	 ldr r2,[r7,#16]
+ 378 0064 1A60     	 str r2,[r3]
+  91:../cleanflight/src/main/sensors/boardalignment.c ****         dest[Y] = -x;
+ 379              	 .loc 1 91 0
+ 380 0066 7B68     	 ldr r3,[r7,#4]
+ 381 0068 0433     	 adds r3,r3,#4
+ 382 006a D7ED057A 	 flds s15,[r7,#20]
+ 383 006e F1EE677A 	 fnegs s15,s15
+ 384 0072 C3ED007A 	 fsts s15,[r3]
+  92:../cleanflight/src/main/sensors/boardalignment.c ****         dest[Z] = z;
+ 385              	 .loc 1 92 0
+ 386 0076 7B68     	 ldr r3,[r7,#4]
+ 387 0078 0833     	 adds r3,r3,#8
+ 388 007a FA68     	 ldr r2,[r7,#12]
+ 389 007c 1A60     	 str r2,[r3]
+  93:../cleanflight/src/main/sensors/boardalignment.c ****         break;
+ 390              	 .loc 1 93 0
+ 391 007e 73E0     	 b .L23
+ 392              	.L17:
+  94:../cleanflight/src/main/sensors/boardalignment.c ****     case CW180_DEG:
+  95:../cleanflight/src/main/sensors/boardalignment.c ****         dest[X] = -x;
+ 393              	 .loc 1 95 0
+ 394 0080 D7ED057A 	 flds s15,[r7,#20]
+ 395 0084 F1EE677A 	 fnegs s15,s15
+ 396 0088 7B68     	 ldr r3,[r7,#4]
+ 397 008a C3ED007A 	 fsts s15,[r3]
+  96:../cleanflight/src/main/sensors/boardalignment.c ****         dest[Y] = -y;
+ 398              	 .loc 1 96 0
+ 399 008e 7B68     	 ldr r3,[r7,#4]
+ 400 0090 0433     	 adds r3,r3,#4
+ 401 0092 D7ED047A 	 flds s15,[r7,#16]
+ 402 0096 F1EE677A 	 fnegs s15,s15
+ 403 009a C3ED007A 	 fsts s15,[r3]
+  97:../cleanflight/src/main/sensors/boardalignment.c ****         dest[Z] = z;
+ 404              	 .loc 1 97 0
+ 405 009e 7B68     	 ldr r3,[r7,#4]
+ 406 00a0 0833     	 adds r3,r3,#8
+ 407 00a2 FA68     	 ldr r2,[r7,#12]
+ 408 00a4 1A60     	 str r2,[r3]
+  98:../cleanflight/src/main/sensors/boardalignment.c ****         break;
+ 409              	 .loc 1 98 0
+ 410 00a6 5FE0     	 b .L23
+ 411              	.L18:
+  99:../cleanflight/src/main/sensors/boardalignment.c ****     case CW270_DEG:
+ 100:../cleanflight/src/main/sensors/boardalignment.c ****         dest[X] = -y;
+ 412              	 .loc 1 100 0
+ 413 00a8 D7ED047A 	 flds s15,[r7,#16]
+ 414 00ac F1EE677A 	 fnegs s15,s15
+ 415 00b0 7B68     	 ldr r3,[r7,#4]
+ 416 00b2 C3ED007A 	 fsts s15,[r3]
+ 101:../cleanflight/src/main/sensors/boardalignment.c ****         dest[Y] = x;
+ 417              	 .loc 1 101 0
+ 418 00b6 7B68     	 ldr r3,[r7,#4]
+ 419 00b8 0433     	 adds r3,r3,#4
+ 420 00ba 7A69     	 ldr r2,[r7,#20]
+ 421 00bc 1A60     	 str r2,[r3]
+ 102:../cleanflight/src/main/sensors/boardalignment.c ****         dest[Z] = z;
+ 422              	 .loc 1 102 0
+ 423 00be 7B68     	 ldr r3,[r7,#4]
+ 424 00c0 0833     	 adds r3,r3,#8
+ 425 00c2 FA68     	 ldr r2,[r7,#12]
+ 426 00c4 1A60     	 str r2,[r3]
+ 103:../cleanflight/src/main/sensors/boardalignment.c ****         break;
+ 427              	 .loc 1 103 0
+ 428 00c6 4FE0     	 b .L23
+ 429              	.L19:
+ 104:../cleanflight/src/main/sensors/boardalignment.c ****     case CW0_DEG_FLIP:
+ 105:../cleanflight/src/main/sensors/boardalignment.c ****         dest[X] = -x;
+ 430              	 .loc 1 105 0
+ 431 00c8 D7ED057A 	 flds s15,[r7,#20]
+ 432 00cc F1EE677A 	 fnegs s15,s15
+ 433 00d0 7B68     	 ldr r3,[r7,#4]
+ 434 00d2 C3ED007A 	 fsts s15,[r3]
+ 106:../cleanflight/src/main/sensors/boardalignment.c ****         dest[Y] = y;
+ 435              	 .loc 1 106 0
+ 436 00d6 7B68     	 ldr r3,[r7,#4]
+ 437 00d8 0433     	 adds r3,r3,#4
+ 438 00da 3A69     	 ldr r2,[r7,#16]
+ 439 00dc 1A60     	 str r2,[r3]
+ 107:../cleanflight/src/main/sensors/boardalignment.c ****         dest[Z] = -z;
+ 440              	 .loc 1 107 0
+ 441 00de 7B68     	 ldr r3,[r7,#4]
+ 442 00e0 0833     	 adds r3,r3,#8
+ 443 00e2 D7ED037A 	 flds s15,[r7,#12]
+ 444 00e6 F1EE677A 	 fnegs s15,s15
+ 445 00ea C3ED007A 	 fsts s15,[r3]
+ 108:../cleanflight/src/main/sensors/boardalignment.c ****         break;
+ 446              	 .loc 1 108 0
+ 447 00ee 3BE0     	 b .L23
+ 448              	.L20:
+ 109:../cleanflight/src/main/sensors/boardalignment.c ****     case CW90_DEG_FLIP:
+ 110:../cleanflight/src/main/sensors/boardalignment.c ****         dest[X] = y;
+ 449              	 .loc 1 110 0
+ 450 00f0 7B68     	 ldr r3,[r7,#4]
+ 451 00f2 3A69     	 ldr r2,[r7,#16]
+ 452 00f4 1A60     	 str r2,[r3]
+ 111:../cleanflight/src/main/sensors/boardalignment.c ****         dest[Y] = x;
+ 453              	 .loc 1 111 0
+ 454 00f6 7B68     	 ldr r3,[r7,#4]
+ 455 00f8 0433     	 adds r3,r3,#4
+ 456 00fa 7A69     	 ldr r2,[r7,#20]
+ 457 00fc 1A60     	 str r2,[r3]
+ 112:../cleanflight/src/main/sensors/boardalignment.c ****         dest[Z] = -z;
+ 458              	 .loc 1 112 0
+ 459 00fe 7B68     	 ldr r3,[r7,#4]
+ 460 0100 0833     	 adds r3,r3,#8
+ 461 0102 D7ED037A 	 flds s15,[r7,#12]
+ 462 0106 F1EE677A 	 fnegs s15,s15
+ 463 010a C3ED007A 	 fsts s15,[r3]
+ 113:../cleanflight/src/main/sensors/boardalignment.c ****         break;
+ 464              	 .loc 1 113 0
+ 465 010e 2BE0     	 b .L23
+ 466              	.L21:
+ 114:../cleanflight/src/main/sensors/boardalignment.c ****     case CW180_DEG_FLIP:
+ 115:../cleanflight/src/main/sensors/boardalignment.c ****         dest[X] = x;
+ 467              	 .loc 1 115 0
+ 468 0110 7B68     	 ldr r3,[r7,#4]
+ 469 0112 7A69     	 ldr r2,[r7,#20]
+ 470 0114 1A60     	 str r2,[r3]
+ 116:../cleanflight/src/main/sensors/boardalignment.c ****         dest[Y] = -y;
+ 471              	 .loc 1 116 0
+ 472 0116 7B68     	 ldr r3,[r7,#4]
+ 473 0118 0433     	 adds r3,r3,#4
+ 474 011a D7ED047A 	 flds s15,[r7,#16]
+ 475 011e F1EE677A 	 fnegs s15,s15
+ 476 0122 C3ED007A 	 fsts s15,[r3]
+ 117:../cleanflight/src/main/sensors/boardalignment.c ****         dest[Z] = -z;
+ 477              	 .loc 1 117 0
+ 478 0126 7B68     	 ldr r3,[r7,#4]
+ 479 0128 0833     	 adds r3,r3,#8
+ 480 012a D7ED037A 	 flds s15,[r7,#12]
+ 481 012e F1EE677A 	 fnegs s15,s15
+ 482 0132 C3ED007A 	 fsts s15,[r3]
+ 118:../cleanflight/src/main/sensors/boardalignment.c ****         break;
+ 483              	 .loc 1 118 0
+ 484 0136 17E0     	 b .L23
+ 485              	.L22:
+ 119:../cleanflight/src/main/sensors/boardalignment.c ****     case CW270_DEG_FLIP:
+ 120:../cleanflight/src/main/sensors/boardalignment.c ****         dest[X] = -y;
+ 486              	 .loc 1 120 0
+ 487 0138 D7ED047A 	 flds s15,[r7,#16]
+ 488 013c F1EE677A 	 fnegs s15,s15
+ 489 0140 7B68     	 ldr r3,[r7,#4]
+ 490 0142 C3ED007A 	 fsts s15,[r3]
+ 121:../cleanflight/src/main/sensors/boardalignment.c ****         dest[Y] = -x;
+ 491              	 .loc 1 121 0
+ 492 0146 7B68     	 ldr r3,[r7,#4]
+ 493 0148 0433     	 adds r3,r3,#4
+ 494 014a D7ED057A 	 flds s15,[r7,#20]
+ 495 014e F1EE677A 	 fnegs s15,s15
+ 496 0152 C3ED007A 	 fsts s15,[r3]
+ 122:../cleanflight/src/main/sensors/boardalignment.c ****         dest[Z] = -z;
+ 497              	 .loc 1 122 0
+ 498 0156 7B68     	 ldr r3,[r7,#4]
+ 499 0158 0833     	 adds r3,r3,#8
+ 500 015a D7ED037A 	 flds s15,[r7,#12]
+ 501 015e F1EE677A 	 fnegs s15,s15
+ 502 0162 C3ED007A 	 fsts s15,[r3]
+ 123:../cleanflight/src/main/sensors/boardalignment.c ****         break;
+ 503              	 .loc 1 123 0
+ 504 0166 00BF     	 nop
+ 505              	.L23:
+ 124:../cleanflight/src/main/sensors/boardalignment.c ****     }
+ 125:../cleanflight/src/main/sensors/boardalignment.c **** 
+ 126:../cleanflight/src/main/sensors/boardalignment.c ****     if (!standardBoardAlignment)
+ 506              	 .loc 1 126 0
+ 507 0168 064B     	 ldr r3,.L25
+ 508 016a 1B78     	 ldrb r3,[r3]
+ 509 016c 83F00103 	 eor r3,r3,#1
+ 510 0170 DBB2     	 uxtb r3,r3
+ 511 0172 002B     	 cmp r3,#0
+ 512 0174 02D0     	 beq .L13
+ 127:../cleanflight/src/main/sensors/boardalignment.c ****         alignBoard(dest);
+ 513              	 .loc 1 127 0
+ 514 0176 7868     	 ldr r0,[r7,#4]
+ 515 0178 FFF7FEFF 	 bl alignBoard
+ 516              	.L13:
+ 128:../cleanflight/src/main/sensors/boardalignment.c **** }
+ 517              	 .loc 1 128 0
+ 518 017c 1837     	 adds r7,r7,#24
+ 519              	.LCFI20:
+ 520              	 .cfi_def_cfa_offset 8
+ 521 017e BD46     	 mov sp,r7
+ 522              	.LCFI21:
+ 523              	 .cfi_def_cfa_register 13
+ 524              	 
+ 525 0180 80BD     	 pop {r7,pc}
+ 526              	.L26:
+ 527 0182 00BF     	 .align 2
+ 528              	.L25:
+ 529 0184 00000000 	 .word standardBoardAlignment
+ 530              	 .cfi_endproc
+ 531              	.LFE531:
+ 533              	 .text
+ 534              	.Letext0:
+ 535              	 .file 2 "d:\\xmc\\dave-ide-4.4.2-64bit\\eclipse\\arm-gcc-49\\arm-none-eabi\\include\\machine\\_default_types.h"
+ 536              	 .file 3 "d:\\xmc\\dave-ide-4.4.2-64bit\\eclipse\\arm-gcc-49\\arm-none-eabi\\include\\stdint.h"
+ 537              	 .file 4 "D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/lib/main/XMC4000/XMCLib/inc/xmc_usic.h"
+ 538              	 .file 5 "D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/common/maths.h"
+ 539              	 .file 6 "D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/pg/pg.h"
+ 540              	 .file 7 "D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/common/axis.h"
+ 541              	 .file 8 "D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/drivers/sensor.h"
+ 542              	 .file 9 "../cleanflight/src/main/sensors/boardalignment.h"
+ 543              	 .file 10 "D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/lib/main/CMSIS/Core/Include/core_cm4.h"
+ 544              	 .file 11 "D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/lib/main/XMC4000/system_XMC4700.h"
+DEFINED SYMBOLS
+                            *ABS*:00000000 boardalignment.c
+    {standard input}:22     .data.standardBoardAlignment:00000000 standardBoardAlignment
+    {standard input}:25     .bss.boardRotation:00000000 $d
+    {standard input}:28     .bss.boardRotation:00000000 boardRotation
+                            *COM*:0000000c boardAlignment_System
+                            *COM*:0000000c boardAlignment_Copy
+    {standard input}:37     .pg_registry:00000000 boardAlignment_Registry
+    {standard input}:34     .pg_registry:00000000 $d
+    {standard input}:45     .text.isBoardAlignmentStandard:00000000 $t
+    {standard input}:49     .text.isBoardAlignmentStandard:00000000 isBoardAlignmentStandard
+    {standard input}:111    .text.initBoardAlignment:00000000 $t
+    {standard input}:116    .text.initBoardAlignment:00000000 initBoardAlignment
+    {standard input}:189    .text.initBoardAlignment:00000064 $d
+    {standard input}:195    .text.alignBoard:00000000 $t
+    {standard input}:199    .text.alignBoard:00000000 alignBoard
+    {standard input}:298    .text.alignBoard:000000d0 $d
+    {standard input}:303    .text.alignSensors:00000000 $t
+    {standard input}:308    .text.alignSensors:00000000 alignSensors
+    {standard input}:349    .text.alignSensors:0000002c $d
+    {standard input}:356    .text.alignSensors:00000048 $t
+    {standard input}:529    .text.alignSensors:00000184 $d
+                     .debug_frame:00000010 $d
+
+UNDEFINED SYMBOLS
+degreesToRadians
+buildRotationMatrix

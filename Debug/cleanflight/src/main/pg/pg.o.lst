@@ -1,0 +1,862 @@
+   1              	 .syntax unified
+   2              	 .cpu cortex-m4
+   3              	 .eabi_attribute 27,3
+   4              	 .fpu fpv4-sp-d16
+   5              	 .eabi_attribute 20,1
+   6              	 .eabi_attribute 21,1
+   7              	 .eabi_attribute 23,3
+   8              	 .eabi_attribute 24,1
+   9              	 .eabi_attribute 25,1
+  10              	 .eabi_attribute 26,1
+  11              	 .eabi_attribute 30,6
+  12              	 .eabi_attribute 34,1
+  13              	 .eabi_attribute 18,4
+  14              	 .thumb
+  15              	 .file "pg.c"
+  16              	 .text
+  17              	.Ltext0:
+  18              	 .cfi_sections .debug_frame
+  19              	 .section .text.pgN,"ax",%progbits
+  20              	 .align 2
+  21              	 .thumb
+  22              	 .thumb_func
+  24              	pgN:
+  25              	.LFB523:
+  26              	 .file 1 "../cleanflight/src/main/pg/pg.h"
+   1:../cleanflight/src/main/pg/pg.h **** /*
+   2:../cleanflight/src/main/pg/pg.h ****  * This file is part of Cleanflight and Betaflight.
+   3:../cleanflight/src/main/pg/pg.h ****  *
+   4:../cleanflight/src/main/pg/pg.h ****  * Cleanflight and Betaflight are free software. You can redistribute
+   5:../cleanflight/src/main/pg/pg.h ****  * this software and/or modify this software under the terms of the
+   6:../cleanflight/src/main/pg/pg.h ****  * GNU General Public License as published by the Free Software
+   7:../cleanflight/src/main/pg/pg.h ****  * Foundation, either version 3 of the License, or (at your option)
+   8:../cleanflight/src/main/pg/pg.h ****  * any later version.
+   9:../cleanflight/src/main/pg/pg.h ****  *
+  10:../cleanflight/src/main/pg/pg.h ****  * Cleanflight and Betaflight are distributed in the hope that they
+  11:../cleanflight/src/main/pg/pg.h ****  * will be useful, but WITHOUT ANY WARRANTY; without even the implied
+  12:../cleanflight/src/main/pg/pg.h ****  * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+  13:../cleanflight/src/main/pg/pg.h ****  * See the GNU General Public License for more details.
+  14:../cleanflight/src/main/pg/pg.h ****  *
+  15:../cleanflight/src/main/pg/pg.h ****  * You should have received a copy of the GNU General Public License
+  16:../cleanflight/src/main/pg/pg.h ****  * along with this software.
+  17:../cleanflight/src/main/pg/pg.h ****  *
+  18:../cleanflight/src/main/pg/pg.h ****  * If not, see <http://www.gnu.org/licenses/>.
+  19:../cleanflight/src/main/pg/pg.h ****  */
+  20:../cleanflight/src/main/pg/pg.h **** 
+  21:../cleanflight/src/main/pg/pg.h **** #pragma once
+  22:../cleanflight/src/main/pg/pg.h **** 
+  23:../cleanflight/src/main/pg/pg.h **** #include <stdint.h>
+  24:../cleanflight/src/main/pg/pg.h **** #include <stdbool.h>
+  25:../cleanflight/src/main/pg/pg.h **** 
+  26:../cleanflight/src/main/pg/pg.h **** #include "build/build_config.h"
+  27:../cleanflight/src/main/pg/pg.h **** 
+  28:../cleanflight/src/main/pg/pg.h **** typedef uint16_t pgn_t;
+  29:../cleanflight/src/main/pg/pg.h **** 
+  30:../cleanflight/src/main/pg/pg.h **** // parameter group registry flags
+  31:../cleanflight/src/main/pg/pg.h **** typedef enum {
+  32:../cleanflight/src/main/pg/pg.h ****     PGRF_NONE = 0,
+  33:../cleanflight/src/main/pg/pg.h ****     PGRF_CLASSIFICATON_BIT = (1 << 0)
+  34:../cleanflight/src/main/pg/pg.h **** } pgRegistryFlags_e;
+  35:../cleanflight/src/main/pg/pg.h **** 
+  36:../cleanflight/src/main/pg/pg.h **** typedef enum {
+  37:../cleanflight/src/main/pg/pg.h ****     PGR_PGN_MASK =          0x0fff,
+  38:../cleanflight/src/main/pg/pg.h ****     PGR_PGN_VERSION_MASK =  0xf000,
+  39:../cleanflight/src/main/pg/pg.h ****     PGR_SIZE_MASK =         0x0fff,
+  40:../cleanflight/src/main/pg/pg.h ****     PGR_SIZE_SYSTEM_FLAG =  0x0000 // documentary
+  41:../cleanflight/src/main/pg/pg.h **** } pgRegistryInternal_e;
+  42:../cleanflight/src/main/pg/pg.h **** 
+  43:../cleanflight/src/main/pg/pg.h **** // function that resets a single parameter group instance
+  44:../cleanflight/src/main/pg/pg.h **** typedef void (pgResetFunc)(void * /* base */, int /* size */);
+  45:../cleanflight/src/main/pg/pg.h **** 
+  46:../cleanflight/src/main/pg/pg.h **** typedef struct pgRegistry_s {
+  47:../cleanflight/src/main/pg/pg.h ****     pgn_t pgn;             // The parameter group number, the top 4 bits are reserved for version
+  48:../cleanflight/src/main/pg/pg.h ****     uint16_t size;         // Size of the group in RAM, the top 4 bits are reserved for flags
+  49:../cleanflight/src/main/pg/pg.h ****     uint8_t *address;      // Address of the group in RAM.
+  50:../cleanflight/src/main/pg/pg.h ****     uint8_t *copy;         // Address of the copy in RAM.
+  51:../cleanflight/src/main/pg/pg.h ****     uint8_t **ptr;         // The pointer to update after loading the record into ram.
+  52:../cleanflight/src/main/pg/pg.h ****     union {
+  53:../cleanflight/src/main/pg/pg.h ****         void *ptr;         // Pointer to init template
+  54:../cleanflight/src/main/pg/pg.h ****         pgResetFunc *fn;   // Pointer to pgResetFunc
+  55:../cleanflight/src/main/pg/pg.h ****     } reset;
+  56:../cleanflight/src/main/pg/pg.h **** } pgRegistry_t;
+  57:../cleanflight/src/main/pg/pg.h **** 
+  58:../cleanflight/src/main/pg/pg.h **** static inline uint16_t pgN(const pgRegistry_t* reg) {return reg->pgn & PGR_PGN_MASK;}
+  27              	 .loc 1 58 0
+  28              	 .cfi_startproc
+  29              	 
+  30              	 
+  31              	 
+  32 0000 80B4     	 push {r7}
+  33              	.LCFI0:
+  34              	 .cfi_def_cfa_offset 4
+  35              	 .cfi_offset 7,-4
+  36 0002 83B0     	 sub sp,sp,#12
+  37              	.LCFI1:
+  38              	 .cfi_def_cfa_offset 16
+  39 0004 00AF     	 add r7,sp,#0
+  40              	.LCFI2:
+  41              	 .cfi_def_cfa_register 7
+  42 0006 7860     	 str r0,[r7,#4]
+  43              	 .loc 1 58 0
+  44 0008 7B68     	 ldr r3,[r7,#4]
+  45 000a 1B88     	 ldrh r3,[r3]
+  46 000c 9BB2     	 uxth r3,r3
+  47 000e C3F30B03 	 ubfx r3,r3,#0,#12
+  48 0012 9BB2     	 uxth r3,r3
+  49 0014 1846     	 mov r0,r3
+  50 0016 0C37     	 adds r7,r7,#12
+  51              	.LCFI3:
+  52              	 .cfi_def_cfa_offset 4
+  53 0018 BD46     	 mov sp,r7
+  54              	.LCFI4:
+  55              	 .cfi_def_cfa_register 13
+  56              	 
+  57 001a 5DF8047B 	 ldr r7,[sp],#4
+  58              	.LCFI5:
+  59              	 .cfi_restore 7
+  60              	 .cfi_def_cfa_offset 0
+  61 001e 7047     	 bx lr
+  62              	 .cfi_endproc
+  63              	.LFE523:
+  65              	 .section .text.pgVersion,"ax",%progbits
+  66              	 .align 2
+  67              	 .thumb
+  68              	 .thumb_func
+  70              	pgVersion:
+  71              	.LFB524:
+  59:../cleanflight/src/main/pg/pg.h **** static inline uint8_t pgVersion(const pgRegistry_t* reg) {return (uint8_t)(reg->pgn >> 12);}
+  72              	 .loc 1 59 0
+  73              	 .cfi_startproc
+  74              	 
+  75              	 
+  76              	 
+  77 0000 80B4     	 push {r7}
+  78              	.LCFI6:
+  79              	 .cfi_def_cfa_offset 4
+  80              	 .cfi_offset 7,-4
+  81 0002 83B0     	 sub sp,sp,#12
+  82              	.LCFI7:
+  83              	 .cfi_def_cfa_offset 16
+  84 0004 00AF     	 add r7,sp,#0
+  85              	.LCFI8:
+  86              	 .cfi_def_cfa_register 7
+  87 0006 7860     	 str r0,[r7,#4]
+  88              	 .loc 1 59 0
+  89 0008 7B68     	 ldr r3,[r7,#4]
+  90 000a 1B88     	 ldrh r3,[r3]
+  91 000c 9BB2     	 uxth r3,r3
+  92 000e 1B0B     	 lsrs r3,r3,#12
+  93 0010 9BB2     	 uxth r3,r3
+  94 0012 DBB2     	 uxtb r3,r3
+  95 0014 1846     	 mov r0,r3
+  96 0016 0C37     	 adds r7,r7,#12
+  97              	.LCFI9:
+  98              	 .cfi_def_cfa_offset 4
+  99 0018 BD46     	 mov sp,r7
+ 100              	.LCFI10:
+ 101              	 .cfi_def_cfa_register 13
+ 102              	 
+ 103 001a 5DF8047B 	 ldr r7,[sp],#4
+ 104              	.LCFI11:
+ 105              	 .cfi_restore 7
+ 106              	 .cfi_def_cfa_offset 0
+ 107 001e 7047     	 bx lr
+ 108              	 .cfi_endproc
+ 109              	.LFE524:
+ 111              	 .section .text.pgSize,"ax",%progbits
+ 112              	 .align 2
+ 113              	 .thumb
+ 114              	 .thumb_func
+ 116              	pgSize:
+ 117              	.LFB525:
+  60:../cleanflight/src/main/pg/pg.h **** static inline uint16_t pgSize(const pgRegistry_t* reg) {return reg->size & PGR_SIZE_MASK;}
+ 118              	 .loc 1 60 0
+ 119              	 .cfi_startproc
+ 120              	 
+ 121              	 
+ 122              	 
+ 123 0000 80B4     	 push {r7}
+ 124              	.LCFI12:
+ 125              	 .cfi_def_cfa_offset 4
+ 126              	 .cfi_offset 7,-4
+ 127 0002 83B0     	 sub sp,sp,#12
+ 128              	.LCFI13:
+ 129              	 .cfi_def_cfa_offset 16
+ 130 0004 00AF     	 add r7,sp,#0
+ 131              	.LCFI14:
+ 132              	 .cfi_def_cfa_register 7
+ 133 0006 7860     	 str r0,[r7,#4]
+ 134              	 .loc 1 60 0
+ 135 0008 7B68     	 ldr r3,[r7,#4]
+ 136 000a 5B88     	 ldrh r3,[r3,#2]
+ 137 000c 9BB2     	 uxth r3,r3
+ 138 000e C3F30B03 	 ubfx r3,r3,#0,#12
+ 139 0012 9BB2     	 uxth r3,r3
+ 140 0014 1846     	 mov r0,r3
+ 141 0016 0C37     	 adds r7,r7,#12
+ 142              	.LCFI15:
+ 143              	 .cfi_def_cfa_offset 4
+ 144 0018 BD46     	 mov sp,r7
+ 145              	.LCFI16:
+ 146              	 .cfi_def_cfa_register 13
+ 147              	 
+ 148 001a 5DF8047B 	 ldr r7,[sp],#4
+ 149              	.LCFI17:
+ 150              	 .cfi_restore 7
+ 151              	 .cfi_def_cfa_offset 0
+ 152 001e 7047     	 bx lr
+ 153              	 .cfi_endproc
+ 154              	.LFE525:
+ 156              	 .section .text.pgFind,"ax",%progbits
+ 157              	 .align 2
+ 158              	 .global pgFind
+ 159              	 .thumb
+ 160              	 .thumb_func
+ 162              	pgFind:
+ 163              	.LFB526:
+ 164              	 .file 2 "../cleanflight/src/main/pg/pg.c"
+   1:../cleanflight/src/main/pg/pg.c **** /*
+   2:../cleanflight/src/main/pg/pg.c ****  * This file is part of Cleanflight and Betaflight.
+   3:../cleanflight/src/main/pg/pg.c ****  *
+   4:../cleanflight/src/main/pg/pg.c ****  * Cleanflight and Betaflight are free software. You can redistribute
+   5:../cleanflight/src/main/pg/pg.c ****  * this software and/or modify this software under the terms of the
+   6:../cleanflight/src/main/pg/pg.c ****  * GNU General Public License as published by the Free Software
+   7:../cleanflight/src/main/pg/pg.c ****  * Foundation, either version 3 of the License, or (at your option)
+   8:../cleanflight/src/main/pg/pg.c ****  * any later version.
+   9:../cleanflight/src/main/pg/pg.c ****  *
+  10:../cleanflight/src/main/pg/pg.c ****  * Cleanflight and Betaflight are distributed in the hope that they
+  11:../cleanflight/src/main/pg/pg.c ****  * will be useful, but WITHOUT ANY WARRANTY; without even the implied
+  12:../cleanflight/src/main/pg/pg.c ****  * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+  13:../cleanflight/src/main/pg/pg.c ****  * See the GNU General Public License for more details.
+  14:../cleanflight/src/main/pg/pg.c ****  *
+  15:../cleanflight/src/main/pg/pg.c ****  * You should have received a copy of the GNU General Public License
+  16:../cleanflight/src/main/pg/pg.c ****  * along with this software.
+  17:../cleanflight/src/main/pg/pg.c ****  *
+  18:../cleanflight/src/main/pg/pg.c ****  * If not, see <http://www.gnu.org/licenses/>.
+  19:../cleanflight/src/main/pg/pg.c ****  */
+  20:../cleanflight/src/main/pg/pg.c **** 
+  21:../cleanflight/src/main/pg/pg.c **** #include <stddef.h>
+  22:../cleanflight/src/main/pg/pg.c **** #include <string.h>
+  23:../cleanflight/src/main/pg/pg.c **** #include <stdint.h>
+  24:../cleanflight/src/main/pg/pg.c **** 
+  25:../cleanflight/src/main/pg/pg.c **** #include "platform.h"
+  26:../cleanflight/src/main/pg/pg.c **** 
+  27:../cleanflight/src/main/pg/pg.c **** #include "common/maths.h"
+  28:../cleanflight/src/main/pg/pg.c **** 
+  29:../cleanflight/src/main/pg/pg.c **** #include "pg.h"
+  30:../cleanflight/src/main/pg/pg.c **** 
+  31:../cleanflight/src/main/pg/pg.c **** const pgRegistry_t* pgFind(pgn_t pgn)
+  32:../cleanflight/src/main/pg/pg.c **** {
+ 165              	 .loc 2 32 0
+ 166              	 .cfi_startproc
+ 167              	 
+ 168              	 
+ 169 0000 80B5     	 push {r7,lr}
+ 170              	.LCFI18:
+ 171              	 .cfi_def_cfa_offset 8
+ 172              	 .cfi_offset 7,-8
+ 173              	 .cfi_offset 14,-4
+ 174 0002 84B0     	 sub sp,sp,#16
+ 175              	.LCFI19:
+ 176              	 .cfi_def_cfa_offset 24
+ 177 0004 00AF     	 add r7,sp,#0
+ 178              	.LCFI20:
+ 179              	 .cfi_def_cfa_register 7
+ 180 0006 0346     	 mov r3,r0
+ 181 0008 FB80     	 strh r3,[r7,#6]
+ 182              	.LBB2:
+  33:../cleanflight/src/main/pg/pg.c ****     PG_FOREACH(reg) {
+ 183              	 .loc 2 33 0
+ 184 000a 0C4B     	 ldr r3,.L12
+ 185 000c FB60     	 str r3,[r7,#12]
+ 186 000e 0CE0     	 b .L8
+ 187              	.L11:
+  34:../cleanflight/src/main/pg/pg.c ****         if (pgN(reg) == pgn) {
+ 188              	 .loc 2 34 0
+ 189 0010 F868     	 ldr r0,[r7,#12]
+ 190 0012 FFF7FEFF 	 bl pgN
+ 191 0016 0346     	 mov r3,r0
+ 192 0018 1A46     	 mov r2,r3
+ 193 001a FB88     	 ldrh r3,[r7,#6]
+ 194 001c 9342     	 cmp r3,r2
+ 195 001e 01D1     	 bne .L9
+  35:../cleanflight/src/main/pg/pg.c ****             return reg;
+ 196              	 .loc 2 35 0
+ 197 0020 FB68     	 ldr r3,[r7,#12]
+ 198 0022 07E0     	 b .L10
+ 199              	.L9:
+  33:../cleanflight/src/main/pg/pg.c ****     PG_FOREACH(reg) {
+ 200              	 .loc 2 33 0 discriminator 2
+ 201 0024 FB68     	 ldr r3,[r7,#12]
+ 202 0026 1433     	 adds r3,r3,#20
+ 203 0028 FB60     	 str r3,[r7,#12]
+ 204              	.L8:
+  33:../cleanflight/src/main/pg/pg.c ****     PG_FOREACH(reg) {
+ 205              	 .loc 2 33 0 is_stmt 0 discriminator 1
+ 206 002a FB68     	 ldr r3,[r7,#12]
+ 207 002c 044A     	 ldr r2,.L12+4
+ 208 002e 9342     	 cmp r3,r2
+ 209 0030 EED3     	 bcc .L11
+ 210              	.LBE2:
+  36:../cleanflight/src/main/pg/pg.c ****         }
+  37:../cleanflight/src/main/pg/pg.c ****     }
+  38:../cleanflight/src/main/pg/pg.c ****     return NULL;
+ 211              	 .loc 2 38 0 is_stmt 1
+ 212 0032 0023     	 movs r3,#0
+ 213              	.L10:
+  39:../cleanflight/src/main/pg/pg.c **** }
+ 214              	 .loc 2 39 0
+ 215 0034 1846     	 mov r0,r3
+ 216 0036 1037     	 adds r7,r7,#16
+ 217              	.LCFI21:
+ 218              	 .cfi_def_cfa_offset 8
+ 219 0038 BD46     	 mov sp,r7
+ 220              	.LCFI22:
+ 221              	 .cfi_def_cfa_register 13
+ 222              	 
+ 223 003a 80BD     	 pop {r7,pc}
+ 224              	.L13:
+ 225              	 .align 2
+ 226              	.L12:
+ 227 003c 00000000 	 .word __pg_registry_start
+ 228 0040 00000000 	 .word __pg_registry_end
+ 229              	 .cfi_endproc
+ 230              	.LFE526:
+ 232              	 .section .text.pgOffset,"ax",%progbits
+ 233              	 .align 2
+ 234              	 .thumb
+ 235              	 .thumb_func
+ 237              	pgOffset:
+ 238              	.LFB527:
+  40:../cleanflight/src/main/pg/pg.c **** 
+  41:../cleanflight/src/main/pg/pg.c **** static uint8_t *pgOffset(const pgRegistry_t* reg)
+  42:../cleanflight/src/main/pg/pg.c **** {
+ 239              	 .loc 2 42 0
+ 240              	 .cfi_startproc
+ 241              	 
+ 242              	 
+ 243              	 
+ 244 0000 80B4     	 push {r7}
+ 245              	.LCFI23:
+ 246              	 .cfi_def_cfa_offset 4
+ 247              	 .cfi_offset 7,-4
+ 248 0002 83B0     	 sub sp,sp,#12
+ 249              	.LCFI24:
+ 250              	 .cfi_def_cfa_offset 16
+ 251 0004 00AF     	 add r7,sp,#0
+ 252              	.LCFI25:
+ 253              	 .cfi_def_cfa_register 7
+ 254 0006 7860     	 str r0,[r7,#4]
+  43:../cleanflight/src/main/pg/pg.c ****     return reg->address;
+ 255              	 .loc 2 43 0
+ 256 0008 7B68     	 ldr r3,[r7,#4]
+ 257 000a 5B68     	 ldr r3,[r3,#4]
+  44:../cleanflight/src/main/pg/pg.c **** }
+ 258              	 .loc 2 44 0
+ 259 000c 1846     	 mov r0,r3
+ 260 000e 0C37     	 adds r7,r7,#12
+ 261              	.LCFI26:
+ 262              	 .cfi_def_cfa_offset 4
+ 263 0010 BD46     	 mov sp,r7
+ 264              	.LCFI27:
+ 265              	 .cfi_def_cfa_register 13
+ 266              	 
+ 267 0012 5DF8047B 	 ldr r7,[sp],#4
+ 268              	.LCFI28:
+ 269              	 .cfi_restore 7
+ 270              	 .cfi_def_cfa_offset 0
+ 271 0016 7047     	 bx lr
+ 272              	 .cfi_endproc
+ 273              	.LFE527:
+ 275              	 .section .text.pgResetInstance,"ax",%progbits
+ 276              	 .align 2
+ 277              	 .global pgResetInstance
+ 278              	 .thumb
+ 279              	 .thumb_func
+ 281              	pgResetInstance:
+ 282              	.LFB528:
+  45:../cleanflight/src/main/pg/pg.c **** 
+  46:../cleanflight/src/main/pg/pg.c **** void pgResetInstance(const pgRegistry_t *reg, uint8_t *base)
+  47:../cleanflight/src/main/pg/pg.c **** {
+ 283              	 .loc 2 47 0
+ 284              	 .cfi_startproc
+ 285              	 
+ 286              	 
+ 287 0000 80B5     	 push {r7,lr}
+ 288              	.LCFI29:
+ 289              	 .cfi_def_cfa_offset 8
+ 290              	 .cfi_offset 7,-8
+ 291              	 .cfi_offset 14,-4
+ 292 0002 84B0     	 sub sp,sp,#16
+ 293              	.LCFI30:
+ 294              	 .cfi_def_cfa_offset 24
+ 295 0004 00AF     	 add r7,sp,#0
+ 296              	.LCFI31:
+ 297              	 .cfi_def_cfa_register 7
+ 298 0006 7860     	 str r0,[r7,#4]
+ 299 0008 3960     	 str r1,[r7]
+  48:../cleanflight/src/main/pg/pg.c ****     const uint16_t regSize = pgSize(reg);
+ 300              	 .loc 2 48 0
+ 301 000a 7868     	 ldr r0,[r7,#4]
+ 302 000c FFF7FEFF 	 bl pgSize
+ 303 0010 0346     	 mov r3,r0
+ 304 0012 FB81     	 strh r3,[r7,#14]
+  49:../cleanflight/src/main/pg/pg.c **** 
+  50:../cleanflight/src/main/pg/pg.c ****     memset(base, 0, regSize);
+ 305              	 .loc 2 50 0
+ 306 0014 FB89     	 ldrh r3,[r7,#14]
+ 307 0016 3868     	 ldr r0,[r7]
+ 308 0018 0021     	 movs r1,#0
+ 309 001a 1A46     	 mov r2,r3
+ 310 001c FFF7FEFF 	 bl memset
+  51:../cleanflight/src/main/pg/pg.c ****     if (reg->reset.ptr >= (void*)__pg_resetdata_start && reg->reset.ptr < (void*)__pg_resetdata_end
+ 311              	 .loc 2 51 0
+ 312 0020 7B68     	 ldr r3,[r7,#4]
+ 313 0022 1B69     	 ldr r3,[r3,#16]
+ 314 0024 0E4A     	 ldr r2,.L19
+ 315 0026 9342     	 cmp r3,r2
+ 316 0028 0DD3     	 bcc .L17
+ 317              	 .loc 2 51 0 is_stmt 0 discriminator 1
+ 318 002a 7B68     	 ldr r3,[r7,#4]
+ 319 002c 1B69     	 ldr r3,[r3,#16]
+ 320 002e 0D4A     	 ldr r2,.L19+4
+ 321 0030 9342     	 cmp r3,r2
+ 322 0032 08D2     	 bcs .L17
+  52:../cleanflight/src/main/pg/pg.c ****         // pointer points to resetdata section, to it is data template
+  53:../cleanflight/src/main/pg/pg.c ****         memcpy(base, reg->reset.ptr, regSize);
+ 323              	 .loc 2 53 0 is_stmt 1
+ 324 0034 7B68     	 ldr r3,[r7,#4]
+ 325 0036 1A69     	 ldr r2,[r3,#16]
+ 326 0038 FB89     	 ldrh r3,[r7,#14]
+ 327 003a 3868     	 ldr r0,[r7]
+ 328 003c 1146     	 mov r1,r2
+ 329 003e 1A46     	 mov r2,r3
+ 330 0040 FFF7FEFF 	 bl memcpy
+ 331 0044 09E0     	 b .L16
+ 332              	.L17:
+  54:../cleanflight/src/main/pg/pg.c ****     } else if (reg->reset.fn) {
+ 333              	 .loc 2 54 0
+ 334 0046 7B68     	 ldr r3,[r7,#4]
+ 335 0048 1B69     	 ldr r3,[r3,#16]
+ 336 004a 002B     	 cmp r3,#0
+ 337 004c 05D0     	 beq .L16
+  55:../cleanflight/src/main/pg/pg.c ****         // reset function, call it
+  56:../cleanflight/src/main/pg/pg.c ****         reg->reset.fn(base, regSize);
+ 338              	 .loc 2 56 0
+ 339 004e 7B68     	 ldr r3,[r7,#4]
+ 340 0050 1B69     	 ldr r3,[r3,#16]
+ 341 0052 FA89     	 ldrh r2,[r7,#14]
+ 342 0054 3868     	 ldr r0,[r7]
+ 343 0056 1146     	 mov r1,r2
+ 344 0058 9847     	 blx r3
+ 345              	.L16:
+  57:../cleanflight/src/main/pg/pg.c ****     }
+  58:../cleanflight/src/main/pg/pg.c **** }
+ 346              	 .loc 2 58 0
+ 347 005a 1037     	 adds r7,r7,#16
+ 348              	.LCFI32:
+ 349              	 .cfi_def_cfa_offset 8
+ 350 005c BD46     	 mov sp,r7
+ 351              	.LCFI33:
+ 352              	 .cfi_def_cfa_register 13
+ 353              	 
+ 354 005e 80BD     	 pop {r7,pc}
+ 355              	.L20:
+ 356              	 .align 2
+ 357              	.L19:
+ 358 0060 00000000 	 .word __pg_resetdata_start
+ 359 0064 00000000 	 .word __pg_resetdata_end
+ 360              	 .cfi_endproc
+ 361              	.LFE528:
+ 363              	 .section .text.pgReset,"ax",%progbits
+ 364              	 .align 2
+ 365              	 .global pgReset
+ 366              	 .thumb
+ 367              	 .thumb_func
+ 369              	pgReset:
+ 370              	.LFB529:
+  59:../cleanflight/src/main/pg/pg.c **** 
+  60:../cleanflight/src/main/pg/pg.c **** void pgReset(const pgRegistry_t* reg)
+  61:../cleanflight/src/main/pg/pg.c **** {
+ 371              	 .loc 2 61 0
+ 372              	 .cfi_startproc
+ 373              	 
+ 374              	 
+ 375 0000 80B5     	 push {r7,lr}
+ 376              	.LCFI34:
+ 377              	 .cfi_def_cfa_offset 8
+ 378              	 .cfi_offset 7,-8
+ 379              	 .cfi_offset 14,-4
+ 380 0002 82B0     	 sub sp,sp,#8
+ 381              	.LCFI35:
+ 382              	 .cfi_def_cfa_offset 16
+ 383 0004 00AF     	 add r7,sp,#0
+ 384              	.LCFI36:
+ 385              	 .cfi_def_cfa_register 7
+ 386 0006 7860     	 str r0,[r7,#4]
+  62:../cleanflight/src/main/pg/pg.c ****     pgResetInstance(reg, pgOffset(reg));
+ 387              	 .loc 2 62 0
+ 388 0008 7868     	 ldr r0,[r7,#4]
+ 389 000a FFF7FEFF 	 bl pgOffset
+ 390 000e 0346     	 mov r3,r0
+ 391 0010 7868     	 ldr r0,[r7,#4]
+ 392 0012 1946     	 mov r1,r3
+ 393 0014 FFF7FEFF 	 bl pgResetInstance
+  63:../cleanflight/src/main/pg/pg.c **** }
+ 394              	 .loc 2 63 0
+ 395 0018 0837     	 adds r7,r7,#8
+ 396              	.LCFI37:
+ 397              	 .cfi_def_cfa_offset 8
+ 398 001a BD46     	 mov sp,r7
+ 399              	.LCFI38:
+ 400              	 .cfi_def_cfa_register 13
+ 401              	 
+ 402 001c 80BD     	 pop {r7,pc}
+ 403              	 .cfi_endproc
+ 404              	.LFE529:
+ 406 001e 00BF     	 .section .text.pgResetCopy,"ax",%progbits
+ 407              	 .align 2
+ 408              	 .global pgResetCopy
+ 409              	 .thumb
+ 410              	 .thumb_func
+ 412              	pgResetCopy:
+ 413              	.LFB530:
+  64:../cleanflight/src/main/pg/pg.c **** 
+  65:../cleanflight/src/main/pg/pg.c **** bool pgResetCopy(void *copy, pgn_t pgn)
+  66:../cleanflight/src/main/pg/pg.c **** {
+ 414              	 .loc 2 66 0
+ 415              	 .cfi_startproc
+ 416              	 
+ 417              	 
+ 418 0000 80B5     	 push {r7,lr}
+ 419              	.LCFI39:
+ 420              	 .cfi_def_cfa_offset 8
+ 421              	 .cfi_offset 7,-8
+ 422              	 .cfi_offset 14,-4
+ 423 0002 84B0     	 sub sp,sp,#16
+ 424              	.LCFI40:
+ 425              	 .cfi_def_cfa_offset 24
+ 426 0004 00AF     	 add r7,sp,#0
+ 427              	.LCFI41:
+ 428              	 .cfi_def_cfa_register 7
+ 429 0006 7860     	 str r0,[r7,#4]
+ 430 0008 0B46     	 mov r3,r1
+ 431 000a 7B80     	 strh r3,[r7,#2]
+  67:../cleanflight/src/main/pg/pg.c ****     const pgRegistry_t *reg = pgFind(pgn);
+ 432              	 .loc 2 67 0
+ 433 000c 7B88     	 ldrh r3,[r7,#2]
+ 434 000e 1846     	 mov r0,r3
+ 435 0010 FFF7FEFF 	 bl pgFind
+ 436 0014 F860     	 str r0,[r7,#12]
+  68:../cleanflight/src/main/pg/pg.c ****     if (reg) {
+ 437              	 .loc 2 68 0
+ 438 0016 FB68     	 ldr r3,[r7,#12]
+ 439 0018 002B     	 cmp r3,#0
+ 440 001a 05D0     	 beq .L23
+  69:../cleanflight/src/main/pg/pg.c ****         pgResetInstance(reg, copy);
+ 441              	 .loc 2 69 0
+ 442 001c F868     	 ldr r0,[r7,#12]
+ 443 001e 7968     	 ldr r1,[r7,#4]
+ 444 0020 FFF7FEFF 	 bl pgResetInstance
+  70:../cleanflight/src/main/pg/pg.c ****         return true;
+ 445              	 .loc 2 70 0
+ 446 0024 0123     	 movs r3,#1
+ 447 0026 00E0     	 b .L24
+ 448              	.L23:
+  71:../cleanflight/src/main/pg/pg.c ****     }
+  72:../cleanflight/src/main/pg/pg.c ****     return false;
+ 449              	 .loc 2 72 0
+ 450 0028 0023     	 movs r3,#0
+ 451              	.L24:
+  73:../cleanflight/src/main/pg/pg.c **** }
+ 452              	 .loc 2 73 0
+ 453 002a 1846     	 mov r0,r3
+ 454 002c 1037     	 adds r7,r7,#16
+ 455              	.LCFI42:
+ 456              	 .cfi_def_cfa_offset 8
+ 457 002e BD46     	 mov sp,r7
+ 458              	.LCFI43:
+ 459              	 .cfi_def_cfa_register 13
+ 460              	 
+ 461 0030 80BD     	 pop {r7,pc}
+ 462              	 .cfi_endproc
+ 463              	.LFE530:
+ 465 0032 00BF     	 .section .text.pgLoad,"ax",%progbits
+ 466              	 .align 2
+ 467              	 .global pgLoad
+ 468              	 .thumb
+ 469              	 .thumb_func
+ 471              	pgLoad:
+ 472              	.LFB531:
+  74:../cleanflight/src/main/pg/pg.c **** 
+  75:../cleanflight/src/main/pg/pg.c **** bool pgLoad(const pgRegistry_t* reg, const void *from, int size, int version)
+  76:../cleanflight/src/main/pg/pg.c **** {
+ 473              	 .loc 2 76 0
+ 474              	 .cfi_startproc
+ 475              	 
+ 476              	 
+ 477 0000 80B5     	 push {r7,lr}
+ 478              	.LCFI44:
+ 479              	 .cfi_def_cfa_offset 8
+ 480              	 .cfi_offset 7,-8
+ 481              	 .cfi_offset 14,-4
+ 482 0002 88B0     	 sub sp,sp,#32
+ 483              	.LCFI45:
+ 484              	 .cfi_def_cfa_offset 40
+ 485 0004 00AF     	 add r7,sp,#0
+ 486              	.LCFI46:
+ 487              	 .cfi_def_cfa_register 7
+ 488 0006 F860     	 str r0,[r7,#12]
+ 489 0008 B960     	 str r1,[r7,#8]
+ 490 000a 7A60     	 str r2,[r7,#4]
+ 491 000c 3B60     	 str r3,[r7]
+  77:../cleanflight/src/main/pg/pg.c ****     pgResetInstance(reg, pgOffset(reg));
+ 492              	 .loc 2 77 0
+ 493 000e F868     	 ldr r0,[r7,#12]
+ 494 0010 FFF7FEFF 	 bl pgOffset
+ 495 0014 0346     	 mov r3,r0
+ 496 0016 F868     	 ldr r0,[r7,#12]
+ 497 0018 1946     	 mov r1,r3
+ 498 001a FFF7FEFF 	 bl pgResetInstance
+  78:../cleanflight/src/main/pg/pg.c ****     // restore only matching version, keep defaults otherwise
+  79:../cleanflight/src/main/pg/pg.c ****     if (version == pgVersion(reg)) {
+ 499              	 .loc 2 79 0
+ 500 001e F868     	 ldr r0,[r7,#12]
+ 501 0020 FFF7FEFF 	 bl pgVersion
+ 502 0024 0346     	 mov r3,r0
+ 503 0026 1A46     	 mov r2,r3
+ 504 0028 3B68     	 ldr r3,[r7]
+ 505 002a 9A42     	 cmp r2,r3
+ 506 002c 18D1     	 bne .L26
+ 507              	.LBB3:
+ 508              	.LBB4:
+  80:../cleanflight/src/main/pg/pg.c ****         const int take = MIN(size, pgSize(reg));
+ 509              	 .loc 2 80 0
+ 510 002e 7B68     	 ldr r3,[r7,#4]
+ 511 0030 FB61     	 str r3,[r7,#28]
+ 512 0032 F868     	 ldr r0,[r7,#12]
+ 513 0034 FFF7FEFF 	 bl pgSize
+ 514 0038 0346     	 mov r3,r0
+ 515 003a 7B83     	 strh r3,[r7,#26]
+ 516 003c 7A8B     	 ldrh r2,[r7,#26]
+ 517 003e FB69     	 ldr r3,[r7,#28]
+ 518 0040 9342     	 cmp r3,r2
+ 519 0042 A8BF     	 it ge
+ 520 0044 1346     	 movge r3,r2
+ 521              	.LBE4:
+ 522 0046 7B61     	 str r3,[r7,#20]
+  81:../cleanflight/src/main/pg/pg.c ****         memcpy(pgOffset(reg), from, take);
+ 523              	 .loc 2 81 0
+ 524 0048 F868     	 ldr r0,[r7,#12]
+ 525 004a FFF7FEFF 	 bl pgOffset
+ 526 004e 0246     	 mov r2,r0
+ 527 0050 7B69     	 ldr r3,[r7,#20]
+ 528 0052 1046     	 mov r0,r2
+ 529 0054 B968     	 ldr r1,[r7,#8]
+ 530 0056 1A46     	 mov r2,r3
+ 531 0058 FFF7FEFF 	 bl memcpy
+  82:../cleanflight/src/main/pg/pg.c **** 
+  83:../cleanflight/src/main/pg/pg.c ****         return true;
+ 532              	 .loc 2 83 0
+ 533 005c 0123     	 movs r3,#1
+ 534 005e 00E0     	 b .L27
+ 535              	.L26:
+ 536              	.LBE3:
+  84:../cleanflight/src/main/pg/pg.c ****     }
+  85:../cleanflight/src/main/pg/pg.c **** 
+  86:../cleanflight/src/main/pg/pg.c ****     return false;
+ 537              	 .loc 2 86 0
+ 538 0060 0023     	 movs r3,#0
+ 539              	.L27:
+  87:../cleanflight/src/main/pg/pg.c **** }
+ 540              	 .loc 2 87 0
+ 541 0062 1846     	 mov r0,r3
+ 542 0064 2037     	 adds r7,r7,#32
+ 543              	.LCFI47:
+ 544              	 .cfi_def_cfa_offset 8
+ 545 0066 BD46     	 mov sp,r7
+ 546              	.LCFI48:
+ 547              	 .cfi_def_cfa_register 13
+ 548              	 
+ 549 0068 80BD     	 pop {r7,pc}
+ 550              	 .cfi_endproc
+ 551              	.LFE531:
+ 553 006a 00BF     	 .section .text.pgStore,"ax",%progbits
+ 554              	 .align 2
+ 555              	 .global pgStore
+ 556              	 .thumb
+ 557              	 .thumb_func
+ 559              	pgStore:
+ 560              	.LFB532:
+  88:../cleanflight/src/main/pg/pg.c **** 
+  89:../cleanflight/src/main/pg/pg.c **** int pgStore(const pgRegistry_t* reg, void *to, int size)
+  90:../cleanflight/src/main/pg/pg.c **** {
+ 561              	 .loc 2 90 0
+ 562              	 .cfi_startproc
+ 563              	 
+ 564              	 
+ 565 0000 80B5     	 push {r7,lr}
+ 566              	.LCFI49:
+ 567              	 .cfi_def_cfa_offset 8
+ 568              	 .cfi_offset 7,-8
+ 569              	 .cfi_offset 14,-4
+ 570 0002 88B0     	 sub sp,sp,#32
+ 571              	.LCFI50:
+ 572              	 .cfi_def_cfa_offset 40
+ 573 0004 00AF     	 add r7,sp,#0
+ 574              	.LCFI51:
+ 575              	 .cfi_def_cfa_register 7
+ 576 0006 F860     	 str r0,[r7,#12]
+ 577 0008 B960     	 str r1,[r7,#8]
+ 578 000a 7A60     	 str r2,[r7,#4]
+ 579              	.LBB5:
+  91:../cleanflight/src/main/pg/pg.c ****     const int take = MIN(size, pgSize(reg));
+ 580              	 .loc 2 91 0
+ 581 000c 7B68     	 ldr r3,[r7,#4]
+ 582 000e FB61     	 str r3,[r7,#28]
+ 583 0010 F868     	 ldr r0,[r7,#12]
+ 584 0012 FFF7FEFF 	 bl pgSize
+ 585 0016 0346     	 mov r3,r0
+ 586 0018 7B83     	 strh r3,[r7,#26]
+ 587 001a 7A8B     	 ldrh r2,[r7,#26]
+ 588 001c FB69     	 ldr r3,[r7,#28]
+ 589 001e 9342     	 cmp r3,r2
+ 590 0020 A8BF     	 it ge
+ 591 0022 1346     	 movge r3,r2
+ 592              	.LBE5:
+ 593 0024 7B61     	 str r3,[r7,#20]
+  92:../cleanflight/src/main/pg/pg.c ****     memcpy(to, pgOffset(reg), take);
+ 594              	 .loc 2 92 0
+ 595 0026 F868     	 ldr r0,[r7,#12]
+ 596 0028 FFF7FEFF 	 bl pgOffset
+ 597 002c 0246     	 mov r2,r0
+ 598 002e 7B69     	 ldr r3,[r7,#20]
+ 599 0030 B868     	 ldr r0,[r7,#8]
+ 600 0032 1146     	 mov r1,r2
+ 601 0034 1A46     	 mov r2,r3
+ 602 0036 FFF7FEFF 	 bl memcpy
+  93:../cleanflight/src/main/pg/pg.c ****     return take;
+ 603              	 .loc 2 93 0
+ 604 003a 7B69     	 ldr r3,[r7,#20]
+  94:../cleanflight/src/main/pg/pg.c **** }
+ 605              	 .loc 2 94 0
+ 606 003c 1846     	 mov r0,r3
+ 607 003e 2037     	 adds r7,r7,#32
+ 608              	.LCFI52:
+ 609              	 .cfi_def_cfa_offset 8
+ 610 0040 BD46     	 mov sp,r7
+ 611              	.LCFI53:
+ 612              	 .cfi_def_cfa_register 13
+ 613              	 
+ 614 0042 80BD     	 pop {r7,pc}
+ 615              	 .cfi_endproc
+ 616              	.LFE532:
+ 618              	 .section .text.pgResetAll,"ax",%progbits
+ 619              	 .align 2
+ 620              	 .global pgResetAll
+ 621              	 .thumb
+ 622              	 .thumb_func
+ 624              	pgResetAll:
+ 625              	.LFB533:
+  95:../cleanflight/src/main/pg/pg.c **** 
+  96:../cleanflight/src/main/pg/pg.c **** void pgResetAll(void)
+  97:../cleanflight/src/main/pg/pg.c **** {
+ 626              	 .loc 2 97 0
+ 627              	 .cfi_startproc
+ 628              	 
+ 629              	 
+ 630 0000 80B5     	 push {r7,lr}
+ 631              	.LCFI54:
+ 632              	 .cfi_def_cfa_offset 8
+ 633              	 .cfi_offset 7,-8
+ 634              	 .cfi_offset 14,-4
+ 635 0002 82B0     	 sub sp,sp,#8
+ 636              	.LCFI55:
+ 637              	 .cfi_def_cfa_offset 16
+ 638 0004 00AF     	 add r7,sp,#0
+ 639              	.LCFI56:
+ 640              	 .cfi_def_cfa_register 7
+ 641              	.LBB6:
+  98:../cleanflight/src/main/pg/pg.c ****     PG_FOREACH(reg) {
+ 642              	 .loc 2 98 0
+ 643 0006 084B     	 ldr r3,.L33
+ 644 0008 7B60     	 str r3,[r7,#4]
+ 645 000a 05E0     	 b .L31
+ 646              	.L32:
+  99:../cleanflight/src/main/pg/pg.c ****         pgReset(reg);
+ 647              	 .loc 2 99 0 discriminator 3
+ 648 000c 7868     	 ldr r0,[r7,#4]
+ 649 000e FFF7FEFF 	 bl pgReset
+  98:../cleanflight/src/main/pg/pg.c ****     PG_FOREACH(reg) {
+ 650              	 .loc 2 98 0 discriminator 3
+ 651 0012 7B68     	 ldr r3,[r7,#4]
+ 652 0014 1433     	 adds r3,r3,#20
+ 653 0016 7B60     	 str r3,[r7,#4]
+ 654              	.L31:
+  98:../cleanflight/src/main/pg/pg.c ****     PG_FOREACH(reg) {
+ 655              	 .loc 2 98 0 is_stmt 0 discriminator 1
+ 656 0018 7B68     	 ldr r3,[r7,#4]
+ 657 001a 044A     	 ldr r2,.L33+4
+ 658 001c 9342     	 cmp r3,r2
+ 659 001e F5D3     	 bcc .L32
+ 660              	.LBE6:
+ 100:../cleanflight/src/main/pg/pg.c ****     }
+ 101:../cleanflight/src/main/pg/pg.c **** }
+ 661              	 .loc 2 101 0 is_stmt 1
+ 662 0020 0837     	 adds r7,r7,#8
+ 663              	.LCFI57:
+ 664              	 .cfi_def_cfa_offset 8
+ 665 0022 BD46     	 mov sp,r7
+ 666              	.LCFI58:
+ 667              	 .cfi_def_cfa_register 13
+ 668              	 
+ 669 0024 80BD     	 pop {r7,pc}
+ 670              	.L34:
+ 671 0026 00BF     	 .align 2
+ 672              	.L33:
+ 673 0028 00000000 	 .word __pg_registry_start
+ 674 002c 00000000 	 .word __pg_registry_end
+ 675              	 .cfi_endproc
+ 676              	.LFE533:
+ 678              	 .text
+ 679              	.Letext0:
+ 680              	 .file 3 "d:\\xmc\\dave-ide-4.4.2-64bit\\eclipse\\arm-gcc-49\\arm-none-eabi\\include\\machine\\_default_types.h"
+ 681              	 .file 4 "d:\\xmc\\dave-ide-4.4.2-64bit\\eclipse\\arm-gcc-49\\arm-none-eabi\\include\\stdint.h"
+ 682              	 .file 5 "D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/lib/main/CMSIS/Core/Include/core_cm4.h"
+ 683              	 .file 6 "D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/lib/main/XMC4000/system_XMC4700.h"
+DEFINED SYMBOLS
+                            *ABS*:00000000 pg.c
+    {standard input}:20     .text.pgN:00000000 $t
+    {standard input}:24     .text.pgN:00000000 pgN
+    {standard input}:66     .text.pgVersion:00000000 $t
+    {standard input}:70     .text.pgVersion:00000000 pgVersion
+    {standard input}:112    .text.pgSize:00000000 $t
+    {standard input}:116    .text.pgSize:00000000 pgSize
+    {standard input}:157    .text.pgFind:00000000 $t
+    {standard input}:162    .text.pgFind:00000000 pgFind
+    {standard input}:227    .text.pgFind:0000003c $d
+    {standard input}:233    .text.pgOffset:00000000 $t
+    {standard input}:237    .text.pgOffset:00000000 pgOffset
+    {standard input}:276    .text.pgResetInstance:00000000 $t
+    {standard input}:281    .text.pgResetInstance:00000000 pgResetInstance
+    {standard input}:358    .text.pgResetInstance:00000060 $d
+    {standard input}:364    .text.pgReset:00000000 $t
+    {standard input}:369    .text.pgReset:00000000 pgReset
+    {standard input}:407    .text.pgResetCopy:00000000 $t
+    {standard input}:412    .text.pgResetCopy:00000000 pgResetCopy
+    {standard input}:466    .text.pgLoad:00000000 $t
+    {standard input}:471    .text.pgLoad:00000000 pgLoad
+    {standard input}:554    .text.pgStore:00000000 $t
+    {standard input}:559    .text.pgStore:00000000 pgStore
+    {standard input}:619    .text.pgResetAll:00000000 $t
+    {standard input}:624    .text.pgResetAll:00000000 pgResetAll
+    {standard input}:673    .text.pgResetAll:00000028 $d
+                     .debug_frame:00000010 $d
+
+UNDEFINED SYMBOLS
+__pg_registry_start
+__pg_registry_end
+memset
+memcpy
+__pg_resetdata_start
+__pg_resetdata_end

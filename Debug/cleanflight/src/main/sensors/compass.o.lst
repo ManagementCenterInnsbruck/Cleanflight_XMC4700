@@ -1,0 +1,1457 @@
+   1              	 .syntax unified
+   2              	 .cpu cortex-m4
+   3              	 .eabi_attribute 27,3
+   4              	 .fpu fpv4-sp-d16
+   5              	 .eabi_attribute 20,1
+   6              	 .eabi_attribute 21,1
+   7              	 .eabi_attribute 23,3
+   8              	 .eabi_attribute 24,1
+   9              	 .eabi_attribute 25,1
+  10              	 .eabi_attribute 26,1
+  11              	 .eabi_attribute 30,6
+  12              	 .eabi_attribute 34,1
+  13              	 .eabi_attribute 18,4
+  14              	 .thumb
+  15              	 .file "compass.c"
+  16              	 .text
+  17              	.Ltext0:
+  18              	 .cfi_sections .debug_frame
+  19              	 .section .text.compassConfig,"ax",%progbits
+  20              	 .align 2
+  21              	 .thumb
+  22              	 .thumb_func
+  24              	compassConfig:
+  25              	.LFB535:
+  26              	 .file 1 "D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/sensors/compass.h"
+   1:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/sensors\compass.h **** /*
+   2:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/sensors\compass.h ****  * This file is part of Cleanflight and Betaflight.
+   3:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/sensors\compass.h ****  *
+   4:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/sensors\compass.h ****  * Cleanflight and Betaflight are free software. You can redistribute
+   5:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/sensors\compass.h ****  * this software and/or modify this software under the terms of the
+   6:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/sensors\compass.h ****  * GNU General Public License as published by the Free Software
+   7:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/sensors\compass.h ****  * Foundation, either version 3 of the License, or (at your option)
+   8:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/sensors\compass.h ****  * any later version.
+   9:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/sensors\compass.h ****  *
+  10:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/sensors\compass.h ****  * Cleanflight and Betaflight are distributed in the hope that they
+  11:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/sensors\compass.h ****  * will be useful, but WITHOUT ANY WARRANTY; without even the implied
+  12:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/sensors\compass.h ****  * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+  13:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/sensors\compass.h ****  * See the GNU General Public License for more details.
+  14:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/sensors\compass.h ****  *
+  15:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/sensors\compass.h ****  * You should have received a copy of the GNU General Public License
+  16:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/sensors\compass.h ****  * along with this software.
+  17:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/sensors\compass.h ****  *
+  18:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/sensors\compass.h ****  * If not, see <http://www.gnu.org/licenses/>.
+  19:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/sensors\compass.h ****  */
+  20:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/sensors\compass.h **** 
+  21:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/sensors\compass.h **** #pragma once
+  22:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/sensors\compass.h **** 
+  23:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/sensors\compass.h **** #include "common/time.h"
+  24:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/sensors\compass.h **** #include "drivers/io_types.h"
+  25:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/sensors\compass.h **** #include "drivers/sensor.h"
+  26:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/sensors\compass.h **** #include "pg/pg.h"
+  27:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/sensors\compass.h **** #include "sensors/sensors.h"
+  28:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/sensors\compass.h **** 
+  29:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/sensors\compass.h **** 
+  30:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/sensors\compass.h **** // Type of magnetometer used/detected
+  31:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/sensors\compass.h **** typedef enum {
+  32:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/sensors\compass.h ****     MAG_DEFAULT = 0,
+  33:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/sensors\compass.h ****     MAG_NONE = 1,
+  34:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/sensors\compass.h ****     MAG_HMC5883 = 2,
+  35:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/sensors\compass.h ****     MAG_AK8975 = 3,
+  36:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/sensors\compass.h ****     MAG_AK8963 = 4,
+  37:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/sensors\compass.h ****     MAG_QMC5883 = 5
+  38:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/sensors\compass.h **** } magSensor_e;
+  39:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/sensors\compass.h **** 
+  40:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/sensors\compass.h **** typedef struct mag_s {
+  41:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/sensors\compass.h ****     float magADC[XYZ_AXIS_COUNT];
+  42:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/sensors\compass.h ****     float magneticDeclination;
+  43:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/sensors\compass.h **** } mag_t;
+  44:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/sensors\compass.h **** 
+  45:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/sensors\compass.h **** extern mag_t mag;
+  46:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/sensors\compass.h **** 
+  47:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/sensors\compass.h **** typedef struct compassConfig_s {
+  48:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/sensors\compass.h ****     int16_t mag_declination;                // Get your magnetic decliniation from here : http://ma
+  49:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/sensors\compass.h ****                                             // For example, -6deg 37min, = -637 Japan, format is [s
+  50:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/sensors\compass.h ****     sensor_align_e mag_align;               // mag alignment
+  51:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/sensors\compass.h ****     uint8_t mag_hardware;                   // Which mag hardware to use on boards with more than o
+  52:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/sensors\compass.h ****     uint8_t mag_bustype;
+  53:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/sensors\compass.h ****     uint8_t mag_i2c_device;
+  54:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/sensors\compass.h ****     uint8_t mag_i2c_address;
+  55:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/sensors\compass.h ****     uint8_t mag_spi_device;
+  56:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/sensors\compass.h ****     ioTag_t mag_spi_csn;
+  57:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/sensors\compass.h ****     ioTag_t interruptTag;
+  58:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/sensors\compass.h ****     flightDynamicsTrims_t magZero;
+  59:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/sensors\compass.h **** } compassConfig_t;
+  60:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/sensors\compass.h **** 
+  61:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/sensors\compass.h **** PG_DECLARE(compassConfig_t, compassConfig);
+  27              	 .loc 1 61 0
+  28              	 .cfi_startproc
+  29              	 
+  30              	 
+  31              	 
+  32 0000 80B4     	 push {r7}
+  33              	.LCFI0:
+  34              	 .cfi_def_cfa_offset 4
+  35              	 .cfi_offset 7,-4
+  36 0002 00AF     	 add r7,sp,#0
+  37              	.LCFI1:
+  38              	 .cfi_def_cfa_register 7
+  39              	 .loc 1 61 0
+  40 0004 024B     	 ldr r3,.L3
+  41 0006 1846     	 mov r0,r3
+  42 0008 BD46     	 mov sp,r7
+  43              	.LCFI2:
+  44              	 .cfi_def_cfa_register 13
+  45              	 
+  46 000a 5DF8047B 	 ldr r7,[sp],#4
+  47              	.LCFI3:
+  48              	 .cfi_restore 7
+  49              	 .cfi_def_cfa_offset 0
+  50 000e 7047     	 bx lr
+  51              	.L4:
+  52              	 .align 2
+  53              	.L3:
+  54 0010 00000000 	 .word compassConfig_System
+  55              	 .cfi_endproc
+  56              	.LFE535:
+  58              	 .section .text.compassConfigMutable,"ax",%progbits
+  59              	 .align 2
+  60              	 .thumb
+  61              	 .thumb_func
+  63              	compassConfigMutable:
+  64              	.LFB536:
+  65              	 .loc 1 61 0
+  66              	 .cfi_startproc
+  67              	 
+  68              	 
+  69              	 
+  70 0000 80B4     	 push {r7}
+  71              	.LCFI4:
+  72              	 .cfi_def_cfa_offset 4
+  73              	 .cfi_offset 7,-4
+  74 0002 00AF     	 add r7,sp,#0
+  75              	.LCFI5:
+  76              	 .cfi_def_cfa_register 7
+  77              	 .loc 1 61 0
+  78 0004 024B     	 ldr r3,.L7
+  79 0006 1846     	 mov r0,r3
+  80 0008 BD46     	 mov sp,r7
+  81              	.LCFI6:
+  82              	 .cfi_def_cfa_register 13
+  83              	 
+  84 000a 5DF8047B 	 ldr r7,[sp],#4
+  85              	.LCFI7:
+  86              	 .cfi_restore 7
+  87              	 .cfi_def_cfa_offset 0
+  88 000e 7047     	 bx lr
+  89              	.L8:
+  90              	 .align 2
+  91              	.L7:
+  92 0010 00000000 	 .word compassConfig_System
+  93              	 .cfi_endproc
+  94              	.LFE536:
+  96              	 .comm magDev,29,4
+  97              	 .comm mag,16,4
+  98              	 .comm compassConfig_System,16,4
+  99              	 .comm compassConfig_Copy,16,4
+ 100              	 .global compassConfig_Registry
+ 101              	 .section .pg_registry,"a",%progbits
+ 102              	 .align 2
+ 105              	compassConfig_Registry:
+ 106 0000 2810     	 .short 4136
+ 107 0002 1000     	 .short 16
+ 108 0004 00000000 	 .word compassConfig_System
+ 109 0008 00000000 	 .word compassConfig_Copy
+ 110 000c 00000000 	 .word 0
+ 111 0010 00000000 	 .word pgResetFn_compassConfig
+ 112              	 .section .text.pgResetFn_compassConfig,"ax",%progbits
+ 113              	 .align 2
+ 114              	 .global pgResetFn_compassConfig
+ 115              	 .thumb
+ 116              	 .thumb_func
+ 118              	pgResetFn_compassConfig:
+ 119              	.LFB539:
+ 120              	 .file 2 "../cleanflight/src/main/sensors/compass.c"
+   1:../cleanflight/src/main/sensors/compass.c **** /*
+   2:../cleanflight/src/main/sensors/compass.c ****  * This file is part of Cleanflight and Betaflight.
+   3:../cleanflight/src/main/sensors/compass.c ****  *
+   4:../cleanflight/src/main/sensors/compass.c ****  * Cleanflight and Betaflight are free software. You can redistribute
+   5:../cleanflight/src/main/sensors/compass.c ****  * this software and/or modify this software under the terms of the
+   6:../cleanflight/src/main/sensors/compass.c ****  * GNU General Public License as published by the Free Software
+   7:../cleanflight/src/main/sensors/compass.c ****  * Foundation, either version 3 of the License, or (at your option)
+   8:../cleanflight/src/main/sensors/compass.c ****  * any later version.
+   9:../cleanflight/src/main/sensors/compass.c ****  *
+  10:../cleanflight/src/main/sensors/compass.c ****  * Cleanflight and Betaflight are distributed in the hope that they
+  11:../cleanflight/src/main/sensors/compass.c ****  * will be useful, but WITHOUT ANY WARRANTY; without even the implied
+  12:../cleanflight/src/main/sensors/compass.c ****  * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+  13:../cleanflight/src/main/sensors/compass.c ****  * See the GNU General Public License for more details.
+  14:../cleanflight/src/main/sensors/compass.c ****  *
+  15:../cleanflight/src/main/sensors/compass.c ****  * You should have received a copy of the GNU General Public License
+  16:../cleanflight/src/main/sensors/compass.c ****  * along with this software.
+  17:../cleanflight/src/main/sensors/compass.c ****  *
+  18:../cleanflight/src/main/sensors/compass.c ****  * If not, see <http://www.gnu.org/licenses/>.
+  19:../cleanflight/src/main/sensors/compass.c ****  */
+  20:../cleanflight/src/main/sensors/compass.c **** 
+  21:../cleanflight/src/main/sensors/compass.c **** #include <stdbool.h>
+  22:../cleanflight/src/main/sensors/compass.c **** #include <stdint.h>
+  23:../cleanflight/src/main/sensors/compass.c **** 
+  24:../cleanflight/src/main/sensors/compass.c **** #include "platform.h"
+  25:../cleanflight/src/main/sensors/compass.c **** 
+  26:../cleanflight/src/main/sensors/compass.c **** #include "common/axis.h"
+  27:../cleanflight/src/main/sensors/compass.c **** 
+  28:../cleanflight/src/main/sensors/compass.c **** #include "pg/pg.h"
+  29:../cleanflight/src/main/sensors/compass.c **** #include "pg/pg_ids.h"
+  30:../cleanflight/src/main/sensors/compass.c **** 
+  31:../cleanflight/src/main/sensors/compass.c **** #include "drivers/bus_i2c.h"
+  32:../cleanflight/src/main/sensors/compass.c **** #include "drivers/bus_spi.h"
+  33:../cleanflight/src/main/sensors/compass.c **** #include "drivers/bus.h"
+  34:../cleanflight/src/main/sensors/compass.c **** #include "drivers/accgyro/accgyro_mpu.h"
+  35:../cleanflight/src/main/sensors/compass.c **** #include "drivers/compass/compass.h"
+  36:../cleanflight/src/main/sensors/compass.c **** #include "drivers/compass/compass_ak8975.h"
+  37:../cleanflight/src/main/sensors/compass.c **** #include "drivers/compass/compass_ak8963.h"
+  38:../cleanflight/src/main/sensors/compass.c **** #include "drivers/compass/compass_fake.h"
+  39:../cleanflight/src/main/sensors/compass.c **** #include "drivers/compass/compass_hmc5883l.h"
+  40:../cleanflight/src/main/sensors/compass.c **** #include "drivers/compass/compass_qmc5883l.h"
+  41:../cleanflight/src/main/sensors/compass.c **** #include "drivers/io.h"
+  42:../cleanflight/src/main/sensors/compass.c **** #include "drivers/light_led.h"
+  43:../cleanflight/src/main/sensors/compass.c **** 
+  44:../cleanflight/src/main/sensors/compass.c **** #include "fc/config.h"
+  45:../cleanflight/src/main/sensors/compass.c **** #include "fc/runtime_config.h"
+  46:../cleanflight/src/main/sensors/compass.c **** 
+  47:../cleanflight/src/main/sensors/compass.c **** #include "sensors/boardalignment.h"
+  48:../cleanflight/src/main/sensors/compass.c **** #include "sensors/compass.h"
+  49:../cleanflight/src/main/sensors/compass.c **** #include "sensors/gyro.h"
+  50:../cleanflight/src/main/sensors/compass.c **** #include "sensors/sensors.h"
+  51:../cleanflight/src/main/sensors/compass.c **** 
+  52:../cleanflight/src/main/sensors/compass.c **** #ifdef USE_HARDWARE_REVISION_DETECTION
+  53:../cleanflight/src/main/sensors/compass.c **** #include "hardware_revision.h"
+  54:../cleanflight/src/main/sensors/compass.c **** #endif
+  55:../cleanflight/src/main/sensors/compass.c **** 
+  56:../cleanflight/src/main/sensors/compass.c **** magDev_t magDev;
+  57:../cleanflight/src/main/sensors/compass.c **** mag_t mag;                   // mag access functions
+  58:../cleanflight/src/main/sensors/compass.c **** 
+  59:../cleanflight/src/main/sensors/compass.c **** #ifdef MAG_INT_EXTI
+  60:../cleanflight/src/main/sensors/compass.c **** #define COMPASS_INTERRUPT_TAG   IO_TAG(MAG_INT_EXTI)
+  61:../cleanflight/src/main/sensors/compass.c **** #else
+  62:../cleanflight/src/main/sensors/compass.c **** #define COMPASS_INTERRUPT_TAG   IO_TAG_NONE
+  63:../cleanflight/src/main/sensors/compass.c **** #endif
+  64:../cleanflight/src/main/sensors/compass.c **** 
+  65:../cleanflight/src/main/sensors/compass.c **** PG_REGISTER_WITH_RESET_FN(compassConfig_t, compassConfig, PG_COMPASS_CONFIG, 1);
+  66:../cleanflight/src/main/sensors/compass.c **** 
+  67:../cleanflight/src/main/sensors/compass.c **** void pgResetFn_compassConfig(compassConfig_t *compassConfig)
+  68:../cleanflight/src/main/sensors/compass.c **** {
+ 121              	 .loc 2 68 0
+ 122              	 .cfi_startproc
+ 123              	 
+ 124              	 
+ 125              	 
+ 126 0000 80B4     	 push {r7}
+ 127              	.LCFI8:
+ 128              	 .cfi_def_cfa_offset 4
+ 129              	 .cfi_offset 7,-4
+ 130 0002 83B0     	 sub sp,sp,#12
+ 131              	.LCFI9:
+ 132              	 .cfi_def_cfa_offset 16
+ 133 0004 00AF     	 add r7,sp,#0
+ 134              	.LCFI10:
+ 135              	 .cfi_def_cfa_register 7
+ 136 0006 7860     	 str r0,[r7,#4]
+  69:../cleanflight/src/main/sensors/compass.c ****     compassConfig->mag_align = ALIGN_DEFAULT;
+ 137              	 .loc 2 69 0
+ 138 0008 7B68     	 ldr r3,[r7,#4]
+ 139 000a 0022     	 movs r2,#0
+ 140 000c 9A70     	 strb r2,[r3,#2]
+  70:../cleanflight/src/main/sensors/compass.c ****     compassConfig->mag_declination = 0;
+ 141              	 .loc 2 70 0
+ 142 000e 7B68     	 ldr r3,[r7,#4]
+ 143 0010 0022     	 movs r2,#0
+ 144 0012 1A70     	 strb r2,[r3]
+ 145 0014 0022     	 movs r2,#0
+ 146 0016 5A70     	 strb r2,[r3,#1]
+  71:../cleanflight/src/main/sensors/compass.c ****     compassConfig->mag_hardware = MAG_DEFAULT;
+ 147              	 .loc 2 71 0
+ 148 0018 7B68     	 ldr r3,[r7,#4]
+ 149 001a 0022     	 movs r2,#0
+ 150 001c DA70     	 strb r2,[r3,#3]
+  72:../cleanflight/src/main/sensors/compass.c **** 
+  73:../cleanflight/src/main/sensors/compass.c **** // Generate a reasonable default for backward compatibility
+  74:../cleanflight/src/main/sensors/compass.c **** // Strategy is
+  75:../cleanflight/src/main/sensors/compass.c **** // 1. If SPI device is defined, it will take precedence, assuming it's onboard.
+  76:../cleanflight/src/main/sensors/compass.c **** // 2. I2C devices are will be handled by address = 0 (per device default).
+  77:../cleanflight/src/main/sensors/compass.c **** // 3. Slave I2C device on SPI gyro
+  78:../cleanflight/src/main/sensors/compass.c **** 
+  79:../cleanflight/src/main/sensors/compass.c **** #if defined(USE_SPI) && (defined(USE_MAG_SPI_HMC5883) || defined(USE_MAG_SPI_AK8963))
+  80:../cleanflight/src/main/sensors/compass.c ****     compassConfig->mag_bustype = BUSTYPE_SPI;
+  81:../cleanflight/src/main/sensors/compass.c **** #ifdef USE_MAG_SPI_HMC5883
+  82:../cleanflight/src/main/sensors/compass.c ****     compassConfig->mag_spi_device = SPI_DEV_TO_CFG(spiDeviceByInstance(HMC5883_SPI_INSTANCE));
+  83:../cleanflight/src/main/sensors/compass.c ****     compassConfig->mag_spi_csn = IO_TAG(HMC5883_CS_PIN);
+  84:../cleanflight/src/main/sensors/compass.c **** #else
+  85:../cleanflight/src/main/sensors/compass.c ****     compassConfig->mag_spi_device = SPI_DEV_TO_CFG(spiDeviceByInstance(AK8963_SPI_INSTANCE));
+  86:../cleanflight/src/main/sensors/compass.c ****     compassConfig->mag_spi_csn = IO_TAG(AK8963_CS_PIN);
+  87:../cleanflight/src/main/sensors/compass.c **** #endif
+  88:../cleanflight/src/main/sensors/compass.c ****     compassConfig->mag_i2c_device = I2C_DEV_TO_CFG(I2CINVALID);
+  89:../cleanflight/src/main/sensors/compass.c ****     compassConfig->mag_i2c_address = 0;
+  90:../cleanflight/src/main/sensors/compass.c **** #elif defined(USE_MAG_HMC5883) || defined(USE_MAG_QMC5883) || defined(USE_MAG_AK8975) || (defined(U
+  91:../cleanflight/src/main/sensors/compass.c ****     compassConfig->mag_bustype = BUSTYPE_I2C;
+ 151              	 .loc 2 91 0
+ 152 001e 7B68     	 ldr r3,[r7,#4]
+ 153 0020 0122     	 movs r2,#1
+ 154 0022 1A71     	 strb r2,[r3,#4]
+  92:../cleanflight/src/main/sensors/compass.c ****     compassConfig->mag_i2c_device = I2C_DEV_TO_CFG(MAG_I2C_INSTANCE);
+ 155              	 .loc 2 92 0
+ 156 0024 7B68     	 ldr r3,[r7,#4]
+ 157 0026 0522     	 movs r2,#5
+ 158 0028 5A71     	 strb r2,[r3,#5]
+  93:../cleanflight/src/main/sensors/compass.c ****     compassConfig->mag_i2c_address = 0;
+ 159              	 .loc 2 93 0
+ 160 002a 7B68     	 ldr r3,[r7,#4]
+ 161 002c 0022     	 movs r2,#0
+ 162 002e 9A71     	 strb r2,[r3,#6]
+  94:../cleanflight/src/main/sensors/compass.c ****     compassConfig->mag_spi_device = SPI_DEV_TO_CFG(SPIINVALID);
+ 163              	 .loc 2 94 0
+ 164 0030 7B68     	 ldr r3,[r7,#4]
+ 165 0032 0022     	 movs r2,#0
+ 166 0034 DA71     	 strb r2,[r3,#7]
+  95:../cleanflight/src/main/sensors/compass.c ****     compassConfig->mag_spi_csn = IO_TAG_NONE;
+ 167              	 .loc 2 95 0
+ 168 0036 7B68     	 ldr r3,[r7,#4]
+ 169 0038 0022     	 movs r2,#0
+ 170 003a 1A72     	 strb r2,[r3,#8]
+  96:../cleanflight/src/main/sensors/compass.c **** #elif defined(USE_MAG_AK8963) && (defined(USE_GYRO_SPI_MPU6500) || defined(USE_GYRO_SPI_MPU9250))
+  97:../cleanflight/src/main/sensors/compass.c ****     compassConfig->mag_bustype = BUSTYPE_MPU_SLAVE;
+  98:../cleanflight/src/main/sensors/compass.c ****     compassConfig->mag_i2c_device = I2C_DEV_TO_CFG(I2CINVALID);
+  99:../cleanflight/src/main/sensors/compass.c ****     compassConfig->mag_i2c_address = 0;
+ 100:../cleanflight/src/main/sensors/compass.c ****     compassConfig->mag_spi_device = SPI_DEV_TO_CFG(SPIINVALID);
+ 101:../cleanflight/src/main/sensors/compass.c ****     compassConfig->mag_spi_csn = IO_TAG_NONE;
+ 102:../cleanflight/src/main/sensors/compass.c **** #else
+ 103:../cleanflight/src/main/sensors/compass.c ****     compassConfig->mag_hardware = MAG_NONE;
+ 104:../cleanflight/src/main/sensors/compass.c ****     compassConfig->mag_bustype = BUSTYPE_NONE;
+ 105:../cleanflight/src/main/sensors/compass.c ****     compassConfig->mag_i2c_device = I2C_DEV_TO_CFG(I2CINVALID);
+ 106:../cleanflight/src/main/sensors/compass.c ****     compassConfig->mag_i2c_address = 0;
+ 107:../cleanflight/src/main/sensors/compass.c ****     compassConfig->mag_spi_device = SPI_DEV_TO_CFG(SPIINVALID);
+ 108:../cleanflight/src/main/sensors/compass.c ****     compassConfig->mag_spi_csn = IO_TAG_NONE;
+ 109:../cleanflight/src/main/sensors/compass.c **** #endif
+ 110:../cleanflight/src/main/sensors/compass.c ****     compassConfig->interruptTag = COMPASS_INTERRUPT_TAG;
+ 171              	 .loc 2 110 0
+ 172 003c 7B68     	 ldr r3,[r7,#4]
+ 173 003e 0022     	 movs r2,#0
+ 174 0040 5A72     	 strb r2,[r3,#9]
+ 111:../cleanflight/src/main/sensors/compass.c **** }
+ 175              	 .loc 2 111 0
+ 176 0042 0C37     	 adds r7,r7,#12
+ 177              	.LCFI11:
+ 178              	 .cfi_def_cfa_offset 4
+ 179 0044 BD46     	 mov sp,r7
+ 180              	.LCFI12:
+ 181              	 .cfi_def_cfa_register 13
+ 182              	 
+ 183 0046 5DF8047B 	 ldr r7,[sp],#4
+ 184              	.LCFI13:
+ 185              	 .cfi_restore 7
+ 186              	 .cfi_def_cfa_offset 0
+ 187 004a 7047     	 bx lr
+ 188              	 .cfi_endproc
+ 189              	.LFE539:
+ 191              	 .section .bss.magADCRaw,"aw",%nobits
+ 192              	 .align 2
+ 195              	magADCRaw:
+ 196 0000 00000000 	 .space 6
+ 196      0000
+ 197 0006 0000     	 .section .bss.magInit,"aw",%nobits
+ 200              	magInit:
+ 201 0000 00       	 .space 1
+ 202              	 .section .text.compassDetect,"ax",%progbits
+ 203              	 .align 2
+ 204              	 .global compassDetect
+ 205              	 .thumb
+ 206              	 .thumb_func
+ 208              	compassDetect:
+ 209              	.LFB540:
+ 112:../cleanflight/src/main/sensors/compass.c **** 
+ 113:../cleanflight/src/main/sensors/compass.c **** #if defined(USE_MAG)
+ 114:../cleanflight/src/main/sensors/compass.c **** 
+ 115:../cleanflight/src/main/sensors/compass.c **** static int16_t magADCRaw[XYZ_AXIS_COUNT];
+ 116:../cleanflight/src/main/sensors/compass.c **** static uint8_t magInit = 0;
+ 117:../cleanflight/src/main/sensors/compass.c **** 
+ 118:../cleanflight/src/main/sensors/compass.c **** #if !defined(SIMULATOR_BUILD)
+ 119:../cleanflight/src/main/sensors/compass.c **** bool compassDetect(magDev_t *dev)
+ 120:../cleanflight/src/main/sensors/compass.c **** {
+ 210              	 .loc 2 120 0
+ 211              	 .cfi_startproc
+ 212              	 
+ 213              	 
+ 214 0000 80B5     	 push {r7,lr}
+ 215              	.LCFI14:
+ 216              	 .cfi_def_cfa_offset 8
+ 217              	 .cfi_offset 7,-8
+ 218              	 .cfi_offset 14,-4
+ 219 0002 84B0     	 sub sp,sp,#16
+ 220              	.LCFI15:
+ 221              	 .cfi_def_cfa_offset 24
+ 222 0004 00AF     	 add r7,sp,#0
+ 223              	.LCFI16:
+ 224              	 .cfi_def_cfa_register 7
+ 225 0006 7860     	 str r0,[r7,#4]
+ 121:../cleanflight/src/main/sensors/compass.c ****     magSensor_e magHardware = MAG_NONE;
+ 226              	 .loc 2 121 0
+ 227 0008 0123     	 movs r3,#1
+ 228 000a FB73     	 strb r3,[r7,#15]
+ 122:../cleanflight/src/main/sensors/compass.c **** 
+ 123:../cleanflight/src/main/sensors/compass.c ****     busDevice_t *busdev = &dev->busdev;
+ 229              	 .loc 2 123 0
+ 230 000c 7B68     	 ldr r3,[r7,#4]
+ 231 000e 0C33     	 adds r3,r3,#12
+ 232 0010 BB60     	 str r3,[r7,#8]
+ 124:../cleanflight/src/main/sensors/compass.c **** 
+ 125:../cleanflight/src/main/sensors/compass.c **** #ifdef USE_MAG_DATA_READY_SIGNAL
+ 126:../cleanflight/src/main/sensors/compass.c ****     dev->magIntExtiTag = compassConfig()->interruptTag;
+ 127:../cleanflight/src/main/sensors/compass.c **** #endif
+ 128:../cleanflight/src/main/sensors/compass.c **** 
+ 129:../cleanflight/src/main/sensors/compass.c ****     switch (compassConfig()->mag_bustype) {
+ 233              	 .loc 2 129 0
+ 234 0012 FFF7FEFF 	 bl compassConfig
+ 235 0016 0346     	 mov r3,r0
+ 236 0018 1B79     	 ldrb r3,[r3,#4]
+ 237 001a 012B     	 cmp r3,#1
+ 238 001c 02D0     	 beq .L12
+ 239 001e 022B     	 cmp r3,#2
+ 240 0020 13D0     	 beq .L13
+ 241 0022 31E0     	 b .L23
+ 242              	.L12:
+ 130:../cleanflight/src/main/sensors/compass.c **** #ifdef USE_I2C
+ 131:../cleanflight/src/main/sensors/compass.c ****     case BUSTYPE_I2C:
+ 132:../cleanflight/src/main/sensors/compass.c ****         busdev->bustype = BUSTYPE_I2C;
+ 243              	 .loc 2 132 0
+ 244 0024 BB68     	 ldr r3,[r7,#8]
+ 245 0026 0122     	 movs r2,#1
+ 246 0028 1A70     	 strb r2,[r3]
+ 133:../cleanflight/src/main/sensors/compass.c ****         busdev->busdev_u.i2c.device = I2C_CFG_TO_DEV(compassConfig()->mag_i2c_device);
+ 247              	 .loc 2 133 0
+ 248 002a FFF7FEFF 	 bl compassConfig
+ 249 002e 0346     	 mov r3,r0
+ 250 0030 5B79     	 ldrb r3,[r3,#5]
+ 251 0032 013B     	 subs r3,r3,#1
+ 252 0034 DBB2     	 uxtb r3,r3
+ 253 0036 DAB2     	 uxtb r2,r3
+ 254 0038 BB68     	 ldr r3,[r7,#8]
+ 255 003a 5A70     	 strb r2,[r3,#1]
+ 134:../cleanflight/src/main/sensors/compass.c ****         busdev->busdev_u.i2c.address = compassConfig()->mag_i2c_address;
+ 256              	 .loc 2 134 0
+ 257 003c FFF7FEFF 	 bl compassConfig
+ 258 0040 0346     	 mov r3,r0
+ 259 0042 9A79     	 ldrb r2,[r3,#6]
+ 260 0044 BB68     	 ldr r3,[r7,#8]
+ 261 0046 9A70     	 strb r2,[r3,#2]
+ 135:../cleanflight/src/main/sensors/compass.c **** #endif
+ 136:../cleanflight/src/main/sensors/compass.c ****         break;
+ 262              	 .loc 2 136 0
+ 263 0048 20E0     	 b .L14
+ 264              	.L13:
+ 137:../cleanflight/src/main/sensors/compass.c **** 
+ 138:../cleanflight/src/main/sensors/compass.c **** #ifdef USE_SPI
+ 139:../cleanflight/src/main/sensors/compass.c ****     case BUSTYPE_SPI:
+ 140:../cleanflight/src/main/sensors/compass.c ****         busdev->bustype = BUSTYPE_SPI;
+ 265              	 .loc 2 140 0
+ 266 004a BB68     	 ldr r3,[r7,#8]
+ 267 004c 0222     	 movs r2,#2
+ 268 004e 1A70     	 strb r2,[r3]
+ 141:../cleanflight/src/main/sensors/compass.c ****         spiBusSetInstance(busdev, spiInstanceByDevice(SPI_CFG_TO_DEV(compassConfig()->mag_spi_devic
+ 269              	 .loc 2 141 0
+ 270 0050 FFF7FEFF 	 bl compassConfig
+ 271 0054 0346     	 mov r3,r0
+ 272 0056 DB79     	 ldrb r3,[r3,#7]
+ 273 0058 013B     	 subs r3,r3,#1
+ 274 005a DBB2     	 uxtb r3,r3
+ 275 005c DBB2     	 uxtb r3,r3
+ 276 005e 5BB2     	 sxtb r3,r3
+ 277 0060 1846     	 mov r0,r3
+ 278 0062 FFF7FEFF 	 bl spiInstanceByDevice
+ 279 0066 0346     	 mov r3,r0
+ 280 0068 B868     	 ldr r0,[r7,#8]
+ 281 006a 1946     	 mov r1,r3
+ 282 006c FFF7FEFF 	 bl spiBusSetInstance
+ 142:../cleanflight/src/main/sensors/compass.c ****         busdev->busdev_u.spi.csnPin = IOGetByTag(compassConfig()->mag_spi_csn);
+ 283              	 .loc 2 142 0
+ 284 0070 FFF7FEFF 	 bl compassConfig
+ 285 0074 0346     	 mov r3,r0
+ 286 0076 1B7A     	 ldrb r3,[r3,#8]
+ 287 0078 1846     	 mov r0,r3
+ 288 007a FFF7FEFF 	 bl IOGetByTag
+ 289 007e 0246     	 mov r2,r0
+ 290 0080 BB68     	 ldr r3,[r7,#8]
+ 291 0082 C3F80520 	 str r2,[r3,#5]
+ 143:../cleanflight/src/main/sensors/compass.c **** #endif
+ 144:../cleanflight/src/main/sensors/compass.c ****         break;
+ 292              	 .loc 2 144 0
+ 293 0086 01E0     	 b .L14
+ 294              	.L23:
+ 145:../cleanflight/src/main/sensors/compass.c **** 
+ 146:../cleanflight/src/main/sensors/compass.c **** #if defined(USE_MAG_AK8963) && (defined(USE_GYRO_SPI_MPU6500) || defined(USE_GYRO_SPI_MPU9250))
+ 147:../cleanflight/src/main/sensors/compass.c ****     case BUSTYPE_MPU_SLAVE:
+ 148:../cleanflight/src/main/sensors/compass.c ****         {
+ 149:../cleanflight/src/main/sensors/compass.c ****             if (gyroMpuDetectionResult()->sensor == MPU_9250_SPI) {
+ 150:../cleanflight/src/main/sensors/compass.c ****                 busdev->bustype = BUSTYPE_MPU_SLAVE;
+ 151:../cleanflight/src/main/sensors/compass.c ****                 busdev->busdev_u.mpuSlave.master = gyroSensorBus();
+ 152:../cleanflight/src/main/sensors/compass.c ****                 busdev->busdev_u.mpuSlave.address = compassConfig()->mag_i2c_address;
+ 153:../cleanflight/src/main/sensors/compass.c ****             } else {
+ 154:../cleanflight/src/main/sensors/compass.c ****                 return false;
+ 155:../cleanflight/src/main/sensors/compass.c ****             }
+ 156:../cleanflight/src/main/sensors/compass.c ****         }
+ 157:../cleanflight/src/main/sensors/compass.c **** #endif
+ 158:../cleanflight/src/main/sensors/compass.c ****         break;
+ 159:../cleanflight/src/main/sensors/compass.c **** 
+ 160:../cleanflight/src/main/sensors/compass.c ****     default:
+ 161:../cleanflight/src/main/sensors/compass.c ****         return false;
+ 295              	 .loc 2 161 0
+ 296 0088 0023     	 movs r3,#0
+ 297 008a 51E0     	 b .L15
+ 298              	.L14:
+ 162:../cleanflight/src/main/sensors/compass.c ****     }
+ 163:../cleanflight/src/main/sensors/compass.c **** 
+ 164:../cleanflight/src/main/sensors/compass.c ****     dev->magAlign = ALIGN_DEFAULT;
+ 299              	 .loc 2 164 0
+ 300 008c 7B68     	 ldr r3,[r7,#4]
+ 301 008e 0022     	 movs r2,#0
+ 302 0090 5A75     	 strb r2,[r3,#21]
+ 165:../cleanflight/src/main/sensors/compass.c **** 
+ 166:../cleanflight/src/main/sensors/compass.c ****     switch (compassConfig()->mag_hardware) {
+ 303              	 .loc 2 166 0
+ 304 0092 FFF7FEFF 	 bl compassConfig
+ 305 0096 0346     	 mov r3,r0
+ 306 0098 DB78     	 ldrb r3,[r3,#3]
+ 307 009a 052B     	 cmp r3,#5
+ 308 009c 3CD8     	 bhi .L16
+ 309 009e 01A2     	 adr r2,.L18
+ 310 00a0 52F823F0 	 ldr pc,[r2,r3,lsl#2]
+ 311              	 .p2align 2
+ 312              	.L18:
+ 313 00a4 BD000000 	 .word .L17+1
+ 314 00a8 13010000 	 .word .L19+1
+ 315 00ac BD000000 	 .word .L17+1
+ 316 00b0 BD000000 	 .word .L17+1
+ 317 00b4 BD000000 	 .word .L17+1
+ 318 00b8 BD000000 	 .word .L17+1
+ 319              	 .p2align 1
+ 320              	.L17:
+ 167:../cleanflight/src/main/sensors/compass.c ****     case MAG_DEFAULT:
+ 168:../cleanflight/src/main/sensors/compass.c ****         FALLTHROUGH;
+ 169:../cleanflight/src/main/sensors/compass.c **** 
+ 170:../cleanflight/src/main/sensors/compass.c ****     case MAG_HMC5883:
+ 171:../cleanflight/src/main/sensors/compass.c **** #if defined(USE_MAG_HMC5883) || defined(USE_MAG_SPI_HMC5883)
+ 172:../cleanflight/src/main/sensors/compass.c ****         if (busdev->bustype == BUSTYPE_I2C) {
+ 173:../cleanflight/src/main/sensors/compass.c ****                 busdev->busdev_u.i2c.address = compassConfig()->mag_i2c_address;
+ 174:../cleanflight/src/main/sensors/compass.c ****         }
+ 175:../cleanflight/src/main/sensors/compass.c **** 
+ 176:../cleanflight/src/main/sensors/compass.c ****         if (hmc5883lDetect(dev)) {
+ 177:../cleanflight/src/main/sensors/compass.c **** #ifdef MAG_HMC5883_ALIGN
+ 178:../cleanflight/src/main/sensors/compass.c ****             dev->magAlign = MAG_HMC5883_ALIGN;
+ 179:../cleanflight/src/main/sensors/compass.c **** #endif
+ 180:../cleanflight/src/main/sensors/compass.c ****             magHardware = MAG_HMC5883;
+ 181:../cleanflight/src/main/sensors/compass.c ****             break;
+ 182:../cleanflight/src/main/sensors/compass.c ****         }
+ 183:../cleanflight/src/main/sensors/compass.c **** #endif
+ 184:../cleanflight/src/main/sensors/compass.c ****         FALLTHROUGH;
+ 185:../cleanflight/src/main/sensors/compass.c **** 
+ 186:../cleanflight/src/main/sensors/compass.c ****     case MAG_QMC5883:
+ 187:../cleanflight/src/main/sensors/compass.c **** #ifdef USE_MAG_QMC5883
+ 188:../cleanflight/src/main/sensors/compass.c ****         if (busdev->bustype == BUSTYPE_I2C) {
+ 189:../cleanflight/src/main/sensors/compass.c ****                 busdev->busdev_u.i2c.address = compassConfig()->mag_i2c_address;
+ 190:../cleanflight/src/main/sensors/compass.c ****         }
+ 191:../cleanflight/src/main/sensors/compass.c **** 
+ 192:../cleanflight/src/main/sensors/compass.c ****         if (qmc5883lDetect(dev)) {
+ 193:../cleanflight/src/main/sensors/compass.c **** #ifdef MAG_QMC5883L_ALIGN
+ 194:../cleanflight/src/main/sensors/compass.c ****             dev->magAlign = MAG_QMC5883L_ALIGN;
+ 195:../cleanflight/src/main/sensors/compass.c **** #endif
+ 196:../cleanflight/src/main/sensors/compass.c ****             magHardware = MAG_QMC5883;
+ 197:../cleanflight/src/main/sensors/compass.c ****             break;
+ 198:../cleanflight/src/main/sensors/compass.c ****         }
+ 199:../cleanflight/src/main/sensors/compass.c **** #endif
+ 200:../cleanflight/src/main/sensors/compass.c ****         FALLTHROUGH;
+ 201:../cleanflight/src/main/sensors/compass.c **** 
+ 202:../cleanflight/src/main/sensors/compass.c ****     case MAG_AK8975:
+ 203:../cleanflight/src/main/sensors/compass.c **** #ifdef USE_MAG_AK8975
+ 204:../cleanflight/src/main/sensors/compass.c ****         if (busdev->bustype == BUSTYPE_I2C) {
+ 205:../cleanflight/src/main/sensors/compass.c ****                 busdev->busdev_u.i2c.address = compassConfig()->mag_i2c_address;
+ 206:../cleanflight/src/main/sensors/compass.c ****         }
+ 207:../cleanflight/src/main/sensors/compass.c **** 
+ 208:../cleanflight/src/main/sensors/compass.c ****         if (ak8975Detect(dev)) {
+ 209:../cleanflight/src/main/sensors/compass.c **** #ifdef MAG_AK8975_ALIGN
+ 210:../cleanflight/src/main/sensors/compass.c ****             dev->magAlign = MAG_AK8975_ALIGN;
+ 211:../cleanflight/src/main/sensors/compass.c **** #endif
+ 212:../cleanflight/src/main/sensors/compass.c ****             magHardware = MAG_AK8975;
+ 213:../cleanflight/src/main/sensors/compass.c ****             break;
+ 214:../cleanflight/src/main/sensors/compass.c ****         }
+ 215:../cleanflight/src/main/sensors/compass.c **** #endif
+ 216:../cleanflight/src/main/sensors/compass.c ****         FALLTHROUGH;
+ 217:../cleanflight/src/main/sensors/compass.c **** 
+ 218:../cleanflight/src/main/sensors/compass.c ****     case MAG_AK8963:
+ 219:../cleanflight/src/main/sensors/compass.c **** #if defined(USE_MAG_AK8963) || defined(USE_MAG_SPI_AK8963)
+ 220:../cleanflight/src/main/sensors/compass.c ****         if (busdev->bustype == BUSTYPE_I2C) {
+ 321              	 .loc 2 220 0
+ 322 00bc BB68     	 ldr r3,[r7,#8]
+ 323 00be 1B78     	 ldrb r3,[r3]
+ 324 00c0 012B     	 cmp r3,#1
+ 325 00c2 05D1     	 bne .L20
+ 221:../cleanflight/src/main/sensors/compass.c ****             busdev->busdev_u.i2c.address = compassConfig()->mag_i2c_address;
+ 326              	 .loc 2 221 0
+ 327 00c4 FFF7FEFF 	 bl compassConfig
+ 328 00c8 0346     	 mov r3,r0
+ 329 00ca 9A79     	 ldrb r2,[r3,#6]
+ 330 00cc BB68     	 ldr r3,[r7,#8]
+ 331 00ce 9A70     	 strb r2,[r3,#2]
+ 332              	.L20:
+ 222:../cleanflight/src/main/sensors/compass.c ****         }
+ 223:../cleanflight/src/main/sensors/compass.c ****         if (gyroMpuDetectionResult()->sensor == MPU_9250_SPI) {
+ 333              	 .loc 2 223 0
+ 334 00d0 FFF7FEFF 	 bl gyroMpuDetectionResult
+ 335 00d4 0346     	 mov r3,r0
+ 336 00d6 1B78     	 ldrb r3,[r3]
+ 337 00d8 062B     	 cmp r3,#6
+ 338 00da 0ED1     	 bne .L21
+ 224:../cleanflight/src/main/sensors/compass.c ****             dev->busdev.bustype = BUSTYPE_MPU_SLAVE;
+ 339              	 .loc 2 224 0
+ 340 00dc 7B68     	 ldr r3,[r7,#4]
+ 341 00de 0322     	 movs r2,#3
+ 342 00e0 1A73     	 strb r2,[r3,#12]
+ 225:../cleanflight/src/main/sensors/compass.c ****             busdev->busdev_u.mpuSlave.address = compassConfig()->mag_i2c_address;
+ 343              	 .loc 2 225 0
+ 344 00e2 FFF7FEFF 	 bl compassConfig
+ 345 00e6 0346     	 mov r3,r0
+ 346 00e8 9A79     	 ldrb r2,[r3,#6]
+ 347 00ea BB68     	 ldr r3,[r7,#8]
+ 348 00ec 5A71     	 strb r2,[r3,#5]
+ 226:../cleanflight/src/main/sensors/compass.c ****             dev->busdev.busdev_u.mpuSlave.master = gyroSensorBus();
+ 349              	 .loc 2 226 0
+ 350 00ee FFF7FEFF 	 bl gyroSensorBus
+ 351 00f2 0246     	 mov r2,r0
+ 352 00f4 7B68     	 ldr r3,[r7,#4]
+ 353 00f6 C3F80D20 	 str r2,[r3,#13]
+ 354              	.L21:
+ 227:../cleanflight/src/main/sensors/compass.c ****         }
+ 228:../cleanflight/src/main/sensors/compass.c **** 
+ 229:../cleanflight/src/main/sensors/compass.c ****         if (ak8963Detect(dev)) {
+ 355              	 .loc 2 229 0
+ 356 00fa 7868     	 ldr r0,[r7,#4]
+ 357 00fc FFF7FEFF 	 bl ak8963Detect
+ 358 0100 0346     	 mov r3,r0
+ 359 0102 002B     	 cmp r3,#0
+ 360 0104 05D0     	 beq .L19
+ 230:../cleanflight/src/main/sensors/compass.c **** #ifdef MAG_AK8963_ALIGN
+ 231:../cleanflight/src/main/sensors/compass.c ****             dev->magAlign = MAG_AK8963_ALIGN;
+ 361              	 .loc 2 231 0
+ 362 0106 7B68     	 ldr r3,[r7,#4]
+ 363 0108 0622     	 movs r2,#6
+ 364 010a 5A75     	 strb r2,[r3,#21]
+ 232:../cleanflight/src/main/sensors/compass.c **** #endif
+ 233:../cleanflight/src/main/sensors/compass.c ****             magHardware = MAG_AK8963;
+ 365              	 .loc 2 233 0
+ 366 010c 0423     	 movs r3,#4
+ 367 010e FB73     	 strb r3,[r7,#15]
+ 234:../cleanflight/src/main/sensors/compass.c ****             break;
+ 368              	 .loc 2 234 0
+ 369 0110 02E0     	 b .L16
+ 370              	.L19:
+ 235:../cleanflight/src/main/sensors/compass.c ****         }
+ 236:../cleanflight/src/main/sensors/compass.c **** #endif
+ 237:../cleanflight/src/main/sensors/compass.c ****         FALLTHROUGH;
+ 238:../cleanflight/src/main/sensors/compass.c **** 
+ 239:../cleanflight/src/main/sensors/compass.c ****     case MAG_NONE:
+ 240:../cleanflight/src/main/sensors/compass.c ****         magHardware = MAG_NONE;
+ 371              	 .loc 2 240 0
+ 372 0112 0123     	 movs r3,#1
+ 373 0114 FB73     	 strb r3,[r7,#15]
+ 241:../cleanflight/src/main/sensors/compass.c ****         break;
+ 374              	 .loc 2 241 0
+ 375 0116 00BF     	 nop
+ 376              	.L16:
+ 242:../cleanflight/src/main/sensors/compass.c ****     }
+ 243:../cleanflight/src/main/sensors/compass.c **** 
+ 244:../cleanflight/src/main/sensors/compass.c ****     if (magHardware == MAG_NONE) {
+ 377              	 .loc 2 244 0
+ 378 0118 FB7B     	 ldrb r3,[r7,#15]
+ 379 011a 012B     	 cmp r3,#1
+ 380 011c 01D1     	 bne .L22
+ 245:../cleanflight/src/main/sensors/compass.c ****         return false;
+ 381              	 .loc 2 245 0
+ 382 011e 0023     	 movs r3,#0
+ 383 0120 06E0     	 b .L15
+ 384              	.L22:
+ 246:../cleanflight/src/main/sensors/compass.c ****     }
+ 247:../cleanflight/src/main/sensors/compass.c **** 
+ 248:../cleanflight/src/main/sensors/compass.c ****     detectedSensors[SENSOR_INDEX_MAG] = magHardware;
+ 385              	 .loc 2 248 0
+ 386 0122 054A     	 ldr r2,.L24
+ 387 0124 FB7B     	 ldrb r3,[r7,#15]
+ 388 0126 D370     	 strb r3,[r2,#3]
+ 249:../cleanflight/src/main/sensors/compass.c ****     sensorsSet(SENSOR_MAG);
+ 389              	 .loc 2 249 0
+ 390 0128 0820     	 movs r0,#8
+ 391 012a FFF7FEFF 	 bl sensorsSet
+ 250:../cleanflight/src/main/sensors/compass.c ****     return true;
+ 392              	 .loc 2 250 0
+ 393 012e 0123     	 movs r3,#1
+ 394              	.L15:
+ 251:../cleanflight/src/main/sensors/compass.c **** }
+ 395              	 .loc 2 251 0
+ 396 0130 1846     	 mov r0,r3
+ 397 0132 1037     	 adds r7,r7,#16
+ 398              	.LCFI17:
+ 399              	 .cfi_def_cfa_offset 8
+ 400 0134 BD46     	 mov sp,r7
+ 401              	.LCFI18:
+ 402              	 .cfi_def_cfa_register 13
+ 403              	 
+ 404 0136 80BD     	 pop {r7,pc}
+ 405              	.L25:
+ 406              	 .align 2
+ 407              	.L24:
+ 408 0138 00000000 	 .word detectedSensors
+ 409              	 .cfi_endproc
+ 410              	.LFE540:
+ 412              	 .section .text.compassInit,"ax",%progbits
+ 413              	 .align 2
+ 414              	 .global compassInit
+ 415              	 .thumb
+ 416              	 .thumb_func
+ 418              	compassInit:
+ 419              	.LFB541:
+ 252:../cleanflight/src/main/sensors/compass.c **** #else
+ 253:../cleanflight/src/main/sensors/compass.c **** bool compassDetect(magDev_t *dev)
+ 254:../cleanflight/src/main/sensors/compass.c **** {
+ 255:../cleanflight/src/main/sensors/compass.c ****     UNUSED(dev);
+ 256:../cleanflight/src/main/sensors/compass.c **** 
+ 257:../cleanflight/src/main/sensors/compass.c ****     return false;
+ 258:../cleanflight/src/main/sensors/compass.c **** }
+ 259:../cleanflight/src/main/sensors/compass.c **** #endif // !SIMULATOR_BUILD
+ 260:../cleanflight/src/main/sensors/compass.c **** 
+ 261:../cleanflight/src/main/sensors/compass.c **** bool compassInit(void)
+ 262:../cleanflight/src/main/sensors/compass.c **** {
+ 420              	 .loc 2 262 0
+ 421              	 .cfi_startproc
+ 422              	 
+ 423              	 
+ 424 0000 80B5     	 push {r7,lr}
+ 425              	.LCFI19:
+ 426              	 .cfi_def_cfa_offset 8
+ 427              	 .cfi_offset 7,-8
+ 428              	 .cfi_offset 14,-4
+ 429 0002 82B0     	 sub sp,sp,#8
+ 430              	.LCFI20:
+ 431              	 .cfi_def_cfa_offset 16
+ 432 0004 00AF     	 add r7,sp,#0
+ 433              	.LCFI21:
+ 434              	 .cfi_def_cfa_register 7
+ 263:../cleanflight/src/main/sensors/compass.c ****     // initialize and calibration. turn on led during mag calibration (calibration routine blinks i
+ 264:../cleanflight/src/main/sensors/compass.c ****     // calculate magnetic declination
+ 265:../cleanflight/src/main/sensors/compass.c ****     mag.magneticDeclination = 0.0f; // TODO investigate if this is actually needed if there is no m
+ 435              	 .loc 2 265 0
+ 436 0006 344B     	 ldr r3,.L30
+ 437 0008 4FF00002 	 mov r2,#0
+ 438 000c DA60     	 str r2,[r3,#12]
+ 266:../cleanflight/src/main/sensors/compass.c **** 
+ 267:../cleanflight/src/main/sensors/compass.c ****     if (!compassDetect(&magDev)) {
+ 439              	 .loc 2 267 0
+ 440 000e 3348     	 ldr r0,.L30+4
+ 441 0010 FFF7FEFF 	 bl compassDetect
+ 442 0014 0346     	 mov r3,r0
+ 443 0016 83F00103 	 eor r3,r3,#1
+ 444 001a DBB2     	 uxtb r3,r3
+ 445 001c 002B     	 cmp r3,#0
+ 446 001e 01D0     	 beq .L27
+ 268:../cleanflight/src/main/sensors/compass.c ****         return false;
+ 447              	 .loc 2 268 0
+ 448 0020 0023     	 movs r3,#0
+ 449 0022 55E0     	 b .L28
+ 450              	.L27:
+ 269:../cleanflight/src/main/sensors/compass.c ****     }
+ 270:../cleanflight/src/main/sensors/compass.c **** 
+ 271:../cleanflight/src/main/sensors/compass.c ****     const int16_t deg = compassConfig()->mag_declination / 100;
+ 451              	 .loc 2 271 0
+ 452 0024 FFF7FEFF 	 bl compassConfig
+ 453 0028 0346     	 mov r3,r0
+ 454 002a B3F90030 	 ldrsh r3,[r3]
+ 455 002e 9BB2     	 uxth r3,r3
+ 456 0030 1BB2     	 sxth r3,r3
+ 457 0032 2B4A     	 ldr r2,.L30+8
+ 458 0034 82FB0312 	 smull r1,r2,r2,r3
+ 459 0038 5211     	 asrs r2,r2,#5
+ 460 003a DB17     	 asrs r3,r3,#31
+ 461 003c D31A     	 subs r3,r2,r3
+ 462 003e FB80     	 strh r3,[r7,#6]
+ 272:../cleanflight/src/main/sensors/compass.c ****     const int16_t min = compassConfig()->mag_declination % 100;
+ 463              	 .loc 2 272 0
+ 464 0040 FFF7FEFF 	 bl compassConfig
+ 465 0044 0346     	 mov r3,r0
+ 466 0046 B3F90030 	 ldrsh r3,[r3]
+ 467 004a 9BB2     	 uxth r3,r3
+ 468 004c 1BB2     	 sxth r3,r3
+ 469 004e 244A     	 ldr r2,.L30+8
+ 470 0050 82FB0312 	 smull r1,r2,r2,r3
+ 471 0054 5111     	 asrs r1,r2,#5
+ 472 0056 DA17     	 asrs r2,r3,#31
+ 473 0058 8A1A     	 subs r2,r1,r2
+ 474 005a 6421     	 movs r1,#100
+ 475 005c 01FB02F2 	 mul r2,r1,r2
+ 476 0060 9B1A     	 subs r3,r3,r2
+ 477 0062 BB80     	 strh r3,[r7,#4]
+ 273:../cleanflight/src/main/sensors/compass.c ****     mag.magneticDeclination = (deg + ((float)min * (1.0f / 60.0f))) * 10; // heading is in 0.1deg u
+ 478              	 .loc 2 273 0
+ 479 0064 B7F90630 	 ldrsh r3,[r7,#6]
+ 480 0068 07EE903A 	 fmsr s15,r3
+ 481 006c B8EEE77A 	 fsitos s14,s15
+ 482 0070 B7F90430 	 ldrsh r3,[r7,#4]
+ 483 0074 07EE903A 	 fmsr s15,r3
+ 484 0078 F8EEE77A 	 fsitos s15,s15
+ 485 007c DFED196A 	 flds s13,.L30+12
+ 486 0080 67EEA67A 	 fmuls s15,s15,s13
+ 487 0084 77EE277A 	 fadds s15,s14,s15
+ 488 0088 B2EE047A 	 fconsts s14,#36
+ 489 008c 67EE877A 	 fmuls s15,s15,s14
+ 490 0090 114B     	 ldr r3,.L30
+ 491 0092 17EE902A 	 fmrs r2,s15
+ 492 0096 DA60     	 str r2,[r3,#12]
+ 274:../cleanflight/src/main/sensors/compass.c ****     LED1_ON;
+ 493              	 .loc 2 274 0
+ 494 0098 0120     	 movs r0,#1
+ 495 009a 0121     	 movs r1,#1
+ 496 009c FFF7FEFF 	 bl ledSet
+ 275:../cleanflight/src/main/sensors/compass.c ****     magDev.init(&magDev);
+ 497              	 .loc 2 275 0
+ 498 00a0 0E4B     	 ldr r3,.L30+4
+ 499 00a2 1B68     	 ldr r3,[r3]
+ 500 00a4 0D48     	 ldr r0,.L30+4
+ 501 00a6 9847     	 blx r3
+ 276:../cleanflight/src/main/sensors/compass.c ****     LED1_OFF;
+ 502              	 .loc 2 276 0
+ 503 00a8 0120     	 movs r0,#1
+ 504 00aa 0021     	 movs r1,#0
+ 505 00ac FFF7FEFF 	 bl ledSet
+ 277:../cleanflight/src/main/sensors/compass.c ****     magInit = 1;
+ 506              	 .loc 2 277 0
+ 507 00b0 0D4B     	 ldr r3,.L30+16
+ 508 00b2 0122     	 movs r2,#1
+ 509 00b4 1A70     	 strb r2,[r3]
+ 278:../cleanflight/src/main/sensors/compass.c ****     if (compassConfig()->mag_align != ALIGN_DEFAULT) {
+ 510              	 .loc 2 278 0
+ 511 00b6 FFF7FEFF 	 bl compassConfig
+ 512 00ba 0346     	 mov r3,r0
+ 513 00bc 9B78     	 ldrb r3,[r3,#2]
+ 514 00be 002B     	 cmp r3,#0
+ 515 00c0 05D0     	 beq .L29
+ 279:../cleanflight/src/main/sensors/compass.c ****         magDev.magAlign = compassConfig()->mag_align;
+ 516              	 .loc 2 279 0
+ 517 00c2 FFF7FEFF 	 bl compassConfig
+ 518 00c6 0346     	 mov r3,r0
+ 519 00c8 9A78     	 ldrb r2,[r3,#2]
+ 520 00ca 044B     	 ldr r3,.L30+4
+ 521 00cc 5A75     	 strb r2,[r3,#21]
+ 522              	.L29:
+ 280:../cleanflight/src/main/sensors/compass.c ****     }
+ 281:../cleanflight/src/main/sensors/compass.c ****     return true;
+ 523              	 .loc 2 281 0
+ 524 00ce 0123     	 movs r3,#1
+ 525              	.L28:
+ 282:../cleanflight/src/main/sensors/compass.c **** }
+ 526              	 .loc 2 282 0
+ 527 00d0 1846     	 mov r0,r3
+ 528 00d2 0837     	 adds r7,r7,#8
+ 529              	.LCFI22:
+ 530              	 .cfi_def_cfa_offset 8
+ 531 00d4 BD46     	 mov sp,r7
+ 532              	.LCFI23:
+ 533              	 .cfi_def_cfa_register 13
+ 534              	 
+ 535 00d6 80BD     	 pop {r7,pc}
+ 536              	.L31:
+ 537              	 .align 2
+ 538              	.L30:
+ 539 00d8 00000000 	 .word mag
+ 540 00dc 00000000 	 .word magDev
+ 541 00e0 1F85EB51 	 .word 1374389535
+ 542 00e4 8988883C 	 .word 1015580809
+ 543 00e8 00000000 	 .word magInit
+ 544              	 .cfi_endproc
+ 545              	.LFE541:
+ 547              	 .section .text.compassIsHealthy,"ax",%progbits
+ 548              	 .align 2
+ 549              	 .global compassIsHealthy
+ 550              	 .thumb
+ 551              	 .thumb_func
+ 553              	compassIsHealthy:
+ 554              	.LFB542:
+ 283:../cleanflight/src/main/sensors/compass.c **** 
+ 284:../cleanflight/src/main/sensors/compass.c **** bool compassIsHealthy(void)
+ 285:../cleanflight/src/main/sensors/compass.c **** {
+ 555              	 .loc 2 285 0
+ 556              	 .cfi_startproc
+ 557              	 
+ 558              	 
+ 559              	 
+ 560 0000 80B4     	 push {r7}
+ 561              	.LCFI24:
+ 562              	 .cfi_def_cfa_offset 4
+ 563              	 .cfi_offset 7,-4
+ 564 0002 00AF     	 add r7,sp,#0
+ 565              	.LCFI25:
+ 566              	 .cfi_def_cfa_register 7
+ 286:../cleanflight/src/main/sensors/compass.c ****     return (mag.magADC[X] != 0) && (mag.magADC[Y] != 0) && (mag.magADC[Z] != 0);
+ 567              	 .loc 2 286 0
+ 568 0004 124B     	 ldr r3,.L36
+ 569 0006 1B68     	 ldr r3,[r3]
+ 570 0008 07EE903A 	 fmsr s15,r3
+ 571 000c F5EE407A 	 fcmpzs s15
+ 572 0010 F1EE10FA 	 fmstat
+ 573 0014 13D0     	 beq .L33
+ 574              	 .loc 2 286 0 is_stmt 0 discriminator 1
+ 575 0016 0E4B     	 ldr r3,.L36
+ 576 0018 5B68     	 ldr r3,[r3,#4]
+ 577 001a 07EE903A 	 fmsr s15,r3
+ 578 001e F5EE407A 	 fcmpzs s15
+ 579 0022 F1EE10FA 	 fmstat
+ 580 0026 0AD0     	 beq .L33
+ 581              	 .loc 2 286 0 discriminator 3
+ 582 0028 094B     	 ldr r3,.L36
+ 583 002a 9B68     	 ldr r3,[r3,#8]
+ 584 002c 07EE903A 	 fmsr s15,r3
+ 585 0030 F5EE407A 	 fcmpzs s15
+ 586 0034 F1EE10FA 	 fmstat
+ 587 0038 01D0     	 beq .L33
+ 588              	 .loc 2 286 0 discriminator 5
+ 589 003a 0123     	 movs r3,#1
+ 590 003c 00E0     	 b .L34
+ 591              	.L33:
+ 592              	 .loc 2 286 0 discriminator 6
+ 593 003e 0023     	 movs r3,#0
+ 594              	.L34:
+ 595              	 .loc 2 286 0 discriminator 8
+ 596 0040 03F00103 	 and r3,r3,#1
+ 597 0044 DBB2     	 uxtb r3,r3
+ 287:../cleanflight/src/main/sensors/compass.c **** }
+ 598              	 .loc 2 287 0 is_stmt 1 discriminator 8
+ 599 0046 1846     	 mov r0,r3
+ 600 0048 BD46     	 mov sp,r7
+ 601              	.LCFI26:
+ 602              	 .cfi_def_cfa_register 13
+ 603              	 
+ 604 004a 5DF8047B 	 ldr r7,[sp],#4
+ 605              	.LCFI27:
+ 606              	 .cfi_restore 7
+ 607              	 .cfi_def_cfa_offset 0
+ 608 004e 7047     	 bx lr
+ 609              	.L37:
+ 610              	 .align 2
+ 611              	.L36:
+ 612 0050 00000000 	 .word mag
+ 613              	 .cfi_endproc
+ 614              	.LFE542:
+ 616              	 .section .text.compassUpdate,"ax",%progbits
+ 617              	 .align 2
+ 618              	 .global compassUpdate
+ 619              	 .thumb
+ 620              	 .thumb_func
+ 622              	compassUpdate:
+ 623              	.LFB543:
+ 288:../cleanflight/src/main/sensors/compass.c **** 
+ 289:../cleanflight/src/main/sensors/compass.c **** void compassUpdate(timeUs_t currentTimeUs)
+ 290:../cleanflight/src/main/sensors/compass.c **** {
+ 624              	 .loc 2 290 0
+ 625              	 .cfi_startproc
+ 626              	 
+ 627              	 
+ 628 0000 80B5     	 push {r7,lr}
+ 629              	.LCFI28:
+ 630              	 .cfi_def_cfa_offset 8
+ 631              	 .cfi_offset 7,-8
+ 632              	 .cfi_offset 14,-4
+ 633 0002 88B0     	 sub sp,sp,#32
+ 634              	.LCFI29:
+ 635              	 .cfi_def_cfa_offset 40
+ 636 0004 00AF     	 add r7,sp,#0
+ 637              	.LCFI30:
+ 638              	 .cfi_def_cfa_register 7
+ 639 0006 7860     	 str r0,[r7,#4]
+ 291:../cleanflight/src/main/sensors/compass.c ****     static timeUs_t tCal = 0;
+ 292:../cleanflight/src/main/sensors/compass.c ****     static flightDynamicsTrims_t magZeroTempMin;
+ 293:../cleanflight/src/main/sensors/compass.c ****     static flightDynamicsTrims_t magZeroTempMax;
+ 294:../cleanflight/src/main/sensors/compass.c **** 
+ 295:../cleanflight/src/main/sensors/compass.c ****     magDev.read(&magDev, magADCRaw);
+ 640              	 .loc 2 295 0
+ 641 0008 9E4B     	 ldr r3,.L57
+ 642 000a 5B68     	 ldr r3,[r3,#4]
+ 643 000c 9D48     	 ldr r0,.L57
+ 644 000e 9E49     	 ldr r1,.L57+4
+ 645 0010 9847     	 blx r3
+ 646              	.LBB2:
+ 296:../cleanflight/src/main/sensors/compass.c ****     for (int axis = 0; axis < XYZ_AXIS_COUNT; axis++) {
+ 647              	 .loc 2 296 0
+ 648 0012 0023     	 movs r3,#0
+ 649 0014 FB61     	 str r3,[r7,#28]
+ 650 0016 12E0     	 b .L39
+ 651              	.L40:
+ 297:../cleanflight/src/main/sensors/compass.c ****         mag.magADC[axis] = magADCRaw[axis];
+ 652              	 .loc 2 297 0 discriminator 3
+ 653 0018 9B4A     	 ldr r2,.L57+4
+ 654 001a FB69     	 ldr r3,[r7,#28]
+ 655 001c 32F81330 	 ldrh r3,[r2,r3,lsl#1]
+ 656 0020 1BB2     	 sxth r3,r3
+ 657 0022 07EE903A 	 fmsr s15,r3
+ 658 0026 F8EEE77A 	 fsitos s15,s15
+ 659 002a 984A     	 ldr r2,.L57+8
+ 660 002c FB69     	 ldr r3,[r7,#28]
+ 661 002e 9B00     	 lsls r3,r3,#2
+ 662 0030 1344     	 add r3,r3,r2
+ 663 0032 17EE902A 	 fmrs r2,s15
+ 664 0036 1A60     	 str r2,[r3]
+ 296:../cleanflight/src/main/sensors/compass.c ****     for (int axis = 0; axis < XYZ_AXIS_COUNT; axis++) {
+ 665              	 .loc 2 296 0 discriminator 3
+ 666 0038 FB69     	 ldr r3,[r7,#28]
+ 667 003a 0133     	 adds r3,r3,#1
+ 668 003c FB61     	 str r3,[r7,#28]
+ 669              	.L39:
+ 296:../cleanflight/src/main/sensors/compass.c ****     for (int axis = 0; axis < XYZ_AXIS_COUNT; axis++) {
+ 670              	 .loc 2 296 0 is_stmt 0 discriminator 1
+ 671 003e FB69     	 ldr r3,[r7,#28]
+ 672 0040 022B     	 cmp r3,#2
+ 673 0042 E9DD     	 ble .L40
+ 674              	.LBE2:
+ 298:../cleanflight/src/main/sensors/compass.c ****     }
+ 299:../cleanflight/src/main/sensors/compass.c ****     alignSensors(mag.magADC, magDev.magAlign);
+ 675              	 .loc 2 299 0 is_stmt 1
+ 676 0044 8F4B     	 ldr r3,.L57
+ 677 0046 5B7D     	 ldrb r3,[r3,#21]
+ 678 0048 9048     	 ldr r0,.L57+8
+ 679 004a 1946     	 mov r1,r3
+ 680 004c FFF7FEFF 	 bl alignSensors
+ 300:../cleanflight/src/main/sensors/compass.c **** 
+ 301:../cleanflight/src/main/sensors/compass.c ****     flightDynamicsTrims_t *magZero = &compassConfigMutable()->magZero;
+ 681              	 .loc 2 301 0
+ 682 0050 FFF7FEFF 	 bl compassConfigMutable
+ 683 0054 0346     	 mov r3,r0
+ 684 0056 0A33     	 adds r3,r3,#10
+ 685 0058 FB60     	 str r3,[r7,#12]
+ 302:../cleanflight/src/main/sensors/compass.c ****     if (STATE(CALIBRATE_MAG)) {
+ 686              	 .loc 2 302 0
+ 687 005a 8D4B     	 ldr r3,.L57+12
+ 688 005c 1B78     	 ldrb r3,[r3]
+ 689 005e 03F00403 	 and r3,r3,#4
+ 690 0062 002B     	 cmp r3,#0
+ 691 0064 3DD0     	 beq .L41
+ 303:../cleanflight/src/main/sensors/compass.c ****         tCal = currentTimeUs;
+ 692              	 .loc 2 303 0
+ 693 0066 8B4A     	 ldr r2,.L57+16
+ 694 0068 7B68     	 ldr r3,[r7,#4]
+ 695 006a 1360     	 str r3,[r2]
+ 696              	.LBB3:
+ 304:../cleanflight/src/main/sensors/compass.c ****         for (int axis = 0; axis < 3; axis++) {
+ 697              	 .loc 2 304 0
+ 698 006c 0023     	 movs r3,#0
+ 699 006e BB61     	 str r3,[r7,#24]
+ 700 0070 2DE0     	 b .L42
+ 701              	.L43:
+ 305:../cleanflight/src/main/sensors/compass.c ****             magZero->raw[axis] = 0;
+ 702              	 .loc 2 305 0 discriminator 3
+ 703 0072 FA68     	 ldr r2,[r7,#12]
+ 704 0074 BB69     	 ldr r3,[r7,#24]
+ 705 0076 0021     	 movs r1,#0
+ 706 0078 02F81310 	 strb r1,[r2,r3,lsl#1]
+ 707 007c 5B00     	 lsls r3,r3,#1
+ 708 007e 1344     	 add r3,r3,r2
+ 709 0080 0022     	 movs r2,#0
+ 710 0082 5A70     	 strb r2,[r3,#1]
+ 306:../cleanflight/src/main/sensors/compass.c ****             magZeroTempMin.raw[axis] = mag.magADC[axis];
+ 711              	 .loc 2 306 0 discriminator 3
+ 712 0084 814A     	 ldr r2,.L57+8
+ 713 0086 BB69     	 ldr r3,[r7,#24]
+ 714 0088 9B00     	 lsls r3,r3,#2
+ 715 008a 1344     	 add r3,r3,r2
+ 716 008c 1B68     	 ldr r3,[r3]
+ 717 008e 07EE903A 	 fmsr s15,r3
+ 718 0092 FDEEE77A 	 ftosizs s15,s15
+ 719 0096 C7ED007A 	 fsts s15,[r7]
+ 720 009a 3B88     	 ldrh r3,[r7]
+ 721 009c 99B2     	 uxth r1,r3
+ 722 009e 7E4A     	 ldr r2,.L57+20
+ 723 00a0 BB69     	 ldr r3,[r7,#24]
+ 724 00a2 22F81310 	 strh r1,[r2,r3,lsl#1]
+ 307:../cleanflight/src/main/sensors/compass.c ****             magZeroTempMax.raw[axis] = mag.magADC[axis];
+ 725              	 .loc 2 307 0 discriminator 3
+ 726 00a6 794A     	 ldr r2,.L57+8
+ 727 00a8 BB69     	 ldr r3,[r7,#24]
+ 728 00aa 9B00     	 lsls r3,r3,#2
+ 729 00ac 1344     	 add r3,r3,r2
+ 730 00ae 1B68     	 ldr r3,[r3]
+ 731 00b0 07EE903A 	 fmsr s15,r3
+ 732 00b4 FDEEE77A 	 ftosizs s15,s15
+ 733 00b8 C7ED007A 	 fsts s15,[r7]
+ 734 00bc 3B88     	 ldrh r3,[r7]
+ 735 00be 99B2     	 uxth r1,r3
+ 736 00c0 764A     	 ldr r2,.L57+24
+ 737 00c2 BB69     	 ldr r3,[r7,#24]
+ 738 00c4 22F81310 	 strh r1,[r2,r3,lsl#1]
+ 304:../cleanflight/src/main/sensors/compass.c ****             magZero->raw[axis] = 0;
+ 739              	 .loc 2 304 0 discriminator 3
+ 740 00c8 BB69     	 ldr r3,[r7,#24]
+ 741 00ca 0133     	 adds r3,r3,#1
+ 742 00cc BB61     	 str r3,[r7,#24]
+ 743              	.L42:
+ 304:../cleanflight/src/main/sensors/compass.c ****             magZero->raw[axis] = 0;
+ 744              	 .loc 2 304 0 is_stmt 0 discriminator 1
+ 745 00ce BB69     	 ldr r3,[r7,#24]
+ 746 00d0 022B     	 cmp r3,#2
+ 747 00d2 CEDD     	 ble .L43
+ 748              	.LBE3:
+ 308:../cleanflight/src/main/sensors/compass.c ****         }
+ 309:../cleanflight/src/main/sensors/compass.c ****         DISABLE_STATE(CALIBRATE_MAG);
+ 749              	 .loc 2 309 0 is_stmt 1
+ 750 00d4 6E4B     	 ldr r3,.L57+12
+ 751 00d6 1B78     	 ldrb r3,[r3]
+ 752 00d8 23F00403 	 bic r3,r3,#4
+ 753 00dc DAB2     	 uxtb r2,r3
+ 754 00de 6C4B     	 ldr r3,.L57+12
+ 755 00e0 1A70     	 strb r2,[r3]
+ 756              	.L41:
+ 310:../cleanflight/src/main/sensors/compass.c ****     }
+ 311:../cleanflight/src/main/sensors/compass.c **** 
+ 312:../cleanflight/src/main/sensors/compass.c ****     if (magInit) {              // we apply offset only once mag calibration is done
+ 757              	 .loc 2 312 0
+ 758 00e2 6F4B     	 ldr r3,.L57+28
+ 759 00e4 1B78     	 ldrb r3,[r3]
+ 760 00e6 002B     	 cmp r3,#0
+ 761 00e8 3ED0     	 beq .L44
+ 313:../cleanflight/src/main/sensors/compass.c ****         mag.magADC[X] -= magZero->raw[X];
+ 762              	 .loc 2 313 0
+ 763 00ea 684B     	 ldr r3,.L57+8
+ 764 00ec 1A68     	 ldr r2,[r3]
+ 765 00ee 1346     	 mov r3,r2
+ 766 00f0 1A46     	 mov r2,r3
+ 767 00f2 FB68     	 ldr r3,[r7,#12]
+ 768 00f4 B3F90030 	 ldrsh r3,[r3]
+ 769 00f8 9BB2     	 uxth r3,r3
+ 770 00fa 1BB2     	 sxth r3,r3
+ 771 00fc 07EE903A 	 fmsr s15,r3
+ 772 0100 F8EEE77A 	 fsitos s15,s15
+ 773 0104 07EE102A 	 fmsr s14,r2
+ 774 0108 77EE677A 	 fsubs s15,s14,s15
+ 775 010c 5F4B     	 ldr r3,.L57+8
+ 776 010e 17EE902A 	 fmrs r2,s15
+ 777 0112 1A60     	 str r2,[r3]
+ 314:../cleanflight/src/main/sensors/compass.c ****         mag.magADC[Y] -= magZero->raw[Y];
+ 778              	 .loc 2 314 0
+ 779 0114 5D4B     	 ldr r3,.L57+8
+ 780 0116 5A68     	 ldr r2,[r3,#4]
+ 781 0118 1346     	 mov r3,r2
+ 782 011a 1A46     	 mov r2,r3
+ 783 011c FB68     	 ldr r3,[r7,#12]
+ 784 011e B3F90230 	 ldrsh r3,[r3,#2]
+ 785 0122 9BB2     	 uxth r3,r3
+ 786 0124 1BB2     	 sxth r3,r3
+ 787 0126 07EE903A 	 fmsr s15,r3
+ 788 012a F8EEE77A 	 fsitos s15,s15
+ 789 012e 07EE102A 	 fmsr s14,r2
+ 790 0132 77EE677A 	 fsubs s15,s14,s15
+ 791 0136 554B     	 ldr r3,.L57+8
+ 792 0138 17EE902A 	 fmrs r2,s15
+ 793 013c 5A60     	 str r2,[r3,#4]
+ 315:../cleanflight/src/main/sensors/compass.c ****         mag.magADC[Z] -= magZero->raw[Z];
+ 794              	 .loc 2 315 0
+ 795 013e 534B     	 ldr r3,.L57+8
+ 796 0140 9A68     	 ldr r2,[r3,#8]
+ 797 0142 1346     	 mov r3,r2
+ 798 0144 1A46     	 mov r2,r3
+ 799 0146 FB68     	 ldr r3,[r7,#12]
+ 800 0148 B3F90430 	 ldrsh r3,[r3,#4]
+ 801 014c 9BB2     	 uxth r3,r3
+ 802 014e 1BB2     	 sxth r3,r3
+ 803 0150 07EE903A 	 fmsr s15,r3
+ 804 0154 F8EEE77A 	 fsitos s15,s15
+ 805 0158 07EE102A 	 fmsr s14,r2
+ 806 015c 77EE677A 	 fsubs s15,s14,s15
+ 807 0160 4A4B     	 ldr r3,.L57+8
+ 808 0162 17EE902A 	 fmrs r2,s15
+ 809 0166 9A60     	 str r2,[r3,#8]
+ 810              	.L44:
+ 316:../cleanflight/src/main/sensors/compass.c ****     }
+ 317:../cleanflight/src/main/sensors/compass.c **** 
+ 318:../cleanflight/src/main/sensors/compass.c ****     if (tCal != 0) {
+ 811              	 .loc 2 318 0
+ 812 0168 4A4B     	 ldr r3,.L57+16
+ 813 016a 1B68     	 ldr r3,[r3]
+ 814 016c 002B     	 cmp r3,#0
+ 815 016e 00F08580 	 beq .L38
+ 319:../cleanflight/src/main/sensors/compass.c ****         if ((currentTimeUs - tCal) < 30000000) {    // 30s: you have 30s to turn the multi in all d
+ 816              	 .loc 2 319 0
+ 817 0172 484B     	 ldr r3,.L57+16
+ 818 0174 1B68     	 ldr r3,[r3]
+ 819 0176 7A68     	 ldr r2,[r7,#4]
+ 820 0178 D31A     	 subs r3,r2,r3
+ 821 017a 4A4A     	 ldr r2,.L57+32
+ 822 017c 9342     	 cmp r3,r2
+ 823 017e 5CD8     	 bhi .L46
+ 320:../cleanflight/src/main/sensors/compass.c ****             LED0_TOGGLE;
+ 824              	 .loc 2 320 0
+ 825 0180 0020     	 movs r0,#0
+ 826 0182 FFF7FEFF 	 bl ledToggle
+ 827              	.LBB4:
+ 321:../cleanflight/src/main/sensors/compass.c ****             for (int axis = 0; axis < 3; axis++) {
+ 828              	 .loc 2 321 0
+ 829 0186 0023     	 movs r3,#0
+ 830 0188 7B61     	 str r3,[r7,#20]
+ 831 018a 52E0     	 b .L47
+ 832              	.L52:
+ 322:../cleanflight/src/main/sensors/compass.c ****                 if (mag.magADC[axis] < magZeroTempMin.raw[axis])
+ 833              	 .loc 2 322 0
+ 834 018c 3F4A     	 ldr r2,.L57+8
+ 835 018e 7B69     	 ldr r3,[r7,#20]
+ 836 0190 9B00     	 lsls r3,r3,#2
+ 837 0192 1344     	 add r3,r3,r2
+ 838 0194 1968     	 ldr r1,[r3]
+ 839 0196 0B46     	 mov r3,r1
+ 840 0198 1946     	 mov r1,r3
+ 841 019a 3F4A     	 ldr r2,.L57+20
+ 842 019c 7B69     	 ldr r3,[r7,#20]
+ 843 019e 32F81330 	 ldrh r3,[r2,r3,lsl#1]
+ 844 01a2 1BB2     	 sxth r3,r3
+ 845 01a4 07EE903A 	 fmsr s15,r3
+ 846 01a8 F8EEE77A 	 fsitos s15,s15
+ 847 01ac 07EE101A 	 fmsr s14,r1
+ 848 01b0 B4EEE77A 	 fcmpes s14,s15
+ 849 01b4 F1EE10FA 	 fmstat
+ 850 01b8 10D5     	 bpl .L48
+ 323:../cleanflight/src/main/sensors/compass.c ****                     magZeroTempMin.raw[axis] = mag.magADC[axis];
+ 851              	 .loc 2 323 0
+ 852 01ba 344A     	 ldr r2,.L57+8
+ 853 01bc 7B69     	 ldr r3,[r7,#20]
+ 854 01be 9B00     	 lsls r3,r3,#2
+ 855 01c0 1344     	 add r3,r3,r2
+ 856 01c2 1B68     	 ldr r3,[r3]
+ 857 01c4 07EE903A 	 fmsr s15,r3
+ 858 01c8 FDEEE77A 	 ftosizs s15,s15
+ 859 01cc C7ED007A 	 fsts s15,[r7]
+ 860 01d0 3B88     	 ldrh r3,[r7]
+ 861 01d2 99B2     	 uxth r1,r3
+ 862 01d4 304A     	 ldr r2,.L57+20
+ 863 01d6 7B69     	 ldr r3,[r7,#20]
+ 864 01d8 22F81310 	 strh r1,[r2,r3,lsl#1]
+ 865              	.L48:
+ 324:../cleanflight/src/main/sensors/compass.c ****                 if (mag.magADC[axis] > magZeroTempMax.raw[axis])
+ 866              	 .loc 2 324 0
+ 867 01dc 2B4A     	 ldr r2,.L57+8
+ 868 01de 7B69     	 ldr r3,[r7,#20]
+ 869 01e0 9B00     	 lsls r3,r3,#2
+ 870 01e2 1344     	 add r3,r3,r2
+ 871 01e4 1968     	 ldr r1,[r3]
+ 872 01e6 0B46     	 mov r3,r1
+ 873 01e8 1946     	 mov r1,r3
+ 874 01ea 2C4A     	 ldr r2,.L57+24
+ 875 01ec 7B69     	 ldr r3,[r7,#20]
+ 876 01ee 32F81330 	 ldrh r3,[r2,r3,lsl#1]
+ 877 01f2 1BB2     	 sxth r3,r3
+ 878 01f4 07EE903A 	 fmsr s15,r3
+ 879 01f8 F8EEE77A 	 fsitos s15,s15
+ 880 01fc 07EE101A 	 fmsr s14,r1
+ 881 0200 B4EEE77A 	 fcmpes s14,s15
+ 882 0204 F1EE10FA 	 fmstat
+ 883 0208 10DD     	 ble .L50
+ 325:../cleanflight/src/main/sensors/compass.c ****                     magZeroTempMax.raw[axis] = mag.magADC[axis];
+ 884              	 .loc 2 325 0
+ 885 020a 204A     	 ldr r2,.L57+8
+ 886 020c 7B69     	 ldr r3,[r7,#20]
+ 887 020e 9B00     	 lsls r3,r3,#2
+ 888 0210 1344     	 add r3,r3,r2
+ 889 0212 1B68     	 ldr r3,[r3]
+ 890 0214 07EE903A 	 fmsr s15,r3
+ 891 0218 FDEEE77A 	 ftosizs s15,s15
+ 892 021c C7ED007A 	 fsts s15,[r7]
+ 893 0220 3B88     	 ldrh r3,[r7]
+ 894 0222 99B2     	 uxth r1,r3
+ 895 0224 1D4A     	 ldr r2,.L57+24
+ 896 0226 7B69     	 ldr r3,[r7,#20]
+ 897 0228 22F81310 	 strh r1,[r2,r3,lsl#1]
+ 898              	.L50:
+ 321:../cleanflight/src/main/sensors/compass.c ****                 if (mag.magADC[axis] < magZeroTempMin.raw[axis])
+ 899              	 .loc 2 321 0 discriminator 2
+ 900 022c 7B69     	 ldr r3,[r7,#20]
+ 901 022e 0133     	 adds r3,r3,#1
+ 902 0230 7B61     	 str r3,[r7,#20]
+ 903              	.L47:
+ 321:../cleanflight/src/main/sensors/compass.c ****                 if (mag.magADC[axis] < magZeroTempMin.raw[axis])
+ 904              	 .loc 2 321 0 is_stmt 0 discriminator 1
+ 905 0232 7B69     	 ldr r3,[r7,#20]
+ 906 0234 022B     	 cmp r3,#2
+ 907 0236 A9DD     	 ble .L52
+ 908              	.LBE4:
+ 909 0238 20E0     	 b .L38
+ 910              	.L46:
+ 326:../cleanflight/src/main/sensors/compass.c ****             }
+ 327:../cleanflight/src/main/sensors/compass.c ****         } else {
+ 328:../cleanflight/src/main/sensors/compass.c ****             tCal = 0;
+ 911              	 .loc 2 328 0 is_stmt 1
+ 912 023a 164B     	 ldr r3,.L57+16
+ 913 023c 0022     	 movs r2,#0
+ 914 023e 1A60     	 str r2,[r3]
+ 915              	.LBB5:
+ 329:../cleanflight/src/main/sensors/compass.c ****             for (int axis = 0; axis < 3; axis++) {
+ 916              	 .loc 2 329 0
+ 917 0240 0023     	 movs r3,#0
+ 918 0242 3B61     	 str r3,[r7,#16]
+ 919 0244 15E0     	 b .L53
+ 920              	.L54:
+ 330:../cleanflight/src/main/sensors/compass.c ****                 magZero->raw[axis] = (magZeroTempMin.raw[axis] + magZeroTempMax.raw[axis]) / 2; // 
+ 921              	 .loc 2 330 0 discriminator 3
+ 922 0246 144A     	 ldr r2,.L57+20
+ 923 0248 3B69     	 ldr r3,[r7,#16]
+ 924 024a 32F81330 	 ldrh r3,[r2,r3,lsl#1]
+ 925 024e 1AB2     	 sxth r2,r3
+ 926 0250 1249     	 ldr r1,.L57+24
+ 927 0252 3B69     	 ldr r3,[r7,#16]
+ 928 0254 31F81330 	 ldrh r3,[r1,r3,lsl#1]
+ 929 0258 1BB2     	 sxth r3,r3
+ 930 025a 1344     	 add r3,r3,r2
+ 931 025c DA0F     	 lsrs r2,r3,#31
+ 932 025e 1344     	 add r3,r3,r2
+ 933 0260 5B10     	 asrs r3,r3,#1
+ 934 0262 99B2     	 uxth r1,r3
+ 935 0264 FB68     	 ldr r3,[r7,#12]
+ 936 0266 3A69     	 ldr r2,[r7,#16]
+ 937 0268 23F81210 	 strh r1,[r3,r2,lsl#1]
+ 329:../cleanflight/src/main/sensors/compass.c ****             for (int axis = 0; axis < 3; axis++) {
+ 938              	 .loc 2 329 0 discriminator 3
+ 939 026c 3B69     	 ldr r3,[r7,#16]
+ 940 026e 0133     	 adds r3,r3,#1
+ 941 0270 3B61     	 str r3,[r7,#16]
+ 942              	.L53:
+ 329:../cleanflight/src/main/sensors/compass.c ****             for (int axis = 0; axis < 3; axis++) {
+ 943              	 .loc 2 329 0 is_stmt 0 discriminator 1
+ 944 0272 3B69     	 ldr r3,[r7,#16]
+ 945 0274 022B     	 cmp r3,#2
+ 946 0276 E6DD     	 ble .L54
+ 947              	.LBE5:
+ 331:../cleanflight/src/main/sensors/compass.c ****             }
+ 332:../cleanflight/src/main/sensors/compass.c **** 
+ 333:../cleanflight/src/main/sensors/compass.c ****             saveConfigAndNotify();
+ 948              	 .loc 2 333 0 is_stmt 1
+ 949 0278 FFF7FEFF 	 bl saveConfigAndNotify
+ 950              	.L38:
+ 334:../cleanflight/src/main/sensors/compass.c ****         }
+ 335:../cleanflight/src/main/sensors/compass.c ****     }
+ 336:../cleanflight/src/main/sensors/compass.c **** }
+ 951              	 .loc 2 336 0
+ 952 027c 2037     	 adds r7,r7,#32
+ 953              	.LCFI31:
+ 954              	 .cfi_def_cfa_offset 8
+ 955 027e BD46     	 mov sp,r7
+ 956              	.LCFI32:
+ 957              	 .cfi_def_cfa_register 13
+ 958              	 
+ 959 0280 80BD     	 pop {r7,pc}
+ 960              	.L58:
+ 961 0282 00BF     	 .align 2
+ 962              	.L57:
+ 963 0284 00000000 	 .word magDev
+ 964 0288 00000000 	 .word magADCRaw
+ 965 028c 00000000 	 .word mag
+ 966 0290 00000000 	 .word stateFlags
+ 967 0294 00000000 	 .word tCal.12333
+ 968 0298 00000000 	 .word magZeroTempMin.12334
+ 969 029c 00000000 	 .word magZeroTempMax.12335
+ 970 02a0 00000000 	 .word magInit
+ 971 02a4 7FC3C901 	 .word 29999999
+ 972              	 .cfi_endproc
+ 973              	.LFE543:
+ 975              	 .section .bss.tCal.12333,"aw",%nobits
+ 976              	 .align 2
+ 979              	tCal.12333:
+ 980 0000 00000000 	 .space 4
+ 981              	 .section .bss.magZeroTempMin.12334,"aw",%nobits
+ 982              	 .align 2
+ 985              	magZeroTempMin.12334:
+ 986 0000 00000000 	 .space 6
+ 986      0000
+ 987 0006 0000     	 .section .bss.magZeroTempMax.12335,"aw",%nobits
+ 988              	 .align 2
+ 991              	magZeroTempMax.12335:
+ 992 0000 00000000 	 .space 6
+ 992      0000
+ 993 0006 0000     	 .text
+ 994              	.Letext0:
+ 995              	 .file 3 "d:\\xmc\\dave-ide-4.4.2-64bit\\eclipse\\arm-gcc-49\\arm-none-eabi\\include\\machine\\_default_types.h"
+ 996              	 .file 4 "d:\\xmc\\dave-ide-4.4.2-64bit\\eclipse\\arm-gcc-49\\arm-none-eabi\\include\\stdint.h"
+ 997              	 .file 5 "D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/lib/main/XMC4000/xmc4700.h"
+ 998              	 .file 6 "D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/lib/main/XMC4000/XMCLib/inc/xmc_usic.h"
+ 999              	 .file 7 "D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/platform.h"
+ 1000              	 .file 8 "D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/pg/pg.h"
+ 1001              	 .file 9 "D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/common/axis.h"
+ 1002              	 .file 10 "D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/drivers/io_types.h"
+ 1003              	 .file 11 "D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/drivers/bus_i2c.h"
+ 1004              	 .file 12 "D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/drivers/bus.h"
+ 1005              	 .file 13 "D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/drivers/bus_spi.h"
+ 1006              	 .file 14 "D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/drivers/exti.h"
+ 1007              	 .file 15 "D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/drivers/sensor.h"
+ 1008              	 .file 16 "D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/drivers/compass/compass.h"
+ 1009              	 .file 17 "D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/drivers/accgyro/accgyro_mpu.h"
+ 1010              	 .file 18 "D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/drivers/resource.h"
+ 1011              	 .file 19 "D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/drivers/light_led.h"
+ 1012              	 .file 20 "D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/fc/config.h"
+ 1013              	 .file 21 "D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/fc/runtime_config.h"
+ 1014              	 .file 22 "D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/sensors/boardalignment.h"
+ 1015              	 .file 23 "D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/common/time.h"
+ 1016              	 .file 24 "D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/sensors/sensors.h"
+ 1017              	 .file 25 "D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/sensors/gyro.h"
+ 1018              	 .file 26 "D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/lib/main/CMSIS/Core/Include/core_cm4.h"
+ 1019              	 .file 27 "D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/lib/main/XMC4000/system_XMC4700.h"
+DEFINED SYMBOLS
+                            *ABS*:00000000 compass.c
+    {standard input}:20     .text.compassConfig:00000000 $t
+    {standard input}:24     .text.compassConfig:00000000 compassConfig
+    {standard input}:54     .text.compassConfig:00000010 $d
+                            *COM*:00000010 compassConfig_System
+    {standard input}:59     .text.compassConfigMutable:00000000 $t
+    {standard input}:63     .text.compassConfigMutable:00000000 compassConfigMutable
+    {standard input}:92     .text.compassConfigMutable:00000010 $d
+                            *COM*:0000001d magDev
+                            *COM*:00000010 mag
+                            *COM*:00000010 compassConfig_Copy
+    {standard input}:105    .pg_registry:00000000 compassConfig_Registry
+    {standard input}:102    .pg_registry:00000000 $d
+    {standard input}:118    .text.pgResetFn_compassConfig:00000000 pgResetFn_compassConfig
+    {standard input}:113    .text.pgResetFn_compassConfig:00000000 $t
+    {standard input}:192    .bss.magADCRaw:00000000 $d
+    {standard input}:195    .bss.magADCRaw:00000000 magADCRaw
+    {standard input}:200    .bss.magInit:00000000 magInit
+    {standard input}:201    .bss.magInit:00000000 $d
+    {standard input}:203    .text.compassDetect:00000000 $t
+    {standard input}:208    .text.compassDetect:00000000 compassDetect
+    {standard input}:313    .text.compassDetect:000000a4 $d
+    {standard input}:319    .text.compassDetect:000000bc $t
+    {standard input}:408    .text.compassDetect:00000138 $d
+    {standard input}:413    .text.compassInit:00000000 $t
+    {standard input}:418    .text.compassInit:00000000 compassInit
+    {standard input}:539    .text.compassInit:000000d8 $d
+    {standard input}:548    .text.compassIsHealthy:00000000 $t
+    {standard input}:553    .text.compassIsHealthy:00000000 compassIsHealthy
+    {standard input}:612    .text.compassIsHealthy:00000050 $d
+    {standard input}:617    .text.compassUpdate:00000000 $t
+    {standard input}:622    .text.compassUpdate:00000000 compassUpdate
+    {standard input}:963    .text.compassUpdate:00000284 $d
+    {standard input}:979    .bss.tCal.12333:00000000 tCal.12333
+    {standard input}:985    .bss.magZeroTempMin.12334:00000000 magZeroTempMin.12334
+    {standard input}:991    .bss.magZeroTempMax.12335:00000000 magZeroTempMax.12335
+    {standard input}:976    .bss.tCal.12333:00000000 $d
+    {standard input}:982    .bss.magZeroTempMin.12334:00000000 $d
+    {standard input}:988    .bss.magZeroTempMax.12335:00000000 $d
+                     .debug_frame:00000010 $d
+
+UNDEFINED SYMBOLS
+spiInstanceByDevice
+spiBusSetInstance
+IOGetByTag
+gyroMpuDetectionResult
+gyroSensorBus
+ak8963Detect
+sensorsSet
+detectedSensors
+ledSet
+alignSensors
+ledToggle
+saveConfigAndNotify
+stateFlags

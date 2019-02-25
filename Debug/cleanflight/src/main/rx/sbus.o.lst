@@ -1,0 +1,719 @@
+   1              	 .syntax unified
+   2              	 .cpu cortex-m4
+   3              	 .eabi_attribute 27,3
+   4              	 .fpu fpv4-sp-d16
+   5              	 .eabi_attribute 20,1
+   6              	 .eabi_attribute 21,1
+   7              	 .eabi_attribute 23,3
+   8              	 .eabi_attribute 24,1
+   9              	 .eabi_attribute 25,1
+  10              	 .eabi_attribute 26,1
+  11              	 .eabi_attribute 30,6
+  12              	 .eabi_attribute 34,1
+  13              	 .eabi_attribute 18,4
+  14              	 .thumb
+  15              	 .file "sbus.c"
+  16              	 .text
+  17              	.Ltext0:
+  18              	 .cfi_sections .debug_frame
+  19              	 .section .text.sbusDataReceive,"ax",%progbits
+  20              	 .align 2
+  21              	 .thumb
+  22              	 .thumb_func
+  24              	sbusDataReceive:
+  25              	.LFB539:
+  26              	 .file 1 "../cleanflight/src/main/rx/sbus.c"
+   1:../cleanflight/src/main/rx/sbus.c **** /*
+   2:../cleanflight/src/main/rx/sbus.c ****  * This file is part of Cleanflight and Betaflight.
+   3:../cleanflight/src/main/rx/sbus.c ****  *
+   4:../cleanflight/src/main/rx/sbus.c ****  * Cleanflight and Betaflight are free software. You can redistribute
+   5:../cleanflight/src/main/rx/sbus.c ****  * this software and/or modify this software under the terms of the
+   6:../cleanflight/src/main/rx/sbus.c ****  * GNU General Public License as published by the Free Software
+   7:../cleanflight/src/main/rx/sbus.c ****  * Foundation, either version 3 of the License, or (at your option)
+   8:../cleanflight/src/main/rx/sbus.c ****  * any later version.
+   9:../cleanflight/src/main/rx/sbus.c ****  *
+  10:../cleanflight/src/main/rx/sbus.c ****  * Cleanflight and Betaflight are distributed in the hope that they
+  11:../cleanflight/src/main/rx/sbus.c ****  * will be useful, but WITHOUT ANY WARRANTY; without even the implied
+  12:../cleanflight/src/main/rx/sbus.c ****  * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+  13:../cleanflight/src/main/rx/sbus.c ****  * See the GNU General Public License for more details.
+  14:../cleanflight/src/main/rx/sbus.c ****  *
+  15:../cleanflight/src/main/rx/sbus.c ****  * You should have received a copy of the GNU General Public License
+  16:../cleanflight/src/main/rx/sbus.c ****  * along with this software.
+  17:../cleanflight/src/main/rx/sbus.c ****  *
+  18:../cleanflight/src/main/rx/sbus.c ****  * If not, see <http://www.gnu.org/licenses/>.
+  19:../cleanflight/src/main/rx/sbus.c ****  */
+  20:../cleanflight/src/main/rx/sbus.c **** 
+  21:../cleanflight/src/main/rx/sbus.c **** #include <stdbool.h>
+  22:../cleanflight/src/main/rx/sbus.c **** #include <stdint.h>
+  23:../cleanflight/src/main/rx/sbus.c **** #include <stdlib.h>
+  24:../cleanflight/src/main/rx/sbus.c **** 
+  25:../cleanflight/src/main/rx/sbus.c **** #include "platform.h"
+  26:../cleanflight/src/main/rx/sbus.c **** 
+  27:../cleanflight/src/main/rx/sbus.c **** #ifdef USE_SERIAL_RX
+  28:../cleanflight/src/main/rx/sbus.c **** 
+  29:../cleanflight/src/main/rx/sbus.c **** #include "build/debug.h"
+  30:../cleanflight/src/main/rx/sbus.c **** 
+  31:../cleanflight/src/main/rx/sbus.c **** #include "common/utils.h"
+  32:../cleanflight/src/main/rx/sbus.c **** 
+  33:../cleanflight/src/main/rx/sbus.c **** #include "drivers/time.h"
+  34:../cleanflight/src/main/rx/sbus.c **** 
+  35:../cleanflight/src/main/rx/sbus.c **** #include "io/serial.h"
+  36:../cleanflight/src/main/rx/sbus.c **** 
+  37:../cleanflight/src/main/rx/sbus.c **** #ifdef USE_TELEMETRY
+  38:../cleanflight/src/main/rx/sbus.c **** #include "telemetry/telemetry.h"
+  39:../cleanflight/src/main/rx/sbus.c **** #endif
+  40:../cleanflight/src/main/rx/sbus.c **** 
+  41:../cleanflight/src/main/rx/sbus.c **** #include "pg/rx.h"
+  42:../cleanflight/src/main/rx/sbus.c **** 
+  43:../cleanflight/src/main/rx/sbus.c **** #include "rx/rx.h"
+  44:../cleanflight/src/main/rx/sbus.c **** #include "rx/sbus.h"
+  45:../cleanflight/src/main/rx/sbus.c **** #include "rx/sbus_channels.h"
+  46:../cleanflight/src/main/rx/sbus.c **** 
+  47:../cleanflight/src/main/rx/sbus.c **** /*
+  48:../cleanflight/src/main/rx/sbus.c ****  * Observations
+  49:../cleanflight/src/main/rx/sbus.c ****  *
+  50:../cleanflight/src/main/rx/sbus.c ****  * FrSky X8R
+  51:../cleanflight/src/main/rx/sbus.c ****  * time between frames: 6ms.
+  52:../cleanflight/src/main/rx/sbus.c ****  * time to send frame: 3ms.
+  53:../cleanflight/src/main/rx/sbus.c **** *
+  54:../cleanflight/src/main/rx/sbus.c ****  * Futaba R6208SB/R6303SB
+  55:../cleanflight/src/main/rx/sbus.c ****  * time between frames: 11ms.
+  56:../cleanflight/src/main/rx/sbus.c ****  * time to send frame: 3ms.
+  57:../cleanflight/src/main/rx/sbus.c ****  */
+  58:../cleanflight/src/main/rx/sbus.c **** 
+  59:../cleanflight/src/main/rx/sbus.c **** #define SBUS_TIME_NEEDED_PER_FRAME 3000
+  60:../cleanflight/src/main/rx/sbus.c **** 
+  61:../cleanflight/src/main/rx/sbus.c **** #define SBUS_STATE_FAILSAFE (1 << 0)
+  62:../cleanflight/src/main/rx/sbus.c **** #define SBUS_STATE_SIGNALLOSS (1 << 1)
+  63:../cleanflight/src/main/rx/sbus.c **** 
+  64:../cleanflight/src/main/rx/sbus.c **** #define SBUS_FRAME_SIZE (SBUS_CHANNEL_DATA_LENGTH + 2)
+  65:../cleanflight/src/main/rx/sbus.c **** 
+  66:../cleanflight/src/main/rx/sbus.c **** #define SBUS_FRAME_BEGIN_BYTE 0x0F
+  67:../cleanflight/src/main/rx/sbus.c **** 
+  68:../cleanflight/src/main/rx/sbus.c **** #define SBUS_BAUDRATE 100000
+  69:../cleanflight/src/main/rx/sbus.c **** 
+  70:../cleanflight/src/main/rx/sbus.c **** #if !defined(SBUS_PORT_OPTIONS)
+  71:../cleanflight/src/main/rx/sbus.c **** #define SBUS_PORT_OPTIONS (SERIAL_STOPBITS_2 | SERIAL_PARITY_EVEN)
+  72:../cleanflight/src/main/rx/sbus.c **** #endif
+  73:../cleanflight/src/main/rx/sbus.c **** 
+  74:../cleanflight/src/main/rx/sbus.c **** #define SBUS_DIGITAL_CHANNEL_MIN 173
+  75:../cleanflight/src/main/rx/sbus.c **** #define SBUS_DIGITAL_CHANNEL_MAX 1812
+  76:../cleanflight/src/main/rx/sbus.c **** 
+  77:../cleanflight/src/main/rx/sbus.c **** enum {
+  78:../cleanflight/src/main/rx/sbus.c ****     DEBUG_SBUS_FRAME_FLAGS = 0,
+  79:../cleanflight/src/main/rx/sbus.c ****     DEBUG_SBUS_STATE_FLAGS,
+  80:../cleanflight/src/main/rx/sbus.c ****     DEBUG_SBUS_FRAME_TIME,
+  81:../cleanflight/src/main/rx/sbus.c **** };
+  82:../cleanflight/src/main/rx/sbus.c **** 
+  83:../cleanflight/src/main/rx/sbus.c **** 
+  84:../cleanflight/src/main/rx/sbus.c **** struct sbusFrame_s {
+  85:../cleanflight/src/main/rx/sbus.c ****     uint8_t syncByte;
+  86:../cleanflight/src/main/rx/sbus.c ****     sbusChannels_t channels;
+  87:../cleanflight/src/main/rx/sbus.c ****     /**
+  88:../cleanflight/src/main/rx/sbus.c ****      * The endByte is 0x00 on FrSky and some futaba RX's, on Some SBUS2 RX's the value indicates th
+  89:../cleanflight/src/main/rx/sbus.c ****      *
+  90:../cleanflight/src/main/rx/sbus.c ****      * See https://github.com/cleanflight/cleanflight/issues/590#issuecomment-101027349
+  91:../cleanflight/src/main/rx/sbus.c ****      * and
+  92:../cleanflight/src/main/rx/sbus.c ****      * https://github.com/cleanflight/cleanflight/issues/590#issuecomment-101706023
+  93:../cleanflight/src/main/rx/sbus.c ****      */
+  94:../cleanflight/src/main/rx/sbus.c ****     uint8_t endByte;
+  95:../cleanflight/src/main/rx/sbus.c **** } __attribute__ ((__packed__));
+  96:../cleanflight/src/main/rx/sbus.c **** 
+  97:../cleanflight/src/main/rx/sbus.c **** typedef union sbusFrame_u {
+  98:../cleanflight/src/main/rx/sbus.c ****     uint8_t bytes[SBUS_FRAME_SIZE];
+  99:../cleanflight/src/main/rx/sbus.c ****     struct sbusFrame_s frame;
+ 100:../cleanflight/src/main/rx/sbus.c **** } sbusFrame_t;
+ 101:../cleanflight/src/main/rx/sbus.c **** 
+ 102:../cleanflight/src/main/rx/sbus.c **** typedef struct sbusFrameData_s {
+ 103:../cleanflight/src/main/rx/sbus.c ****     sbusFrame_t frame;
+ 104:../cleanflight/src/main/rx/sbus.c ****     uint32_t startAtUs;
+ 105:../cleanflight/src/main/rx/sbus.c ****     uint16_t stateFlags;
+ 106:../cleanflight/src/main/rx/sbus.c ****     uint8_t position;
+ 107:../cleanflight/src/main/rx/sbus.c ****     bool done;
+ 108:../cleanflight/src/main/rx/sbus.c **** } sbusFrameData_t;
+ 109:../cleanflight/src/main/rx/sbus.c **** 
+ 110:../cleanflight/src/main/rx/sbus.c **** 
+ 111:../cleanflight/src/main/rx/sbus.c **** // Receive ISR callback
+ 112:../cleanflight/src/main/rx/sbus.c **** static void sbusDataReceive(uint16_t c, void *data)
+ 113:../cleanflight/src/main/rx/sbus.c **** {
+  27              	 .loc 1 113 0
+  28              	 .cfi_startproc
+  29              	 
+  30              	 
+  31 0000 80B5     	 push {r7,lr}
+  32              	.LCFI0:
+  33              	 .cfi_def_cfa_offset 8
+  34              	 .cfi_offset 7,-8
+  35              	 .cfi_offset 14,-4
+  36 0002 86B0     	 sub sp,sp,#24
+  37              	.LCFI1:
+  38              	 .cfi_def_cfa_offset 32
+  39 0004 00AF     	 add r7,sp,#0
+  40              	.LCFI2:
+  41              	 .cfi_def_cfa_register 7
+  42 0006 0346     	 mov r3,r0
+  43 0008 3960     	 str r1,[r7]
+  44 000a FB80     	 strh r3,[r7,#6]
+ 114:../cleanflight/src/main/rx/sbus.c ****     sbusFrameData_t *sbusFrameData = data;
+  45              	 .loc 1 114 0
+  46 000c 3B68     	 ldr r3,[r7]
+  47 000e 7B61     	 str r3,[r7,#20]
+ 115:../cleanflight/src/main/rx/sbus.c **** 
+ 116:../cleanflight/src/main/rx/sbus.c ****     const uint32_t nowUs = micros();
+  48              	 .loc 1 116 0
+  49 0010 FFF7FEFF 	 bl micros
+  50 0014 3861     	 str r0,[r7,#16]
+ 117:../cleanflight/src/main/rx/sbus.c **** 
+ 118:../cleanflight/src/main/rx/sbus.c ****     const int32_t sbusFrameTime = nowUs - sbusFrameData->startAtUs;
+  51              	 .loc 1 118 0
+  52 0016 7B69     	 ldr r3,[r7,#20]
+  53 0018 D3F81930 	 ldr r3,[r3,#25]
+  54 001c 3A69     	 ldr r2,[r7,#16]
+  55 001e D31A     	 subs r3,r2,r3
+  56 0020 FB60     	 str r3,[r7,#12]
+ 119:../cleanflight/src/main/rx/sbus.c **** 
+ 120:../cleanflight/src/main/rx/sbus.c ****     if (sbusFrameTime > (long)(SBUS_TIME_NEEDED_PER_FRAME + 500)) {
+  57              	 .loc 1 120 0
+  58 0022 FB68     	 ldr r3,[r7,#12]
+  59 0024 40F6AC52 	 movw r2,#3500
+  60 0028 9342     	 cmp r3,r2
+  61 002a 02DD     	 ble .L2
+ 121:../cleanflight/src/main/rx/sbus.c ****         sbusFrameData->position = 0;
+  62              	 .loc 1 121 0
+  63 002c 7B69     	 ldr r3,[r7,#20]
+  64 002e 0022     	 movs r2,#0
+  65 0030 DA77     	 strb r2,[r3,#31]
+  66              	.L2:
+ 122:../cleanflight/src/main/rx/sbus.c ****     }
+ 123:../cleanflight/src/main/rx/sbus.c **** 
+ 124:../cleanflight/src/main/rx/sbus.c ****     if (sbusFrameData->position == 0) {
+  67              	 .loc 1 124 0
+  68 0032 7B69     	 ldr r3,[r7,#20]
+  69 0034 DB7F     	 ldrb r3,[r3,#31]
+  70 0036 002B     	 cmp r3,#0
+  71 0038 07D1     	 bne .L3
+ 125:../cleanflight/src/main/rx/sbus.c ****         if (c != SBUS_FRAME_BEGIN_BYTE) {
+  72              	 .loc 1 125 0
+  73 003a FB88     	 ldrh r3,[r7,#6]
+  74 003c 0F2B     	 cmp r3,#15
+  75 003e 00D0     	 beq .L4
+ 126:../cleanflight/src/main/rx/sbus.c ****             return;
+  76              	 .loc 1 126 0
+  77 0040 27E0     	 b .L1
+  78              	.L4:
+ 127:../cleanflight/src/main/rx/sbus.c ****         }
+ 128:../cleanflight/src/main/rx/sbus.c ****         sbusFrameData->startAtUs = nowUs;
+  79              	 .loc 1 128 0
+  80 0042 7B69     	 ldr r3,[r7,#20]
+  81 0044 3A69     	 ldr r2,[r7,#16]
+  82 0046 C3F81920 	 str r2,[r3,#25]
+  83              	.L3:
+ 129:../cleanflight/src/main/rx/sbus.c ****     }
+ 130:../cleanflight/src/main/rx/sbus.c **** 
+ 131:../cleanflight/src/main/rx/sbus.c ****     if (sbusFrameData->position < SBUS_FRAME_SIZE) {
+  84              	 .loc 1 131 0
+  85 004a 7B69     	 ldr r3,[r7,#20]
+  86 004c DB7F     	 ldrb r3,[r3,#31]
+  87 004e 182B     	 cmp r3,#24
+  88 0050 1FD8     	 bhi .L1
+ 132:../cleanflight/src/main/rx/sbus.c ****         sbusFrameData->frame.bytes[sbusFrameData->position++] = (uint8_t)c;
+  89              	 .loc 1 132 0
+  90 0052 7B69     	 ldr r3,[r7,#20]
+  91 0054 DB7F     	 ldrb r3,[r3,#31]
+  92 0056 5A1C     	 adds r2,r3,#1
+  93 0058 D1B2     	 uxtb r1,r2
+  94 005a 7A69     	 ldr r2,[r7,#20]
+  95 005c D177     	 strb r1,[r2,#31]
+  96 005e 1A46     	 mov r2,r3
+  97 0060 FB88     	 ldrh r3,[r7,#6]
+  98 0062 D9B2     	 uxtb r1,r3
+  99 0064 7B69     	 ldr r3,[r7,#20]
+ 100 0066 9954     	 strb r1,[r3,r2]
+ 133:../cleanflight/src/main/rx/sbus.c ****         if (sbusFrameData->position < SBUS_FRAME_SIZE) {
+ 101              	 .loc 1 133 0
+ 102 0068 7B69     	 ldr r3,[r7,#20]
+ 103 006a DB7F     	 ldrb r3,[r3,#31]
+ 104 006c 182B     	 cmp r3,#24
+ 105 006e 04D8     	 bhi .L6
+ 134:../cleanflight/src/main/rx/sbus.c ****             sbusFrameData->done = false;
+ 106              	 .loc 1 134 0
+ 107 0070 7B69     	 ldr r3,[r7,#20]
+ 108 0072 0022     	 movs r2,#0
+ 109 0074 83F82020 	 strb r2,[r3,#32]
+ 110 0078 0BE0     	 b .L1
+ 111              	.L6:
+ 135:../cleanflight/src/main/rx/sbus.c ****         } else {
+ 136:../cleanflight/src/main/rx/sbus.c ****             sbusFrameData->done = true;
+ 112              	 .loc 1 136 0
+ 113 007a 7B69     	 ldr r3,[r7,#20]
+ 114 007c 0122     	 movs r2,#1
+ 115 007e 83F82020 	 strb r2,[r3,#32]
+ 137:../cleanflight/src/main/rx/sbus.c ****             DEBUG_SET(DEBUG_SBUS, DEBUG_SBUS_FRAME_TIME, sbusFrameTime);
+ 116              	 .loc 1 137 0
+ 117 0082 054B     	 ldr r3,.L7
+ 118 0084 1B78     	 ldrb r3,[r3]
+ 119 0086 1A2B     	 cmp r3,#26
+ 120 0088 03D1     	 bne .L1
+ 121              	 .loc 1 137 0 is_stmt 0 discriminator 1
+ 122 008a FB68     	 ldr r3,[r7,#12]
+ 123 008c 9AB2     	 uxth r2,r3
+ 124 008e 034B     	 ldr r3,.L7+4
+ 125 0090 9A80     	 strh r2,[r3,#4]
+ 126              	.L1:
+ 138:../cleanflight/src/main/rx/sbus.c ****         }
+ 139:../cleanflight/src/main/rx/sbus.c ****     }
+ 140:../cleanflight/src/main/rx/sbus.c **** }
+ 127              	 .loc 1 140 0 is_stmt 1
+ 128 0092 1837     	 adds r7,r7,#24
+ 129              	.LCFI3:
+ 130              	 .cfi_def_cfa_offset 8
+ 131 0094 BD46     	 mov sp,r7
+ 132              	.LCFI4:
+ 133              	 .cfi_def_cfa_register 13
+ 134              	 
+ 135 0096 80BD     	 pop {r7,pc}
+ 136              	.L8:
+ 137              	 .align 2
+ 138              	.L7:
+ 139 0098 00000000 	 .word debugMode
+ 140 009c 00000000 	 .word debug
+ 141              	 .cfi_endproc
+ 142              	.LFE539:
+ 144              	 .section .text.sbusFrameStatus,"ax",%progbits
+ 145              	 .align 2
+ 146              	 .thumb
+ 147              	 .thumb_func
+ 149              	sbusFrameStatus:
+ 150              	.LFB540:
+ 141:../cleanflight/src/main/rx/sbus.c **** 
+ 142:../cleanflight/src/main/rx/sbus.c **** static uint8_t sbusFrameStatus(rxRuntimeConfig_t *rxRuntimeConfig)
+ 143:../cleanflight/src/main/rx/sbus.c **** {
+ 151              	 .loc 1 143 0
+ 152              	 .cfi_startproc
+ 153              	 
+ 154              	 
+ 155 0000 80B5     	 push {r7,lr}
+ 156              	.LCFI5:
+ 157              	 .cfi_def_cfa_offset 8
+ 158              	 .cfi_offset 7,-8
+ 159              	 .cfi_offset 14,-4
+ 160 0002 84B0     	 sub sp,sp,#16
+ 161              	.LCFI6:
+ 162              	 .cfi_def_cfa_offset 24
+ 163 0004 00AF     	 add r7,sp,#0
+ 164              	.LCFI7:
+ 165              	 .cfi_def_cfa_register 7
+ 166 0006 7860     	 str r0,[r7,#4]
+ 144:../cleanflight/src/main/rx/sbus.c ****     sbusFrameData_t *sbusFrameData = rxRuntimeConfig->frameData;
+ 167              	 .loc 1 144 0
+ 168 0008 7B68     	 ldr r3,[r7,#4]
+ 169 000a D3F81330 	 ldr r3,[r3,#19]
+ 170 000e FB60     	 str r3,[r7,#12]
+ 145:../cleanflight/src/main/rx/sbus.c ****     if (!sbusFrameData->done) {
+ 171              	 .loc 1 145 0
+ 172 0010 FB68     	 ldr r3,[r7,#12]
+ 173 0012 93F82030 	 ldrb r3,[r3,#32]
+ 174 0016 83F00103 	 eor r3,r3,#1
+ 175 001a DBB2     	 uxtb r3,r3
+ 176 001c 002B     	 cmp r3,#0
+ 177 001e 01D0     	 beq .L10
+ 146:../cleanflight/src/main/rx/sbus.c ****         return RX_FRAME_PENDING;
+ 178              	 .loc 1 146 0
+ 179 0020 0023     	 movs r3,#0
+ 180 0022 54E0     	 b .L11
+ 181              	.L10:
+ 147:../cleanflight/src/main/rx/sbus.c ****     }
+ 148:../cleanflight/src/main/rx/sbus.c ****     sbusFrameData->done = false;
+ 182              	 .loc 1 148 0
+ 183 0024 FB68     	 ldr r3,[r7,#12]
+ 184 0026 0022     	 movs r2,#0
+ 185 0028 83F82020 	 strb r2,[r3,#32]
+ 149:../cleanflight/src/main/rx/sbus.c **** 
+ 150:../cleanflight/src/main/rx/sbus.c ****     DEBUG_SET(DEBUG_SBUS, DEBUG_SBUS_FRAME_FLAGS, sbusFrameData->frame.frame.channels.flags);
+ 186              	 .loc 1 150 0
+ 187 002c 2A4B     	 ldr r3,.L16
+ 188 002e 1B78     	 ldrb r3,[r3]
+ 189 0030 1A2B     	 cmp r3,#26
+ 190 0032 04D1     	 bne .L12
+ 191              	 .loc 1 150 0 is_stmt 0 discriminator 1
+ 192 0034 FB68     	 ldr r3,[r7,#12]
+ 193 0036 DB7D     	 ldrb r3,[r3,#23]
+ 194 0038 9AB2     	 uxth r2,r3
+ 195 003a 284B     	 ldr r3,.L16+4
+ 196 003c 1A80     	 strh r2,[r3]
+ 197              	.L12:
+ 151:../cleanflight/src/main/rx/sbus.c **** 
+ 152:../cleanflight/src/main/rx/sbus.c ****     if (sbusFrameData->frame.frame.channels.flags & SBUS_FLAG_SIGNAL_LOSS) {
+ 198              	 .loc 1 152 0 is_stmt 1
+ 199 003e FB68     	 ldr r3,[r7,#12]
+ 200 0040 DB7D     	 ldrb r3,[r3,#23]
+ 201 0042 03F00403 	 and r3,r3,#4
+ 202 0046 002B     	 cmp r3,#0
+ 203 0048 14D0     	 beq .L13
+ 153:../cleanflight/src/main/rx/sbus.c ****         sbusFrameData->stateFlags |= SBUS_STATE_SIGNALLOSS;
+ 204              	 .loc 1 153 0
+ 205 004a FB68     	 ldr r3,[r7,#12]
+ 206 004c B3F81D30 	 ldrh r3,[r3,#29]
+ 207 0050 9BB2     	 uxth r3,r3
+ 208 0052 43F00203 	 orr r3,r3,#2
+ 209 0056 9AB2     	 uxth r2,r3
+ 210 0058 FB68     	 ldr r3,[r7,#12]
+ 211 005a A3F81D20 	 strh r2,[r3,#29]
+ 154:../cleanflight/src/main/rx/sbus.c ****         DEBUG_SET(DEBUG_SBUS, DEBUG_SBUS_STATE_FLAGS, sbusFrameData->stateFlags);
+ 212              	 .loc 1 154 0
+ 213 005e 1E4B     	 ldr r3,.L16
+ 214 0060 1B78     	 ldrb r3,[r3]
+ 215 0062 1A2B     	 cmp r3,#26
+ 216 0064 06D1     	 bne .L13
+ 217              	 .loc 1 154 0 is_stmt 0 discriminator 1
+ 218 0066 FB68     	 ldr r3,[r7,#12]
+ 219 0068 B3F81D30 	 ldrh r3,[r3,#29]
+ 220 006c 9BB2     	 uxth r3,r3
+ 221 006e 9AB2     	 uxth r2,r3
+ 222 0070 1A4B     	 ldr r3,.L16+4
+ 223 0072 5A80     	 strh r2,[r3,#2]
+ 224              	.L13:
+ 155:../cleanflight/src/main/rx/sbus.c ****     }
+ 156:../cleanflight/src/main/rx/sbus.c ****     if (sbusFrameData->frame.frame.channels.flags & SBUS_FLAG_FAILSAFE_ACTIVE) {
+ 225              	 .loc 1 156 0 is_stmt 1
+ 226 0074 FB68     	 ldr r3,[r7,#12]
+ 227 0076 DB7D     	 ldrb r3,[r3,#23]
+ 228 0078 03F00803 	 and r3,r3,#8
+ 229 007c 002B     	 cmp r3,#0
+ 230 007e 14D0     	 beq .L14
+ 157:../cleanflight/src/main/rx/sbus.c ****         sbusFrameData->stateFlags |= SBUS_STATE_FAILSAFE;
+ 231              	 .loc 1 157 0
+ 232 0080 FB68     	 ldr r3,[r7,#12]
+ 233 0082 B3F81D30 	 ldrh r3,[r3,#29]
+ 234 0086 9BB2     	 uxth r3,r3
+ 235 0088 43F00103 	 orr r3,r3,#1
+ 236 008c 9AB2     	 uxth r2,r3
+ 237 008e FB68     	 ldr r3,[r7,#12]
+ 238 0090 A3F81D20 	 strh r2,[r3,#29]
+ 158:../cleanflight/src/main/rx/sbus.c ****         DEBUG_SET(DEBUG_SBUS, DEBUG_SBUS_STATE_FLAGS, sbusFrameData->stateFlags);
+ 239              	 .loc 1 158 0
+ 240 0094 104B     	 ldr r3,.L16
+ 241 0096 1B78     	 ldrb r3,[r3]
+ 242 0098 1A2B     	 cmp r3,#26
+ 243 009a 06D1     	 bne .L14
+ 244              	 .loc 1 158 0 is_stmt 0 discriminator 1
+ 245 009c FB68     	 ldr r3,[r7,#12]
+ 246 009e B3F81D30 	 ldrh r3,[r3,#29]
+ 247 00a2 9BB2     	 uxth r3,r3
+ 248 00a4 9AB2     	 uxth r2,r3
+ 249 00a6 0D4B     	 ldr r3,.L16+4
+ 250 00a8 5A80     	 strh r2,[r3,#2]
+ 251              	.L14:
+ 159:../cleanflight/src/main/rx/sbus.c ****     }
+ 160:../cleanflight/src/main/rx/sbus.c **** 
+ 161:../cleanflight/src/main/rx/sbus.c ****     DEBUG_SET(DEBUG_SBUS, DEBUG_SBUS_STATE_FLAGS, sbusFrameData->stateFlags);
+ 252              	 .loc 1 161 0 is_stmt 1
+ 253 00aa 0B4B     	 ldr r3,.L16
+ 254 00ac 1B78     	 ldrb r3,[r3]
+ 255 00ae 1A2B     	 cmp r3,#26
+ 256 00b0 06D1     	 bne .L15
+ 257              	 .loc 1 161 0 is_stmt 0 discriminator 1
+ 258 00b2 FB68     	 ldr r3,[r7,#12]
+ 259 00b4 B3F81D30 	 ldrh r3,[r3,#29]
+ 260 00b8 9BB2     	 uxth r3,r3
+ 261 00ba 9AB2     	 uxth r2,r3
+ 262 00bc 074B     	 ldr r3,.L16+4
+ 263 00be 5A80     	 strh r2,[r3,#2]
+ 264              	.L15:
+ 162:../cleanflight/src/main/rx/sbus.c **** 
+ 163:../cleanflight/src/main/rx/sbus.c ****     return sbusChannelsDecode(rxRuntimeConfig, &sbusFrameData->frame.frame.channels);
+ 265              	 .loc 1 163 0 is_stmt 1
+ 266 00c0 FB68     	 ldr r3,[r7,#12]
+ 267 00c2 0133     	 adds r3,r3,#1
+ 268 00c4 7868     	 ldr r0,[r7,#4]
+ 269 00c6 1946     	 mov r1,r3
+ 270 00c8 FFF7FEFF 	 bl sbusChannelsDecode
+ 271 00cc 0346     	 mov r3,r0
+ 272              	.L11:
+ 164:../cleanflight/src/main/rx/sbus.c **** }
+ 273              	 .loc 1 164 0
+ 274 00ce 1846     	 mov r0,r3
+ 275 00d0 1037     	 adds r7,r7,#16
+ 276              	.LCFI8:
+ 277              	 .cfi_def_cfa_offset 8
+ 278 00d2 BD46     	 mov sp,r7
+ 279              	.LCFI9:
+ 280              	 .cfi_def_cfa_register 13
+ 281              	 
+ 282 00d4 80BD     	 pop {r7,pc}
+ 283              	.L17:
+ 284 00d6 00BF     	 .align 2
+ 285              	.L16:
+ 286 00d8 00000000 	 .word debugMode
+ 287 00dc 00000000 	 .word debug
+ 288              	 .cfi_endproc
+ 289              	.LFE540:
+ 291              	 .section .text.sbusInit,"ax",%progbits
+ 292              	 .align 2
+ 293              	 .global sbusInit
+ 294              	 .thumb
+ 295              	 .thumb_func
+ 297              	sbusInit:
+ 298              	.LFB541:
+ 165:../cleanflight/src/main/rx/sbus.c **** 
+ 166:../cleanflight/src/main/rx/sbus.c **** bool sbusInit(const rxConfig_t *rxConfig, rxRuntimeConfig_t *rxRuntimeConfig)
+ 167:../cleanflight/src/main/rx/sbus.c **** {
+ 299              	 .loc 1 167 0
+ 300              	 .cfi_startproc
+ 301              	 
+ 302              	 
+ 303 0000 80B5     	 push {r7,lr}
+ 304              	.LCFI10:
+ 305              	 .cfi_def_cfa_offset 8
+ 306              	 .cfi_offset 7,-8
+ 307              	 .cfi_offset 14,-4
+ 308 0002 8AB0     	 sub sp,sp,#40
+ 309              	.LCFI11:
+ 310              	 .cfi_def_cfa_offset 48
+ 311 0004 04AF     	 add r7,sp,#16
+ 312              	.LCFI12:
+ 313              	 .cfi_def_cfa 7,32
+ 314 0006 7860     	 str r0,[r7,#4]
+ 315 0008 3960     	 str r1,[r7]
+ 168:../cleanflight/src/main/rx/sbus.c ****     static uint16_t sbusChannelData[SBUS_MAX_CHANNEL];
+ 169:../cleanflight/src/main/rx/sbus.c ****     static sbusFrameData_t sbusFrameData;
+ 170:../cleanflight/src/main/rx/sbus.c **** 
+ 171:../cleanflight/src/main/rx/sbus.c ****     rxRuntimeConfig->channelData = sbusChannelData;
+ 316              	 .loc 1 171 0
+ 317 000a 3B68     	 ldr r3,[r7]
+ 318 000c 2D4A     	 ldr r2,.L28
+ 319 000e C3F80F20 	 str r2,[r3,#15]
+ 172:../cleanflight/src/main/rx/sbus.c ****     rxRuntimeConfig->frameData = &sbusFrameData;
+ 320              	 .loc 1 172 0
+ 321 0012 3B68     	 ldr r3,[r7]
+ 322 0014 2C4A     	 ldr r2,.L28+4
+ 323 0016 C3F81320 	 str r2,[r3,#19]
+ 173:../cleanflight/src/main/rx/sbus.c ****     sbusChannelsInit(rxConfig, rxRuntimeConfig);
+ 324              	 .loc 1 173 0
+ 325 001a 7868     	 ldr r0,[r7,#4]
+ 326 001c 3968     	 ldr r1,[r7]
+ 327 001e FFF7FEFF 	 bl sbusChannelsInit
+ 174:../cleanflight/src/main/rx/sbus.c **** 
+ 175:../cleanflight/src/main/rx/sbus.c ****     rxRuntimeConfig->channelCount = SBUS_MAX_CHANNEL;
+ 328              	 .loc 1 175 0
+ 329 0022 3B68     	 ldr r3,[r7]
+ 330 0024 1222     	 movs r2,#18
+ 331 0026 1A70     	 strb r2,[r3]
+ 176:../cleanflight/src/main/rx/sbus.c ****     rxRuntimeConfig->rxRefreshRate = 11000;
+ 332              	 .loc 1 176 0
+ 333 0028 3B68     	 ldr r3,[r7]
+ 334 002a 0022     	 movs r2,#0
+ 335 002c 62F00702 	 orn r2,r2,#7
+ 336 0030 5A70     	 strb r2,[r3,#1]
+ 337 0032 0022     	 movs r2,#0
+ 338 0034 42F02A02 	 orr r2,r2,#42
+ 339 0038 9A70     	 strb r2,[r3,#2]
+ 177:../cleanflight/src/main/rx/sbus.c **** 
+ 178:../cleanflight/src/main/rx/sbus.c ****     rxRuntimeConfig->rcFrameStatusFn = sbusFrameStatus;
+ 340              	 .loc 1 178 0
+ 341 003a 3B68     	 ldr r3,[r7]
+ 342 003c 234A     	 ldr r2,.L28+8
+ 343 003e C3F80720 	 str r2,[r3,#7]
+ 179:../cleanflight/src/main/rx/sbus.c **** 
+ 180:../cleanflight/src/main/rx/sbus.c ****     const serialPortConfig_t *portConfig = findSerialPortConfig(FUNCTION_RX_SERIAL);
+ 344              	 .loc 1 180 0
+ 345 0042 4020     	 movs r0,#64
+ 346 0044 FFF7FEFF 	 bl findSerialPortConfig
+ 347 0048 7861     	 str r0,[r7,#20]
+ 181:../cleanflight/src/main/rx/sbus.c ****     if (!portConfig) {
+ 348              	 .loc 1 181 0
+ 349 004a 7B69     	 ldr r3,[r7,#20]
+ 350 004c 002B     	 cmp r3,#0
+ 351 004e 01D1     	 bne .L19
+ 182:../cleanflight/src/main/rx/sbus.c ****         return false;
+ 352              	 .loc 1 182 0
+ 353 0050 0023     	 movs r3,#0
+ 354 0052 33E0     	 b .L20
+ 355              	.L19:
+ 183:../cleanflight/src/main/rx/sbus.c ****     }
+ 184:../cleanflight/src/main/rx/sbus.c **** 
+ 185:../cleanflight/src/main/rx/sbus.c **** #ifdef USE_TELEMETRY
+ 186:../cleanflight/src/main/rx/sbus.c ****     bool portShared = telemetryCheckRxPortShared(portConfig);
+ 187:../cleanflight/src/main/rx/sbus.c **** #else
+ 188:../cleanflight/src/main/rx/sbus.c ****     bool portShared = false;
+ 356              	 .loc 1 188 0
+ 357 0054 0023     	 movs r3,#0
+ 358 0056 FB74     	 strb r3,[r7,#19]
+ 189:../cleanflight/src/main/rx/sbus.c **** #endif
+ 190:../cleanflight/src/main/rx/sbus.c **** 
+ 191:../cleanflight/src/main/rx/sbus.c ****     serialPort_t *sBusPort = openSerialPort(portConfig->identifier,
+ 359              	 .loc 1 191 0
+ 360 0058 7B69     	 ldr r3,[r7,#20]
+ 361 005a 9978     	 ldrb r1,[r3,#2]
+ 362 005c FB7C     	 ldrb r3,[r7,#19]
+ 363 005e 002B     	 cmp r3,#0
+ 364 0060 01D0     	 beq .L21
+ 365              	 .loc 1 191 0 is_stmt 0 discriminator 1
+ 366 0062 0322     	 movs r2,#3
+ 367 0064 00E0     	 b .L22
+ 368              	.L21:
+ 369              	 .loc 1 191 0 discriminator 2
+ 370 0066 0122     	 movs r2,#1
+ 371              	.L22:
+ 192:../cleanflight/src/main/rx/sbus.c ****         FUNCTION_RX_SERIAL,
+ 193:../cleanflight/src/main/rx/sbus.c ****         sbusDataReceive,
+ 194:../cleanflight/src/main/rx/sbus.c ****         &sbusFrameData,
+ 195:../cleanflight/src/main/rx/sbus.c ****         SBUS_BAUDRATE,
+ 196:../cleanflight/src/main/rx/sbus.c ****         portShared ? MODE_RXTX : MODE_RX,
+ 197:../cleanflight/src/main/rx/sbus.c ****         SBUS_PORT_OPTIONS | (rxConfig->serialrx_inverted ? 0 : SERIAL_INVERTED) | (rxConfig->halfDu
+ 372              	 .loc 1 197 0 is_stmt 1 discriminator 4
+ 373 0068 7B68     	 ldr r3,[r7,#4]
+ 374 006a 5B7A     	 ldrb r3,[r3,#9]
+ 191:../cleanflight/src/main/rx/sbus.c ****         FUNCTION_RX_SERIAL,
+ 375              	 .loc 1 191 0 discriminator 4
+ 376 006c 002B     	 cmp r3,#0
+ 377 006e 01D1     	 bne .L23
+ 191:../cleanflight/src/main/rx/sbus.c ****         FUNCTION_RX_SERIAL,
+ 378              	 .loc 1 191 0 is_stmt 0 discriminator 5
+ 379 0070 0720     	 movs r0,#7
+ 380 0072 00E0     	 b .L24
+ 381              	.L23:
+ 191:../cleanflight/src/main/rx/sbus.c ****         FUNCTION_RX_SERIAL,
+ 382              	 .loc 1 191 0 discriminator 6
+ 383 0074 0620     	 movs r0,#6
+ 384              	.L24:
+ 385              	 .loc 1 197 0 is_stmt 1 discriminator 8
+ 386 0076 7B68     	 ldr r3,[r7,#4]
+ 387 0078 9B7A     	 ldrb r3,[r3,#10]
+ 191:../cleanflight/src/main/rx/sbus.c ****         FUNCTION_RX_SERIAL,
+ 388              	 .loc 1 191 0 discriminator 8
+ 389 007a 002B     	 cmp r3,#0
+ 390 007c 01D0     	 beq .L25
+ 191:../cleanflight/src/main/rx/sbus.c ****         FUNCTION_RX_SERIAL,
+ 391              	 .loc 1 191 0 is_stmt 0 discriminator 9
+ 392 007e 0823     	 movs r3,#8
+ 393 0080 00E0     	 b .L26
+ 394              	.L25:
+ 191:../cleanflight/src/main/rx/sbus.c ****         FUNCTION_RX_SERIAL,
+ 395              	 .loc 1 191 0 discriminator 10
+ 396 0082 0023     	 movs r3,#0
+ 397              	.L26:
+ 191:../cleanflight/src/main/rx/sbus.c ****         FUNCTION_RX_SERIAL,
+ 398              	 .loc 1 191 0 discriminator 12
+ 399 0084 0343     	 orrs r3,r3,r0
+ 400 0086 DBB2     	 uxtb r3,r3
+ 401 0088 DBB2     	 uxtb r3,r3
+ 402 008a 48B2     	 sxtb r0,r1
+ 403 008c 1049     	 ldr r1,.L28+12
+ 404 008e 0091     	 str r1,[sp]
+ 405 0090 0192     	 str r2,[sp,#4]
+ 406 0092 0293     	 str r3,[sp,#8]
+ 407 0094 4021     	 movs r1,#64
+ 408 0096 0F4A     	 ldr r2,.L28+16
+ 409 0098 0B4B     	 ldr r3,.L28+4
+ 410 009a FFF7FEFF 	 bl openSerialPort
+ 411 009e F860     	 str r0,[r7,#12]
+ 198:../cleanflight/src/main/rx/sbus.c ****         );
+ 199:../cleanflight/src/main/rx/sbus.c **** 
+ 200:../cleanflight/src/main/rx/sbus.c ****     if (rxConfig->rssi_src_frame_errors) {
+ 412              	 .loc 1 200 0 is_stmt 1 discriminator 12
+ 413 00a0 7B68     	 ldr r3,[r7,#4]
+ 414 00a2 93F82230 	 ldrb r3,[r3,#34]
+ 415 00a6 002B     	 cmp r3,#0
+ 416 00a8 02D0     	 beq .L27
+ 201:../cleanflight/src/main/rx/sbus.c ****         rssiSource = RSSI_SOURCE_FRAME_ERRORS;
+ 417              	 .loc 1 201 0
+ 418 00aa 0B4B     	 ldr r3,.L28+20
+ 419 00ac 0522     	 movs r2,#5
+ 420 00ae 1A70     	 strb r2,[r3]
+ 421              	.L27:
+ 202:../cleanflight/src/main/rx/sbus.c ****     }
+ 203:../cleanflight/src/main/rx/sbus.c **** 
+ 204:../cleanflight/src/main/rx/sbus.c **** #ifdef USE_TELEMETRY
+ 205:../cleanflight/src/main/rx/sbus.c ****     if (portShared) {
+ 206:../cleanflight/src/main/rx/sbus.c ****         telemetrySharedPort = sBusPort;
+ 207:../cleanflight/src/main/rx/sbus.c ****     }
+ 208:../cleanflight/src/main/rx/sbus.c **** #endif
+ 209:../cleanflight/src/main/rx/sbus.c **** 
+ 210:../cleanflight/src/main/rx/sbus.c ****     return sBusPort != NULL;
+ 422              	 .loc 1 210 0
+ 423 00b0 FB68     	 ldr r3,[r7,#12]
+ 424 00b2 002B     	 cmp r3,#0
+ 425 00b4 14BF     	 ite ne
+ 426 00b6 0123     	 movne r3,#1
+ 427 00b8 0023     	 moveq r3,#0
+ 428 00ba DBB2     	 uxtb r3,r3
+ 429              	.L20:
+ 211:../cleanflight/src/main/rx/sbus.c **** }
+ 430              	 .loc 1 211 0
+ 431 00bc 1846     	 mov r0,r3
+ 432 00be 1837     	 adds r7,r7,#24
+ 433              	.LCFI13:
+ 434              	 .cfi_def_cfa_offset 8
+ 435 00c0 BD46     	 mov sp,r7
+ 436              	.LCFI14:
+ 437              	 .cfi_def_cfa_register 13
+ 438              	 
+ 439 00c2 80BD     	 pop {r7,pc}
+ 440              	.L29:
+ 441              	 .align 2
+ 442              	.L28:
+ 443 00c4 00000000 	 .word sbusChannelData.12619
+ 444 00c8 00000000 	 .word sbusFrameData.12620
+ 445 00cc 00000000 	 .word sbusFrameStatus
+ 446 00d0 A0860100 	 .word 100000
+ 447 00d4 00000000 	 .word sbusDataReceive
+ 448 00d8 00000000 	 .word rssiSource
+ 449              	 .cfi_endproc
+ 450              	.LFE541:
+ 452              	 .section .bss.sbusChannelData.12619,"aw",%nobits
+ 453              	 .align 2
+ 456              	sbusChannelData.12619:
+ 457 0000 00000000 	 .space 36
+ 457      00000000 
+ 457      00000000 
+ 457      00000000 
+ 457      00000000 
+ 458              	 .section .bss.sbusFrameData.12620,"aw",%nobits
+ 459              	 .align 2
+ 462              	sbusFrameData.12620:
+ 463 0000 00000000 	 .space 33
+ 463      00000000 
+ 463      00000000 
+ 463      00000000 
+ 463      00000000 
+ 464 0021 000000   	 .text
+ 465              	.Letext0:
+ 466              	 .file 2 "d:\\xmc\\dave-ide-4.4.2-64bit\\eclipse\\arm-gcc-49\\arm-none-eabi\\include\\machine\\_default_types.h"
+ 467              	 .file 3 "d:\\xmc\\dave-ide-4.4.2-64bit\\eclipse\\arm-gcc-49\\arm-none-eabi\\include\\stdint.h"
+ 468              	 .file 4 "D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/common/time.h"
+ 469              	 .file 5 "D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/drivers/io_types.h"
+ 470              	 .file 6 "D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/build/debug.h"
+ 471              	 .file 7 "D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/drivers/serial.h"
+ 472              	 .file 8 "D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/io/serial.h"
+ 473              	 .file 9 "D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/pg/rx.h"
+ 474              	 .file 10 "D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/rx/rx.h"
+ 475              	 .file 11 "D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/rx/sbus_channels.h"
+ 476              	 .file 12 "D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/lib/main/CMSIS/Core/Include/core_cm4.h"
+ 477              	 .file 13 "D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/lib/main/XMC4000/system_XMC4700.h"
+DEFINED SYMBOLS
+                            *ABS*:00000000 sbus.c
+    {standard input}:20     .text.sbusDataReceive:00000000 $t
+    {standard input}:24     .text.sbusDataReceive:00000000 sbusDataReceive
+    {standard input}:139    .text.sbusDataReceive:00000098 $d
+    {standard input}:145    .text.sbusFrameStatus:00000000 $t
+    {standard input}:149    .text.sbusFrameStatus:00000000 sbusFrameStatus
+    {standard input}:286    .text.sbusFrameStatus:000000d8 $d
+    {standard input}:292    .text.sbusInit:00000000 $t
+    {standard input}:297    .text.sbusInit:00000000 sbusInit
+    {standard input}:443    .text.sbusInit:000000c4 $d
+    {standard input}:456    .bss.sbusChannelData.12619:00000000 sbusChannelData.12619
+    {standard input}:462    .bss.sbusFrameData.12620:00000000 sbusFrameData.12620
+    {standard input}:453    .bss.sbusChannelData.12619:00000000 $d
+    {standard input}:459    .bss.sbusFrameData.12620:00000000 $d
+                     .debug_frame:00000010 $d
+
+UNDEFINED SYMBOLS
+micros
+debugMode
+debug
+sbusChannelsDecode
+sbusChannelsInit
+findSerialPortConfig
+openSerialPort
+rssiSource

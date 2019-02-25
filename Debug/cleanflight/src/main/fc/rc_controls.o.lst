@@ -1,0 +1,1988 @@
+   1              	 .syntax unified
+   2              	 .cpu cortex-m4
+   3              	 .eabi_attribute 27,3
+   4              	 .fpu fpv4-sp-d16
+   5              	 .eabi_attribute 20,1
+   6              	 .eabi_attribute 21,1
+   7              	 .eabi_attribute 23,3
+   8              	 .eabi_attribute 24,1
+   9              	 .eabi_attribute 25,1
+  10              	 .eabi_attribute 26,1
+  11              	 .eabi_attribute 30,6
+  12              	 .eabi_attribute 34,1
+  13              	 .eabi_attribute 18,4
+  14              	 .thumb
+  15              	 .file "rc_controls.c"
+  16              	 .text
+  17              	.Ltext0:
+  18              	 .cfi_sections .debug_frame
+  19              	 .section .text.rxConfig,"ax",%progbits
+  20              	 .align 2
+  21              	 .thumb
+  22              	 .thumb_func
+  24              	rxConfig:
+  25              	.LFB533:
+  26              	 .file 1 "D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/pg/rx.h"
+   1:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/pg\rx.h **** /*
+   2:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/pg\rx.h ****  * This file is part of Cleanflight and Betaflight.
+   3:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/pg\rx.h ****  *
+   4:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/pg\rx.h ****  * Cleanflight and Betaflight are free software. You can redistribute
+   5:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/pg\rx.h ****  * this software and/or modify this software under the terms of the
+   6:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/pg\rx.h ****  * GNU General Public License as published by the Free Software
+   7:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/pg\rx.h ****  * Foundation, either version 3 of the License, or (at your option)
+   8:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/pg\rx.h ****  * any later version.
+   9:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/pg\rx.h ****  *
+  10:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/pg\rx.h ****  * Cleanflight and Betaflight are distributed in the hope that they
+  11:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/pg\rx.h ****  * will be useful, but WITHOUT ANY WARRANTY; without even the implied
+  12:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/pg\rx.h ****  * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+  13:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/pg\rx.h ****  * See the GNU General Public License for more details.
+  14:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/pg\rx.h ****  *
+  15:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/pg\rx.h ****  * You should have received a copy of the GNU General Public License
+  16:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/pg\rx.h ****  * along with this software.
+  17:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/pg\rx.h ****  *
+  18:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/pg\rx.h ****  * If not, see <http://www.gnu.org/licenses/>.
+  19:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/pg\rx.h ****  */
+  20:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/pg\rx.h **** 
+  21:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/pg\rx.h **** #pragma once
+  22:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/pg\rx.h **** 
+  23:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/pg\rx.h **** #include "drivers/io_types.h"
+  24:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/pg\rx.h **** 
+  25:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/pg\rx.h **** #include "pg/pg.h"
+  26:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/pg\rx.h **** 
+  27:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/pg\rx.h **** typedef struct rxConfig_s {
+  28:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/pg\rx.h ****     uint8_t rcmap[RX_MAPPABLE_CHANNEL_COUNT];  // mapping of radio channels to internal RPYTA+ orde
+  29:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/pg\rx.h ****     uint8_t serialrx_provider;              // type of UART-based receiver (0 = spek 10, 1 = spek 1
+  30:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/pg\rx.h ****     uint8_t serialrx_inverted;              // invert the serial RX protocol compared to it's defau
+  31:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/pg\rx.h ****     uint8_t halfDuplex;                     // allow rx to operate in half duplex mode on F4, ignor
+  32:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/pg\rx.h ****     ioTag_t spektrum_bind_pin_override_ioTag;
+  33:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/pg\rx.h ****     ioTag_t spektrum_bind_plug_ioTag;
+  34:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/pg\rx.h ****     uint8_t spektrum_sat_bind;              // number of bind pulses for Spektrum satellite receive
+  35:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/pg\rx.h ****     uint8_t spektrum_sat_bind_autoreset;    // whenever we will reset (exit) binding mode after har
+  36:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/pg\rx.h ****     uint8_t rssi_channel;
+  37:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/pg\rx.h ****     uint8_t rssi_scale;
+  38:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/pg\rx.h ****     uint8_t rssi_invert;
+  39:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/pg\rx.h ****     uint16_t midrc;                         // Some radios have not a neutral point centered on 150
+  40:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/pg\rx.h ****     uint16_t mincheck;                      // minimum rc end
+  41:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/pg\rx.h ****     uint16_t maxcheck;                      // maximum rc end
+  42:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/pg\rx.h ****     uint8_t rcInterpolation;
+  43:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/pg\rx.h ****     uint8_t rcInterpolationChannels;
+  44:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/pg\rx.h ****     uint8_t rcInterpolationInterval;
+  45:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/pg\rx.h ****     uint8_t fpvCamAngleDegrees;             // Camera angle to be scaled into rc commands
+  46:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/pg\rx.h ****     uint8_t airModeActivateThreshold;       // Throttle setpoint percent where airmode gets activat
+  47:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/pg\rx.h **** 
+  48:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/pg\rx.h ****     uint16_t rx_min_usec;
+  49:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/pg\rx.h ****     uint16_t rx_max_usec;
+  50:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/pg\rx.h ****     uint8_t max_aux_channel;
+  51:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/pg\rx.h ****     uint8_t rssi_src_frame_errors;          // true to use frame drop flags in the rx protocol
+  52:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/pg\rx.h ****     int8_t rssi_offset;                     // offset applied to the RSSI value before it is return
+  53:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/pg\rx.h ****     uint8_t rc_smoothing_type;              // Determines the smoothing algorithm to use: INTERPOLA
+  54:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/pg\rx.h ****     uint8_t rc_smoothing_input_cutoff;      // Filter cutoff frequency for the input filter (0 = au
+  55:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/pg\rx.h ****     uint8_t rc_smoothing_derivative_cutoff; // Filter cutoff frequency for the setpoint weight deri
+  56:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/pg\rx.h ****     uint8_t rc_smoothing_debug_axis;        // Axis to log as debug values when debug_mode = RC_SMO
+  57:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/pg\rx.h ****     uint8_t rc_smoothing_input_type;        // Input filter type (0 = PT1, 1 = BIQUAD)
+  58:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/pg\rx.h ****     uint8_t rc_smoothing_derivative_type;   // Derivative filter type (0 = OFF, 1 = PT1, 2 = BIQUAD
+  59:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/pg\rx.h **** } rxConfig_t;
+  60:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/pg\rx.h **** 
+  61:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/pg\rx.h **** PG_DECLARE(rxConfig_t, rxConfig);
+  27              	 .loc 1 61 0
+  28              	 .cfi_startproc
+  29              	 
+  30              	 
+  31              	 
+  32 0000 80B4     	 push {r7}
+  33              	.LCFI0:
+  34              	 .cfi_def_cfa_offset 4
+  35              	 .cfi_offset 7,-4
+  36 0002 00AF     	 add r7,sp,#0
+  37              	.LCFI1:
+  38              	 .cfi_def_cfa_register 7
+  39              	 .loc 1 61 0
+  40 0004 024B     	 ldr r3,.L3
+  41 0006 1846     	 mov r0,r3
+  42 0008 BD46     	 mov sp,r7
+  43              	.LCFI2:
+  44              	 .cfi_def_cfa_register 13
+  45              	 
+  46 000a 5DF8047B 	 ldr r7,[sp],#4
+  47              	.LCFI3:
+  48              	 .cfi_restore 7
+  49              	 .cfi_def_cfa_offset 0
+  50 000e 7047     	 bx lr
+  51              	.L4:
+  52              	 .align 2
+  53              	.L3:
+  54 0010 00000000 	 .word rxConfig_System
+  55              	 .cfi_endproc
+  56              	.LFE533:
+  58              	 .comm pCurrentDisplay,4,4
+  59              	 .section .text.flight3DConfig,"ax",%progbits
+  60              	 .align 2
+  61              	 .thumb
+  62              	 .thumb_func
+  64              	flight3DConfig:
+  65              	.LFB545:
+  66              	 .file 2 "D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/fc/rc_controls.h"
+   1:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/fc\rc_controls.h **** /*
+   2:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/fc\rc_controls.h ****  * This file is part of Cleanflight and Betaflight.
+   3:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/fc\rc_controls.h ****  *
+   4:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/fc\rc_controls.h ****  * Cleanflight and Betaflight are free software. You can redistribute
+   5:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/fc\rc_controls.h ****  * this software and/or modify this software under the terms of the
+   6:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/fc\rc_controls.h ****  * GNU General Public License as published by the Free Software
+   7:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/fc\rc_controls.h ****  * Foundation, either version 3 of the License, or (at your option)
+   8:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/fc\rc_controls.h ****  * any later version.
+   9:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/fc\rc_controls.h ****  *
+  10:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/fc\rc_controls.h ****  * Cleanflight and Betaflight are distributed in the hope that they
+  11:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/fc\rc_controls.h ****  * will be useful, but WITHOUT ANY WARRANTY; without even the implied
+  12:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/fc\rc_controls.h ****  * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+  13:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/fc\rc_controls.h ****  * See the GNU General Public License for more details.
+  14:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/fc\rc_controls.h ****  *
+  15:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/fc\rc_controls.h ****  * You should have received a copy of the GNU General Public License
+  16:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/fc\rc_controls.h ****  * along with this software.
+  17:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/fc\rc_controls.h ****  *
+  18:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/fc\rc_controls.h ****  * If not, see <http://www.gnu.org/licenses/>.
+  19:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/fc\rc_controls.h ****  */
+  20:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/fc\rc_controls.h **** 
+  21:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/fc\rc_controls.h **** #pragma once
+  22:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/fc\rc_controls.h **** 
+  23:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/fc\rc_controls.h **** #include <stdbool.h>
+  24:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/fc\rc_controls.h **** 
+  25:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/fc\rc_controls.h **** #include "common/filter.h"
+  26:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/fc\rc_controls.h **** #include "pg/pg.h"
+  27:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/fc\rc_controls.h **** 
+  28:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/fc\rc_controls.h **** typedef enum rc_alias {
+  29:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/fc\rc_controls.h ****     ROLL = 0,
+  30:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/fc\rc_controls.h ****     PITCH,
+  31:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/fc\rc_controls.h ****     YAW,
+  32:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/fc\rc_controls.h ****     THROTTLE,
+  33:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/fc\rc_controls.h ****     AUX1,
+  34:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/fc\rc_controls.h ****     AUX2,
+  35:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/fc\rc_controls.h ****     AUX3,
+  36:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/fc\rc_controls.h ****     AUX4,
+  37:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/fc\rc_controls.h ****     AUX5,
+  38:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/fc\rc_controls.h ****     AUX6,
+  39:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/fc\rc_controls.h ****     AUX7,
+  40:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/fc\rc_controls.h ****     AUX8
+  41:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/fc\rc_controls.h **** } rc_alias_e;
+  42:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/fc\rc_controls.h **** 
+  43:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/fc\rc_controls.h **** #define PRIMARY_CHANNEL_COUNT (THROTTLE + 1)
+  44:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/fc\rc_controls.h **** 
+  45:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/fc\rc_controls.h **** typedef enum {
+  46:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/fc\rc_controls.h ****     THROTTLE_LOW = 0,
+  47:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/fc\rc_controls.h ****     THROTTLE_HIGH
+  48:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/fc\rc_controls.h **** } throttleStatus_e;
+  49:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/fc\rc_controls.h **** 
+  50:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/fc\rc_controls.h **** #define AIRMODEDEADBAND 12
+  51:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/fc\rc_controls.h **** 
+  52:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/fc\rc_controls.h **** typedef enum {
+  53:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/fc\rc_controls.h ****     NOT_CENTERED = 0,
+  54:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/fc\rc_controls.h ****     CENTERED
+  55:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/fc\rc_controls.h **** } rollPitchStatus_e;
+  56:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/fc\rc_controls.h **** 
+  57:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/fc\rc_controls.h **** typedef enum {
+  58:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/fc\rc_controls.h ****     RC_SMOOTHING_OFF = 0,
+  59:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/fc\rc_controls.h ****     RC_SMOOTHING_DEFAULT,
+  60:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/fc\rc_controls.h ****     RC_SMOOTHING_AUTO,
+  61:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/fc\rc_controls.h ****     RC_SMOOTHING_MANUAL
+  62:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/fc\rc_controls.h **** } rcSmoothing_t;
+  63:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/fc\rc_controls.h **** 
+  64:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/fc\rc_controls.h **** typedef enum {
+  65:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/fc\rc_controls.h ****     RC_SMOOTHING_TYPE_INTERPOLATION,
+  66:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/fc\rc_controls.h ****     RC_SMOOTHING_TYPE_FILTER
+  67:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/fc\rc_controls.h **** } rcSmoothingType_e;
+  68:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/fc\rc_controls.h **** 
+  69:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/fc\rc_controls.h **** typedef enum {
+  70:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/fc\rc_controls.h ****     RC_SMOOTHING_INPUT_PT1,
+  71:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/fc\rc_controls.h ****     RC_SMOOTHING_INPUT_BIQUAD
+  72:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/fc\rc_controls.h **** } rcSmoothingInputFilter_e;
+  73:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/fc\rc_controls.h **** 
+  74:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/fc\rc_controls.h **** typedef enum {
+  75:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/fc\rc_controls.h ****     RC_SMOOTHING_DERIVATIVE_OFF,
+  76:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/fc\rc_controls.h ****     RC_SMOOTHING_DERIVATIVE_PT1,
+  77:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/fc\rc_controls.h ****     RC_SMOOTHING_DERIVATIVE_BIQUAD
+  78:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/fc\rc_controls.h **** } rcSmoothingDerivativeFilter_e;
+  79:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/fc\rc_controls.h **** 
+  80:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/fc\rc_controls.h **** typedef enum {
+  81:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/fc\rc_controls.h ****     RC_SMOOTHING_VALUE_INPUT_ACTIVE,
+  82:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/fc\rc_controls.h ****     RC_SMOOTHING_VALUE_DERIVATIVE_ACTIVE,
+  83:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/fc\rc_controls.h ****     RC_SMOOTHING_VALUE_AVERAGE_FRAME
+  84:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/fc\rc_controls.h **** } rcSmoothingInfoType_e;
+  85:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/fc\rc_controls.h **** 
+  86:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/fc\rc_controls.h **** #define ROL_LO (1 << (2 * ROLL))
+  87:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/fc\rc_controls.h **** #define ROL_CE (3 << (2 * ROLL))
+  88:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/fc\rc_controls.h **** #define ROL_HI (2 << (2 * ROLL))
+  89:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/fc\rc_controls.h **** #define PIT_LO (1 << (2 * PITCH))
+  90:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/fc\rc_controls.h **** #define PIT_CE (3 << (2 * PITCH))
+  91:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/fc\rc_controls.h **** #define PIT_HI (2 << (2 * PITCH))
+  92:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/fc\rc_controls.h **** #define YAW_LO (1 << (2 * YAW))
+  93:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/fc\rc_controls.h **** #define YAW_CE (3 << (2 * YAW))
+  94:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/fc\rc_controls.h **** #define YAW_HI (2 << (2 * YAW))
+  95:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/fc\rc_controls.h **** #define THR_LO (1 << (2 * THROTTLE))
+  96:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/fc\rc_controls.h **** #define THR_CE (3 << (2 * THROTTLE))
+  97:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/fc\rc_controls.h **** #define THR_HI (2 << (2 * THROTTLE))
+  98:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/fc\rc_controls.h **** 
+  99:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/fc\rc_controls.h **** #define CONTROL_RATE_CONFIG_RC_EXPO_MAX  100
+ 100:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/fc\rc_controls.h **** 
+ 101:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/fc\rc_controls.h **** #define CONTROL_RATE_CONFIG_RC_RATES_MAX  255
+ 102:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/fc\rc_controls.h **** 
+ 103:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/fc\rc_controls.h **** // (Super) rates are constrained to [0, 100] for Betaflight rates, so values higher than 100 won't 
+ 104:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/fc\rc_controls.h **** #define CONTROL_RATE_CONFIG_RATE_MAX  255
+ 105:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/fc\rc_controls.h **** 
+ 106:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/fc\rc_controls.h **** #define CONTROL_RATE_CONFIG_TPA_MAX              100
+ 107:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/fc\rc_controls.h **** 
+ 108:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/fc\rc_controls.h **** extern float rcCommand[4];
+ 109:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/fc\rc_controls.h **** 
+ 110:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/fc\rc_controls.h **** typedef struct rcSmoothingFilterTraining_s {
+ 111:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/fc\rc_controls.h ****     float sum;
+ 112:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/fc\rc_controls.h ****     int count;
+ 113:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/fc\rc_controls.h ****     uint16_t min;
+ 114:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/fc\rc_controls.h ****     uint16_t max;
+ 115:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/fc\rc_controls.h **** } rcSmoothingFilterTraining_t;
+ 116:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/fc\rc_controls.h **** 
+ 117:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/fc\rc_controls.h **** typedef union rcSmoothingFilterTypes_u {
+ 118:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/fc\rc_controls.h ****     pt1Filter_t pt1Filter;
+ 119:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/fc\rc_controls.h ****     biquadFilter_t biquadFilter;
+ 120:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/fc\rc_controls.h **** } rcSmoothingFilterTypes_t;
+ 121:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/fc\rc_controls.h **** 
+ 122:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/fc\rc_controls.h **** typedef struct rcSmoothingFilter_s {
+ 123:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/fc\rc_controls.h ****     bool filterInitialized;
+ 124:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/fc\rc_controls.h ****     rcSmoothingFilterTypes_t filter[4];
+ 125:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/fc\rc_controls.h ****     uint16_t inputCutoffFrequency;
+ 126:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/fc\rc_controls.h ****     uint16_t derivativeCutoffFrequency;
+ 127:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/fc\rc_controls.h ****     int averageFrameTimeUs;
+ 128:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/fc\rc_controls.h ****     rcSmoothingFilterTraining_t training;
+ 129:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/fc\rc_controls.h **** } rcSmoothingFilter_t;
+ 130:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/fc\rc_controls.h **** 
+ 131:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/fc\rc_controls.h **** typedef struct rcControlsConfig_s {
+ 132:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/fc\rc_controls.h ****     uint8_t deadband;                       // introduce a deadband around the stick center for pit
+ 133:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/fc\rc_controls.h ****     uint8_t yaw_deadband;                   // introduce a deadband around the stick center for yaw
+ 134:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/fc\rc_controls.h ****     uint8_t alt_hold_deadband;              // defines the neutral zone of throttle stick during al
+ 135:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/fc\rc_controls.h ****     uint8_t alt_hold_fast_change;           // when disabled, turn off the althold when throttle st
+ 136:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/fc\rc_controls.h ****     bool yaw_control_reversed;            // invert control direction of yaw
+ 137:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/fc\rc_controls.h **** } rcControlsConfig_t;
+ 138:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/fc\rc_controls.h **** 
+ 139:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/fc\rc_controls.h **** PG_DECLARE(rcControlsConfig_t, rcControlsConfig);
+ 140:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/fc\rc_controls.h **** 
+ 141:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/fc\rc_controls.h **** typedef struct flight3DConfig_s {
+ 142:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/fc\rc_controls.h ****     uint16_t deadband3d_low;                // min 3d value
+ 143:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/fc\rc_controls.h ****     uint16_t deadband3d_high;               // max 3d value
+ 144:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/fc\rc_controls.h ****     uint16_t neutral3d;                     // center 3d value
+ 145:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/fc\rc_controls.h ****     uint16_t deadband3d_throttle;           // default throttle deadband from MIDRC
+ 146:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/fc\rc_controls.h ****     uint16_t limit3d_low;                   // pwm output value for max negative thrust
+ 147:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/fc\rc_controls.h ****     uint16_t limit3d_high;                  // pwm output value for max positive thrust
+ 148:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/fc\rc_controls.h ****     uint8_t switched_mode3d;                // enable '3D Switched Mode'
+ 149:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/fc\rc_controls.h **** } flight3DConfig_t;
+ 150:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/fc\rc_controls.h **** 
+ 151:D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/fc\rc_controls.h **** PG_DECLARE(flight3DConfig_t, flight3DConfig);
+  67              	 .loc 2 151 0
+  68              	 .cfi_startproc
+  69              	 
+  70              	 
+  71              	 
+  72 0000 80B4     	 push {r7}
+  73              	.LCFI4:
+  74              	 .cfi_def_cfa_offset 4
+  75              	 .cfi_offset 7,-4
+  76 0002 00AF     	 add r7,sp,#0
+  77              	.LCFI5:
+  78              	 .cfi_def_cfa_register 7
+  79              	 .loc 2 151 0
+  80 0004 024B     	 ldr r3,.L7
+  81 0006 1846     	 mov r0,r3
+  82 0008 BD46     	 mov sp,r7
+  83              	.LCFI6:
+  84              	 .cfi_def_cfa_register 13
+  85              	 
+  86 000a 5DF8047B 	 ldr r7,[sp],#4
+  87              	.LCFI7:
+  88              	 .cfi_restore 7
+  89              	 .cfi_def_cfa_offset 0
+  90 000e 7047     	 bx lr
+  91              	.L8:
+  92              	 .align 2
+  93              	.L7:
+  94 0010 00000000 	 .word flight3DConfig_System
+  95              	 .cfi_endproc
+  96              	.LFE545:
+  98              	 .section .bss.pidProfile,"aw",%nobits
+  99              	 .align 2
+ 102              	pidProfile:
+ 103 0000 00000000 	 .space 4
+ 104              	 .section .data.isUsingSticksToArm,"aw",%progbits
+ 107              	isUsingSticksToArm:
+ 108 0000 01       	 .byte 1
+ 109              	 .comm rcCommand,16,4
+ 110              	 .comm rcControlsConfig_System,5,4
+ 111              	 .comm rcControlsConfig_Copy,5,4
+ 112              	 .global rcControlsConfig_Registry
+ 113              	 .section .pg_registry,"a",%progbits
+ 114              	 .align 2
+ 117              	rcControlsConfig_Registry:
+ 118 0000 1900     	 .short 25
+ 119 0002 0500     	 .short 5
+ 120 0004 00000000 	 .word rcControlsConfig_System
+ 121 0008 00000000 	 .word rcControlsConfig_Copy
+ 122 000c 00000000 	 .word 0
+ 123 0010 00000000 	 .word pgResetTemplate_rcControlsConfig
+ 124              	 .global pgResetTemplate_rcControlsConfig
+ 125              	 .section .pg_resetdata,"a",%progbits
+ 126              	 .align 1
+ 129              	pgResetTemplate_rcControlsConfig:
+ 130 0000 00       	 .byte 0
+ 131 0001 00       	 .byte 0
+ 132 0002 28       	 .byte 40
+ 133 0003 01       	 .byte 1
+ 134 0004 00       	 .byte 0
+ 135              	 .comm armingConfig_System,2,4
+ 136              	 .comm armingConfig_Copy,2,4
+ 137              	 .global armingConfig_Registry
+ 138              	 .section .pg_registry
+ 139              	 .align 2
+ 142              	armingConfig_Registry:
+ 143 0014 1010     	 .short 4112
+ 144 0016 0200     	 .short 2
+ 145 0018 00000000 	 .word armingConfig_System
+ 146 001c 00000000 	 .word armingConfig_Copy
+ 147 0020 00000000 	 .word 0
+ 148 0024 00000000 	 .word pgResetTemplate_armingConfig
+ 149              	 .global pgResetTemplate_armingConfig
+ 150              	 .section .pg_resetdata
+ 151 0005 00       	 .align 1
+ 154              	pgResetTemplate_armingConfig:
+ 155 0006 00       	 .byte 0
+ 156 0007 05       	 .byte 5
+ 157              	 .comm flight3DConfig_System,13,4
+ 158              	 .comm flight3DConfig_Copy,13,4
+ 159              	 .global flight3DConfig_Registry
+ 160              	 .section .pg_registry
+ 161              	 .align 2
+ 164              	flight3DConfig_Registry:
+ 165 0028 1A00     	 .short 26
+ 166 002a 0D00     	 .short 13
+ 167 002c 00000000 	 .word flight3DConfig_System
+ 168 0030 00000000 	 .word flight3DConfig_Copy
+ 169 0034 00000000 	 .word 0
+ 170 0038 00000000 	 .word pgResetTemplate_flight3DConfig
+ 171              	 .global pgResetTemplate_flight3DConfig
+ 172              	 .section .pg_resetdata
+ 173              	 .align 1
+ 176              	pgResetTemplate_flight3DConfig:
+ 177 0008 7E05     	 .short 1406
+ 178 000a EA05     	 .short 1514
+ 179 000c B405     	 .short 1460
+ 180 000e 3200     	 .short 50
+ 181 0010 E803     	 .short 1000
+ 182 0012 D007     	 .short 2000
+ 183 0014 00       	 .byte 0
+ 184 0015 00       	 .section .text.isUsingSticksForArming,"ax",%progbits
+ 185              	 .align 2
+ 186              	 .global isUsingSticksForArming
+ 187              	 .thumb
+ 188              	 .thumb_func
+ 190              	isUsingSticksForArming:
+ 191              	.LFB588:
+ 192              	 .file 3 "../cleanflight/src/main/fc/rc_controls.c"
+   1:../cleanflight/src/main/fc/rc_controls.c **** /*
+   2:../cleanflight/src/main/fc/rc_controls.c ****  * This file is part of Cleanflight and Betaflight.
+   3:../cleanflight/src/main/fc/rc_controls.c ****  *
+   4:../cleanflight/src/main/fc/rc_controls.c ****  * Cleanflight and Betaflight are free software. You can redistribute
+   5:../cleanflight/src/main/fc/rc_controls.c ****  * this software and/or modify this software under the terms of the
+   6:../cleanflight/src/main/fc/rc_controls.c ****  * GNU General Public License as published by the Free Software
+   7:../cleanflight/src/main/fc/rc_controls.c ****  * Foundation, either version 3 of the License, or (at your option)
+   8:../cleanflight/src/main/fc/rc_controls.c ****  * any later version.
+   9:../cleanflight/src/main/fc/rc_controls.c ****  *
+  10:../cleanflight/src/main/fc/rc_controls.c ****  * Cleanflight and Betaflight are distributed in the hope that they
+  11:../cleanflight/src/main/fc/rc_controls.c ****  * will be useful, but WITHOUT ANY WARRANTY; without even the implied
+  12:../cleanflight/src/main/fc/rc_controls.c ****  * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+  13:../cleanflight/src/main/fc/rc_controls.c ****  * See the GNU General Public License for more details.
+  14:../cleanflight/src/main/fc/rc_controls.c ****  *
+  15:../cleanflight/src/main/fc/rc_controls.c ****  * You should have received a copy of the GNU General Public License
+  16:../cleanflight/src/main/fc/rc_controls.c ****  * along with this software.
+  17:../cleanflight/src/main/fc/rc_controls.c ****  *
+  18:../cleanflight/src/main/fc/rc_controls.c ****  * If not, see <http://www.gnu.org/licenses/>.
+  19:../cleanflight/src/main/fc/rc_controls.c ****  */
+  20:../cleanflight/src/main/fc/rc_controls.c **** 
+  21:../cleanflight/src/main/fc/rc_controls.c **** #include <stdbool.h>
+  22:../cleanflight/src/main/fc/rc_controls.c **** #include <stdint.h>
+  23:../cleanflight/src/main/fc/rc_controls.c **** #include <string.h>
+  24:../cleanflight/src/main/fc/rc_controls.c **** 
+  25:../cleanflight/src/main/fc/rc_controls.c **** #include <math.h>
+  26:../cleanflight/src/main/fc/rc_controls.c **** 
+  27:../cleanflight/src/main/fc/rc_controls.c **** #include "platform.h"
+  28:../cleanflight/src/main/fc/rc_controls.c **** 
+  29:../cleanflight/src/main/fc/rc_controls.c **** #include "blackbox/blackbox.h"
+  30:../cleanflight/src/main/fc/rc_controls.c **** 
+  31:../cleanflight/src/main/fc/rc_controls.c **** #include "build/build_config.h"
+  32:../cleanflight/src/main/fc/rc_controls.c **** 
+  33:../cleanflight/src/main/fc/rc_controls.c **** #include "common/axis.h"
+  34:../cleanflight/src/main/fc/rc_controls.c **** #include "common/maths.h"
+  35:../cleanflight/src/main/fc/rc_controls.c **** 
+  36:../cleanflight/src/main/fc/rc_controls.c **** #include "config/feature.h"
+  37:../cleanflight/src/main/fc/rc_controls.c **** #include "pg/pg.h"
+  38:../cleanflight/src/main/fc/rc_controls.c **** #include "pg/pg_ids.h"
+  39:../cleanflight/src/main/fc/rc_controls.c **** #include "pg/rx.h"
+  40:../cleanflight/src/main/fc/rc_controls.c **** 
+  41:../cleanflight/src/main/fc/rc_controls.c **** #include "cms/cms.h"
+  42:../cleanflight/src/main/fc/rc_controls.c **** 
+  43:../cleanflight/src/main/fc/rc_controls.c **** #include "drivers/camera_control.h"
+  44:../cleanflight/src/main/fc/rc_controls.c **** 
+  45:../cleanflight/src/main/fc/rc_controls.c **** #include "fc/config.h"
+  46:../cleanflight/src/main/fc/rc_controls.c **** #include "fc/fc_core.h"
+  47:../cleanflight/src/main/fc/rc_controls.c **** #include "fc/rc_controls.h"
+  48:../cleanflight/src/main/fc/rc_controls.c **** #include "fc/fc_rc.h"
+  49:../cleanflight/src/main/fc/rc_controls.c **** #include "fc/runtime_config.h"
+  50:../cleanflight/src/main/fc/rc_controls.c **** 
+  51:../cleanflight/src/main/fc/rc_controls.c **** #include "io/gps.h"
+  52:../cleanflight/src/main/fc/rc_controls.c **** #include "io/beeper.h"
+  53:../cleanflight/src/main/fc/rc_controls.c **** #include "io/motors.h"
+  54:../cleanflight/src/main/fc/rc_controls.c **** #include "io/vtx_control.h"
+  55:../cleanflight/src/main/fc/rc_controls.c **** #include "io/dashboard.h"
+  56:../cleanflight/src/main/fc/rc_controls.c **** 
+  57:../cleanflight/src/main/fc/rc_controls.c **** #include "sensors/barometer.h"
+  58:../cleanflight/src/main/fc/rc_controls.c **** #include "sensors/battery.h"
+  59:../cleanflight/src/main/fc/rc_controls.c **** #include "sensors/sensors.h"
+  60:../cleanflight/src/main/fc/rc_controls.c **** #include "sensors/gyro.h"
+  61:../cleanflight/src/main/fc/rc_controls.c **** #include "sensors/acceleration.h"
+  62:../cleanflight/src/main/fc/rc_controls.c **** 
+  63:../cleanflight/src/main/fc/rc_controls.c **** #include "rx/rx.h"
+  64:../cleanflight/src/main/fc/rc_controls.c **** #include "scheduler/scheduler.h"
+  65:../cleanflight/src/main/fc/rc_controls.c **** 
+  66:../cleanflight/src/main/fc/rc_controls.c **** #include "flight/pid.h"
+  67:../cleanflight/src/main/fc/rc_controls.c **** #include "flight/failsafe.h"
+  68:../cleanflight/src/main/fc/rc_controls.c **** 
+  69:../cleanflight/src/main/fc/rc_controls.c **** static pidProfile_t *pidProfile;
+  70:../cleanflight/src/main/fc/rc_controls.c **** 
+  71:../cleanflight/src/main/fc/rc_controls.c **** // true if arming is done via the sticks (as opposed to a switch)
+  72:../cleanflight/src/main/fc/rc_controls.c **** static bool isUsingSticksToArm = true;
+  73:../cleanflight/src/main/fc/rc_controls.c **** 
+  74:../cleanflight/src/main/fc/rc_controls.c **** float rcCommand[4];           // interval [1000;2000] for THROTTLE and [-500;+500] for ROLL/PITCH/Y
+  75:../cleanflight/src/main/fc/rc_controls.c **** 
+  76:../cleanflight/src/main/fc/rc_controls.c **** PG_REGISTER_WITH_RESET_TEMPLATE(rcControlsConfig_t, rcControlsConfig, PG_RC_CONTROLS_CONFIG, 0);
+  77:../cleanflight/src/main/fc/rc_controls.c **** 
+  78:../cleanflight/src/main/fc/rc_controls.c **** PG_RESET_TEMPLATE(rcControlsConfig_t, rcControlsConfig,
+  79:../cleanflight/src/main/fc/rc_controls.c ****     .deadband = 0,
+  80:../cleanflight/src/main/fc/rc_controls.c ****     .yaw_deadband = 0,
+  81:../cleanflight/src/main/fc/rc_controls.c ****     .alt_hold_deadband = 40,
+  82:../cleanflight/src/main/fc/rc_controls.c ****     .alt_hold_fast_change = 1,
+  83:../cleanflight/src/main/fc/rc_controls.c ****     .yaw_control_reversed = false,
+  84:../cleanflight/src/main/fc/rc_controls.c **** );
+  85:../cleanflight/src/main/fc/rc_controls.c **** 
+  86:../cleanflight/src/main/fc/rc_controls.c **** PG_REGISTER_WITH_RESET_TEMPLATE(armingConfig_t, armingConfig, PG_ARMING_CONFIG, 1);
+  87:../cleanflight/src/main/fc/rc_controls.c **** 
+  88:../cleanflight/src/main/fc/rc_controls.c **** PG_RESET_TEMPLATE(armingConfig_t, armingConfig,
+  89:../cleanflight/src/main/fc/rc_controls.c ****     .gyro_cal_on_first_arm = 0,  // TODO - Cleanup retarded arm support
+  90:../cleanflight/src/main/fc/rc_controls.c ****     .auto_disarm_delay = 5
+  91:../cleanflight/src/main/fc/rc_controls.c **** );
+  92:../cleanflight/src/main/fc/rc_controls.c **** 
+  93:../cleanflight/src/main/fc/rc_controls.c **** PG_REGISTER_WITH_RESET_TEMPLATE(flight3DConfig_t, flight3DConfig, PG_MOTOR_3D_CONFIG, 0);
+  94:../cleanflight/src/main/fc/rc_controls.c **** PG_RESET_TEMPLATE(flight3DConfig_t, flight3DConfig,
+  95:../cleanflight/src/main/fc/rc_controls.c ****     .deadband3d_low = 1406,
+  96:../cleanflight/src/main/fc/rc_controls.c ****     .deadband3d_high = 1514,
+  97:../cleanflight/src/main/fc/rc_controls.c ****     .neutral3d = 1460,
+  98:../cleanflight/src/main/fc/rc_controls.c ****     .deadband3d_throttle = 50,
+  99:../cleanflight/src/main/fc/rc_controls.c ****     .limit3d_low = 1000,
+ 100:../cleanflight/src/main/fc/rc_controls.c ****     .limit3d_high = 2000,
+ 101:../cleanflight/src/main/fc/rc_controls.c ****     .switched_mode3d = false
+ 102:../cleanflight/src/main/fc/rc_controls.c **** );
+ 103:../cleanflight/src/main/fc/rc_controls.c **** 
+ 104:../cleanflight/src/main/fc/rc_controls.c **** bool isUsingSticksForArming(void)
+ 105:../cleanflight/src/main/fc/rc_controls.c **** {
+ 193              	 .loc 3 105 0
+ 194              	 .cfi_startproc
+ 195              	 
+ 196              	 
+ 197              	 
+ 198 0000 80B4     	 push {r7}
+ 199              	.LCFI8:
+ 200              	 .cfi_def_cfa_offset 4
+ 201              	 .cfi_offset 7,-4
+ 202 0002 00AF     	 add r7,sp,#0
+ 203              	.LCFI9:
+ 204              	 .cfi_def_cfa_register 7
+ 106:../cleanflight/src/main/fc/rc_controls.c ****     return isUsingSticksToArm;
+ 205              	 .loc 3 106 0
+ 206 0004 034B     	 ldr r3,.L11
+ 207 0006 1B78     	 ldrb r3,[r3]
+ 107:../cleanflight/src/main/fc/rc_controls.c **** }
+ 208              	 .loc 3 107 0
+ 209 0008 1846     	 mov r0,r3
+ 210 000a BD46     	 mov sp,r7
+ 211              	.LCFI10:
+ 212              	 .cfi_def_cfa_register 13
+ 213              	 
+ 214 000c 5DF8047B 	 ldr r7,[sp],#4
+ 215              	.LCFI11:
+ 216              	 .cfi_restore 7
+ 217              	 .cfi_def_cfa_offset 0
+ 218 0010 7047     	 bx lr
+ 219              	.L12:
+ 220 0012 00BF     	 .align 2
+ 221              	.L11:
+ 222 0014 00000000 	 .word isUsingSticksToArm
+ 223              	 .cfi_endproc
+ 224              	.LFE588:
+ 226              	 .section .text.areSticksInApModePosition,"ax",%progbits
+ 227              	 .align 2
+ 228              	 .global areSticksInApModePosition
+ 229              	 .thumb
+ 230              	 .thumb_func
+ 232              	areSticksInApModePosition:
+ 233              	.LFB589:
+ 108:../cleanflight/src/main/fc/rc_controls.c **** 
+ 109:../cleanflight/src/main/fc/rc_controls.c **** bool areSticksInApModePosition(uint16_t ap_mode)
+ 110:../cleanflight/src/main/fc/rc_controls.c **** {
+ 234              	 .loc 3 110 0
+ 235              	 .cfi_startproc
+ 236              	 
+ 237              	 
+ 238              	 
+ 239 0000 80B4     	 push {r7}
+ 240              	.LCFI12:
+ 241              	 .cfi_def_cfa_offset 4
+ 242              	 .cfi_offset 7,-4
+ 243 0002 85B0     	 sub sp,sp,#20
+ 244              	.LCFI13:
+ 245              	 .cfi_def_cfa_offset 24
+ 246 0004 00AF     	 add r7,sp,#0
+ 247              	.LCFI14:
+ 248              	 .cfi_def_cfa_register 7
+ 249 0006 0346     	 mov r3,r0
+ 250 0008 FB80     	 strh r3,[r7,#6]
+ 251              	.LBB2:
+ 111:../cleanflight/src/main/fc/rc_controls.c ****     return ABS(rcCommand[ROLL]) < ap_mode && ABS(rcCommand[PITCH]) < ap_mode;
+ 252              	 .loc 3 111 0
+ 253 000a 214B     	 ldr r3,.L31
+ 254 000c 1B68     	 ldr r3,[r3]
+ 255 000e FB60     	 str r3,[r7,#12]
+ 256 0010 D7ED037A 	 flds s15,[r7,#12]
+ 257 0014 F5EEC07A 	 fcmpezs s15
+ 258 0018 F1EE10FA 	 fmstat
+ 259 001c 02DD     	 ble .L29
+ 260              	 .loc 3 111 0 is_stmt 0 discriminator 1
+ 261 001e D7ED037A 	 flds s15,[r7,#12]
+ 262 0022 03E0     	 b .L16
+ 263              	.L29:
+ 264              	 .loc 3 111 0 discriminator 2
+ 265 0024 D7ED037A 	 flds s15,[r7,#12]
+ 266 0028 F1EE677A 	 fnegs s15,s15
+ 267              	.L16:
+ 268              	.LBE2:
+ 269              	 .loc 3 111 0 discriminator 4
+ 270 002c FB88     	 ldrh r3,[r7,#6]
+ 271 002e 07EE103A 	 fmsr s14,r3
+ 272 0032 B8EEC77A 	 fsitos s14,s14
+ 273 0036 F4EEC77A 	 fcmpes s15,s14
+ 274 003a F1EE10FA 	 fmstat
+ 275 003e 1CD5     	 bpl .L17
+ 276              	.LBB3:
+ 277              	 .loc 3 111 0 discriminator 5
+ 278 0040 134B     	 ldr r3,.L31
+ 279 0042 5B68     	 ldr r3,[r3,#4]
+ 280 0044 BB60     	 str r3,[r7,#8]
+ 281 0046 D7ED027A 	 flds s15,[r7,#8]
+ 282 004a F5EEC07A 	 fcmpezs s15
+ 283 004e F1EE10FA 	 fmstat
+ 284 0052 02DD     	 ble .L30
+ 285              	 .loc 3 111 0 discriminator 7
+ 286 0054 D7ED027A 	 flds s15,[r7,#8]
+ 287 0058 03E0     	 b .L21
+ 288              	.L30:
+ 289              	 .loc 3 111 0 discriminator 8
+ 290 005a D7ED027A 	 flds s15,[r7,#8]
+ 291 005e F1EE677A 	 fnegs s15,s15
+ 292              	.L21:
+ 293              	.LBE3:
+ 294              	 .loc 3 111 0 discriminator 10
+ 295 0062 FB88     	 ldrh r3,[r7,#6]
+ 296 0064 07EE103A 	 fmsr s14,r3
+ 297 0068 B8EEC77A 	 fsitos s14,s14
+ 298 006c F4EEC77A 	 fcmpes s15,s14
+ 299 0070 F1EE10FA 	 fmstat
+ 300 0074 01D5     	 bpl .L17
+ 301              	 .loc 3 111 0 discriminator 11
+ 302 0076 0123     	 movs r3,#1
+ 303 0078 00E0     	 b .L23
+ 304              	.L17:
+ 305              	 .loc 3 111 0 discriminator 12
+ 306 007a 0023     	 movs r3,#0
+ 307              	.L23:
+ 308              	 .loc 3 111 0 discriminator 14
+ 309 007c 03F00103 	 and r3,r3,#1
+ 310 0080 DBB2     	 uxtb r3,r3
+ 112:../cleanflight/src/main/fc/rc_controls.c **** }
+ 311              	 .loc 3 112 0 is_stmt 1 discriminator 14
+ 312 0082 1846     	 mov r0,r3
+ 313 0084 1437     	 adds r7,r7,#20
+ 314              	.LCFI15:
+ 315              	 .cfi_def_cfa_offset 4
+ 316 0086 BD46     	 mov sp,r7
+ 317              	.LCFI16:
+ 318              	 .cfi_def_cfa_register 13
+ 319              	 
+ 320 0088 5DF8047B 	 ldr r7,[sp],#4
+ 321              	.LCFI17:
+ 322              	 .cfi_restore 7
+ 323              	 .cfi_def_cfa_offset 0
+ 324 008c 7047     	 bx lr
+ 325              	.L32:
+ 326 008e 00BF     	 .align 2
+ 327              	.L31:
+ 328 0090 00000000 	 .word rcCommand
+ 329              	 .cfi_endproc
+ 330              	.LFE589:
+ 332              	 .section .text.calculateThrottleStatus,"ax",%progbits
+ 333              	 .align 2
+ 334              	 .global calculateThrottleStatus
+ 335              	 .thumb
+ 336              	 .thumb_func
+ 338              	calculateThrottleStatus:
+ 339              	.LFB590:
+ 113:../cleanflight/src/main/fc/rc_controls.c **** 
+ 114:../cleanflight/src/main/fc/rc_controls.c **** throttleStatus_e calculateThrottleStatus(void)
+ 115:../cleanflight/src/main/fc/rc_controls.c **** {
+ 340              	 .loc 3 115 0
+ 341              	 .cfi_startproc
+ 342              	 
+ 343              	 
+ 344 0000 B0B5     	 push {r4,r5,r7,lr}
+ 345              	.LCFI18:
+ 346              	 .cfi_def_cfa_offset 16
+ 347              	 .cfi_offset 4,-16
+ 348              	 .cfi_offset 5,-12
+ 349              	 .cfi_offset 7,-8
+ 350              	 .cfi_offset 14,-4
+ 351 0002 00AF     	 add r7,sp,#0
+ 352              	.LCFI19:
+ 353              	 .cfi_def_cfa_register 7
+ 116:../cleanflight/src/main/fc/rc_controls.c ****     if (feature(FEATURE_3D)) {
+ 354              	 .loc 3 116 0
+ 355 0004 4FF48050 	 mov r0,#4096
+ 356 0008 FFF7FEFF 	 bl feature
+ 357 000c 0346     	 mov r3,r0
+ 358 000e 002B     	 cmp r3,#0
+ 359 0010 3DD0     	 beq .L34
+ 117:../cleanflight/src/main/fc/rc_controls.c ****         if (IS_RC_MODE_ACTIVE(BOX3D) || flight3DConfig()->switched_mode3d) {
+ 360              	 .loc 3 117 0
+ 361 0012 1820     	 movs r0,#24
+ 362 0014 FFF7FEFF 	 bl IS_RC_MODE_ACTIVE
+ 363 0018 0346     	 mov r3,r0
+ 364 001a 002B     	 cmp r3,#0
+ 365 001c 05D1     	 bne .L35
+ 366              	 .loc 3 117 0 is_stmt 0 discriminator 1
+ 367 001e FFF7FEFF 	 bl flight3DConfig
+ 368 0022 0346     	 mov r3,r0
+ 369 0024 1B7B     	 ldrb r3,[r3,#12]
+ 370 0026 002B     	 cmp r3,#0
+ 371 0028 0DD0     	 beq .L36
+ 372              	.L35:
+ 118:../cleanflight/src/main/fc/rc_controls.c ****             if (rcData[THROTTLE] < rxConfig()->mincheck) {
+ 373              	 .loc 3 118 0 is_stmt 1
+ 374 002a 204B     	 ldr r3,.L41
+ 375 002c DB88     	 ldrh r3,[r3,#6]
+ 376 002e 1CB2     	 sxth r4,r3
+ 377 0030 FFF7FEFF 	 bl rxConfig
+ 378 0034 0346     	 mov r3,r0
+ 379 0036 9B8A     	 ldrh r3,[r3,#20]
+ 380 0038 9BB2     	 uxth r3,r3
+ 381 003a 9C42     	 cmp r4,r3
+ 382 003c 01DA     	 bge .L37
+ 119:../cleanflight/src/main/fc/rc_controls.c ****                 return THROTTLE_LOW;
+ 383              	 .loc 3 119 0
+ 384 003e 0023     	 movs r3,#0
+ 385 0040 32E0     	 b .L38
+ 386              	.L37:
+ 118:../cleanflight/src/main/fc/rc_controls.c ****             if (rcData[THROTTLE] < rxConfig()->mincheck) {
+ 387              	 .loc 3 118 0
+ 388 0042 00BF     	 nop
+ 389 0044 2FE0     	 b .L40
+ 390              	.L36:
+ 120:../cleanflight/src/main/fc/rc_controls.c ****             }
+ 121:../cleanflight/src/main/fc/rc_controls.c ****         } else if ((rcData[THROTTLE] > (rxConfig()->midrc - flight3DConfig()->deadband3d_throttle) 
+ 391              	 .loc 3 121 0
+ 392 0046 194B     	 ldr r3,.L41
+ 393 0048 DB88     	 ldrh r3,[r3,#6]
+ 394 004a 1CB2     	 sxth r4,r3
+ 395 004c FFF7FEFF 	 bl rxConfig
+ 396 0050 0346     	 mov r3,r0
+ 397 0052 5B8A     	 ldrh r3,[r3,#18]
+ 398 0054 9BB2     	 uxth r3,r3
+ 399 0056 1D46     	 mov r5,r3
+ 400 0058 FFF7FEFF 	 bl flight3DConfig
+ 401 005c 0346     	 mov r3,r0
+ 402 005e DB88     	 ldrh r3,[r3,#6]
+ 403 0060 9BB2     	 uxth r3,r3
+ 404 0062 EB1A     	 subs r3,r5,r3
+ 405 0064 9C42     	 cmp r4,r3
+ 406 0066 1EDD     	 ble .L40
+ 407              	 .loc 3 121 0 is_stmt 0 discriminator 1
+ 408 0068 104B     	 ldr r3,.L41
+ 409 006a DB88     	 ldrh r3,[r3,#6]
+ 410 006c 1CB2     	 sxth r4,r3
+ 411 006e FFF7FEFF 	 bl rxConfig
+ 412 0072 0346     	 mov r3,r0
+ 413 0074 5B8A     	 ldrh r3,[r3,#18]
+ 414 0076 9BB2     	 uxth r3,r3
+ 415 0078 1D46     	 mov r5,r3
+ 416 007a FFF7FEFF 	 bl flight3DConfig
+ 417 007e 0346     	 mov r3,r0
+ 418 0080 DB88     	 ldrh r3,[r3,#6]
+ 419 0082 9BB2     	 uxth r3,r3
+ 420 0084 2B44     	 add r3,r3,r5
+ 421 0086 9C42     	 cmp r4,r3
+ 422 0088 0DDA     	 bge .L40
+ 122:../cleanflight/src/main/fc/rc_controls.c ****             return THROTTLE_LOW;
+ 423              	 .loc 3 122 0 is_stmt 1
+ 424 008a 0023     	 movs r3,#0
+ 425 008c 0CE0     	 b .L38
+ 426              	.L34:
+ 123:../cleanflight/src/main/fc/rc_controls.c ****         }
+ 124:../cleanflight/src/main/fc/rc_controls.c ****     } else if (rcData[THROTTLE] < rxConfig()->mincheck) {
+ 427              	 .loc 3 124 0
+ 428 008e 074B     	 ldr r3,.L41
+ 429 0090 DB88     	 ldrh r3,[r3,#6]
+ 430 0092 1CB2     	 sxth r4,r3
+ 431 0094 FFF7FEFF 	 bl rxConfig
+ 432 0098 0346     	 mov r3,r0
+ 433 009a 9B8A     	 ldrh r3,[r3,#20]
+ 434 009c 9BB2     	 uxth r3,r3
+ 435 009e 9C42     	 cmp r4,r3
+ 436 00a0 01DA     	 bge .L40
+ 125:../cleanflight/src/main/fc/rc_controls.c ****         return THROTTLE_LOW;
+ 437              	 .loc 3 125 0
+ 438 00a2 0023     	 movs r3,#0
+ 439 00a4 00E0     	 b .L38
+ 440              	.L40:
+ 126:../cleanflight/src/main/fc/rc_controls.c ****     }
+ 127:../cleanflight/src/main/fc/rc_controls.c **** 
+ 128:../cleanflight/src/main/fc/rc_controls.c ****     return THROTTLE_HIGH;
+ 441              	 .loc 3 128 0
+ 442 00a6 0123     	 movs r3,#1
+ 443              	.L38:
+ 129:../cleanflight/src/main/fc/rc_controls.c **** }
+ 444              	 .loc 3 129 0
+ 445 00a8 1846     	 mov r0,r3
+ 446 00aa B0BD     	 pop {r4,r5,r7,pc}
+ 447              	.L42:
+ 448              	 .align 2
+ 449              	.L41:
+ 450 00ac 00000000 	 .word rcData
+ 451              	 .cfi_endproc
+ 452              	.LFE590:
+ 454              	 .section .text.processRcStickPositions,"ax",%progbits
+ 455              	 .align 2
+ 456              	 .global processRcStickPositions
+ 457              	 .thumb
+ 458              	 .thumb_func
+ 460              	processRcStickPositions:
+ 461              	.LFB591:
+ 130:../cleanflight/src/main/fc/rc_controls.c **** 
+ 131:../cleanflight/src/main/fc/rc_controls.c **** #define ARM_DELAY_MS        500
+ 132:../cleanflight/src/main/fc/rc_controls.c **** #define STICK_DELAY_MS      50
+ 133:../cleanflight/src/main/fc/rc_controls.c **** #define STICK_AUTOREPEAT_MS 250
+ 134:../cleanflight/src/main/fc/rc_controls.c **** #define repeatAfter(t) { \
+ 135:../cleanflight/src/main/fc/rc_controls.c ****     rcDelayMs -= (t); \
+ 136:../cleanflight/src/main/fc/rc_controls.c ****     doNotRepeat = false; \
+ 137:../cleanflight/src/main/fc/rc_controls.c **** }
+ 138:../cleanflight/src/main/fc/rc_controls.c **** void processRcStickPositions()
+ 139:../cleanflight/src/main/fc/rc_controls.c **** {
+ 462              	 .loc 3 139 0
+ 463              	 .cfi_startproc
+ 464              	 
+ 465              	 
+ 466 0000 90B5     	 push {r4,r7,lr}
+ 467              	.LCFI20:
+ 468              	 .cfi_def_cfa_offset 12
+ 469              	 .cfi_offset 4,-12
+ 470              	 .cfi_offset 7,-8
+ 471              	 .cfi_offset 14,-4
+ 472 0002 85B0     	 sub sp,sp,#20
+ 473              	.LCFI21:
+ 474              	 .cfi_def_cfa_offset 32
+ 475 0004 00AF     	 add r7,sp,#0
+ 476              	.LCFI22:
+ 477              	 .cfi_def_cfa_register 7
+ 140:../cleanflight/src/main/fc/rc_controls.c ****     // time the sticks are maintained
+ 141:../cleanflight/src/main/fc/rc_controls.c ****     static int16_t rcDelayMs;
+ 142:../cleanflight/src/main/fc/rc_controls.c ****     // hold sticks position for command combos
+ 143:../cleanflight/src/main/fc/rc_controls.c ****     static uint8_t rcSticks;
+ 144:../cleanflight/src/main/fc/rc_controls.c ****     // an extra guard for disarming through switch to prevent that one frame can disarm it
+ 145:../cleanflight/src/main/fc/rc_controls.c ****     static uint8_t rcDisarmTicks;
+ 146:../cleanflight/src/main/fc/rc_controls.c ****     static bool doNotRepeat;
+ 147:../cleanflight/src/main/fc/rc_controls.c **** 
+ 148:../cleanflight/src/main/fc/rc_controls.c **** #ifdef USE_CMS
+ 149:../cleanflight/src/main/fc/rc_controls.c ****     if (cmsInMenu) {
+ 478              	 .loc 3 149 0
+ 479 0006 B04B     	 ldr r3,.L97
+ 480 0008 1B78     	 ldrb r3,[r3]
+ 481 000a 002B     	 cmp r3,#0
+ 482 000c 00D0     	 beq .L44
+ 150:../cleanflight/src/main/fc/rc_controls.c ****         return;
+ 483              	 .loc 3 150 0
+ 484 000e 15E2     	 b .L43
+ 485              	.L44:
+ 151:../cleanflight/src/main/fc/rc_controls.c ****     }
+ 152:../cleanflight/src/main/fc/rc_controls.c **** #endif
+ 153:../cleanflight/src/main/fc/rc_controls.c **** 
+ 154:../cleanflight/src/main/fc/rc_controls.c ****     // checking sticks positions
+ 155:../cleanflight/src/main/fc/rc_controls.c ****     uint8_t stTmp = 0;
+ 486              	 .loc 3 155 0
+ 487 0010 0023     	 movs r3,#0
+ 488 0012 FB73     	 strb r3,[r7,#15]
+ 489              	.LBB4:
+ 156:../cleanflight/src/main/fc/rc_controls.c ****     for (int i = 0; i < 4; i++) {
+ 490              	 .loc 3 156 0
+ 491 0014 0023     	 movs r3,#0
+ 492 0016 BB60     	 str r3,[r7,#8]
+ 493 0018 25E0     	 b .L46
+ 494              	.L49:
+ 157:../cleanflight/src/main/fc/rc_controls.c ****         stTmp >>= 2;
+ 495              	 .loc 3 157 0
+ 496 001a FB7B     	 ldrb r3,[r7,#15]
+ 497 001c 9B08     	 lsrs r3,r3,#2
+ 498 001e FB73     	 strb r3,[r7,#15]
+ 158:../cleanflight/src/main/fc/rc_controls.c ****         if (rcData[i] > rxConfig()->mincheck) {
+ 499              	 .loc 3 158 0
+ 500 0020 AA4A     	 ldr r2,.L97+4
+ 501 0022 BB68     	 ldr r3,[r7,#8]
+ 502 0024 32F81330 	 ldrh r3,[r2,r3,lsl#1]
+ 503 0028 1CB2     	 sxth r4,r3
+ 504 002a FFF7FEFF 	 bl rxConfig
+ 505 002e 0346     	 mov r3,r0
+ 506 0030 9B8A     	 ldrh r3,[r3,#20]
+ 507 0032 9BB2     	 uxth r3,r3
+ 508 0034 9C42     	 cmp r4,r3
+ 509 0036 03DD     	 ble .L47
+ 159:../cleanflight/src/main/fc/rc_controls.c ****             stTmp |= 0x80;  // check for MIN
+ 510              	 .loc 3 159 0
+ 511 0038 FB7B     	 ldrb r3,[r7,#15]
+ 512 003a 63F07F03 	 orn r3,r3,#127
+ 513 003e FB73     	 strb r3,[r7,#15]
+ 514              	.L47:
+ 160:../cleanflight/src/main/fc/rc_controls.c ****         }
+ 161:../cleanflight/src/main/fc/rc_controls.c ****         if (rcData[i] < rxConfig()->maxcheck) {
+ 515              	 .loc 3 161 0
+ 516 0040 A24A     	 ldr r2,.L97+4
+ 517 0042 BB68     	 ldr r3,[r7,#8]
+ 518 0044 32F81330 	 ldrh r3,[r2,r3,lsl#1]
+ 519 0048 1CB2     	 sxth r4,r3
+ 520 004a FFF7FEFF 	 bl rxConfig
+ 521 004e 0346     	 mov r3,r0
+ 522 0050 DB8A     	 ldrh r3,[r3,#22]
+ 523 0052 9BB2     	 uxth r3,r3
+ 524 0054 9C42     	 cmp r4,r3
+ 525 0056 03DA     	 bge .L48
+ 162:../cleanflight/src/main/fc/rc_controls.c ****             stTmp |= 0x40;  // check for MAX
+ 526              	 .loc 3 162 0
+ 527 0058 FB7B     	 ldrb r3,[r7,#15]
+ 528 005a 43F04003 	 orr r3,r3,#64
+ 529 005e FB73     	 strb r3,[r7,#15]
+ 530              	.L48:
+ 156:../cleanflight/src/main/fc/rc_controls.c ****         stTmp >>= 2;
+ 531              	 .loc 3 156 0 discriminator 2
+ 532 0060 BB68     	 ldr r3,[r7,#8]
+ 533 0062 0133     	 adds r3,r3,#1
+ 534 0064 BB60     	 str r3,[r7,#8]
+ 535              	.L46:
+ 156:../cleanflight/src/main/fc/rc_controls.c ****         stTmp >>= 2;
+ 536              	 .loc 3 156 0 is_stmt 0 discriminator 1
+ 537 0066 BB68     	 ldr r3,[r7,#8]
+ 538 0068 032B     	 cmp r3,#3
+ 539 006a D6DD     	 ble .L49
+ 540              	.LBE4:
+ 163:../cleanflight/src/main/fc/rc_controls.c ****         }
+ 164:../cleanflight/src/main/fc/rc_controls.c ****     }
+ 165:../cleanflight/src/main/fc/rc_controls.c ****     if (stTmp == rcSticks) {
+ 541              	 .loc 3 165 0 is_stmt 1
+ 542 006c 984B     	 ldr r3,.L97+8
+ 543 006e 1B78     	 ldrb r3,[r3]
+ 544 0070 FA7B     	 ldrb r2,[r7,#15]
+ 545 0072 9A42     	 cmp r2,r3
+ 546 0074 25D1     	 bne .L50
+ 166:../cleanflight/src/main/fc/rc_controls.c ****         if (rcDelayMs <= INT16_MAX - (getTaskDeltaTime(TASK_SELF) / 1000)) {
+ 547              	 .loc 3 166 0
+ 548 0076 974B     	 ldr r3,.L97+12
+ 549 0078 1B88     	 ldrh r3,[r3]
+ 550 007a 1CB2     	 sxth r4,r3
+ 551 007c 1620     	 movs r0,#22
+ 552 007e FFF7FEFF 	 bl getTaskDeltaTime
+ 553 0082 0346     	 mov r3,r0
+ 554 0084 944A     	 ldr r2,.L97+16
+ 555 0086 82FB0312 	 smull r1,r2,r2,r3
+ 556 008a 9211     	 asrs r2,r2,#6
+ 557 008c DB17     	 asrs r3,r3,#31
+ 558 008e D31A     	 subs r3,r2,r3
+ 559 0090 C3F5FF43 	 rsb r3,r3,#32640
+ 560 0094 7F33     	 adds r3,r3,#127
+ 561 0096 9C42     	 cmp r4,r3
+ 562 0098 19DC     	 bgt .L52
+ 167:../cleanflight/src/main/fc/rc_controls.c ****             rcDelayMs += getTaskDeltaTime(TASK_SELF) / 1000;
+ 563              	 .loc 3 167 0
+ 564 009a 1620     	 movs r0,#22
+ 565 009c FFF7FEFF 	 bl getTaskDeltaTime
+ 566 00a0 0346     	 mov r3,r0
+ 567 00a2 8D4A     	 ldr r2,.L97+16
+ 568 00a4 82FB0312 	 smull r1,r2,r2,r3
+ 569 00a8 9211     	 asrs r2,r2,#6
+ 570 00aa DB17     	 asrs r3,r3,#31
+ 571 00ac D31A     	 subs r3,r2,r3
+ 572 00ae 9AB2     	 uxth r2,r3
+ 573 00b0 884B     	 ldr r3,.L97+12
+ 574 00b2 1B88     	 ldrh r3,[r3]
+ 575 00b4 9BB2     	 uxth r3,r3
+ 576 00b6 1344     	 add r3,r3,r2
+ 577 00b8 9BB2     	 uxth r3,r3
+ 578 00ba 9AB2     	 uxth r2,r3
+ 579 00bc 854B     	 ldr r3,.L97+12
+ 580 00be 1A80     	 strh r2,[r3]
+ 581 00c0 05E0     	 b .L52
+ 582              	.L50:
+ 168:../cleanflight/src/main/fc/rc_controls.c ****         }
+ 169:../cleanflight/src/main/fc/rc_controls.c ****     } else {
+ 170:../cleanflight/src/main/fc/rc_controls.c ****         rcDelayMs = 0;
+ 583              	 .loc 3 170 0
+ 584 00c2 844B     	 ldr r3,.L97+12
+ 585 00c4 0022     	 movs r2,#0
+ 586 00c6 1A80     	 strh r2,[r3]
+ 171:../cleanflight/src/main/fc/rc_controls.c ****         doNotRepeat = false;
+ 587              	 .loc 3 171 0
+ 588 00c8 844B     	 ldr r3,.L97+20
+ 589 00ca 0022     	 movs r2,#0
+ 590 00cc 1A70     	 strb r2,[r3]
+ 591              	.L52:
+ 172:../cleanflight/src/main/fc/rc_controls.c ****     }
+ 173:../cleanflight/src/main/fc/rc_controls.c ****     rcSticks = stTmp;
+ 592              	 .loc 3 173 0
+ 593 00ce 804A     	 ldr r2,.L97+8
+ 594 00d0 FB7B     	 ldrb r3,[r7,#15]
+ 595 00d2 1370     	 strb r3,[r2]
+ 174:../cleanflight/src/main/fc/rc_controls.c **** 
+ 175:../cleanflight/src/main/fc/rc_controls.c ****     // perform actions
+ 176:../cleanflight/src/main/fc/rc_controls.c ****     if (!isUsingSticksToArm) {
+ 596              	 .loc 3 176 0
+ 597 00d4 824B     	 ldr r3,.L97+24
+ 598 00d6 1B78     	 ldrb r3,[r3]
+ 599 00d8 83F00103 	 eor r3,r3,#1
+ 600 00dc DBB2     	 uxtb r3,r3
+ 601 00de 002B     	 cmp r3,#0
+ 602 00e0 2FD0     	 beq .L53
+ 177:../cleanflight/src/main/fc/rc_controls.c ****         if (IS_RC_MODE_ACTIVE(BOXARM)) {
+ 603              	 .loc 3 177 0
+ 604 00e2 0020     	 movs r0,#0
+ 605 00e4 FFF7FEFF 	 bl IS_RC_MODE_ACTIVE
+ 606 00e8 0346     	 mov r3,r0
+ 607 00ea 002B     	 cmp r3,#0
+ 608 00ec 05D0     	 beq .L54
+ 178:../cleanflight/src/main/fc/rc_controls.c ****             rcDisarmTicks = 0;
+ 609              	 .loc 3 178 0
+ 610 00ee 7D4B     	 ldr r3,.L97+28
+ 611 00f0 0022     	 movs r2,#0
+ 612 00f2 1A70     	 strb r2,[r3]
+ 179:../cleanflight/src/main/fc/rc_controls.c ****             // Arming via ARM BOX
+ 180:../cleanflight/src/main/fc/rc_controls.c ****             tryArm();
+ 613              	 .loc 3 180 0
+ 614 00f4 FFF7FEFF 	 bl tryArm
+ 615 00f8 80E0     	 b .L56
+ 616              	.L54:
+ 181:../cleanflight/src/main/fc/rc_controls.c ****         } else {
+ 182:../cleanflight/src/main/fc/rc_controls.c ****             resetTryingToArm();
+ 617              	 .loc 3 182 0
+ 618 00fa FFF7FEFF 	 bl resetTryingToArm
+ 183:../cleanflight/src/main/fc/rc_controls.c ****             // Disarming via ARM BOX
+ 184:../cleanflight/src/main/fc/rc_controls.c ****             resetArmingDisabled();
+ 619              	 .loc 3 184 0
+ 620 00fe FFF7FEFF 	 bl resetArmingDisabled
+ 185:../cleanflight/src/main/fc/rc_controls.c ****             if (ARMING_FLAG(ARMED) && rxIsReceivingSignal() && !failsafeIsActive()  ) {
+ 621              	 .loc 3 185 0
+ 622 0102 794B     	 ldr r3,.L97+32
+ 623 0104 1B78     	 ldrb r3,[r3]
+ 624 0106 03F00103 	 and r3,r3,#1
+ 625 010a 002B     	 cmp r3,#0
+ 626 010c 76D0     	 beq .L56
+ 627              	 .loc 3 185 0 is_stmt 0 discriminator 1
+ 628 010e FFF7FEFF 	 bl rxIsReceivingSignal
+ 629 0112 0346     	 mov r3,r0
+ 630 0114 002B     	 cmp r3,#0
+ 631 0116 71D0     	 beq .L56
+ 632              	 .loc 3 185 0 discriminator 2
+ 633 0118 FFF7FEFF 	 bl failsafeIsActive
+ 634 011c 0346     	 mov r3,r0
+ 635 011e 83F00103 	 eor r3,r3,#1
+ 636 0122 DBB2     	 uxtb r3,r3
+ 637 0124 002B     	 cmp r3,#0
+ 638 0126 69D0     	 beq .L56
+ 186:../cleanflight/src/main/fc/rc_controls.c ****                 rcDisarmTicks++;
+ 639              	 .loc 3 186 0 is_stmt 1
+ 640 0128 6E4B     	 ldr r3,.L97+28
+ 641 012a 1B78     	 ldrb r3,[r3]
+ 642 012c 0133     	 adds r3,r3,#1
+ 643 012e DAB2     	 uxtb r2,r3
+ 644 0130 6C4B     	 ldr r3,.L97+28
+ 645 0132 1A70     	 strb r2,[r3]
+ 187:../cleanflight/src/main/fc/rc_controls.c ****                 if (rcDisarmTicks > 3) {
+ 646              	 .loc 3 187 0
+ 647 0134 6B4B     	 ldr r3,.L97+28
+ 648 0136 1B78     	 ldrb r3,[r3]
+ 649 0138 032B     	 cmp r3,#3
+ 650 013a 5FD9     	 bls .L56
+ 188:../cleanflight/src/main/fc/rc_controls.c ****                     disarm();
+ 651              	 .loc 3 188 0
+ 652 013c FFF7FEFF 	 bl disarm
+ 653 0140 5CE0     	 b .L56
+ 654              	.L53:
+ 189:../cleanflight/src/main/fc/rc_controls.c ****                 }
+ 190:../cleanflight/src/main/fc/rc_controls.c ****             }
+ 191:../cleanflight/src/main/fc/rc_controls.c ****         }
+ 192:../cleanflight/src/main/fc/rc_controls.c ****     } else if (rcSticks == THR_LO + YAW_LO + PIT_CE + ROL_CE) {
+ 655              	 .loc 3 192 0
+ 656 0142 634B     	 ldr r3,.L97+8
+ 657 0144 1B78     	 ldrb r3,[r3]
+ 658 0146 5F2B     	 cmp r3,#95
+ 659 0148 2DD1     	 bne .L57
+ 193:../cleanflight/src/main/fc/rc_controls.c ****         if (rcDelayMs >= ARM_DELAY_MS && !doNotRepeat) {
+ 660              	 .loc 3 193 0
+ 661 014a 624B     	 ldr r3,.L97+12
+ 662 014c 1B88     	 ldrh r3,[r3]
+ 663 014e 1BB2     	 sxth r3,r3
+ 664 0150 B3F5FA7F 	 cmp r3,#500
+ 665 0154 26DB     	 blt .L58
+ 666              	 .loc 3 193 0 is_stmt 0 discriminator 1
+ 667 0156 614B     	 ldr r3,.L97+20
+ 668 0158 1B78     	 ldrb r3,[r3]
+ 669 015a 83F00103 	 eor r3,r3,#1
+ 670 015e DBB2     	 uxtb r3,r3
+ 671 0160 002B     	 cmp r3,#0
+ 672 0162 1FD0     	 beq .L58
+ 194:../cleanflight/src/main/fc/rc_controls.c ****             doNotRepeat = true;
+ 673              	 .loc 3 194 0 is_stmt 1
+ 674 0164 5D4B     	 ldr r3,.L97+20
+ 675 0166 0122     	 movs r2,#1
+ 676 0168 1A70     	 strb r2,[r3]
+ 195:../cleanflight/src/main/fc/rc_controls.c ****             // Disarm on throttle down + yaw
+ 196:../cleanflight/src/main/fc/rc_controls.c ****             resetTryingToArm();
+ 677              	 .loc 3 196 0
+ 678 016a FFF7FEFF 	 bl resetTryingToArm
+ 197:../cleanflight/src/main/fc/rc_controls.c ****             if (ARMING_FLAG(ARMED))
+ 679              	 .loc 3 197 0
+ 680 016e 5E4B     	 ldr r3,.L97+32
+ 681 0170 1B78     	 ldrb r3,[r3]
+ 682 0172 03F00103 	 and r3,r3,#1
+ 683 0176 002B     	 cmp r3,#0
+ 684 0178 02D0     	 beq .L59
+ 198:../cleanflight/src/main/fc/rc_controls.c ****                 disarm();
+ 685              	 .loc 3 198 0
+ 686 017a FFF7FEFF 	 bl disarm
+ 687 017e 11E0     	 b .L58
+ 688              	.L59:
+ 199:../cleanflight/src/main/fc/rc_controls.c ****             else {
+ 200:../cleanflight/src/main/fc/rc_controls.c ****                 beeper(BEEPER_DISARM_REPEAT);     // sound tone while stick held
+ 689              	 .loc 3 200 0
+ 690 0180 0F20     	 movs r0,#15
+ 691 0182 FFF7FEFF 	 bl beeper
+ 201:../cleanflight/src/main/fc/rc_controls.c ****                 repeatAfter(STICK_AUTOREPEAT_MS); // disarm tone will repeat
+ 692              	 .loc 3 201 0
+ 693 0186 534B     	 ldr r3,.L97+12
+ 694 0188 1B88     	 ldrh r3,[r3]
+ 695 018a 9BB2     	 uxth r3,r3
+ 696 018c FA3B     	 subs r3,r3,#250
+ 697 018e 9BB2     	 uxth r3,r3
+ 698 0190 9AB2     	 uxth r2,r3
+ 699 0192 504B     	 ldr r3,.L97+12
+ 700 0194 1A80     	 strh r2,[r3]
+ 701 0196 514B     	 ldr r3,.L97+20
+ 702 0198 0022     	 movs r2,#0
+ 703 019a 1A70     	 strb r2,[r3]
+ 202:../cleanflight/src/main/fc/rc_controls.c **** 
+ 203:../cleanflight/src/main/fc/rc_controls.c **** #ifdef USE_RUNAWAY_TAKEOFF
+ 204:../cleanflight/src/main/fc/rc_controls.c ****                 // Unset the ARMING_DISABLED_RUNAWAY_TAKEOFF arming disabled flag that might have b
+ 205:../cleanflight/src/main/fc/rc_controls.c ****                 // by a runaway pidSum detection auto-disarm.
+ 206:../cleanflight/src/main/fc/rc_controls.c ****                 // This forces the pilot to explicitly perform a disarm sequence (even though we're
+ 207:../cleanflight/src/main/fc/rc_controls.c ****                 // before they're able to rearm
+ 208:../cleanflight/src/main/fc/rc_controls.c ****                 unsetArmingDisabled(ARMING_DISABLED_RUNAWAY_TAKEOFF);
+ 704              	 .loc 3 208 0
+ 705 019c 2020     	 movs r0,#32
+ 706 019e FFF7FEFF 	 bl unsetArmingDisabled
+ 209:../cleanflight/src/main/fc/rc_controls.c **** #endif
+ 210:../cleanflight/src/main/fc/rc_controls.c ****             }
+ 211:../cleanflight/src/main/fc/rc_controls.c ****         }
+ 212:../cleanflight/src/main/fc/rc_controls.c ****         return;
+ 707              	 .loc 3 212 0
+ 708 01a2 4BE1     	 b .L43
+ 709              	.L58:
+ 710              	 .loc 3 212 0 is_stmt 0 discriminator 2
+ 711 01a4 4AE1     	 b .L43
+ 712              	.L57:
+ 213:../cleanflight/src/main/fc/rc_controls.c ****     } else if (rcSticks == THR_LO + YAW_HI + PIT_CE + ROL_CE) {
+ 713              	 .loc 3 213 0 is_stmt 1
+ 714 01a6 4A4B     	 ldr r3,.L97+8
+ 715 01a8 1B78     	 ldrb r3,[r3]
+ 716 01aa 6F2B     	 cmp r3,#111
+ 717 01ac 24D1     	 bne .L60
+ 214:../cleanflight/src/main/fc/rc_controls.c ****         if (rcDelayMs >= ARM_DELAY_MS && !doNotRepeat) {
+ 718              	 .loc 3 214 0
+ 719 01ae 494B     	 ldr r3,.L97+12
+ 720 01b0 1B88     	 ldrh r3,[r3]
+ 721 01b2 1BB2     	 sxth r3,r3
+ 722 01b4 B3F5FA7F 	 cmp r3,#500
+ 723 01b8 1DDB     	 blt .L61
+ 724              	 .loc 3 214 0 is_stmt 0 discriminator 1
+ 725 01ba 484B     	 ldr r3,.L97+20
+ 726 01bc 1B78     	 ldrb r3,[r3]
+ 727 01be 83F00103 	 eor r3,r3,#1
+ 728 01c2 DBB2     	 uxtb r3,r3
+ 729 01c4 002B     	 cmp r3,#0
+ 730 01c6 16D0     	 beq .L61
+ 215:../cleanflight/src/main/fc/rc_controls.c ****             doNotRepeat = true;
+ 731              	 .loc 3 215 0 is_stmt 1
+ 732 01c8 444B     	 ldr r3,.L97+20
+ 733 01ca 0122     	 movs r2,#1
+ 734 01cc 1A70     	 strb r2,[r3]
+ 216:../cleanflight/src/main/fc/rc_controls.c ****             if (!ARMING_FLAG(ARMED)) {
+ 735              	 .loc 3 216 0
+ 736 01ce 464B     	 ldr r3,.L97+32
+ 737 01d0 1B78     	 ldrb r3,[r3]
+ 738 01d2 03F00103 	 and r3,r3,#1
+ 739 01d6 002B     	 cmp r3,#0
+ 740 01d8 0AD1     	 bne .L62
+ 217:../cleanflight/src/main/fc/rc_controls.c ****                 // Arm via YAW
+ 218:../cleanflight/src/main/fc/rc_controls.c ****                 tryArm();
+ 741              	 .loc 3 218 0
+ 742 01da FFF7FEFF 	 bl tryArm
+ 219:../cleanflight/src/main/fc/rc_controls.c ****                 if (isTryingToArm()) {
+ 743              	 .loc 3 219 0
+ 744 01de FFF7FEFF 	 bl isTryingToArm
+ 745 01e2 0346     	 mov r3,r0
+ 746 01e4 002B     	 cmp r3,#0
+ 747 01e6 06D0     	 beq .L61
+ 220:../cleanflight/src/main/fc/rc_controls.c ****                     doNotRepeat = false;
+ 748              	 .loc 3 220 0
+ 749 01e8 3C4B     	 ldr r3,.L97+20
+ 750 01ea 0022     	 movs r2,#0
+ 751 01ec 1A70     	 strb r2,[r3]
+ 221:../cleanflight/src/main/fc/rc_controls.c ****                 }
+ 222:../cleanflight/src/main/fc/rc_controls.c ****             } else {
+ 223:../cleanflight/src/main/fc/rc_controls.c ****                 resetArmingDisabled();
+ 224:../cleanflight/src/main/fc/rc_controls.c ****             }
+ 225:../cleanflight/src/main/fc/rc_controls.c ****         }
+ 226:../cleanflight/src/main/fc/rc_controls.c ****         return;
+ 752              	 .loc 3 226 0
+ 753 01ee 25E1     	 b .L43
+ 754              	.L62:
+ 223:../cleanflight/src/main/fc/rc_controls.c ****             }
+ 755              	 .loc 3 223 0
+ 756 01f0 FFF7FEFF 	 bl resetArmingDisabled
+ 757              	 .loc 3 226 0
+ 758 01f4 22E1     	 b .L43
+ 759              	.L61:
+ 760              	 .loc 3 226 0 is_stmt 0 discriminator 3
+ 761 01f6 21E1     	 b .L43
+ 762              	.L60:
+ 227:../cleanflight/src/main/fc/rc_controls.c ****     } else {
+ 228:../cleanflight/src/main/fc/rc_controls.c ****         resetTryingToArm();
+ 763              	 .loc 3 228 0 is_stmt 1
+ 764 01f8 FFF7FEFF 	 bl resetTryingToArm
+ 765              	.L56:
+ 229:../cleanflight/src/main/fc/rc_controls.c ****     }
+ 230:../cleanflight/src/main/fc/rc_controls.c **** 
+ 231:../cleanflight/src/main/fc/rc_controls.c ****     if (ARMING_FLAG(ARMED) || doNotRepeat || rcDelayMs <= STICK_DELAY_MS || (getArmingDisableFlags(
+ 766              	 .loc 3 231 0
+ 767 01fc 3A4B     	 ldr r3,.L97+32
+ 768 01fe 1B78     	 ldrb r3,[r3]
+ 769 0200 03F00103 	 and r3,r3,#1
+ 770 0204 002B     	 cmp r3,#0
+ 771 0206 0FD1     	 bne .L64
+ 772              	 .loc 3 231 0 is_stmt 0 discriminator 1
+ 773 0208 344B     	 ldr r3,.L97+20
+ 774 020a 1B78     	 ldrb r3,[r3]
+ 775 020c 002B     	 cmp r3,#0
+ 776 020e 0BD1     	 bne .L64
+ 777              	 .loc 3 231 0 discriminator 2
+ 778 0210 304B     	 ldr r3,.L97+12
+ 779 0212 1B88     	 ldrh r3,[r3]
+ 780 0214 1BB2     	 sxth r3,r3
+ 781 0216 322B     	 cmp r3,#50
+ 782 0218 06DD     	 ble .L64
+ 783              	 .loc 3 231 0 discriminator 3
+ 784 021a FFF7FEFF 	 bl getArmingDisableFlags
+ 785 021e 0346     	 mov r3,r0
+ 786 0220 03F02003 	 and r3,r3,#32
+ 787 0224 002B     	 cmp r3,#0
+ 788 0226 00D0     	 beq .L65
+ 789              	.L64:
+ 232:../cleanflight/src/main/fc/rc_controls.c ****         return;
+ 790              	 .loc 3 232 0 is_stmt 1 discriminator 5
+ 791 0228 08E1     	 b .L43
+ 792              	.L65:
+ 233:../cleanflight/src/main/fc/rc_controls.c ****     }
+ 234:../cleanflight/src/main/fc/rc_controls.c ****     doNotRepeat = true;
+ 793              	 .loc 3 234 0
+ 794 022a 2C4B     	 ldr r3,.L97+20
+ 795 022c 0122     	 movs r2,#1
+ 796 022e 1A70     	 strb r2,[r3]
+ 235:../cleanflight/src/main/fc/rc_controls.c **** 
+ 236:../cleanflight/src/main/fc/rc_controls.c ****     // actions during not armed
+ 237:../cleanflight/src/main/fc/rc_controls.c **** 
+ 238:../cleanflight/src/main/fc/rc_controls.c ****     if (rcSticks == THR_LO + YAW_LO + PIT_LO + ROL_CE) {
+ 797              	 .loc 3 238 0
+ 798 0230 274B     	 ldr r3,.L97+8
+ 799 0232 1B78     	 ldrb r3,[r3]
+ 800 0234 572B     	 cmp r3,#87
+ 801 0236 15D1     	 bne .L66
+ 239:../cleanflight/src/main/fc/rc_controls.c ****         // GYRO calibration
+ 240:../cleanflight/src/main/fc/rc_controls.c ****         gyroStartCalibration(false);
+ 802              	 .loc 3 240 0
+ 803 0238 0020     	 movs r0,#0
+ 804 023a FFF7FEFF 	 bl gyroStartCalibration
+ 241:../cleanflight/src/main/fc/rc_controls.c **** 
+ 242:../cleanflight/src/main/fc/rc_controls.c **** #ifdef USE_GPS
+ 243:../cleanflight/src/main/fc/rc_controls.c ****         if (feature(FEATURE_GPS)) {
+ 805              	 .loc 3 243 0
+ 806 023e 8020     	 movs r0,#128
+ 807 0240 FFF7FEFF 	 bl feature
+ 808 0244 0346     	 mov r3,r0
+ 809 0246 002B     	 cmp r3,#0
+ 810 0248 01D0     	 beq .L67
+ 244:../cleanflight/src/main/fc/rc_controls.c ****             GPS_reset_home_position();
+ 811              	 .loc 3 244 0
+ 812 024a FFF7FEFF 	 bl GPS_reset_home_position
+ 813              	.L67:
+ 245:../cleanflight/src/main/fc/rc_controls.c ****         }
+ 246:../cleanflight/src/main/fc/rc_controls.c **** #endif
+ 247:../cleanflight/src/main/fc/rc_controls.c **** 
+ 248:../cleanflight/src/main/fc/rc_controls.c **** #ifdef USE_BARO
+ 249:../cleanflight/src/main/fc/rc_controls.c ****         if (sensors(SENSOR_BARO))
+ 814              	 .loc 3 249 0
+ 815 024e 0420     	 movs r0,#4
+ 816 0250 FFF7FEFF 	 bl sensors
+ 817 0254 0346     	 mov r3,r0
+ 818 0256 002B     	 cmp r3,#0
+ 819 0258 03D0     	 beq .L68
+ 250:../cleanflight/src/main/fc/rc_controls.c ****             baroSetCalibrationCycles(10); // calibrate baro to new ground level (10 * 25 ms = ~250 
+ 820              	 .loc 3 250 0
+ 821 025a 0A20     	 movs r0,#10
+ 822 025c FFF7FEFF 	 bl baroSetCalibrationCycles
+ 251:../cleanflight/src/main/fc/rc_controls.c **** #endif
+ 252:../cleanflight/src/main/fc/rc_controls.c **** 
+ 253:../cleanflight/src/main/fc/rc_controls.c ****         return;
+ 823              	 .loc 3 253 0
+ 824 0260 ECE0     	 b .L43
+ 825              	.L68:
+ 826              	 .loc 3 253 0 is_stmt 0 discriminator 6
+ 827 0262 EBE0     	 b .L43
+ 828              	.L66:
+ 254:../cleanflight/src/main/fc/rc_controls.c ****     }
+ 255:../cleanflight/src/main/fc/rc_controls.c **** 
+ 256:../cleanflight/src/main/fc/rc_controls.c ****     if (feature(FEATURE_INFLIGHT_ACC_CAL) && (rcSticks == THR_LO + YAW_LO + PIT_HI + ROL_HI)) {
+ 829              	 .loc 3 256 0 is_stmt 1
+ 830 0264 0420     	 movs r0,#4
+ 831 0266 FFF7FEFF 	 bl feature
+ 832 026a 0346     	 mov r3,r0
+ 833 026c 002B     	 cmp r3,#0
+ 834 026e 06D0     	 beq .L69
+ 835              	 .loc 3 256 0 is_stmt 0 discriminator 1
+ 836 0270 174B     	 ldr r3,.L97+8
+ 837 0272 1B78     	 ldrb r3,[r3]
+ 838 0274 5A2B     	 cmp r3,#90
+ 839 0276 02D1     	 bne .L69
+ 257:../cleanflight/src/main/fc/rc_controls.c ****         // Inflight ACC Calibration
+ 258:../cleanflight/src/main/fc/rc_controls.c ****         handleInflightCalibrationStickPosition();
+ 840              	 .loc 3 258 0 is_stmt 1
+ 841 0278 FFF7FEFF 	 bl handleInflightCalibrationStickPosition
+ 259:../cleanflight/src/main/fc/rc_controls.c ****         return;
+ 842              	 .loc 3 259 0
+ 843 027c DEE0     	 b .L43
+ 844              	.L69:
+ 260:../cleanflight/src/main/fc/rc_controls.c ****     }
+ 261:../cleanflight/src/main/fc/rc_controls.c **** 
+ 262:../cleanflight/src/main/fc/rc_controls.c ****     // Change PID profile
+ 263:../cleanflight/src/main/fc/rc_controls.c ****     switch (rcSticks) {
+ 845              	 .loc 3 263 0
+ 846 027e 144B     	 ldr r3,.L97+8
+ 847 0280 1B78     	 ldrb r3,[r3]
+ 848 0282 5D2B     	 cmp r3,#93
+ 849 0284 04D0     	 beq .L71
+ 850 0286 5E2B     	 cmp r3,#94
+ 851 0288 0AD0     	 beq .L72
+ 852 028a 5B2B     	 cmp r3,#91
+ 853 028c 04D0     	 beq .L73
+ 854 028e 0BE0     	 b .L96
+ 855              	.L71:
+ 264:../cleanflight/src/main/fc/rc_controls.c ****     case THR_LO + YAW_LO + PIT_CE + ROL_LO:
+ 265:../cleanflight/src/main/fc/rc_controls.c ****         // ROLL left -> PID profile 1
+ 266:../cleanflight/src/main/fc/rc_controls.c ****         changePidProfile(0);
+ 856              	 .loc 3 266 0
+ 857 0290 0020     	 movs r0,#0
+ 858 0292 FFF7FEFF 	 bl changePidProfile
+ 267:../cleanflight/src/main/fc/rc_controls.c ****         return;
+ 859              	 .loc 3 267 0
+ 860 0296 D1E0     	 b .L43
+ 861              	.L73:
+ 268:../cleanflight/src/main/fc/rc_controls.c ****     case THR_LO + YAW_LO + PIT_HI + ROL_CE:
+ 269:../cleanflight/src/main/fc/rc_controls.c ****         // PITCH up -> PID profile 2
+ 270:../cleanflight/src/main/fc/rc_controls.c ****         changePidProfile(1);
+ 862              	 .loc 3 270 0
+ 863 0298 0120     	 movs r0,#1
+ 864 029a FFF7FEFF 	 bl changePidProfile
+ 271:../cleanflight/src/main/fc/rc_controls.c ****         return;
+ 865              	 .loc 3 271 0
+ 866 029e CDE0     	 b .L43
+ 867              	.L72:
+ 272:../cleanflight/src/main/fc/rc_controls.c ****     case THR_LO + YAW_LO + PIT_CE + ROL_HI:
+ 273:../cleanflight/src/main/fc/rc_controls.c ****         // ROLL right -> PID profile 3
+ 274:../cleanflight/src/main/fc/rc_controls.c ****         changePidProfile(2);
+ 868              	 .loc 3 274 0
+ 869 02a0 0220     	 movs r0,#2
+ 870 02a2 FFF7FEFF 	 bl changePidProfile
+ 275:../cleanflight/src/main/fc/rc_controls.c ****         return;
+ 871              	 .loc 3 275 0
+ 872 02a6 C9E0     	 b .L43
+ 873              	.L96:
+ 276:../cleanflight/src/main/fc/rc_controls.c ****     }
+ 277:../cleanflight/src/main/fc/rc_controls.c **** 
+ 278:../cleanflight/src/main/fc/rc_controls.c ****     if (rcSticks == THR_LO + YAW_LO + PIT_LO + ROL_HI) {
+ 874              	 .loc 3 278 0
+ 875 02a8 094B     	 ldr r3,.L97+8
+ 876 02aa 1B78     	 ldrb r3,[r3]
+ 877 02ac 562B     	 cmp r3,#86
+ 878 02ae 01D1     	 bne .L74
+ 279:../cleanflight/src/main/fc/rc_controls.c ****         saveConfigAndNotify();
+ 879              	 .loc 3 279 0
+ 880 02b0 FFF7FEFF 	 bl saveConfigAndNotify
+ 881              	.L74:
+ 280:../cleanflight/src/main/fc/rc_controls.c ****     }
+ 281:../cleanflight/src/main/fc/rc_controls.c **** 
+ 282:../cleanflight/src/main/fc/rc_controls.c ****     if (rcSticks == THR_HI + YAW_LO + PIT_LO + ROL_CE) {
+ 882              	 .loc 3 282 0
+ 883 02b4 064B     	 ldr r3,.L97+8
+ 884 02b6 1B78     	 ldrb r3,[r3]
+ 885 02b8 972B     	 cmp r3,#151
+ 886 02ba 17D1     	 bne .L75
+ 283:../cleanflight/src/main/fc/rc_controls.c ****         // Calibrating Acc
+ 284:../cleanflight/src/main/fc/rc_controls.c ****         accSetCalibrationCycles(CALIBRATING_ACC_CYCLES);
+ 887              	 .loc 3 284 0
+ 888 02bc 4FF4C870 	 mov r0,#400
+ 889 02c0 FFF7FEFF 	 bl accSetCalibrationCycles
+ 285:../cleanflight/src/main/fc/rc_controls.c ****         return;
+ 890              	 .loc 3 285 0
+ 891 02c4 BAE0     	 b .L43
+ 892              	.L98:
+ 893 02c6 00BF     	 .align 2
+ 894              	.L97:
+ 895 02c8 00000000 	 .word cmsInMenu
+ 896 02cc 00000000 	 .word rcData
+ 897 02d0 00000000 	 .word rcSticks.14597
+ 898 02d4 00000000 	 .word rcDelayMs.14596
+ 899 02d8 D34D6210 	 .word 274877907
+ 900 02dc 00000000 	 .word doNotRepeat.14599
+ 901 02e0 00000000 	 .word isUsingSticksToArm
+ 902 02e4 00000000 	 .word rcDisarmTicks.14598
+ 903 02e8 00000000 	 .word armingFlags
+ 904              	.L75:
+ 286:../cleanflight/src/main/fc/rc_controls.c ****     }
+ 287:../cleanflight/src/main/fc/rc_controls.c **** 
+ 288:../cleanflight/src/main/fc/rc_controls.c **** 
+ 289:../cleanflight/src/main/fc/rc_controls.c ****     if (rcSticks == THR_HI + YAW_HI + PIT_LO + ROL_CE) {
+ 905              	 .loc 3 289 0
+ 906 02ec 554B     	 ldr r3,.L99
+ 907 02ee 1B78     	 ldrb r3,[r3]
+ 908 02f0 A72B     	 cmp r3,#167
+ 909 02f2 07D1     	 bne .L76
+ 290:../cleanflight/src/main/fc/rc_controls.c ****         // Calibrating Mag
+ 291:../cleanflight/src/main/fc/rc_controls.c ****         ENABLE_STATE(CALIBRATE_MAG);
+ 910              	 .loc 3 291 0
+ 911 02f4 544B     	 ldr r3,.L99+4
+ 912 02f6 1B78     	 ldrb r3,[r3]
+ 913 02f8 43F00403 	 orr r3,r3,#4
+ 914 02fc DAB2     	 uxtb r2,r3
+ 915 02fe 524B     	 ldr r3,.L99+4
+ 916 0300 1A70     	 strb r2,[r3]
+ 292:../cleanflight/src/main/fc/rc_controls.c ****         return;
+ 917              	 .loc 3 292 0
+ 918 0302 9BE0     	 b .L43
+ 919              	.L76:
+ 293:../cleanflight/src/main/fc/rc_controls.c ****     }
+ 294:../cleanflight/src/main/fc/rc_controls.c **** 
+ 295:../cleanflight/src/main/fc/rc_controls.c **** 
+ 296:../cleanflight/src/main/fc/rc_controls.c ****     if (FLIGHT_MODE(ANGLE_MODE|HORIZON_MODE)) {
+ 920              	 .loc 3 296 0
+ 921 0304 514B     	 ldr r3,.L99+8
+ 922 0306 1B88     	 ldrh r3,[r3]
+ 923 0308 03F00303 	 and r3,r3,#3
+ 924 030c 002B     	 cmp r3,#0
+ 925 030e 49D0     	 beq .L77
+ 926              	.LBB5:
+ 297:../cleanflight/src/main/fc/rc_controls.c ****         // in ANGLE or HORIZON mode, so use sticks to apply accelerometer trims
+ 298:../cleanflight/src/main/fc/rc_controls.c ****         rollAndPitchTrims_t accelerometerTrimsDelta;
+ 299:../cleanflight/src/main/fc/rc_controls.c ****         memset(&accelerometerTrimsDelta, 0, sizeof(accelerometerTrimsDelta));
+ 927              	 .loc 3 299 0
+ 928 0310 3B46     	 mov r3,r7
+ 929 0312 1846     	 mov r0,r3
+ 930 0314 0021     	 movs r1,#0
+ 931 0316 0422     	 movs r2,#4
+ 932 0318 FFF7FEFF 	 bl memset
+ 300:../cleanflight/src/main/fc/rc_controls.c **** 
+ 301:../cleanflight/src/main/fc/rc_controls.c ****         bool shouldApplyRollAndPitchTrimDelta = false;
+ 933              	 .loc 3 301 0
+ 934 031c 0023     	 movs r3,#0
+ 935 031e FB71     	 strb r3,[r7,#7]
+ 302:../cleanflight/src/main/fc/rc_controls.c ****         switch (rcSticks) {
+ 936              	 .loc 3 302 0
+ 937 0320 484B     	 ldr r3,.L99
+ 938 0322 1B78     	 ldrb r3,[r3]
+ 939 0324 B73B     	 subs r3,r3,#183
+ 940 0326 072B     	 cmp r3,#7
+ 941 0328 28D8     	 bhi .L78
+ 942 032a 01A2     	 adr r2,.L80
+ 943 032c 52F823F0 	 ldr pc,[r2,r3,lsl#2]
+ 944              	 .p2align 2
+ 945              	.L80:
+ 946 0330 5B030000 	 .word .L79+1
+ 947 0334 7D030000 	 .word .L78+1
+ 948 0338 7D030000 	 .word .L78+1
+ 949 033c 7D030000 	 .word .L78+1
+ 950 0340 51030000 	 .word .L81+1
+ 951 0344 7D030000 	 .word .L78+1
+ 952 0348 71030000 	 .word .L82+1
+ 953 034c 67030000 	 .word .L83+1
+ 954              	 .p2align 1
+ 955              	.L81:
+ 303:../cleanflight/src/main/fc/rc_controls.c ****         case THR_HI + YAW_CE + PIT_HI + ROL_CE:
+ 304:../cleanflight/src/main/fc/rc_controls.c ****             accelerometerTrimsDelta.values.pitch = 2;
+ 956              	 .loc 3 304 0
+ 957 0350 0223     	 movs r3,#2
+ 958 0352 7B80     	 strh r3,[r7,#2]
+ 305:../cleanflight/src/main/fc/rc_controls.c ****             shouldApplyRollAndPitchTrimDelta = true;
+ 959              	 .loc 3 305 0
+ 960 0354 0123     	 movs r3,#1
+ 961 0356 FB71     	 strb r3,[r7,#7]
+ 306:../cleanflight/src/main/fc/rc_controls.c ****             break;
+ 962              	 .loc 3 306 0
+ 963 0358 10E0     	 b .L78
+ 964              	.L79:
+ 307:../cleanflight/src/main/fc/rc_controls.c ****         case THR_HI + YAW_CE + PIT_LO + ROL_CE:
+ 308:../cleanflight/src/main/fc/rc_controls.c ****             accelerometerTrimsDelta.values.pitch = -2;
+ 965              	 .loc 3 308 0
+ 966 035a 4FF6FE73 	 movw r3,#65534
+ 967 035e 7B80     	 strh r3,[r7,#2]
+ 309:../cleanflight/src/main/fc/rc_controls.c ****             shouldApplyRollAndPitchTrimDelta = true;
+ 968              	 .loc 3 309 0
+ 969 0360 0123     	 movs r3,#1
+ 970 0362 FB71     	 strb r3,[r7,#7]
+ 310:../cleanflight/src/main/fc/rc_controls.c ****             break;
+ 971              	 .loc 3 310 0
+ 972 0364 0AE0     	 b .L78
+ 973              	.L83:
+ 311:../cleanflight/src/main/fc/rc_controls.c ****         case THR_HI + YAW_CE + PIT_CE + ROL_HI:
+ 312:../cleanflight/src/main/fc/rc_controls.c ****             accelerometerTrimsDelta.values.roll = 2;
+ 974              	 .loc 3 312 0
+ 975 0366 0223     	 movs r3,#2
+ 976 0368 3B80     	 strh r3,[r7]
+ 313:../cleanflight/src/main/fc/rc_controls.c ****             shouldApplyRollAndPitchTrimDelta = true;
+ 977              	 .loc 3 313 0
+ 978 036a 0123     	 movs r3,#1
+ 979 036c FB71     	 strb r3,[r7,#7]
+ 314:../cleanflight/src/main/fc/rc_controls.c ****             break;
+ 980              	 .loc 3 314 0
+ 981 036e 05E0     	 b .L78
+ 982              	.L82:
+ 315:../cleanflight/src/main/fc/rc_controls.c ****         case THR_HI + YAW_CE + PIT_CE + ROL_LO:
+ 316:../cleanflight/src/main/fc/rc_controls.c ****             accelerometerTrimsDelta.values.roll = -2;
+ 983              	 .loc 3 316 0
+ 984 0370 4FF6FE73 	 movw r3,#65534
+ 985 0374 3B80     	 strh r3,[r7]
+ 317:../cleanflight/src/main/fc/rc_controls.c ****             shouldApplyRollAndPitchTrimDelta = true;
+ 986              	 .loc 3 317 0
+ 987 0376 0123     	 movs r3,#1
+ 988 0378 FB71     	 strb r3,[r7,#7]
+ 318:../cleanflight/src/main/fc/rc_controls.c ****             break;
+ 989              	 .loc 3 318 0
+ 990 037a 00BF     	 nop
+ 991              	.L78:
+ 319:../cleanflight/src/main/fc/rc_controls.c ****         }
+ 320:../cleanflight/src/main/fc/rc_controls.c ****         if (shouldApplyRollAndPitchTrimDelta) {
+ 992              	 .loc 3 320 0
+ 993 037c FB79     	 ldrb r3,[r7,#7]
+ 994 037e 002B     	 cmp r3,#0
+ 995 0380 0FD0     	 beq .L84
+ 321:../cleanflight/src/main/fc/rc_controls.c ****             applyAndSaveAccelerometerTrimsDelta(&accelerometerTrimsDelta);
+ 996              	 .loc 3 321 0
+ 997 0382 3B46     	 mov r3,r7
+ 998 0384 1846     	 mov r0,r3
+ 999 0386 FFF7FEFF 	 bl applyAndSaveAccelerometerTrimsDelta
+ 322:../cleanflight/src/main/fc/rc_controls.c ****             repeatAfter(STICK_AUTOREPEAT_MS);
+ 1000              	 .loc 3 322 0
+ 1001 038a 314B     	 ldr r3,.L99+12
+ 1002 038c 1B88     	 ldrh r3,[r3]
+ 1003 038e 9BB2     	 uxth r3,r3
+ 1004 0390 FA3B     	 subs r3,r3,#250
+ 1005 0392 9BB2     	 uxth r3,r3
+ 1006 0394 9AB2     	 uxth r2,r3
+ 1007 0396 2E4B     	 ldr r3,.L99+12
+ 1008 0398 1A80     	 strh r2,[r3]
+ 1009 039a 2E4B     	 ldr r3,.L99+16
+ 1010 039c 0022     	 movs r2,#0
+ 1011 039e 1A70     	 strb r2,[r3]
+ 1012 03a0 4CE0     	 b .L43
+ 1013              	.L84:
+ 1014              	.LBE5:
+ 1015 03a2 27E0     	 b .L85
+ 1016              	.L77:
+ 323:../cleanflight/src/main/fc/rc_controls.c ****             return;
+ 324:../cleanflight/src/main/fc/rc_controls.c ****         }
+ 325:../cleanflight/src/main/fc/rc_controls.c ****     } else {
+ 326:../cleanflight/src/main/fc/rc_controls.c ****         // in ACRO mode, so use sticks to change RATE profile
+ 327:../cleanflight/src/main/fc/rc_controls.c ****         switch (rcSticks) {
+ 1017              	 .loc 3 327 0
+ 1018 03a4 274B     	 ldr r3,.L99
+ 1019 03a6 1B78     	 ldrb r3,[r3]
+ 1020 03a8 B73B     	 subs r3,r3,#183
+ 1021 03aa 072B     	 cmp r3,#7
+ 1022 03ac 22D8     	 bhi .L85
+ 1023 03ae 01A2     	 adr r2,.L87
+ 1024 03b0 52F823F0 	 ldr pc,[r2,r3,lsl#2]
+ 1025              	 .p2align 2
+ 1026              	.L87:
+ 1027 03b4 DD030000 	 .word .L86+1
+ 1028 03b8 F5030000 	 .word .L85+1
+ 1029 03bc F5030000 	 .word .L85+1
+ 1030 03c0 F5030000 	 .word .L85+1
+ 1031 03c4 D5030000 	 .word .L88+1
+ 1032 03c8 F5030000 	 .word .L85+1
+ 1033 03cc ED030000 	 .word .L89+1
+ 1034 03d0 E5030000 	 .word .L90+1
+ 1035              	 .p2align 1
+ 1036              	.L88:
+ 328:../cleanflight/src/main/fc/rc_controls.c ****         case THR_HI + YAW_CE + PIT_HI + ROL_CE:
+ 329:../cleanflight/src/main/fc/rc_controls.c ****             changeControlRateProfile(0);
+ 1037              	 .loc 3 329 0
+ 1038 03d4 0020     	 movs r0,#0
+ 1039 03d6 FFF7FEFF 	 bl changeControlRateProfile
+ 330:../cleanflight/src/main/fc/rc_controls.c ****             return;
+ 1040              	 .loc 3 330 0
+ 1041 03da 2FE0     	 b .L43
+ 1042              	.L86:
+ 331:../cleanflight/src/main/fc/rc_controls.c ****         case THR_HI + YAW_CE + PIT_LO + ROL_CE:
+ 332:../cleanflight/src/main/fc/rc_controls.c ****             changeControlRateProfile(1);
+ 1043              	 .loc 3 332 0
+ 1044 03dc 0120     	 movs r0,#1
+ 1045 03de FFF7FEFF 	 bl changeControlRateProfile
+ 333:../cleanflight/src/main/fc/rc_controls.c ****             return;
+ 1046              	 .loc 3 333 0
+ 1047 03e2 2BE0     	 b .L43
+ 1048              	.L90:
+ 334:../cleanflight/src/main/fc/rc_controls.c ****         case THR_HI + YAW_CE + PIT_CE + ROL_HI:
+ 335:../cleanflight/src/main/fc/rc_controls.c ****             changeControlRateProfile(2);
+ 1049              	 .loc 3 335 0
+ 1050 03e4 0220     	 movs r0,#2
+ 1051 03e6 FFF7FEFF 	 bl changeControlRateProfile
+ 336:../cleanflight/src/main/fc/rc_controls.c ****             return;
+ 1052              	 .loc 3 336 0
+ 1053 03ea 27E0     	 b .L43
+ 1054              	.L89:
+ 337:../cleanflight/src/main/fc/rc_controls.c ****         case THR_HI + YAW_CE + PIT_CE + ROL_LO:
+ 338:../cleanflight/src/main/fc/rc_controls.c ****             changeControlRateProfile(3);
+ 1055              	 .loc 3 338 0
+ 1056 03ec 0320     	 movs r0,#3
+ 1057 03ee FFF7FEFF 	 bl changeControlRateProfile
+ 339:../cleanflight/src/main/fc/rc_controls.c ****             return;
+ 1058              	 .loc 3 339 0
+ 1059 03f2 23E0     	 b .L43
+ 1060              	.L85:
+ 340:../cleanflight/src/main/fc/rc_controls.c ****         }
+ 341:../cleanflight/src/main/fc/rc_controls.c ****     }
+ 342:../cleanflight/src/main/fc/rc_controls.c **** 
+ 343:../cleanflight/src/main/fc/rc_controls.c **** #ifdef USE_DASHBOARD
+ 344:../cleanflight/src/main/fc/rc_controls.c ****     if (rcSticks == THR_LO + YAW_CE + PIT_HI + ROL_LO) {
+ 1061              	 .loc 3 344 0
+ 1062 03f4 134B     	 ldr r3,.L99
+ 1063 03f6 1B78     	 ldrb r3,[r3]
+ 1064 03f8 792B     	 cmp r3,#121
+ 1065 03fa 01D1     	 bne .L91
+ 345:../cleanflight/src/main/fc/rc_controls.c ****         dashboardDisablePageCycling();
+ 1066              	 .loc 3 345 0
+ 1067 03fc FFF7FEFF 	 bl dashboardDisablePageCycling
+ 1068              	.L91:
+ 346:../cleanflight/src/main/fc/rc_controls.c ****     }
+ 347:../cleanflight/src/main/fc/rc_controls.c **** 
+ 348:../cleanflight/src/main/fc/rc_controls.c ****     if (rcSticks == THR_LO + YAW_CE + PIT_HI + ROL_HI) {
+ 1069              	 .loc 3 348 0
+ 1070 0400 104B     	 ldr r3,.L99
+ 1071 0402 1B78     	 ldrb r3,[r3]
+ 1072 0404 7A2B     	 cmp r3,#122
+ 1073 0406 01D1     	 bne .L92
+ 349:../cleanflight/src/main/fc/rc_controls.c ****         dashboardEnablePageCycling();
+ 1074              	 .loc 3 349 0
+ 1075 0408 FFF7FEFF 	 bl dashboardEnablePageCycling
+ 1076              	.L92:
+ 350:../cleanflight/src/main/fc/rc_controls.c ****     }
+ 351:../cleanflight/src/main/fc/rc_controls.c **** #endif
+ 352:../cleanflight/src/main/fc/rc_controls.c **** 
+ 353:../cleanflight/src/main/fc/rc_controls.c **** #ifdef USE_VTX_CONTROL
+ 354:../cleanflight/src/main/fc/rc_controls.c ****     if (rcSticks ==  THR_HI + YAW_LO + PIT_CE + ROL_HI) {
+ 1077              	 .loc 3 354 0
+ 1078 040c 0D4B     	 ldr r3,.L99
+ 1079 040e 1B78     	 ldrb r3,[r3]
+ 1080 0410 9E2B     	 cmp r3,#158
+ 1081 0412 01D1     	 bne .L93
+ 355:../cleanflight/src/main/fc/rc_controls.c ****         vtxIncrementBand();
+ 1082              	 .loc 3 355 0
+ 1083 0414 FFF7FEFF 	 bl vtxIncrementBand
+ 1084              	.L93:
+ 356:../cleanflight/src/main/fc/rc_controls.c ****     }
+ 357:../cleanflight/src/main/fc/rc_controls.c ****     if (rcSticks ==  THR_HI + YAW_LO + PIT_CE + ROL_LO) {
+ 1085              	 .loc 3 357 0
+ 1086 0418 0A4B     	 ldr r3,.L99
+ 1087 041a 1B78     	 ldrb r3,[r3]
+ 1088 041c 9D2B     	 cmp r3,#157
+ 1089 041e 01D1     	 bne .L94
+ 358:../cleanflight/src/main/fc/rc_controls.c ****         vtxDecrementBand();
+ 1090              	 .loc 3 358 0
+ 1091 0420 FFF7FEFF 	 bl vtxDecrementBand
+ 1092              	.L94:
+ 359:../cleanflight/src/main/fc/rc_controls.c ****     }
+ 360:../cleanflight/src/main/fc/rc_controls.c ****     if (rcSticks ==  THR_HI + YAW_HI + PIT_CE + ROL_HI) {
+ 1093              	 .loc 3 360 0
+ 1094 0424 074B     	 ldr r3,.L99
+ 1095 0426 1B78     	 ldrb r3,[r3]
+ 1096 0428 AE2B     	 cmp r3,#174
+ 1097 042a 01D1     	 bne .L95
+ 361:../cleanflight/src/main/fc/rc_controls.c ****         vtxIncrementChannel();
+ 1098              	 .loc 3 361 0
+ 1099 042c FFF7FEFF 	 bl vtxIncrementChannel
+ 1100              	.L95:
+ 362:../cleanflight/src/main/fc/rc_controls.c ****     }
+ 363:../cleanflight/src/main/fc/rc_controls.c ****     if (rcSticks ==  THR_HI + YAW_HI + PIT_CE + ROL_LO) {
+ 1101              	 .loc 3 363 0
+ 1102 0430 044B     	 ldr r3,.L99
+ 1103 0432 1B78     	 ldrb r3,[r3]
+ 1104 0434 AD2B     	 cmp r3,#173
+ 1105 0436 01D1     	 bne .L43
+ 364:../cleanflight/src/main/fc/rc_controls.c ****         vtxDecrementChannel();
+ 1106              	 .loc 3 364 0
+ 1107 0438 FFF7FEFF 	 bl vtxDecrementChannel
+ 1108              	.L43:
+ 365:../cleanflight/src/main/fc/rc_controls.c ****     }
+ 366:../cleanflight/src/main/fc/rc_controls.c **** #endif
+ 367:../cleanflight/src/main/fc/rc_controls.c **** 
+ 368:../cleanflight/src/main/fc/rc_controls.c **** #ifdef USE_CAMERA_CONTROL
+ 369:../cleanflight/src/main/fc/rc_controls.c ****     if (rcSticks == THR_CE + YAW_HI + PIT_CE + ROL_CE) {
+ 370:../cleanflight/src/main/fc/rc_controls.c ****         cameraControlKeyPress(CAMERA_CONTROL_KEY_ENTER, 0);
+ 371:../cleanflight/src/main/fc/rc_controls.c ****         repeatAfter(3 * STICK_DELAY_MS);
+ 372:../cleanflight/src/main/fc/rc_controls.c ****     } else if (rcSticks == THR_CE + YAW_CE + PIT_CE + ROL_LO) {
+ 373:../cleanflight/src/main/fc/rc_controls.c ****         cameraControlKeyPress(CAMERA_CONTROL_KEY_LEFT, 0);
+ 374:../cleanflight/src/main/fc/rc_controls.c ****         repeatAfter(3 * STICK_DELAY_MS);
+ 375:../cleanflight/src/main/fc/rc_controls.c ****     } else if (rcSticks == THR_CE + YAW_CE + PIT_HI + ROL_CE) {
+ 376:../cleanflight/src/main/fc/rc_controls.c ****         cameraControlKeyPress(CAMERA_CONTROL_KEY_UP, 0);
+ 377:../cleanflight/src/main/fc/rc_controls.c ****         repeatAfter(3 * STICK_DELAY_MS);
+ 378:../cleanflight/src/main/fc/rc_controls.c ****     } else if (rcSticks == THR_CE + YAW_CE + PIT_CE + ROL_HI) {
+ 379:../cleanflight/src/main/fc/rc_controls.c ****         cameraControlKeyPress(CAMERA_CONTROL_KEY_RIGHT, 0);
+ 380:../cleanflight/src/main/fc/rc_controls.c ****         repeatAfter(3 * STICK_DELAY_MS);
+ 381:../cleanflight/src/main/fc/rc_controls.c ****     } else if (rcSticks == THR_CE + YAW_CE + PIT_LO + ROL_CE) {
+ 382:../cleanflight/src/main/fc/rc_controls.c ****         cameraControlKeyPress(CAMERA_CONTROL_KEY_DOWN, 0);
+ 383:../cleanflight/src/main/fc/rc_controls.c ****         repeatAfter(3 * STICK_DELAY_MS);
+ 384:../cleanflight/src/main/fc/rc_controls.c ****     } else if (rcSticks == THR_LO + YAW_CE + PIT_HI + ROL_CE) {
+ 385:../cleanflight/src/main/fc/rc_controls.c ****         cameraControlKeyPress(CAMERA_CONTROL_KEY_UP, 2000);
+ 386:../cleanflight/src/main/fc/rc_controls.c ****     }
+ 387:../cleanflight/src/main/fc/rc_controls.c **** #endif
+ 388:../cleanflight/src/main/fc/rc_controls.c **** }
+ 1109              	 .loc 3 388 0
+ 1110 043c 1437     	 adds r7,r7,#20
+ 1111              	.LCFI23:
+ 1112              	 .cfi_def_cfa_offset 12
+ 1113 043e BD46     	 mov sp,r7
+ 1114              	.LCFI24:
+ 1115              	 .cfi_def_cfa_register 13
+ 1116              	 
+ 1117 0440 90BD     	 pop {r4,r7,pc}
+ 1118              	.L100:
+ 1119 0442 00BF     	 .align 2
+ 1120              	.L99:
+ 1121 0444 00000000 	 .word rcSticks.14597
+ 1122 0448 00000000 	 .word stateFlags
+ 1123 044c 00000000 	 .word flightModeFlags
+ 1124 0450 00000000 	 .word rcDelayMs.14596
+ 1125 0454 00000000 	 .word doNotRepeat.14599
+ 1126              	 .cfi_endproc
+ 1127              	.LFE591:
+ 1129              	 .section .text.getRcStickDeflection,"ax",%progbits
+ 1130              	 .align 2
+ 1131              	 .global getRcStickDeflection
+ 1132              	 .thumb
+ 1133              	 .thumb_func
+ 1135              	getRcStickDeflection:
+ 1136              	.LFB592:
+ 389:../cleanflight/src/main/fc/rc_controls.c **** 
+ 390:../cleanflight/src/main/fc/rc_controls.c **** int32_t getRcStickDeflection(int32_t axis, uint16_t midrc) {
+ 1137              	 .loc 3 390 0
+ 1138              	 .cfi_startproc
+ 1139              	 
+ 1140              	 
+ 1141              	 
+ 1142 0000 80B4     	 push {r7}
+ 1143              	.LCFI25:
+ 1144              	 .cfi_def_cfa_offset 4
+ 1145              	 .cfi_offset 7,-4
+ 1146 0002 87B0     	 sub sp,sp,#28
+ 1147              	.LCFI26:
+ 1148              	 .cfi_def_cfa_offset 32
+ 1149 0004 00AF     	 add r7,sp,#0
+ 1150              	.LCFI27:
+ 1151              	 .cfi_def_cfa_register 7
+ 1152 0006 7860     	 str r0,[r7,#4]
+ 1153 0008 0B46     	 mov r3,r1
+ 1154 000a 7B80     	 strh r3,[r7,#2]
+ 1155              	.LBB6:
+ 1156              	.LBB7:
+ 391:../cleanflight/src/main/fc/rc_controls.c ****     return MIN(ABS(rcData[axis] - midrc), 500);
+ 1157              	 .loc 3 391 0
+ 1158 000c 0D4A     	 ldr r2,.L103
+ 1159 000e 7B68     	 ldr r3,[r7,#4]
+ 1160 0010 32F81330 	 ldrh r3,[r2,r3,lsl#1]
+ 1161 0014 1AB2     	 sxth r2,r3
+ 1162 0016 7B88     	 ldrh r3,[r7,#2]
+ 1163 0018 D31A     	 subs r3,r2,r3
+ 1164 001a 7B61     	 str r3,[r7,#20]
+ 1165 001c 7B69     	 ldr r3,[r7,#20]
+ 1166 001e 002B     	 cmp r3,#0
+ 1167 0020 B8BF     	 it lt
+ 1168 0022 5B42     	 rsblt r3,r3,#0
+ 1169              	.LBE7:
+ 1170 0024 3B61     	 str r3,[r7,#16]
+ 1171 0026 4FF4FA73 	 mov r3,#500
+ 1172 002a FB60     	 str r3,[r7,#12]
+ 1173 002c FA68     	 ldr r2,[r7,#12]
+ 1174 002e 3B69     	 ldr r3,[r7,#16]
+ 1175 0030 9342     	 cmp r3,r2
+ 1176 0032 A8BF     	 it ge
+ 1177 0034 1346     	 movge r3,r2
+ 1178              	.LBE6:
+ 392:../cleanflight/src/main/fc/rc_controls.c **** }
+ 1179              	 .loc 3 392 0
+ 1180 0036 1846     	 mov r0,r3
+ 1181 0038 1C37     	 adds r7,r7,#28
+ 1182              	.LCFI28:
+ 1183              	 .cfi_def_cfa_offset 4
+ 1184 003a BD46     	 mov sp,r7
+ 1185              	.LCFI29:
+ 1186              	 .cfi_def_cfa_register 13
+ 1187              	 
+ 1188 003c 5DF8047B 	 ldr r7,[sp],#4
+ 1189              	.LCFI30:
+ 1190              	 .cfi_restore 7
+ 1191              	 .cfi_def_cfa_offset 0
+ 1192 0040 7047     	 bx lr
+ 1193              	.L104:
+ 1194 0042 00BF     	 .align 2
+ 1195              	.L103:
+ 1196 0044 00000000 	 .word rcData
+ 1197              	 .cfi_endproc
+ 1198              	.LFE592:
+ 1200              	 .section .text.useRcControlsConfig,"ax",%progbits
+ 1201              	 .align 2
+ 1202              	 .global useRcControlsConfig
+ 1203              	 .thumb
+ 1204              	 .thumb_func
+ 1206              	useRcControlsConfig:
+ 1207              	.LFB593:
+ 393:../cleanflight/src/main/fc/rc_controls.c **** 
+ 394:../cleanflight/src/main/fc/rc_controls.c **** void useRcControlsConfig(pidProfile_t *pidProfileToUse)
+ 395:../cleanflight/src/main/fc/rc_controls.c **** {
+ 1208              	 .loc 3 395 0
+ 1209              	 .cfi_startproc
+ 1210              	 
+ 1211              	 
+ 1212 0000 80B5     	 push {r7,lr}
+ 1213              	.LCFI31:
+ 1214              	 .cfi_def_cfa_offset 8
+ 1215              	 .cfi_offset 7,-8
+ 1216              	 .cfi_offset 14,-4
+ 1217 0002 82B0     	 sub sp,sp,#8
+ 1218              	.LCFI32:
+ 1219              	 .cfi_def_cfa_offset 16
+ 1220 0004 00AF     	 add r7,sp,#0
+ 1221              	.LCFI33:
+ 1222              	 .cfi_def_cfa_register 7
+ 1223 0006 7860     	 str r0,[r7,#4]
+ 396:../cleanflight/src/main/fc/rc_controls.c ****     pidProfile = pidProfileToUse;
+ 1224              	 .loc 3 396 0
+ 1225 0008 0B4A     	 ldr r2,.L106
+ 1226 000a 7B68     	 ldr r3,[r7,#4]
+ 1227 000c 1360     	 str r3,[r2]
+ 397:../cleanflight/src/main/fc/rc_controls.c **** 
+ 398:../cleanflight/src/main/fc/rc_controls.c ****     isUsingSticksToArm = !isModeActivationConditionPresent(BOXARM);
+ 1228              	 .loc 3 398 0
+ 1229 000e 0020     	 movs r0,#0
+ 1230 0010 FFF7FEFF 	 bl isModeActivationConditionPresent
+ 1231 0014 0346     	 mov r3,r0
+ 1232 0016 002B     	 cmp r3,#0
+ 1233 0018 14BF     	 ite ne
+ 1234 001a 0123     	 movne r3,#1
+ 1235 001c 0023     	 moveq r3,#0
+ 1236 001e DBB2     	 uxtb r3,r3
+ 1237 0020 83F00103 	 eor r3,r3,#1
+ 1238 0024 DBB2     	 uxtb r3,r3
+ 1239 0026 03F00103 	 and r3,r3,#1
+ 1240 002a DAB2     	 uxtb r2,r3
+ 1241 002c 034B     	 ldr r3,.L106+4
+ 1242 002e 1A70     	 strb r2,[r3]
+ 399:../cleanflight/src/main/fc/rc_controls.c **** }
+ 1243              	 .loc 3 399 0
+ 1244 0030 0837     	 adds r7,r7,#8
+ 1245              	.LCFI34:
+ 1246              	 .cfi_def_cfa_offset 8
+ 1247 0032 BD46     	 mov sp,r7
+ 1248              	.LCFI35:
+ 1249              	 .cfi_def_cfa_register 13
+ 1250              	 
+ 1251 0034 80BD     	 pop {r7,pc}
+ 1252              	.L107:
+ 1253 0036 00BF     	 .align 2
+ 1254              	.L106:
+ 1255 0038 00000000 	 .word pidProfile
+ 1256 003c 00000000 	 .word isUsingSticksToArm
+ 1257              	 .cfi_endproc
+ 1258              	.LFE593:
+ 1260              	 .section .bss.rcSticks.14597,"aw",%nobits
+ 1263              	rcSticks.14597:
+ 1264 0000 00       	 .space 1
+ 1265              	 .section .bss.rcDelayMs.14596,"aw",%nobits
+ 1266              	 .align 1
+ 1269              	rcDelayMs.14596:
+ 1270 0000 0000     	 .space 2
+ 1271              	 .section .bss.doNotRepeat.14599,"aw",%nobits
+ 1274              	doNotRepeat.14599:
+ 1275 0000 00       	 .space 1
+ 1276              	 .section .bss.rcDisarmTicks.14598,"aw",%nobits
+ 1279              	rcDisarmTicks.14598:
+ 1280 0000 00       	 .space 1
+ 1281              	 .text
+ 1282              	.Letext0:
+ 1283              	 .file 4 "d:\\xmc\\dave-ide-4.4.2-64bit\\eclipse\\arm-gcc-49\\arm-none-eabi\\include\\machine\\_default_types.h"
+ 1284              	 .file 5 "d:\\xmc\\dave-ide-4.4.2-64bit\\eclipse\\arm-gcc-49\\arm-none-eabi\\include\\stdint.h"
+ 1285              	 .file 6 "D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/lib/main/XMC4000/XMCLib/inc/xmc_usic.h"
+ 1286              	 .file 7 "D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/pg/pg.h"
+ 1287              	 .file 8 "D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/common/time.h"
+ 1288              	 .file 9 "D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/blackbox/blackbox.h"
+ 1289              	 .file 10 "D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/config/feature.h"
+ 1290              	 .file 11 "D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/drivers/io_types.h"
+ 1291              	 .file 12 "D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/drivers/display.h"
+ 1292              	 .file 13 "D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/drivers/camera_control.h"
+ 1293              	 .file 14 "D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/fc/config.h"
+ 1294              	 .file 15 "D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/fc/fc_core.h"
+ 1295              	 .file 16 "D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/fc/runtime_config.h"
+ 1296              	 .file 17 "D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/io/gps.h"
+ 1297              	 .file 18 "D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/io/beeper.h"
+ 1298              	 .file 19 "D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/fc/rc_modes.h"
+ 1299              	 .file 20 "D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/io/vtx_control.h"
+ 1300              	 .file 21 "D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/sensors/barometer.h"
+ 1301              	 .file 22 "D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/sensors/current.h"
+ 1302              	 .file 23 "D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/sensors/voltage.h"
+ 1303              	 .file 24 "D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/sensors/battery.h"
+ 1304              	 .file 25 "D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/sensors/sensors.h"
+ 1305              	 .file 26 "D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/drivers/sensor.h"
+ 1306              	 .file 27 "D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/sensors/gyro.h"
+ 1307              	 .file 28 "D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/sensors/acceleration.h"
+ 1308              	 .file 29 "D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/rx/rx.h"
+ 1309              	 .file 30 "D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/scheduler/scheduler.h"
+ 1310              	 .file 31 "D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/flight/pid.h"
+ 1311              	 .file 32 "D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/flight/failsafe.h"
+ 1312              	 .file 33 "D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/lib/main/CMSIS/Core/Include/core_cm4.h"
+ 1313              	 .file 34 "D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/lib/main/XMC4000/system_XMC4700.h"
+ 1314              	 .file 35 "D:/XMC/Projekte/Temp/CF_XMC4700/cleanflight/src/main/cms/cms.h"
+DEFINED SYMBOLS
+                            *ABS*:00000000 rc_controls.c
+    {standard input}:20     .text.rxConfig:00000000 $t
+    {standard input}:24     .text.rxConfig:00000000 rxConfig
+    {standard input}:54     .text.rxConfig:00000010 $d
+                            *COM*:00000004 pCurrentDisplay
+    {standard input}:60     .text.flight3DConfig:00000000 $t
+    {standard input}:64     .text.flight3DConfig:00000000 flight3DConfig
+    {standard input}:94     .text.flight3DConfig:00000010 $d
+                            *COM*:0000000d flight3DConfig_System
+    {standard input}:99     .bss.pidProfile:00000000 $d
+    {standard input}:102    .bss.pidProfile:00000000 pidProfile
+    {standard input}:107    .data.isUsingSticksToArm:00000000 isUsingSticksToArm
+                            *COM*:00000010 rcCommand
+                            *COM*:00000005 rcControlsConfig_System
+                            *COM*:00000005 rcControlsConfig_Copy
+    {standard input}:117    .pg_registry:00000000 rcControlsConfig_Registry
+    {standard input}:114    .pg_registry:00000000 $d
+    {standard input}:129    .pg_resetdata:00000000 pgResetTemplate_rcControlsConfig
+    {standard input}:126    .pg_resetdata:00000000 $d
+                            *COM*:00000002 armingConfig_System
+                            *COM*:00000002 armingConfig_Copy
+    {standard input}:142    .pg_registry:00000014 armingConfig_Registry
+    {standard input}:154    .pg_resetdata:00000006 pgResetTemplate_armingConfig
+                            *COM*:0000000d flight3DConfig_Copy
+    {standard input}:164    .pg_registry:00000028 flight3DConfig_Registry
+    {standard input}:176    .pg_resetdata:00000008 pgResetTemplate_flight3DConfig
+    {standard input}:185    .text.isUsingSticksForArming:00000000 $t
+    {standard input}:190    .text.isUsingSticksForArming:00000000 isUsingSticksForArming
+    {standard input}:222    .text.isUsingSticksForArming:00000014 $d
+    {standard input}:227    .text.areSticksInApModePosition:00000000 $t
+    {standard input}:232    .text.areSticksInApModePosition:00000000 areSticksInApModePosition
+    {standard input}:328    .text.areSticksInApModePosition:00000090 $d
+    {standard input}:333    .text.calculateThrottleStatus:00000000 $t
+    {standard input}:338    .text.calculateThrottleStatus:00000000 calculateThrottleStatus
+    {standard input}:450    .text.calculateThrottleStatus:000000ac $d
+    {standard input}:455    .text.processRcStickPositions:00000000 $t
+    {standard input}:460    .text.processRcStickPositions:00000000 processRcStickPositions
+    {standard input}:895    .text.processRcStickPositions:000002c8 $d
+    {standard input}:1263   .bss.rcSticks.14597:00000000 rcSticks.14597
+    {standard input}:1269   .bss.rcDelayMs.14596:00000000 rcDelayMs.14596
+    {standard input}:1274   .bss.doNotRepeat.14599:00000000 doNotRepeat.14599
+    {standard input}:1279   .bss.rcDisarmTicks.14598:00000000 rcDisarmTicks.14598
+    {standard input}:906    .text.processRcStickPositions:000002ec $t
+    {standard input}:946    .text.processRcStickPositions:00000330 $d
+    {standard input}:954    .text.processRcStickPositions:00000350 $t
+    {standard input}:1027   .text.processRcStickPositions:000003b4 $d
+    {standard input}:1035   .text.processRcStickPositions:000003d4 $t
+    {standard input}:1121   .text.processRcStickPositions:00000444 $d
+    {standard input}:1130   .text.getRcStickDeflection:00000000 $t
+    {standard input}:1135   .text.getRcStickDeflection:00000000 getRcStickDeflection
+    {standard input}:1196   .text.getRcStickDeflection:00000044 $d
+    {standard input}:1201   .text.useRcControlsConfig:00000000 $t
+    {standard input}:1206   .text.useRcControlsConfig:00000000 useRcControlsConfig
+    {standard input}:1255   .text.useRcControlsConfig:00000038 $d
+    {standard input}:1264   .bss.rcSticks.14597:00000000 $d
+    {standard input}:1266   .bss.rcDelayMs.14596:00000000 $d
+    {standard input}:1275   .bss.doNotRepeat.14599:00000000 $d
+    {standard input}:1280   .bss.rcDisarmTicks.14598:00000000 $d
+                     .debug_frame:00000010 $d
+
+UNDEFINED SYMBOLS
+rxConfig_System
+feature
+IS_RC_MODE_ACTIVE
+rcData
+getTaskDeltaTime
+tryArm
+resetTryingToArm
+resetArmingDisabled
+rxIsReceivingSignal
+failsafeIsActive
+disarm
+beeper
+unsetArmingDisabled
+isTryingToArm
+getArmingDisableFlags
+gyroStartCalibration
+GPS_reset_home_position
+sensors
+baroSetCalibrationCycles
+handleInflightCalibrationStickPosition
+changePidProfile
+saveConfigAndNotify
+accSetCalibrationCycles
+cmsInMenu
+armingFlags
+memset
+applyAndSaveAccelerometerTrimsDelta
+changeControlRateProfile
+dashboardDisablePageCycling
+dashboardEnablePageCycling
+vtxIncrementBand
+vtxDecrementBand
+vtxIncrementChannel
+vtxDecrementChannel
+stateFlags
+flightModeFlags
+isModeActivationConditionPresent

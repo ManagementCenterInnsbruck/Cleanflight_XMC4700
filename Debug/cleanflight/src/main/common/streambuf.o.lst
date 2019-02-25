@@ -1,0 +1,1166 @@
+   1              	 .syntax unified
+   2              	 .cpu cortex-m4
+   3              	 .eabi_attribute 27,3
+   4              	 .fpu fpv4-sp-d16
+   5              	 .eabi_attribute 20,1
+   6              	 .eabi_attribute 21,1
+   7              	 .eabi_attribute 23,3
+   8              	 .eabi_attribute 24,1
+   9              	 .eabi_attribute 25,1
+  10              	 .eabi_attribute 26,1
+  11              	 .eabi_attribute 30,6
+  12              	 .eabi_attribute 34,1
+  13              	 .eabi_attribute 18,4
+  14              	 .thumb
+  15              	 .file "streambuf.c"
+  16              	 .text
+  17              	.Ltext0:
+  18              	 .cfi_sections .debug_frame
+  19              	 .section .text.sbufInit,"ax",%progbits
+  20              	 .align 2
+  21              	 .global sbufInit
+  22              	 .thumb
+  23              	 .thumb_func
+  25              	sbufInit:
+  26              	.LFB0:
+  27              	 .file 1 "../cleanflight/src/main/common/streambuf.c"
+   1:../cleanflight/src/main/common/streambuf.c **** /*
+   2:../cleanflight/src/main/common/streambuf.c ****  * This file is part of Cleanflight and Betaflight.
+   3:../cleanflight/src/main/common/streambuf.c ****  *
+   4:../cleanflight/src/main/common/streambuf.c ****  * Cleanflight and Betaflight are free software. You can redistribute
+   5:../cleanflight/src/main/common/streambuf.c ****  * this software and/or modify this software under the terms of the
+   6:../cleanflight/src/main/common/streambuf.c ****  * GNU General Public License as published by the Free Software
+   7:../cleanflight/src/main/common/streambuf.c ****  * Foundation, either version 3 of the License, or (at your option)
+   8:../cleanflight/src/main/common/streambuf.c ****  * any later version.
+   9:../cleanflight/src/main/common/streambuf.c ****  *
+  10:../cleanflight/src/main/common/streambuf.c ****  * Cleanflight and Betaflight are distributed in the hope that they
+  11:../cleanflight/src/main/common/streambuf.c ****  * will be useful, but WITHOUT ANY WARRANTY; without even the implied
+  12:../cleanflight/src/main/common/streambuf.c ****  * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+  13:../cleanflight/src/main/common/streambuf.c ****  * See the GNU General Public License for more details.
+  14:../cleanflight/src/main/common/streambuf.c ****  *
+  15:../cleanflight/src/main/common/streambuf.c ****  * You should have received a copy of the GNU General Public License
+  16:../cleanflight/src/main/common/streambuf.c ****  * along with this software.
+  17:../cleanflight/src/main/common/streambuf.c ****  *
+  18:../cleanflight/src/main/common/streambuf.c ****  * If not, see <http://www.gnu.org/licenses/>.
+  19:../cleanflight/src/main/common/streambuf.c ****  */
+  20:../cleanflight/src/main/common/streambuf.c **** 
+  21:../cleanflight/src/main/common/streambuf.c **** #include <string.h>
+  22:../cleanflight/src/main/common/streambuf.c **** #include <stdint.h>
+  23:../cleanflight/src/main/common/streambuf.c **** 
+  24:../cleanflight/src/main/common/streambuf.c **** #include "streambuf.h"
+  25:../cleanflight/src/main/common/streambuf.c **** 
+  26:../cleanflight/src/main/common/streambuf.c **** sbuf_t *sbufInit(sbuf_t *sbuf, uint8_t *ptr, uint8_t *end)
+  27:../cleanflight/src/main/common/streambuf.c **** {
+  28              	 .loc 1 27 0
+  29              	 .cfi_startproc
+  30              	 
+  31              	 
+  32              	 
+  33 0000 80B4     	 push {r7}
+  34              	.LCFI0:
+  35              	 .cfi_def_cfa_offset 4
+  36              	 .cfi_offset 7,-4
+  37 0002 85B0     	 sub sp,sp,#20
+  38              	.LCFI1:
+  39              	 .cfi_def_cfa_offset 24
+  40 0004 00AF     	 add r7,sp,#0
+  41              	.LCFI2:
+  42              	 .cfi_def_cfa_register 7
+  43 0006 F860     	 str r0,[r7,#12]
+  44 0008 B960     	 str r1,[r7,#8]
+  45 000a 7A60     	 str r2,[r7,#4]
+  28:../cleanflight/src/main/common/streambuf.c ****     sbuf->ptr = ptr;
+  46              	 .loc 1 28 0
+  47 000c FB68     	 ldr r3,[r7,#12]
+  48 000e BA68     	 ldr r2,[r7,#8]
+  49 0010 1A60     	 str r2,[r3]
+  29:../cleanflight/src/main/common/streambuf.c ****     sbuf->end = end;
+  50              	 .loc 1 29 0
+  51 0012 FB68     	 ldr r3,[r7,#12]
+  52 0014 7A68     	 ldr r2,[r7,#4]
+  53 0016 5A60     	 str r2,[r3,#4]
+  30:../cleanflight/src/main/common/streambuf.c ****     return sbuf;
+  54              	 .loc 1 30 0
+  55 0018 FB68     	 ldr r3,[r7,#12]
+  31:../cleanflight/src/main/common/streambuf.c **** }
+  56              	 .loc 1 31 0
+  57 001a 1846     	 mov r0,r3
+  58 001c 1437     	 adds r7,r7,#20
+  59              	.LCFI3:
+  60              	 .cfi_def_cfa_offset 4
+  61 001e BD46     	 mov sp,r7
+  62              	.LCFI4:
+  63              	 .cfi_def_cfa_register 13
+  64              	 
+  65 0020 5DF8047B 	 ldr r7,[sp],#4
+  66              	.LCFI5:
+  67              	 .cfi_restore 7
+  68              	 .cfi_def_cfa_offset 0
+  69 0024 7047     	 bx lr
+  70              	 .cfi_endproc
+  71              	.LFE0:
+  73 0026 00BF     	 .section .text.sbufWriteU8,"ax",%progbits
+  74              	 .align 2
+  75              	 .global sbufWriteU8
+  76              	 .thumb
+  77              	 .thumb_func
+  79              	sbufWriteU8:
+  80              	.LFB1:
+  32:../cleanflight/src/main/common/streambuf.c **** 
+  33:../cleanflight/src/main/common/streambuf.c **** void sbufWriteU8(sbuf_t *dst, uint8_t val)
+  34:../cleanflight/src/main/common/streambuf.c **** {
+  81              	 .loc 1 34 0
+  82              	 .cfi_startproc
+  83              	 
+  84              	 
+  85              	 
+  86 0000 80B4     	 push {r7}
+  87              	.LCFI6:
+  88              	 .cfi_def_cfa_offset 4
+  89              	 .cfi_offset 7,-4
+  90 0002 83B0     	 sub sp,sp,#12
+  91              	.LCFI7:
+  92              	 .cfi_def_cfa_offset 16
+  93 0004 00AF     	 add r7,sp,#0
+  94              	.LCFI8:
+  95              	 .cfi_def_cfa_register 7
+  96 0006 7860     	 str r0,[r7,#4]
+  97 0008 0B46     	 mov r3,r1
+  98 000a FB70     	 strb r3,[r7,#3]
+  35:../cleanflight/src/main/common/streambuf.c ****     *dst->ptr++ = val;
+  99              	 .loc 1 35 0
+ 100 000c 7B68     	 ldr r3,[r7,#4]
+ 101 000e 1B68     	 ldr r3,[r3]
+ 102 0010 591C     	 adds r1,r3,#1
+ 103 0012 7A68     	 ldr r2,[r7,#4]
+ 104 0014 1160     	 str r1,[r2]
+ 105 0016 FA78     	 ldrb r2,[r7,#3]
+ 106 0018 1A70     	 strb r2,[r3]
+  36:../cleanflight/src/main/common/streambuf.c **** }
+ 107              	 .loc 1 36 0
+ 108 001a 0C37     	 adds r7,r7,#12
+ 109              	.LCFI9:
+ 110              	 .cfi_def_cfa_offset 4
+ 111 001c BD46     	 mov sp,r7
+ 112              	.LCFI10:
+ 113              	 .cfi_def_cfa_register 13
+ 114              	 
+ 115 001e 5DF8047B 	 ldr r7,[sp],#4
+ 116              	.LCFI11:
+ 117              	 .cfi_restore 7
+ 118              	 .cfi_def_cfa_offset 0
+ 119 0022 7047     	 bx lr
+ 120              	 .cfi_endproc
+ 121              	.LFE1:
+ 123              	 .section .text.sbufWriteU16,"ax",%progbits
+ 124              	 .align 2
+ 125              	 .global sbufWriteU16
+ 126              	 .thumb
+ 127              	 .thumb_func
+ 129              	sbufWriteU16:
+ 130              	.LFB2:
+  37:../cleanflight/src/main/common/streambuf.c **** 
+  38:../cleanflight/src/main/common/streambuf.c **** void sbufWriteU16(sbuf_t *dst, uint16_t val)
+  39:../cleanflight/src/main/common/streambuf.c **** {
+ 131              	 .loc 1 39 0
+ 132              	 .cfi_startproc
+ 133              	 
+ 134              	 
+ 135 0000 80B5     	 push {r7,lr}
+ 136              	.LCFI12:
+ 137              	 .cfi_def_cfa_offset 8
+ 138              	 .cfi_offset 7,-8
+ 139              	 .cfi_offset 14,-4
+ 140 0002 82B0     	 sub sp,sp,#8
+ 141              	.LCFI13:
+ 142              	 .cfi_def_cfa_offset 16
+ 143 0004 00AF     	 add r7,sp,#0
+ 144              	.LCFI14:
+ 145              	 .cfi_def_cfa_register 7
+ 146 0006 7860     	 str r0,[r7,#4]
+ 147 0008 0B46     	 mov r3,r1
+ 148 000a 7B80     	 strh r3,[r7,#2]
+  40:../cleanflight/src/main/common/streambuf.c ****     sbufWriteU8(dst, val >> 0);
+ 149              	 .loc 1 40 0
+ 150 000c 7B88     	 ldrh r3,[r7,#2]
+ 151 000e DBB2     	 uxtb r3,r3
+ 152 0010 7868     	 ldr r0,[r7,#4]
+ 153 0012 1946     	 mov r1,r3
+ 154 0014 FFF7FEFF 	 bl sbufWriteU8
+  41:../cleanflight/src/main/common/streambuf.c ****     sbufWriteU8(dst, val >> 8);
+ 155              	 .loc 1 41 0
+ 156 0018 7B88     	 ldrh r3,[r7,#2]
+ 157 001a 1B0A     	 lsrs r3,r3,#8
+ 158 001c 9BB2     	 uxth r3,r3
+ 159 001e DBB2     	 uxtb r3,r3
+ 160 0020 7868     	 ldr r0,[r7,#4]
+ 161 0022 1946     	 mov r1,r3
+ 162 0024 FFF7FEFF 	 bl sbufWriteU8
+  42:../cleanflight/src/main/common/streambuf.c **** }
+ 163              	 .loc 1 42 0
+ 164 0028 0837     	 adds r7,r7,#8
+ 165              	.LCFI15:
+ 166              	 .cfi_def_cfa_offset 8
+ 167 002a BD46     	 mov sp,r7
+ 168              	.LCFI16:
+ 169              	 .cfi_def_cfa_register 13
+ 170              	 
+ 171 002c 80BD     	 pop {r7,pc}
+ 172              	 .cfi_endproc
+ 173              	.LFE2:
+ 175 002e 00BF     	 .section .text.sbufWriteU32,"ax",%progbits
+ 176              	 .align 2
+ 177              	 .global sbufWriteU32
+ 178              	 .thumb
+ 179              	 .thumb_func
+ 181              	sbufWriteU32:
+ 182              	.LFB3:
+  43:../cleanflight/src/main/common/streambuf.c **** 
+  44:../cleanflight/src/main/common/streambuf.c **** void sbufWriteU32(sbuf_t *dst, uint32_t val)
+  45:../cleanflight/src/main/common/streambuf.c **** {
+ 183              	 .loc 1 45 0
+ 184              	 .cfi_startproc
+ 185              	 
+ 186              	 
+ 187 0000 80B5     	 push {r7,lr}
+ 188              	.LCFI17:
+ 189              	 .cfi_def_cfa_offset 8
+ 190              	 .cfi_offset 7,-8
+ 191              	 .cfi_offset 14,-4
+ 192 0002 82B0     	 sub sp,sp,#8
+ 193              	.LCFI18:
+ 194              	 .cfi_def_cfa_offset 16
+ 195 0004 00AF     	 add r7,sp,#0
+ 196              	.LCFI19:
+ 197              	 .cfi_def_cfa_register 7
+ 198 0006 7860     	 str r0,[r7,#4]
+ 199 0008 3960     	 str r1,[r7]
+  46:../cleanflight/src/main/common/streambuf.c ****     sbufWriteU8(dst, val >> 0);
+ 200              	 .loc 1 46 0
+ 201 000a 3B68     	 ldr r3,[r7]
+ 202 000c DBB2     	 uxtb r3,r3
+ 203 000e 7868     	 ldr r0,[r7,#4]
+ 204 0010 1946     	 mov r1,r3
+ 205 0012 FFF7FEFF 	 bl sbufWriteU8
+  47:../cleanflight/src/main/common/streambuf.c ****     sbufWriteU8(dst, val >> 8);
+ 206              	 .loc 1 47 0
+ 207 0016 3B68     	 ldr r3,[r7]
+ 208 0018 1B0A     	 lsrs r3,r3,#8
+ 209 001a DBB2     	 uxtb r3,r3
+ 210 001c 7868     	 ldr r0,[r7,#4]
+ 211 001e 1946     	 mov r1,r3
+ 212 0020 FFF7FEFF 	 bl sbufWriteU8
+  48:../cleanflight/src/main/common/streambuf.c ****     sbufWriteU8(dst, val >> 16);
+ 213              	 .loc 1 48 0
+ 214 0024 3B68     	 ldr r3,[r7]
+ 215 0026 1B0C     	 lsrs r3,r3,#16
+ 216 0028 DBB2     	 uxtb r3,r3
+ 217 002a 7868     	 ldr r0,[r7,#4]
+ 218 002c 1946     	 mov r1,r3
+ 219 002e FFF7FEFF 	 bl sbufWriteU8
+  49:../cleanflight/src/main/common/streambuf.c ****     sbufWriteU8(dst, val >> 24);
+ 220              	 .loc 1 49 0
+ 221 0032 3B68     	 ldr r3,[r7]
+ 222 0034 1B0E     	 lsrs r3,r3,#24
+ 223 0036 DBB2     	 uxtb r3,r3
+ 224 0038 7868     	 ldr r0,[r7,#4]
+ 225 003a 1946     	 mov r1,r3
+ 226 003c FFF7FEFF 	 bl sbufWriteU8
+  50:../cleanflight/src/main/common/streambuf.c **** }
+ 227              	 .loc 1 50 0
+ 228 0040 0837     	 adds r7,r7,#8
+ 229              	.LCFI20:
+ 230              	 .cfi_def_cfa_offset 8
+ 231 0042 BD46     	 mov sp,r7
+ 232              	.LCFI21:
+ 233              	 .cfi_def_cfa_register 13
+ 234              	 
+ 235 0044 80BD     	 pop {r7,pc}
+ 236              	 .cfi_endproc
+ 237              	.LFE3:
+ 239 0046 00BF     	 .section .text.sbufWriteU16BigEndian,"ax",%progbits
+ 240              	 .align 2
+ 241              	 .global sbufWriteU16BigEndian
+ 242              	 .thumb
+ 243              	 .thumb_func
+ 245              	sbufWriteU16BigEndian:
+ 246              	.LFB4:
+  51:../cleanflight/src/main/common/streambuf.c **** 
+  52:../cleanflight/src/main/common/streambuf.c **** void sbufWriteU16BigEndian(sbuf_t *dst, uint16_t val)
+  53:../cleanflight/src/main/common/streambuf.c **** {
+ 247              	 .loc 1 53 0
+ 248              	 .cfi_startproc
+ 249              	 
+ 250              	 
+ 251 0000 80B5     	 push {r7,lr}
+ 252              	.LCFI22:
+ 253              	 .cfi_def_cfa_offset 8
+ 254              	 .cfi_offset 7,-8
+ 255              	 .cfi_offset 14,-4
+ 256 0002 82B0     	 sub sp,sp,#8
+ 257              	.LCFI23:
+ 258              	 .cfi_def_cfa_offset 16
+ 259 0004 00AF     	 add r7,sp,#0
+ 260              	.LCFI24:
+ 261              	 .cfi_def_cfa_register 7
+ 262 0006 7860     	 str r0,[r7,#4]
+ 263 0008 0B46     	 mov r3,r1
+ 264 000a 7B80     	 strh r3,[r7,#2]
+  54:../cleanflight/src/main/common/streambuf.c ****     sbufWriteU8(dst, val >> 8);
+ 265              	 .loc 1 54 0
+ 266 000c 7B88     	 ldrh r3,[r7,#2]
+ 267 000e 1B0A     	 lsrs r3,r3,#8
+ 268 0010 9BB2     	 uxth r3,r3
+ 269 0012 DBB2     	 uxtb r3,r3
+ 270 0014 7868     	 ldr r0,[r7,#4]
+ 271 0016 1946     	 mov r1,r3
+ 272 0018 FFF7FEFF 	 bl sbufWriteU8
+  55:../cleanflight/src/main/common/streambuf.c ****     sbufWriteU8(dst, (uint8_t)val);
+ 273              	 .loc 1 55 0
+ 274 001c 7B88     	 ldrh r3,[r7,#2]
+ 275 001e DBB2     	 uxtb r3,r3
+ 276 0020 7868     	 ldr r0,[r7,#4]
+ 277 0022 1946     	 mov r1,r3
+ 278 0024 FFF7FEFF 	 bl sbufWriteU8
+  56:../cleanflight/src/main/common/streambuf.c **** }
+ 279              	 .loc 1 56 0
+ 280 0028 0837     	 adds r7,r7,#8
+ 281              	.LCFI25:
+ 282              	 .cfi_def_cfa_offset 8
+ 283 002a BD46     	 mov sp,r7
+ 284              	.LCFI26:
+ 285              	 .cfi_def_cfa_register 13
+ 286              	 
+ 287 002c 80BD     	 pop {r7,pc}
+ 288              	 .cfi_endproc
+ 289              	.LFE4:
+ 291 002e 00BF     	 .section .text.sbufWriteU32BigEndian,"ax",%progbits
+ 292              	 .align 2
+ 293              	 .global sbufWriteU32BigEndian
+ 294              	 .thumb
+ 295              	 .thumb_func
+ 297              	sbufWriteU32BigEndian:
+ 298              	.LFB5:
+  57:../cleanflight/src/main/common/streambuf.c **** 
+  58:../cleanflight/src/main/common/streambuf.c **** void sbufWriteU32BigEndian(sbuf_t *dst, uint32_t val)
+  59:../cleanflight/src/main/common/streambuf.c **** {
+ 299              	 .loc 1 59 0
+ 300              	 .cfi_startproc
+ 301              	 
+ 302              	 
+ 303 0000 80B5     	 push {r7,lr}
+ 304              	.LCFI27:
+ 305              	 .cfi_def_cfa_offset 8
+ 306              	 .cfi_offset 7,-8
+ 307              	 .cfi_offset 14,-4
+ 308 0002 82B0     	 sub sp,sp,#8
+ 309              	.LCFI28:
+ 310              	 .cfi_def_cfa_offset 16
+ 311 0004 00AF     	 add r7,sp,#0
+ 312              	.LCFI29:
+ 313              	 .cfi_def_cfa_register 7
+ 314 0006 7860     	 str r0,[r7,#4]
+ 315 0008 3960     	 str r1,[r7]
+  60:../cleanflight/src/main/common/streambuf.c ****     sbufWriteU8(dst, val >> 24);
+ 316              	 .loc 1 60 0
+ 317 000a 3B68     	 ldr r3,[r7]
+ 318 000c 1B0E     	 lsrs r3,r3,#24
+ 319 000e DBB2     	 uxtb r3,r3
+ 320 0010 7868     	 ldr r0,[r7,#4]
+ 321 0012 1946     	 mov r1,r3
+ 322 0014 FFF7FEFF 	 bl sbufWriteU8
+  61:../cleanflight/src/main/common/streambuf.c ****     sbufWriteU8(dst, val >> 16);
+ 323              	 .loc 1 61 0
+ 324 0018 3B68     	 ldr r3,[r7]
+ 325 001a 1B0C     	 lsrs r3,r3,#16
+ 326 001c DBB2     	 uxtb r3,r3
+ 327 001e 7868     	 ldr r0,[r7,#4]
+ 328 0020 1946     	 mov r1,r3
+ 329 0022 FFF7FEFF 	 bl sbufWriteU8
+  62:../cleanflight/src/main/common/streambuf.c ****     sbufWriteU8(dst, val >> 8);
+ 330              	 .loc 1 62 0
+ 331 0026 3B68     	 ldr r3,[r7]
+ 332 0028 1B0A     	 lsrs r3,r3,#8
+ 333 002a DBB2     	 uxtb r3,r3
+ 334 002c 7868     	 ldr r0,[r7,#4]
+ 335 002e 1946     	 mov r1,r3
+ 336 0030 FFF7FEFF 	 bl sbufWriteU8
+  63:../cleanflight/src/main/common/streambuf.c ****     sbufWriteU8(dst, (uint8_t)val);
+ 337              	 .loc 1 63 0
+ 338 0034 3B68     	 ldr r3,[r7]
+ 339 0036 DBB2     	 uxtb r3,r3
+ 340 0038 7868     	 ldr r0,[r7,#4]
+ 341 003a 1946     	 mov r1,r3
+ 342 003c FFF7FEFF 	 bl sbufWriteU8
+  64:../cleanflight/src/main/common/streambuf.c **** }
+ 343              	 .loc 1 64 0
+ 344 0040 0837     	 adds r7,r7,#8
+ 345              	.LCFI30:
+ 346              	 .cfi_def_cfa_offset 8
+ 347 0042 BD46     	 mov sp,r7
+ 348              	.LCFI31:
+ 349              	 .cfi_def_cfa_register 13
+ 350              	 
+ 351 0044 80BD     	 pop {r7,pc}
+ 352              	 .cfi_endproc
+ 353              	.LFE5:
+ 355 0046 00BF     	 .section .text.sbufFill,"ax",%progbits
+ 356              	 .align 2
+ 357              	 .global sbufFill
+ 358              	 .thumb
+ 359              	 .thumb_func
+ 361              	sbufFill:
+ 362              	.LFB6:
+  65:../cleanflight/src/main/common/streambuf.c **** 
+  66:../cleanflight/src/main/common/streambuf.c **** 
+  67:../cleanflight/src/main/common/streambuf.c **** void sbufFill(sbuf_t *dst, uint8_t data, int len)
+  68:../cleanflight/src/main/common/streambuf.c **** {
+ 363              	 .loc 1 68 0
+ 364              	 .cfi_startproc
+ 365              	 
+ 366              	 
+ 367 0000 80B5     	 push {r7,lr}
+ 368              	.LCFI32:
+ 369              	 .cfi_def_cfa_offset 8
+ 370              	 .cfi_offset 7,-8
+ 371              	 .cfi_offset 14,-4
+ 372 0002 84B0     	 sub sp,sp,#16
+ 373              	.LCFI33:
+ 374              	 .cfi_def_cfa_offset 24
+ 375 0004 00AF     	 add r7,sp,#0
+ 376              	.LCFI34:
+ 377              	 .cfi_def_cfa_register 7
+ 378 0006 F860     	 str r0,[r7,#12]
+ 379 0008 0B46     	 mov r3,r1
+ 380 000a 7A60     	 str r2,[r7,#4]
+ 381 000c FB72     	 strb r3,[r7,#11]
+  69:../cleanflight/src/main/common/streambuf.c ****     memset(dst->ptr, data, len);
+ 382              	 .loc 1 69 0
+ 383 000e FB68     	 ldr r3,[r7,#12]
+ 384 0010 1968     	 ldr r1,[r3]
+ 385 0012 FA7A     	 ldrb r2,[r7,#11]
+ 386 0014 7B68     	 ldr r3,[r7,#4]
+ 387 0016 0846     	 mov r0,r1
+ 388 0018 1146     	 mov r1,r2
+ 389 001a 1A46     	 mov r2,r3
+ 390 001c FFF7FEFF 	 bl memset
+  70:../cleanflight/src/main/common/streambuf.c ****     dst->ptr += len;
+ 391              	 .loc 1 70 0
+ 392 0020 FB68     	 ldr r3,[r7,#12]
+ 393 0022 1A68     	 ldr r2,[r3]
+ 394 0024 7B68     	 ldr r3,[r7,#4]
+ 395 0026 1A44     	 add r2,r2,r3
+ 396 0028 FB68     	 ldr r3,[r7,#12]
+ 397 002a 1A60     	 str r2,[r3]
+  71:../cleanflight/src/main/common/streambuf.c **** }
+ 398              	 .loc 1 71 0
+ 399 002c 1037     	 adds r7,r7,#16
+ 400              	.LCFI35:
+ 401              	 .cfi_def_cfa_offset 8
+ 402 002e BD46     	 mov sp,r7
+ 403              	.LCFI36:
+ 404              	 .cfi_def_cfa_register 13
+ 405              	 
+ 406 0030 80BD     	 pop {r7,pc}
+ 407              	 .cfi_endproc
+ 408              	.LFE6:
+ 410 0032 00BF     	 .section .text.sbufWriteData,"ax",%progbits
+ 411              	 .align 2
+ 412              	 .global sbufWriteData
+ 413              	 .thumb
+ 414              	 .thumb_func
+ 416              	sbufWriteData:
+ 417              	.LFB7:
+  72:../cleanflight/src/main/common/streambuf.c **** 
+  73:../cleanflight/src/main/common/streambuf.c **** void sbufWriteData(sbuf_t *dst, const void *data, int len)
+  74:../cleanflight/src/main/common/streambuf.c **** {
+ 418              	 .loc 1 74 0
+ 419              	 .cfi_startproc
+ 420              	 
+ 421              	 
+ 422 0000 80B5     	 push {r7,lr}
+ 423              	.LCFI37:
+ 424              	 .cfi_def_cfa_offset 8
+ 425              	 .cfi_offset 7,-8
+ 426              	 .cfi_offset 14,-4
+ 427 0002 84B0     	 sub sp,sp,#16
+ 428              	.LCFI38:
+ 429              	 .cfi_def_cfa_offset 24
+ 430 0004 00AF     	 add r7,sp,#0
+ 431              	.LCFI39:
+ 432              	 .cfi_def_cfa_register 7
+ 433 0006 F860     	 str r0,[r7,#12]
+ 434 0008 B960     	 str r1,[r7,#8]
+ 435 000a 7A60     	 str r2,[r7,#4]
+  75:../cleanflight/src/main/common/streambuf.c ****     memcpy(dst->ptr, data, len);
+ 436              	 .loc 1 75 0
+ 437 000c FB68     	 ldr r3,[r7,#12]
+ 438 000e 1A68     	 ldr r2,[r3]
+ 439 0010 7B68     	 ldr r3,[r7,#4]
+ 440 0012 1046     	 mov r0,r2
+ 441 0014 B968     	 ldr r1,[r7,#8]
+ 442 0016 1A46     	 mov r2,r3
+ 443 0018 FFF7FEFF 	 bl memcpy
+  76:../cleanflight/src/main/common/streambuf.c ****     dst->ptr += len;
+ 444              	 .loc 1 76 0
+ 445 001c FB68     	 ldr r3,[r7,#12]
+ 446 001e 1A68     	 ldr r2,[r3]
+ 447 0020 7B68     	 ldr r3,[r7,#4]
+ 448 0022 1A44     	 add r2,r2,r3
+ 449 0024 FB68     	 ldr r3,[r7,#12]
+ 450 0026 1A60     	 str r2,[r3]
+  77:../cleanflight/src/main/common/streambuf.c **** }
+ 451              	 .loc 1 77 0
+ 452 0028 1037     	 adds r7,r7,#16
+ 453              	.LCFI40:
+ 454              	 .cfi_def_cfa_offset 8
+ 455 002a BD46     	 mov sp,r7
+ 456              	.LCFI41:
+ 457              	 .cfi_def_cfa_register 13
+ 458              	 
+ 459 002c 80BD     	 pop {r7,pc}
+ 460              	 .cfi_endproc
+ 461              	.LFE7:
+ 463 002e 00BF     	 .section .text.sbufWriteString,"ax",%progbits
+ 464              	 .align 2
+ 465              	 .global sbufWriteString
+ 466              	 .thumb
+ 467              	 .thumb_func
+ 469              	sbufWriteString:
+ 470              	.LFB8:
+  78:../cleanflight/src/main/common/streambuf.c **** 
+  79:../cleanflight/src/main/common/streambuf.c **** void sbufWriteString(sbuf_t *dst, const char *string)
+  80:../cleanflight/src/main/common/streambuf.c **** {
+ 471              	 .loc 1 80 0
+ 472              	 .cfi_startproc
+ 473              	 
+ 474              	 
+ 475 0000 80B5     	 push {r7,lr}
+ 476              	.LCFI42:
+ 477              	 .cfi_def_cfa_offset 8
+ 478              	 .cfi_offset 7,-8
+ 479              	 .cfi_offset 14,-4
+ 480 0002 82B0     	 sub sp,sp,#8
+ 481              	.LCFI43:
+ 482              	 .cfi_def_cfa_offset 16
+ 483 0004 00AF     	 add r7,sp,#0
+ 484              	.LCFI44:
+ 485              	 .cfi_def_cfa_register 7
+ 486 0006 7860     	 str r0,[r7,#4]
+ 487 0008 3960     	 str r1,[r7]
+  81:../cleanflight/src/main/common/streambuf.c ****     sbufWriteData(dst, string, strlen(string));
+ 488              	 .loc 1 81 0
+ 489 000a 3868     	 ldr r0,[r7]
+ 490 000c FFF7FEFF 	 bl strlen
+ 491 0010 0346     	 mov r3,r0
+ 492 0012 7868     	 ldr r0,[r7,#4]
+ 493 0014 3968     	 ldr r1,[r7]
+ 494 0016 1A46     	 mov r2,r3
+ 495 0018 FFF7FEFF 	 bl sbufWriteData
+  82:../cleanflight/src/main/common/streambuf.c **** }
+ 496              	 .loc 1 82 0
+ 497 001c 0837     	 adds r7,r7,#8
+ 498              	.LCFI45:
+ 499              	 .cfi_def_cfa_offset 8
+ 500 001e BD46     	 mov sp,r7
+ 501              	.LCFI46:
+ 502              	 .cfi_def_cfa_register 13
+ 503              	 
+ 504 0020 80BD     	 pop {r7,pc}
+ 505              	 .cfi_endproc
+ 506              	.LFE8:
+ 508 0022 00BF     	 .section .text.sbufWriteStringWithZeroTerminator,"ax",%progbits
+ 509              	 .align 2
+ 510              	 .global sbufWriteStringWithZeroTerminator
+ 511              	 .thumb
+ 512              	 .thumb_func
+ 514              	sbufWriteStringWithZeroTerminator:
+ 515              	.LFB9:
+  83:../cleanflight/src/main/common/streambuf.c **** 
+  84:../cleanflight/src/main/common/streambuf.c **** void sbufWriteStringWithZeroTerminator(sbuf_t *dst, const char *string)
+  85:../cleanflight/src/main/common/streambuf.c **** {
+ 516              	 .loc 1 85 0
+ 517              	 .cfi_startproc
+ 518              	 
+ 519              	 
+ 520 0000 80B5     	 push {r7,lr}
+ 521              	.LCFI47:
+ 522              	 .cfi_def_cfa_offset 8
+ 523              	 .cfi_offset 7,-8
+ 524              	 .cfi_offset 14,-4
+ 525 0002 82B0     	 sub sp,sp,#8
+ 526              	.LCFI48:
+ 527              	 .cfi_def_cfa_offset 16
+ 528 0004 00AF     	 add r7,sp,#0
+ 529              	.LCFI49:
+ 530              	 .cfi_def_cfa_register 7
+ 531 0006 7860     	 str r0,[r7,#4]
+ 532 0008 3960     	 str r1,[r7]
+  86:../cleanflight/src/main/common/streambuf.c ****     sbufWriteData(dst, string, strlen(string) + 1);
+ 533              	 .loc 1 86 0
+ 534 000a 3868     	 ldr r0,[r7]
+ 535 000c FFF7FEFF 	 bl strlen
+ 536 0010 0346     	 mov r3,r0
+ 537 0012 0133     	 adds r3,r3,#1
+ 538 0014 7868     	 ldr r0,[r7,#4]
+ 539 0016 3968     	 ldr r1,[r7]
+ 540 0018 1A46     	 mov r2,r3
+ 541 001a FFF7FEFF 	 bl sbufWriteData
+  87:../cleanflight/src/main/common/streambuf.c **** }
+ 542              	 .loc 1 87 0
+ 543 001e 0837     	 adds r7,r7,#8
+ 544              	.LCFI50:
+ 545              	 .cfi_def_cfa_offset 8
+ 546 0020 BD46     	 mov sp,r7
+ 547              	.LCFI51:
+ 548              	 .cfi_def_cfa_register 13
+ 549              	 
+ 550 0022 80BD     	 pop {r7,pc}
+ 551              	 .cfi_endproc
+ 552              	.LFE9:
+ 554              	 .section .text.sbufReadU8,"ax",%progbits
+ 555              	 .align 2
+ 556              	 .global sbufReadU8
+ 557              	 .thumb
+ 558              	 .thumb_func
+ 560              	sbufReadU8:
+ 561              	.LFB10:
+  88:../cleanflight/src/main/common/streambuf.c **** 
+  89:../cleanflight/src/main/common/streambuf.c **** uint8_t sbufReadU8(sbuf_t *src)
+  90:../cleanflight/src/main/common/streambuf.c **** {
+ 562              	 .loc 1 90 0
+ 563              	 .cfi_startproc
+ 564              	 
+ 565              	 
+ 566              	 
+ 567 0000 80B4     	 push {r7}
+ 568              	.LCFI52:
+ 569              	 .cfi_def_cfa_offset 4
+ 570              	 .cfi_offset 7,-4
+ 571 0002 83B0     	 sub sp,sp,#12
+ 572              	.LCFI53:
+ 573              	 .cfi_def_cfa_offset 16
+ 574 0004 00AF     	 add r7,sp,#0
+ 575              	.LCFI54:
+ 576              	 .cfi_def_cfa_register 7
+ 577 0006 7860     	 str r0,[r7,#4]
+  91:../cleanflight/src/main/common/streambuf.c ****     return *src->ptr++;
+ 578              	 .loc 1 91 0
+ 579 0008 7B68     	 ldr r3,[r7,#4]
+ 580 000a 1B68     	 ldr r3,[r3]
+ 581 000c 591C     	 adds r1,r3,#1
+ 582 000e 7A68     	 ldr r2,[r7,#4]
+ 583 0010 1160     	 str r1,[r2]
+ 584 0012 1B78     	 ldrb r3,[r3]
+  92:../cleanflight/src/main/common/streambuf.c **** }
+ 585              	 .loc 1 92 0
+ 586 0014 1846     	 mov r0,r3
+ 587 0016 0C37     	 adds r7,r7,#12
+ 588              	.LCFI55:
+ 589              	 .cfi_def_cfa_offset 4
+ 590 0018 BD46     	 mov sp,r7
+ 591              	.LCFI56:
+ 592              	 .cfi_def_cfa_register 13
+ 593              	 
+ 594 001a 5DF8047B 	 ldr r7,[sp],#4
+ 595              	.LCFI57:
+ 596              	 .cfi_restore 7
+ 597              	 .cfi_def_cfa_offset 0
+ 598 001e 7047     	 bx lr
+ 599              	 .cfi_endproc
+ 600              	.LFE10:
+ 602              	 .section .text.sbufReadU16,"ax",%progbits
+ 603              	 .align 2
+ 604              	 .global sbufReadU16
+ 605              	 .thumb
+ 606              	 .thumb_func
+ 608              	sbufReadU16:
+ 609              	.LFB11:
+  93:../cleanflight/src/main/common/streambuf.c **** 
+  94:../cleanflight/src/main/common/streambuf.c **** uint16_t sbufReadU16(sbuf_t *src)
+  95:../cleanflight/src/main/common/streambuf.c **** {
+ 610              	 .loc 1 95 0
+ 611              	 .cfi_startproc
+ 612              	 
+ 613              	 
+ 614 0000 80B5     	 push {r7,lr}
+ 615              	.LCFI58:
+ 616              	 .cfi_def_cfa_offset 8
+ 617              	 .cfi_offset 7,-8
+ 618              	 .cfi_offset 14,-4
+ 619 0002 84B0     	 sub sp,sp,#16
+ 620              	.LCFI59:
+ 621              	 .cfi_def_cfa_offset 24
+ 622 0004 00AF     	 add r7,sp,#0
+ 623              	.LCFI60:
+ 624              	 .cfi_def_cfa_register 7
+ 625 0006 7860     	 str r0,[r7,#4]
+  96:../cleanflight/src/main/common/streambuf.c ****     uint16_t ret;
+  97:../cleanflight/src/main/common/streambuf.c ****     ret = sbufReadU8(src);
+ 626              	 .loc 1 97 0
+ 627 0008 7868     	 ldr r0,[r7,#4]
+ 628 000a FFF7FEFF 	 bl sbufReadU8
+ 629 000e 0346     	 mov r3,r0
+ 630 0010 FB81     	 strh r3,[r7,#14]
+  98:../cleanflight/src/main/common/streambuf.c ****     ret |= sbufReadU8(src) << 8;
+ 631              	 .loc 1 98 0
+ 632 0012 7868     	 ldr r0,[r7,#4]
+ 633 0014 FFF7FEFF 	 bl sbufReadU8
+ 634 0018 0346     	 mov r3,r0
+ 635 001a 1B02     	 lsls r3,r3,#8
+ 636 001c 9AB2     	 uxth r2,r3
+ 637 001e FB89     	 ldrh r3,[r7,#14]
+ 638 0020 1343     	 orrs r3,r3,r2
+ 639 0022 9BB2     	 uxth r3,r3
+ 640 0024 FB81     	 strh r3,[r7,#14]
+  99:../cleanflight/src/main/common/streambuf.c ****     return ret;
+ 641              	 .loc 1 99 0
+ 642 0026 FB89     	 ldrh r3,[r7,#14]
+ 100:../cleanflight/src/main/common/streambuf.c **** }
+ 643              	 .loc 1 100 0
+ 644 0028 1846     	 mov r0,r3
+ 645 002a 1037     	 adds r7,r7,#16
+ 646              	.LCFI61:
+ 647              	 .cfi_def_cfa_offset 8
+ 648 002c BD46     	 mov sp,r7
+ 649              	.LCFI62:
+ 650              	 .cfi_def_cfa_register 13
+ 651              	 
+ 652 002e 80BD     	 pop {r7,pc}
+ 653              	 .cfi_endproc
+ 654              	.LFE11:
+ 656              	 .section .text.sbufReadU32,"ax",%progbits
+ 657              	 .align 2
+ 658              	 .global sbufReadU32
+ 659              	 .thumb
+ 660              	 .thumb_func
+ 662              	sbufReadU32:
+ 663              	.LFB12:
+ 101:../cleanflight/src/main/common/streambuf.c **** 
+ 102:../cleanflight/src/main/common/streambuf.c **** uint32_t sbufReadU32(sbuf_t *src)
+ 103:../cleanflight/src/main/common/streambuf.c **** {
+ 664              	 .loc 1 103 0
+ 665              	 .cfi_startproc
+ 666              	 
+ 667              	 
+ 668 0000 80B5     	 push {r7,lr}
+ 669              	.LCFI63:
+ 670              	 .cfi_def_cfa_offset 8
+ 671              	 .cfi_offset 7,-8
+ 672              	 .cfi_offset 14,-4
+ 673 0002 84B0     	 sub sp,sp,#16
+ 674              	.LCFI64:
+ 675              	 .cfi_def_cfa_offset 24
+ 676 0004 00AF     	 add r7,sp,#0
+ 677              	.LCFI65:
+ 678              	 .cfi_def_cfa_register 7
+ 679 0006 7860     	 str r0,[r7,#4]
+ 104:../cleanflight/src/main/common/streambuf.c ****     uint32_t ret;
+ 105:../cleanflight/src/main/common/streambuf.c ****     ret = sbufReadU8(src);
+ 680              	 .loc 1 105 0
+ 681 0008 7868     	 ldr r0,[r7,#4]
+ 682 000a FFF7FEFF 	 bl sbufReadU8
+ 683 000e 0346     	 mov r3,r0
+ 684 0010 FB60     	 str r3,[r7,#12]
+ 106:../cleanflight/src/main/common/streambuf.c ****     ret |= sbufReadU8(src) <<  8;
+ 685              	 .loc 1 106 0
+ 686 0012 7868     	 ldr r0,[r7,#4]
+ 687 0014 FFF7FEFF 	 bl sbufReadU8
+ 688 0018 0346     	 mov r3,r0
+ 689 001a 1B02     	 lsls r3,r3,#8
+ 690 001c 1A46     	 mov r2,r3
+ 691 001e FB68     	 ldr r3,[r7,#12]
+ 692 0020 1343     	 orrs r3,r3,r2
+ 693 0022 FB60     	 str r3,[r7,#12]
+ 107:../cleanflight/src/main/common/streambuf.c ****     ret |= sbufReadU8(src) << 16;
+ 694              	 .loc 1 107 0
+ 695 0024 7868     	 ldr r0,[r7,#4]
+ 696 0026 FFF7FEFF 	 bl sbufReadU8
+ 697 002a 0346     	 mov r3,r0
+ 698 002c 1B04     	 lsls r3,r3,#16
+ 699 002e 1A46     	 mov r2,r3
+ 700 0030 FB68     	 ldr r3,[r7,#12]
+ 701 0032 1343     	 orrs r3,r3,r2
+ 702 0034 FB60     	 str r3,[r7,#12]
+ 108:../cleanflight/src/main/common/streambuf.c ****     ret |= sbufReadU8(src) << 24;
+ 703              	 .loc 1 108 0
+ 704 0036 7868     	 ldr r0,[r7,#4]
+ 705 0038 FFF7FEFF 	 bl sbufReadU8
+ 706 003c 0346     	 mov r3,r0
+ 707 003e 1B06     	 lsls r3,r3,#24
+ 708 0040 1A46     	 mov r2,r3
+ 709 0042 FB68     	 ldr r3,[r7,#12]
+ 710 0044 1343     	 orrs r3,r3,r2
+ 711 0046 FB60     	 str r3,[r7,#12]
+ 109:../cleanflight/src/main/common/streambuf.c ****     return ret;
+ 712              	 .loc 1 109 0
+ 713 0048 FB68     	 ldr r3,[r7,#12]
+ 110:../cleanflight/src/main/common/streambuf.c **** }
+ 714              	 .loc 1 110 0
+ 715 004a 1846     	 mov r0,r3
+ 716 004c 1037     	 adds r7,r7,#16
+ 717              	.LCFI66:
+ 718              	 .cfi_def_cfa_offset 8
+ 719 004e BD46     	 mov sp,r7
+ 720              	.LCFI67:
+ 721              	 .cfi_def_cfa_register 13
+ 722              	 
+ 723 0050 80BD     	 pop {r7,pc}
+ 724              	 .cfi_endproc
+ 725              	.LFE12:
+ 727 0052 00BF     	 .section .text.sbufReadData,"ax",%progbits
+ 728              	 .align 2
+ 729              	 .global sbufReadData
+ 730              	 .thumb
+ 731              	 .thumb_func
+ 733              	sbufReadData:
+ 734              	.LFB13:
+ 111:../cleanflight/src/main/common/streambuf.c **** 
+ 112:../cleanflight/src/main/common/streambuf.c **** void sbufReadData(sbuf_t *src, void *data, int len)
+ 113:../cleanflight/src/main/common/streambuf.c **** {
+ 735              	 .loc 1 113 0
+ 736              	 .cfi_startproc
+ 737              	 
+ 738              	 
+ 739 0000 80B5     	 push {r7,lr}
+ 740              	.LCFI68:
+ 741              	 .cfi_def_cfa_offset 8
+ 742              	 .cfi_offset 7,-8
+ 743              	 .cfi_offset 14,-4
+ 744 0002 84B0     	 sub sp,sp,#16
+ 745              	.LCFI69:
+ 746              	 .cfi_def_cfa_offset 24
+ 747 0004 00AF     	 add r7,sp,#0
+ 748              	.LCFI70:
+ 749              	 .cfi_def_cfa_register 7
+ 750 0006 F860     	 str r0,[r7,#12]
+ 751 0008 B960     	 str r1,[r7,#8]
+ 752 000a 7A60     	 str r2,[r7,#4]
+ 114:../cleanflight/src/main/common/streambuf.c ****     memcpy(data, src->ptr, len);
+ 753              	 .loc 1 114 0
+ 754 000c FB68     	 ldr r3,[r7,#12]
+ 755 000e 1A68     	 ldr r2,[r3]
+ 756 0010 7B68     	 ldr r3,[r7,#4]
+ 757 0012 B868     	 ldr r0,[r7,#8]
+ 758 0014 1146     	 mov r1,r2
+ 759 0016 1A46     	 mov r2,r3
+ 760 0018 FFF7FEFF 	 bl memcpy
+ 115:../cleanflight/src/main/common/streambuf.c **** }
+ 761              	 .loc 1 115 0
+ 762 001c 1037     	 adds r7,r7,#16
+ 763              	.LCFI71:
+ 764              	 .cfi_def_cfa_offset 8
+ 765 001e BD46     	 mov sp,r7
+ 766              	.LCFI72:
+ 767              	 .cfi_def_cfa_register 13
+ 768              	 
+ 769 0020 80BD     	 pop {r7,pc}
+ 770              	 .cfi_endproc
+ 771              	.LFE13:
+ 773 0022 00BF     	 .section .text.sbufBytesRemaining,"ax",%progbits
+ 774              	 .align 2
+ 775              	 .global sbufBytesRemaining
+ 776              	 .thumb
+ 777              	 .thumb_func
+ 779              	sbufBytesRemaining:
+ 780              	.LFB14:
+ 116:../cleanflight/src/main/common/streambuf.c **** 
+ 117:../cleanflight/src/main/common/streambuf.c **** // reader - return bytes remaining in buffer
+ 118:../cleanflight/src/main/common/streambuf.c **** // writer - return available space
+ 119:../cleanflight/src/main/common/streambuf.c **** int sbufBytesRemaining(sbuf_t *buf)
+ 120:../cleanflight/src/main/common/streambuf.c **** {
+ 781              	 .loc 1 120 0
+ 782              	 .cfi_startproc
+ 783              	 
+ 784              	 
+ 785              	 
+ 786 0000 80B4     	 push {r7}
+ 787              	.LCFI73:
+ 788              	 .cfi_def_cfa_offset 4
+ 789              	 .cfi_offset 7,-4
+ 790 0002 83B0     	 sub sp,sp,#12
+ 791              	.LCFI74:
+ 792              	 .cfi_def_cfa_offset 16
+ 793 0004 00AF     	 add r7,sp,#0
+ 794              	.LCFI75:
+ 795              	 .cfi_def_cfa_register 7
+ 796 0006 7860     	 str r0,[r7,#4]
+ 121:../cleanflight/src/main/common/streambuf.c ****     return buf->end - buf->ptr;
+ 797              	 .loc 1 121 0
+ 798 0008 7B68     	 ldr r3,[r7,#4]
+ 799 000a 5B68     	 ldr r3,[r3,#4]
+ 800 000c 1A46     	 mov r2,r3
+ 801 000e 7B68     	 ldr r3,[r7,#4]
+ 802 0010 1B68     	 ldr r3,[r3]
+ 803 0012 D31A     	 subs r3,r2,r3
+ 122:../cleanflight/src/main/common/streambuf.c **** }
+ 804              	 .loc 1 122 0
+ 805 0014 1846     	 mov r0,r3
+ 806 0016 0C37     	 adds r7,r7,#12
+ 807              	.LCFI76:
+ 808              	 .cfi_def_cfa_offset 4
+ 809 0018 BD46     	 mov sp,r7
+ 810              	.LCFI77:
+ 811              	 .cfi_def_cfa_register 13
+ 812              	 
+ 813 001a 5DF8047B 	 ldr r7,[sp],#4
+ 814              	.LCFI78:
+ 815              	 .cfi_restore 7
+ 816              	 .cfi_def_cfa_offset 0
+ 817 001e 7047     	 bx lr
+ 818              	 .cfi_endproc
+ 819              	.LFE14:
+ 821              	 .section .text.sbufPtr,"ax",%progbits
+ 822              	 .align 2
+ 823              	 .global sbufPtr
+ 824              	 .thumb
+ 825              	 .thumb_func
+ 827              	sbufPtr:
+ 828              	.LFB15:
+ 123:../cleanflight/src/main/common/streambuf.c **** 
+ 124:../cleanflight/src/main/common/streambuf.c **** uint8_t* sbufPtr(sbuf_t *buf)
+ 125:../cleanflight/src/main/common/streambuf.c **** {
+ 829              	 .loc 1 125 0
+ 830              	 .cfi_startproc
+ 831              	 
+ 832              	 
+ 833              	 
+ 834 0000 80B4     	 push {r7}
+ 835              	.LCFI79:
+ 836              	 .cfi_def_cfa_offset 4
+ 837              	 .cfi_offset 7,-4
+ 838 0002 83B0     	 sub sp,sp,#12
+ 839              	.LCFI80:
+ 840              	 .cfi_def_cfa_offset 16
+ 841 0004 00AF     	 add r7,sp,#0
+ 842              	.LCFI81:
+ 843              	 .cfi_def_cfa_register 7
+ 844 0006 7860     	 str r0,[r7,#4]
+ 126:../cleanflight/src/main/common/streambuf.c ****     return buf->ptr;
+ 845              	 .loc 1 126 0
+ 846 0008 7B68     	 ldr r3,[r7,#4]
+ 847 000a 1B68     	 ldr r3,[r3]
+ 127:../cleanflight/src/main/common/streambuf.c **** }
+ 848              	 .loc 1 127 0
+ 849 000c 1846     	 mov r0,r3
+ 850 000e 0C37     	 adds r7,r7,#12
+ 851              	.LCFI82:
+ 852              	 .cfi_def_cfa_offset 4
+ 853 0010 BD46     	 mov sp,r7
+ 854              	.LCFI83:
+ 855              	 .cfi_def_cfa_register 13
+ 856              	 
+ 857 0012 5DF8047B 	 ldr r7,[sp],#4
+ 858              	.LCFI84:
+ 859              	 .cfi_restore 7
+ 860              	 .cfi_def_cfa_offset 0
+ 861 0016 7047     	 bx lr
+ 862              	 .cfi_endproc
+ 863              	.LFE15:
+ 865              	 .section .text.sbufConstPtr,"ax",%progbits
+ 866              	 .align 2
+ 867              	 .global sbufConstPtr
+ 868              	 .thumb
+ 869              	 .thumb_func
+ 871              	sbufConstPtr:
+ 872              	.LFB16:
+ 128:../cleanflight/src/main/common/streambuf.c **** 
+ 129:../cleanflight/src/main/common/streambuf.c **** const uint8_t* sbufConstPtr(const sbuf_t *buf)
+ 130:../cleanflight/src/main/common/streambuf.c **** {
+ 873              	 .loc 1 130 0
+ 874              	 .cfi_startproc
+ 875              	 
+ 876              	 
+ 877              	 
+ 878 0000 80B4     	 push {r7}
+ 879              	.LCFI85:
+ 880              	 .cfi_def_cfa_offset 4
+ 881              	 .cfi_offset 7,-4
+ 882 0002 83B0     	 sub sp,sp,#12
+ 883              	.LCFI86:
+ 884              	 .cfi_def_cfa_offset 16
+ 885 0004 00AF     	 add r7,sp,#0
+ 886              	.LCFI87:
+ 887              	 .cfi_def_cfa_register 7
+ 888 0006 7860     	 str r0,[r7,#4]
+ 131:../cleanflight/src/main/common/streambuf.c ****     return buf->ptr;
+ 889              	 .loc 1 131 0
+ 890 0008 7B68     	 ldr r3,[r7,#4]
+ 891 000a 1B68     	 ldr r3,[r3]
+ 132:../cleanflight/src/main/common/streambuf.c **** }
+ 892              	 .loc 1 132 0
+ 893 000c 1846     	 mov r0,r3
+ 894 000e 0C37     	 adds r7,r7,#12
+ 895              	.LCFI88:
+ 896              	 .cfi_def_cfa_offset 4
+ 897 0010 BD46     	 mov sp,r7
+ 898              	.LCFI89:
+ 899              	 .cfi_def_cfa_register 13
+ 900              	 
+ 901 0012 5DF8047B 	 ldr r7,[sp],#4
+ 902              	.LCFI90:
+ 903              	 .cfi_restore 7
+ 904              	 .cfi_def_cfa_offset 0
+ 905 0016 7047     	 bx lr
+ 906              	 .cfi_endproc
+ 907              	.LFE16:
+ 909              	 .section .text.sbufAdvance,"ax",%progbits
+ 910              	 .align 2
+ 911              	 .global sbufAdvance
+ 912              	 .thumb
+ 913              	 .thumb_func
+ 915              	sbufAdvance:
+ 916              	.LFB17:
+ 133:../cleanflight/src/main/common/streambuf.c **** 
+ 134:../cleanflight/src/main/common/streambuf.c **** // advance buffer pointer
+ 135:../cleanflight/src/main/common/streambuf.c **** // reader - skip data
+ 136:../cleanflight/src/main/common/streambuf.c **** // writer - commit written data
+ 137:../cleanflight/src/main/common/streambuf.c **** void sbufAdvance(sbuf_t *buf, int size)
+ 138:../cleanflight/src/main/common/streambuf.c **** {
+ 917              	 .loc 1 138 0
+ 918              	 .cfi_startproc
+ 919              	 
+ 920              	 
+ 921              	 
+ 922 0000 80B4     	 push {r7}
+ 923              	.LCFI91:
+ 924              	 .cfi_def_cfa_offset 4
+ 925              	 .cfi_offset 7,-4
+ 926 0002 83B0     	 sub sp,sp,#12
+ 927              	.LCFI92:
+ 928              	 .cfi_def_cfa_offset 16
+ 929 0004 00AF     	 add r7,sp,#0
+ 930              	.LCFI93:
+ 931              	 .cfi_def_cfa_register 7
+ 932 0006 7860     	 str r0,[r7,#4]
+ 933 0008 3960     	 str r1,[r7]
+ 139:../cleanflight/src/main/common/streambuf.c ****     buf->ptr += size;
+ 934              	 .loc 1 139 0
+ 935 000a 7B68     	 ldr r3,[r7,#4]
+ 936 000c 1A68     	 ldr r2,[r3]
+ 937 000e 3B68     	 ldr r3,[r7]
+ 938 0010 1A44     	 add r2,r2,r3
+ 939 0012 7B68     	 ldr r3,[r7,#4]
+ 940 0014 1A60     	 str r2,[r3]
+ 140:../cleanflight/src/main/common/streambuf.c **** }
+ 941              	 .loc 1 140 0
+ 942 0016 0C37     	 adds r7,r7,#12
+ 943              	.LCFI94:
+ 944              	 .cfi_def_cfa_offset 4
+ 945 0018 BD46     	 mov sp,r7
+ 946              	.LCFI95:
+ 947              	 .cfi_def_cfa_register 13
+ 948              	 
+ 949 001a 5DF8047B 	 ldr r7,[sp],#4
+ 950              	.LCFI96:
+ 951              	 .cfi_restore 7
+ 952              	 .cfi_def_cfa_offset 0
+ 953 001e 7047     	 bx lr
+ 954              	 .cfi_endproc
+ 955              	.LFE17:
+ 957              	 .section .text.sbufSwitchToReader,"ax",%progbits
+ 958              	 .align 2
+ 959              	 .global sbufSwitchToReader
+ 960              	 .thumb
+ 961              	 .thumb_func
+ 963              	sbufSwitchToReader:
+ 964              	.LFB18:
+ 141:../cleanflight/src/main/common/streambuf.c **** 
+ 142:../cleanflight/src/main/common/streambuf.c **** // modifies streambuf so that written data are prepared for reading
+ 143:../cleanflight/src/main/common/streambuf.c **** void sbufSwitchToReader(sbuf_t *buf, uint8_t *base)
+ 144:../cleanflight/src/main/common/streambuf.c **** {
+ 965              	 .loc 1 144 0
+ 966              	 .cfi_startproc
+ 967              	 
+ 968              	 
+ 969              	 
+ 970 0000 80B4     	 push {r7}
+ 971              	.LCFI97:
+ 972              	 .cfi_def_cfa_offset 4
+ 973              	 .cfi_offset 7,-4
+ 974 0002 83B0     	 sub sp,sp,#12
+ 975              	.LCFI98:
+ 976              	 .cfi_def_cfa_offset 16
+ 977 0004 00AF     	 add r7,sp,#0
+ 978              	.LCFI99:
+ 979              	 .cfi_def_cfa_register 7
+ 980 0006 7860     	 str r0,[r7,#4]
+ 981 0008 3960     	 str r1,[r7]
+ 145:../cleanflight/src/main/common/streambuf.c ****     buf->end = buf->ptr;
+ 982              	 .loc 1 145 0
+ 983 000a 7B68     	 ldr r3,[r7,#4]
+ 984 000c 1A68     	 ldr r2,[r3]
+ 985 000e 7B68     	 ldr r3,[r7,#4]
+ 986 0010 5A60     	 str r2,[r3,#4]
+ 146:../cleanflight/src/main/common/streambuf.c ****     buf->ptr = base;
+ 987              	 .loc 1 146 0
+ 988 0012 7B68     	 ldr r3,[r7,#4]
+ 989 0014 3A68     	 ldr r2,[r7]
+ 990 0016 1A60     	 str r2,[r3]
+ 147:../cleanflight/src/main/common/streambuf.c **** }
+ 991              	 .loc 1 147 0
+ 992 0018 0C37     	 adds r7,r7,#12
+ 993              	.LCFI100:
+ 994              	 .cfi_def_cfa_offset 4
+ 995 001a BD46     	 mov sp,r7
+ 996              	.LCFI101:
+ 997              	 .cfi_def_cfa_register 13
+ 998              	 
+ 999 001c 5DF8047B 	 ldr r7,[sp],#4
+ 1000              	.LCFI102:
+ 1001              	 .cfi_restore 7
+ 1002              	 .cfi_def_cfa_offset 0
+ 1003 0020 7047     	 bx lr
+ 1004              	 .cfi_endproc
+ 1005              	.LFE18:
+ 1007 0022 00BF     	 .text
+ 1008              	.Letext0:
+ 1009              	 .file 2 "d:\\xmc\\dave-ide-4.4.2-64bit\\eclipse\\arm-gcc-49\\arm-none-eabi\\include\\machine\\_default_types.h"
+ 1010              	 .file 3 "d:\\xmc\\dave-ide-4.4.2-64bit\\eclipse\\arm-gcc-49\\arm-none-eabi\\include\\stdint.h"
+ 1011              	 .file 4 "../cleanflight/src/main/common/streambuf.h"
+DEFINED SYMBOLS
+                            *ABS*:00000000 streambuf.c
+    {standard input}:20     .text.sbufInit:00000000 $t
+    {standard input}:25     .text.sbufInit:00000000 sbufInit
+    {standard input}:74     .text.sbufWriteU8:00000000 $t
+    {standard input}:79     .text.sbufWriteU8:00000000 sbufWriteU8
+    {standard input}:124    .text.sbufWriteU16:00000000 $t
+    {standard input}:129    .text.sbufWriteU16:00000000 sbufWriteU16
+    {standard input}:176    .text.sbufWriteU32:00000000 $t
+    {standard input}:181    .text.sbufWriteU32:00000000 sbufWriteU32
+    {standard input}:240    .text.sbufWriteU16BigEndian:00000000 $t
+    {standard input}:245    .text.sbufWriteU16BigEndian:00000000 sbufWriteU16BigEndian
+    {standard input}:292    .text.sbufWriteU32BigEndian:00000000 $t
+    {standard input}:297    .text.sbufWriteU32BigEndian:00000000 sbufWriteU32BigEndian
+    {standard input}:356    .text.sbufFill:00000000 $t
+    {standard input}:361    .text.sbufFill:00000000 sbufFill
+    {standard input}:411    .text.sbufWriteData:00000000 $t
+    {standard input}:416    .text.sbufWriteData:00000000 sbufWriteData
+    {standard input}:464    .text.sbufWriteString:00000000 $t
+    {standard input}:469    .text.sbufWriteString:00000000 sbufWriteString
+    {standard input}:509    .text.sbufWriteStringWithZeroTerminator:00000000 $t
+    {standard input}:514    .text.sbufWriteStringWithZeroTerminator:00000000 sbufWriteStringWithZeroTerminator
+    {standard input}:555    .text.sbufReadU8:00000000 $t
+    {standard input}:560    .text.sbufReadU8:00000000 sbufReadU8
+    {standard input}:603    .text.sbufReadU16:00000000 $t
+    {standard input}:608    .text.sbufReadU16:00000000 sbufReadU16
+    {standard input}:657    .text.sbufReadU32:00000000 $t
+    {standard input}:662    .text.sbufReadU32:00000000 sbufReadU32
+    {standard input}:728    .text.sbufReadData:00000000 $t
+    {standard input}:733    .text.sbufReadData:00000000 sbufReadData
+    {standard input}:774    .text.sbufBytesRemaining:00000000 $t
+    {standard input}:779    .text.sbufBytesRemaining:00000000 sbufBytesRemaining
+    {standard input}:822    .text.sbufPtr:00000000 $t
+    {standard input}:827    .text.sbufPtr:00000000 sbufPtr
+    {standard input}:866    .text.sbufConstPtr:00000000 $t
+    {standard input}:871    .text.sbufConstPtr:00000000 sbufConstPtr
+    {standard input}:910    .text.sbufAdvance:00000000 $t
+    {standard input}:915    .text.sbufAdvance:00000000 sbufAdvance
+    {standard input}:958    .text.sbufSwitchToReader:00000000 $t
+    {standard input}:963    .text.sbufSwitchToReader:00000000 sbufSwitchToReader
+                     .debug_frame:00000010 $d
+
+UNDEFINED SYMBOLS
+memset
+memcpy
+strlen

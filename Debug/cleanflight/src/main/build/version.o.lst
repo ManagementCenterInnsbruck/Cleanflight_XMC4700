@@ -50,8 +50,8 @@
   53              	 .section .rodata
   54              	 .align 2
   55              	.LC3:
-  56 0018 31323A35 	 .ascii "12:52:10\000"
-  56      323A3130 
+  56 0018 31333A30 	 .ascii "13:00:11\000"
+  56      303A3131 
   56      00
   57 0021 000000   	 .section .rodata.buildTime,"a",%progbits
   58              	 .align 2

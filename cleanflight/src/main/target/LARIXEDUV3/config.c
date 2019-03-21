@@ -28,6 +28,9 @@
 #include "flight/mixer.h"
 #include "rx/rx.h"
 #include "io/serial.h"
+#include "sensors/gyro.h"
+#include "sensors/battery.h"
+#include "fc/rc_modes.h"
 
 void targetConfiguration(void)
 {
@@ -38,5 +41,9 @@ void targetConfiguration(void)
 
     serialConfigMutable()->portConfigs[findSerialPortIndexByIdentifier(SERIAL_PORT_SPIS3)].functionMask = FUNCTION_MSP;
     serialConfigMutable()->portConfigs[findSerialPortIndexByIdentifier(SERIAL_PORT_UART4)].functionMask = FUNCTION_MSP;
+
+    gyroConfigMutable()->gyroMovementCalibrationThreshold = 100;
+
+    batteryConfigMutable()->voltageMeterSource = VOLTAGE_METER_ADC;
 }
 #endif

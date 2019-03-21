@@ -107,14 +107,18 @@ void TIM6_DAC_IRQHandler(void)
 {
     cameraControlHi();
 
+#ifndef XMC4700_F100x2048
     TIM6->SR = 0;
+#endif
 }
 
 void TIM7_IRQHandler(void)
 {
     cameraControlLo();
 
+#ifndef XMC4700_F100x2048
     TIM7->SR = 0;
+#endif
 }
 #endif
 
@@ -156,6 +160,7 @@ void cameraControlInit(void)
         cameraControlRuntime.period = CAMERA_CONTROL_SOFT_PWM_RESOLUTION;
         cameraControlRuntime.enabled = true;
 
+#ifndef XMC4700_F100x2048
         NVIC_InitTypeDef nvicTIM6 = {
             TIM6_DAC_IRQn, NVIC_PRIORITY_BASE(NVIC_PRIO_TIMER), NVIC_PRIORITY_SUB(NVIC_PRIO_TIMER), ENABLE
         };
@@ -168,6 +173,7 @@ void cameraControlInit(void)
         RCC->APB1ENR |= RCC_APB1Periph_TIM6 | RCC_APB1Periph_TIM7;
         TIM6->PSC = 0;
         TIM7->PSC = 0;
+#endif
 #endif
     } else if (CAMERA_CONTROL_MODE_DAC == cameraControlConfig()->mode) {
         // @todo not yet implemented
@@ -237,6 +243,7 @@ void cameraControlKeyPress(cameraControlKey_e key, uint32_t holdDurationMs)
             delay(cameraControlConfig()->keyDelayMs + holdDurationMs);
             cameraControlHi();
         } else {
+#ifndef XMC4700_F100x2048
             TIM6->CNT = hiTime;
             TIM6->ARR = cameraControlRuntime.period;
 
@@ -252,7 +259,6 @@ void cameraControlKeyPress(cameraControlKey_e key, uint32_t holdDurationMs)
             // Enable interrupt generation
             TIM6->DIER = TIM_IT_Update;
             TIM7->DIER = TIM_IT_Update;
-
             const uint32_t endTime = millis() + cameraControlConfig()->keyDelayMs + holdDurationMs;
 
             // Wait to give the camera a chance at registering the key press
@@ -263,7 +269,7 @@ void cameraControlKeyPress(cameraControlKey_e key, uint32_t holdDurationMs)
             TIM7->CR1 &= ~TIM_CR1_CEN;
             TIM6->DIER = 0;
             TIM7->DIER = 0;
-
+#endif
             // Reset to idle state
             IOHi(cameraControlRuntime.io);
         }

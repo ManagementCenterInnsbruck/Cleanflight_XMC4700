@@ -704,7 +704,7 @@
 
 #elif defined(XMC4700_F100x2048)
 
-#define TIM_MODULE(tim) ((XMC_CCU4_MODULE_t*)(((uint32_t)tim) & 0xFFFF0000))
+#define TIM_MODULE(tim) ((XMC_CCU4_MODULE_t*)(((uint32_t)tim) & 0xFFFFF000))
 #define TIM_SLICE_NO(tim) (((((uint32_t)tim) & 0x00000F00) >> 8) - 1)
 
 #define TIM_CHANNEL_1                      ((uint8_t)0x01)
@@ -712,13 +712,14 @@
 #define TIM_CHANNEL_3                      ((uint8_t)0x03)
 #define TIM_CHANNEL_4                      ((uint8_t)0x04)
 
-#define DEF_TIM(tim, chan, pin, flags, out) {                   		\
+#define DEF_TIM(tim, chan, pin, flags, out, in) {                   	\
     tim,                                                                \
     IO_TAG(pin),                                                        \
     DEF_TIM_CHANNEL(CH_ ## chan),                                       \
     flags,                                                              \
     (DEF_TIM_OUTPUT(CH_ ## chan) | out),                                \
     DEF_TIM_AF(TCH_## tim ## _ ## chan, pin),                           \
+	in,																	\
 }
 
 #define DEF_TIM_CHANNEL(ch)                   CONCAT(DEF_TIM_CHANNEL__, DEF_TIM_CH_GET(ch))
@@ -728,9 +729,11 @@
 #define DEF_TIM_AF__D(af_n, tim_n)            GPIO_AF ## af_n ## _TIM ## tim_n
 
 #define DEF_TIM_AF__DEF_TIM_AF__P25__TCH_CCU41_CC40_CH1     XMC_GPIO_MODE_OUTPUT_PUSH_PULL_ALT3
-#define DEF_TIM_AF__DEF_TIM_AF__P24__TCH_CCU41_CC41_CH2     XMC_GPIO_MODE_OUTPUT_PUSH_PULL_ALT3
-#define DEF_TIM_AF__DEF_TIM_AF__P23__TCH_CCU41_CC42_CH3     XMC_GPIO_MODE_OUTPUT_PUSH_PULL_ALT3
-#define DEF_TIM_AF__DEF_TIM_AF__P22__TCH_CCU41_CC43_CH4     XMC_GPIO_MODE_OUTPUT_PUSH_PULL_ALT3
+#define DEF_TIM_AF__DEF_TIM_AF__P24__TCH_CCU41_CC41_CH1     XMC_GPIO_MODE_OUTPUT_PUSH_PULL_ALT3
+#define DEF_TIM_AF__DEF_TIM_AF__P23__TCH_CCU41_CC42_CH1     XMC_GPIO_MODE_OUTPUT_PUSH_PULL_ALT3
+#define DEF_TIM_AF__DEF_TIM_AF__P22__TCH_CCU41_CC43_CH1     XMC_GPIO_MODE_OUTPUT_PUSH_PULL_ALT3
+
+#define DEF_TIM_AF__DEF_TIM_AF__P27__TCH_CCU40_CC42_CH1     XMC_GPIO_MODE_INPUT_TRISTATE
 
 #endif
 

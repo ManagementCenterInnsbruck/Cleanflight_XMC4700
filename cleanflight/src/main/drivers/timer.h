@@ -109,6 +109,9 @@ typedef struct timerHardware_s {
 #if defined(STM32F3) || defined(STM32F4) || defined(STM32F7) || defined(XMC4700_F100x2048)
     uint8_t alternateFunction;
 #endif
+#ifdef XMC4700_F100x2048
+    uint8_t input;
+#endif
 #if defined(USE_DSHOT) || defined(USE_LED_STRIP) || defined(USE_TRANSPONDER)
 #if defined(STM32F4) || defined(STM32F7)
     DMA_Stream_TypeDef *dmaRef;
@@ -153,7 +156,7 @@ typedef enum {
 #elif defined(STM32F7)
 #define HARDWARE_TIMER_DEFINITION_COUNT 14
 #elif defined(XMC4700_F100x2048)
-#define HARDWARE_TIMER_DEFINITION_COUNT 4
+#define HARDWARE_TIMER_DEFINITION_COUNT 16
 #endif
 
 #define MHZ_TO_HZ(x) ((x) * 1000000)

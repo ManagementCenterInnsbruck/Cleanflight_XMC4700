@@ -20,12 +20,6 @@
 
 #pragma once
 
-#undef USE_BRUSHED_ESC_AUTODETECT
-#undef USE_TELEMETRY
-#undef USE_CAMERA_CONTROL
-#undef USE_LED_STRIP
-#undef USE_MSP_DISPLAYPORT
-
 #define TARGET_BOARD_IDENTIFIER "LEDU"
 #define USE_TARGET_CONFIG
 
@@ -41,17 +35,23 @@
 
 #define USE_ACC
 #define USE_ACC_MPU6500
+#define USE_ACC_ICM20948
 #define ACC_MPU6500_ALIGN       CW0_DEG
+#define ACC_ICM20948_ALIGN		CW180_DEG
 
 #define MPU_ADDRESS 			0x69
 #define USE_GYRO
 #define USE_GYRO_MPU6500
+#define USE_GYRO_ICM20948
 #define GYRO_MPU6500_ALIGN      CW0_DEG
+#define GYRO_ICM20948_ALIGN		CW180_DEG
 
 #define USE_MAG
 #define USE_MPU9250_MAG
 #define USE_MAG_AK8963
+#define USE_MAG_AK09916
 #define MAG_AK8963_ALIGN        CW90_DEG_FLIP
+#define MAG_AK09916_ALIGN		CW270_DEG_FLIP
 
 #define USE_BARO
 #define USE_BARO_DPS310
@@ -130,9 +130,8 @@
 #define TARGET_IO_PORT14         0xf3ff
 #define TARGET_IO_PORT15         0x030C
 
-#define USABLE_TIMER_CHANNEL_COUNT      13
-//#define USED_TIMERS             ( TIM_N(1) | TIM_N(3) | TIM_N(4) | TIM_N(5) | TIM_N(8) )
-#define USED_TIMERS             ( TIM_N(1) )
+#define USABLE_TIMER_CHANNEL_COUNT      16
+#define USED_TIMERS             ( TIM_N(0) | TIM_N(1) | TIM_N(2) | TIM_N(3) )
 
 #define SPI2 USIC0_CH1
 #define SPI3 USIC1_CH0

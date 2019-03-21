@@ -144,7 +144,12 @@ bool i2cWrite(I2CDevice device, uint8_t addr_, uint8_t reg, uint8_t data)
     while(!XMC_USIC_CH_TXFIFO_IsEmpty((XMC_USIC_CH_t*)I2Cx))
     {
     	if (i2cTimeout-- == 0)
+    	{
+    		XMC_USIC_CH_TXFIFO_Flush((XMC_USIC_CH_t*)I2Cx);
+    		I2Cx->PSCR |= USIC_CH_PSR_IICMode_WTDF_Msk;
+    		I2Cx->FMR = 0x00000002U;
     		return i2cTimeoutUserCallback();
+    	}
     }
 
     XMC_I2C_CH_MasterStart((XMC_USIC_CH_t*)I2Cx, addr_, XMC_I2C_CH_CMD_WRITE);
@@ -156,7 +161,12 @@ bool i2cWrite(I2CDevice device, uint8_t addr_, uint8_t reg, uint8_t data)
     while(!XMC_USIC_CH_TXFIFO_IsEmpty((XMC_USIC_CH_t*)I2Cx))
     {
     	if (i2cTimeout-- == 0)
+    	{
+    		XMC_USIC_CH_TXFIFO_Flush((XMC_USIC_CH_t*)I2Cx);
+    		I2Cx->PSCR |= USIC_CH_PSR_IICMode_WTDF_Msk;
+    		I2Cx->FMR = 0x00000002U;
     		return i2cTimeoutUserCallback();
+    	}
     }
 
     return true;
@@ -183,7 +193,12 @@ bool i2cRead(I2CDevice device, uint8_t addr_, uint8_t reg, uint8_t len, uint8_t*
         while(!XMC_USIC_CH_TXFIFO_IsEmpty((XMC_USIC_CH_t*)I2Cx))
         {
         	if (i2cTimeout-- == 0)
+        	{
+        		XMC_USIC_CH_TXFIFO_Flush((XMC_USIC_CH_t*)I2Cx);
+        		I2Cx->PSCR |= USIC_CH_PSR_IICMode_WTDF_Msk;
+        		I2Cx->FMR = 0x00000002U;
         		return i2cTimeoutUserCallback();
+        	}
         }
 
 
@@ -197,7 +212,12 @@ bool i2cRead(I2CDevice device, uint8_t addr_, uint8_t reg, uint8_t len, uint8_t*
         	while(XMC_USIC_CH_TXFIFO_IsFull((XMC_USIC_CH_t*)I2Cx))
             {
             	if (i2cTimeout-- == 0)
+            	{
+            		XMC_USIC_CH_TXFIFO_Flush((XMC_USIC_CH_t*)I2Cx);
+            		I2Cx->PSCR |= USIC_CH_PSR_IICMode_WTDF_Msk;
+            		I2Cx->FMR = 0x00000002U;
             		return i2cTimeoutUserCallback();
+            	}
             }
 
         	XMC_I2C_CH_MasterReceiveAck((XMC_USIC_CH_t*)I2Cx);
@@ -211,14 +231,24 @@ bool i2cRead(I2CDevice device, uint8_t addr_, uint8_t reg, uint8_t len, uint8_t*
         while(XMC_USIC_CH_TXFIFO_IsFull((XMC_USIC_CH_t*)I2Cx))
         {
         	if (i2cTimeout-- == 0)
+        	{
+        		XMC_USIC_CH_TXFIFO_Flush((XMC_USIC_CH_t*)I2Cx);
+        		I2Cx->PSCR |= USIC_CH_PSR_IICMode_WTDF_Msk;
+        		I2Cx->FMR = 0x00000002U;
         		return i2cTimeoutUserCallback();
+        	}
         }
         XMC_I2C_CH_MasterReceiveNack((XMC_USIC_CH_t*)I2Cx);
         i2cTimeout = I2C_LONG_TIMEOUT;
         while(XMC_USIC_CH_TXFIFO_IsFull((XMC_USIC_CH_t*)I2Cx))
         {
         	if (i2cTimeout-- == 0)
+        	{
+        		XMC_USIC_CH_TXFIFO_Flush((XMC_USIC_CH_t*)I2Cx);
+        		I2Cx->PSCR |= USIC_CH_PSR_IICMode_WTDF_Msk;
+        		I2Cx->FMR = 0x00000002U;
         		return i2cTimeoutUserCallback();
+        	}
         }
         XMC_I2C_CH_MasterStop((XMC_USIC_CH_t*)I2Cx);
 
@@ -230,7 +260,12 @@ bool i2cRead(I2CDevice device, uint8_t addr_, uint8_t reg, uint8_t len, uint8_t*
         		buf[pos++] = XMC_I2C_CH_GetReceivedData((XMC_USIC_CH_t*)I2Cx);
 
     		if (i2cTimeout-- == 0)
-    			return i2cTimeoutUserCallback();
+        	{
+        		XMC_USIC_CH_TXFIFO_Flush((XMC_USIC_CH_t*)I2Cx);
+        		I2Cx->PSCR |= USIC_CH_PSR_IICMode_WTDF_Msk;
+        		I2Cx->FMR = 0x00000002U;
+        		return i2cTimeoutUserCallback();
+        	}
         }
 
         /* If all operations OK */

@@ -76,13 +76,21 @@ timerInfo_t timerInfo[USED_TIMER_COUNT];
 
 static uint8_t lookupTimerIndex(const TIM_TypeDef *tim)
 {
+#ifdef XMC4700_F100x2048
+	uint8_t index = ~1;
+
+	for (uint8_t i=0; i<HARDWARE_TIMER_DEFINITION_COUNT; i++)
+	{
+		if((unsigned)tim == (unsigned)timerDefinitions[i].TIMx)
+			index = i;
+	}
+
+	return index;
+#else
 #define _CASE_SHF 10           // amount we can safely shift timer address to the right. gcc will throw error if some timers overlap
 #define _CASE_(tim, index) case ((unsigned)tim >> _CASE_SHF): return index; break
-#ifdef XMC4700_F100x2048
 #define _CASE(i) _CASE_(CCU4##i##_BASE, TIMER_INDEX(i))
-#else
 #define _CASE(i) _CASE_(TIM##i##_BASE, TIMER_INDEX(i))
-#endif
 
 // let gcc do the work, switch should be quite optimized
     switch ((unsigned)tim >> _CASE_SHF) {
@@ -141,14 +149,64 @@ static uint8_t lookupTimerIndex(const TIM_TypeDef *tim)
     }
 #undef _CASE
 #undef _CASE_
+#endif
 }
 
 TIM_TypeDef * const usedTimers[USED_TIMER_COUNT] = {
 #ifdef XMC4700_F100x2048
-#define _DEF(i) (TIM_TypeDef*)CCU4##i
+#define _DEF(i,j) CCU4##i##_CC4##j
+
+#if USED_TIMERS & TIM_N(1)
+    _DEF(0,0),
+#endif
+#if USED_TIMERS & TIM_N(2)
+	_DEF(0,1),
+#endif
+#if USED_TIMERS & TIM_N(3)
+	_DEF(0,2),
+#endif
+#if USED_TIMERS & TIM_N(4)
+	_DEF(0,3),
+#endif
+#if USED_TIMERS & TIM_N(5)
+	_DEF(1,0),
+#endif
+#if USED_TIMERS & TIM_N(6)
+	_DEF(1,1),
+#endif
+#if USED_TIMERS & TIM_N(7)
+	_DEF(1,2),
+#endif
+#if USED_TIMERS & TIM_N(8)
+	_DEF(1,3),
+#endif
+#if USED_TIMERS & TIM_N(9)
+	_DEF(2,0),
+#endif
+#if USED_TIMERS & TIM_N(10)
+	_DEF(2,1),
+#endif
+#if USED_TIMERS & TIM_N(11)
+	_DEF(2,2),
+#endif
+#if USED_TIMERS & TIM_N(12)
+	_DEF(2,3),
+#endif
+#if USED_TIMERS & TIM_N(13)
+	_DEF(3,0),
+#endif
+#if USED_TIMERS & TIM_N(14)
+	_DEF(3,1),
+#endif
+#if USED_TIMERS & TIM_N(15)
+	_DEF(3,2),
+#endif
+#if USED_TIMERS & TIM_N(16)
+	_DEF(3,3),
+#endif
+
 #else
 #define _DEF(i) TIM##i
-#endif
 
 #if USED_TIMERS & TIM_N(1)
     _DEF(1),
@@ -201,11 +259,65 @@ TIM_TypeDef * const usedTimers[USED_TIMER_COUNT] = {
 #if USED_TIMERS & TIM_N(17)
     _DEF(17),
 #endif
+#endif
 #undef _DEF
 };
 
 // Map timer index to timer number (Straight copy of usedTimers array)
 const int8_t timerNumbers[USED_TIMER_COUNT] = {
+#ifdef XMC4700_F100x2048
+#define _DEF(i,j) i*4+j
+
+#if USED_TIMERS & TIM_N(1)
+    _DEF(0,0),
+#endif
+#if USED_TIMERS & TIM_N(2)
+	_DEF(0,1),
+#endif
+#if USED_TIMERS & TIM_N(3)
+	_DEF(0,2),
+#endif
+#if USED_TIMERS & TIM_N(4)
+	_DEF(0,3),
+#endif
+#if USED_TIMERS & TIM_N(5)
+	_DEF(1,0),
+#endif
+#if USED_TIMERS & TIM_N(6)
+	_DEF(1,1),
+#endif
+#if USED_TIMERS & TIM_N(7)
+	_DEF(1,2),
+#endif
+#if USED_TIMERS & TIM_N(8)
+	_DEF(1,3),
+#endif
+#if USED_TIMERS & TIM_N(9)
+	_DEF(2,0),
+#endif
+#if USED_TIMERS & TIM_N(10)
+	_DEF(2,1),
+#endif
+#if USED_TIMERS & TIM_N(11)
+	_DEF(2,2),
+#endif
+#if USED_TIMERS & TIM_N(12)
+	_DEF(2,3),
+#endif
+#if USED_TIMERS & TIM_N(13)
+	_DEF(3,0),
+#endif
+#if USED_TIMERS & TIM_N(14)
+	_DEF(3,1),
+#endif
+#if USED_TIMERS & TIM_N(15)
+	_DEF(3,2),
+#endif
+#if USED_TIMERS & TIM_N(16)
+	_DEF(3,3),
+#endif
+
+#else
 #define _DEF(i) i
 
 #if USED_TIMERS & TIM_N(1)
@@ -258,6 +370,7 @@ const int8_t timerNumbers[USED_TIMER_COUNT] = {
 #endif
 #if USED_TIMERS & TIM_N(17)
     _DEF(17),
+#endif
 #endif
 #undef _DEF
 };
@@ -318,17 +431,30 @@ void configTimeBase(TIM_TypeDef *tim, uint16_t period, uint32_t hz)
 {
 #ifdef XMC4700_F100x2048
 
-	XMC_CCU4_Init(TIM_MODULE(tim), XMC_CCU4_SLICE_MCMS_ACTION_TRANSFER_PR_CR);
-
 	uint8_t prescaler = log2f(timerClock(tim) / hz);
 
-	XMC_CCU4_SLICE_COMPARE_CONFIG_t slice_config;
-	memset(&slice_config, 0, sizeof(slice_config));
-	slice_config.prescaler_initval = prescaler;
-	slice_config.shadow_xfer_clear = 1;
-	XMC_CCU4_SLICE_CompareInit(tim, &slice_config);
-	XMC_CCU4_SLICE_SetTimerPeriodMatch(tim, period);
-	XMC_CCU4_EnableShadowTransfer(TIM_MODULE(tim), 1 << 4  *TIM_SLICE_NO(tim));
+	XMC_CCU4_Init(TIM_MODULE(tim), XMC_CCU4_SLICE_MCMS_ACTION_TRANSFER_PR_CR);
+
+	if (period == 0) // Capture MODE
+	{
+		XMC_CCU4_SLICE_CAPTURE_CONFIG_t capture_config;
+		memset(&capture_config, 0, sizeof(capture_config));
+		capture_config.prescaler_initval = prescaler;
+		capture_config.ignore_full_flag = true;
+		XMC_CCU4_SLICE_CaptureInit(tim, &capture_config);
+		XMC_CCU4_SLICE_SetTimerPeriodMatch(tim, 0xffff);
+		XMC_CCU4_EnableShadowTransfer(TIM_MODULE(tim), 1 << 4  * TIM_SLICE_NO(tim));
+	}
+	else
+	{
+		XMC_CCU4_SLICE_COMPARE_CONFIG_t slice_config;
+		memset(&slice_config, 0, sizeof(slice_config));
+		slice_config.prescaler_initval = prescaler;
+		slice_config.shadow_xfer_clear = 1;
+		XMC_CCU4_SLICE_CompareInit(tim, &slice_config);
+		XMC_CCU4_SLICE_SetTimerPeriodMatch(tim, period);
+		XMC_CCU4_EnableShadowTransfer(TIM_MODULE(tim), 1 << 4  * TIM_SLICE_NO(tim));
+	}
 
 #else
     TIM_TimeBaseInitTypeDef  TIM_TimeBaseStructure;
@@ -350,7 +476,15 @@ void configTimeBase(TIM_TypeDef *tim, uint16_t period, uint32_t hz)
 void timerConfigure(const timerHardware_t *timerHardwarePtr, uint16_t period, uint32_t hz)
 {
     configTimeBase(timerHardwarePtr->tim, period, hz);
-#ifndef XMC4700_F100x2048
+#ifdef XMC4700_F100x2048
+
+    XMC_CCU4_SLICE_Capture0Config(timerHardwarePtr->tim, XMC_CCU4_SLICE_EVENT_0);
+    XMC_CCU4_SLICE_SetInterruptNode(timerHardwarePtr->tim, XMC_CCU4_SLICE_IRQ_ID_PERIOD_MATCH, TIM_SLICE_NO(timerHardwarePtr->tim));
+    XMC_CCU4_SLICE_SetInterruptNode(timerHardwarePtr->tim, XMC_CCU4_SLICE_IRQ_ID_EVENT0, TIM_SLICE_NO(timerHardwarePtr->tim));
+
+    XMC_CCU4_EnableClock(TIM_MODULE(timerHardwarePtr->tim), TIM_SLICE_NO(timerHardwarePtr->tim));
+    XMC_CCU4_SLICE_StartTimer(timerHardwarePtr->tim);
+#else
     TIM_Cmd(timerHardwarePtr->tim, ENABLE);
 #endif
 
@@ -441,6 +575,10 @@ static void timerChConfig_UpdateOverflow(timerConfig_t *cfg, TIM_TypeDef *tim) {
     }
     // enable or disable IRQ
 #ifdef XMC4700_F100x2048
+    if (cfg->overflowCallbackActive)
+    	XMC_CCU4_SLICE_EnableEvent(tim, XMC_CCU4_SLICE_IRQ_ID_PERIOD_MATCH);
+    else
+    	XMC_CCU4_SLICE_DisableEvent(tim, XMC_CCU4_SLICE_IRQ_ID_PERIOD_MATCH);
 #else
     TIM_ITConfig(tim, TIM_IT_Update, cfg->overflowCallbackActive ? ENABLE : DISABLE);
 #endif
@@ -453,8 +591,12 @@ void timerChConfigCallbacks(const timerHardware_t *timHw, timerCCHandlerRec_t *e
     if (timerIndex >= USED_TIMER_COUNT) {
         return;
     }
+#ifdef XMC4700_F100x2048
+    uint8_t channelIndex = 0;
+    if (edgeCallback == NULL)
+    	XMC_CCU4_SLICE_DisableEvent(timHw->tim, XMC_CCU4_SLICE_IRQ_ID_EVENT0);
+#else
     uint8_t channelIndex = lookupChannelIndex(timHw->channel);
-#ifndef XMC4700_F100x2048
     if (edgeCallback == NULL)   // disable irq before changing callback to NULL
         TIM_ITConfig(timHw->tim, TIM_IT_CCx(timHw->channel), DISABLE);
 #endif
@@ -462,9 +604,11 @@ void timerChConfigCallbacks(const timerHardware_t *timHw, timerCCHandlerRec_t *e
     timerConfig[timerIndex].edgeCallback[channelIndex] = edgeCallback;
     timerConfig[timerIndex].overflowCallback[channelIndex] = overflowCallback;
     // enable channel IRQ
-#ifndef XMC4700_F100x2048
     if (edgeCallback)
-        TIM_ITConfig(timHw->tim, TIM_IT_CCx(timHw->channel), ENABLE);
+#ifdef XMC4700_F100x2048
+    	XMC_CCU4_SLICE_EnableEvent(timHw->tim, XMC_CCU4_SLICE_IRQ_ID_EVENT0);
+#else
+    	TIM_ITConfig(timHw->tim, TIM_IT_CCx(timHw->channel), ENABLE);
 #endif
 
     timerChConfig_UpdateOverflow(&timerConfig[timerIndex], timHw->tim);
@@ -657,9 +801,39 @@ void timerChConfigOC(const timerHardware_t* timHw, bool outEnable, bool stateHig
     }
 }
 
+#endif
+
 static void timCCxHandler(TIM_TypeDef *tim, timerConfig_t *timerConfig)
 {
     uint16_t capture;
+
+#ifdef XMC4700_F100x2048
+
+    if (XMC_CCU4_SLICE_GetEvent(tim, XMC_CCU4_SLICE_IRQ_ID_PERIOD_MATCH))
+    {
+        if (timerConfig->forcedOverflowTimerValue != 0) {
+            capture = timerConfig->forcedOverflowTimerValue - 1;
+            timerConfig->forcedOverflowTimerValue = 0;
+        } else {
+            capture = tim->PR;
+        }
+
+        timerOvrHandlerRec_t *cb = timerConfig->overflowCallbackActive;
+        while (cb) {
+            cb->fn(cb, capture);
+            cb = cb->next;
+        }
+
+    	XMC_CCU4_SLICE_ClearEvent(tim, XMC_CCU4_SLICE_IRQ_ID_PERIOD_MATCH);
+    }
+    else if(XMC_CCU4_SLICE_GetEvent(tim, XMC_CCU4_SLICE_IRQ_ID_EVENT0))
+    {
+    	timerConfig->edgeCallback[0]->fn(timerConfig->edgeCallback[0], (uint16_t)tim->CV[1]);
+
+    	XMC_CCU4_SLICE_ClearEvent(tim, XMC_CCU4_SLICE_IRQ_ID_EVENT0);
+    }
+
+#else
     unsigned tim_status;
     tim_status = tim->SR & tim->DIER;
 #if 1
@@ -728,7 +902,31 @@ static void timCCxHandler(TIM_TypeDef *tim, timerConfig_t *timerConfig)
         timerConfig->edgeCallback[3]->fn(timerConfig->edgeCallback[3], tim->CCR4);
     }
 #endif
+#endif
 }
+
+#ifdef XMC4700_F100x2048
+
+#define _TIM_IRQ_HANDLER2(name, i, j)                                   \
+    void name(void)                                                     \
+    {                                                                   \
+        timCCxHandler(CCU4##i##_CC4##j, &timerConfig[i*4+j]);           \
+    } struct dummy
+
+#if USED_TIMERS & TIM_N(1)
+_TIM_IRQ_HANDLER2(CCU40_0_IRQHandler, 0, 0);
+#endif
+#if USED_TIMERS & TIM_N(2)
+_TIM_IRQ_HANDLER2(CCU40_1_IRQHandler, 0, 1);
+#endif
+#if USED_TIMERS & TIM_N(3)
+_TIM_IRQ_HANDLER2(CCU40_2_IRQHandler, 0, 2);
+#endif
+#if USED_TIMERS & TIM_N(4)
+_TIM_IRQ_HANDLER2(CCU40_3_IRQHandler, 0, 3);
+#endif
+
+#else
 
 // handler for shared interrupts when both timers need to check status bits
 #define _TIM_IRQ_HANDLER2(name, i, j)                                   \

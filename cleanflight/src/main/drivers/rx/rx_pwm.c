@@ -54,7 +54,11 @@
 
 static inputFilteringMode_e inputFilteringMode;
 
+#ifdef XMC4700_F100x2048
+void pwmICConfig(TIM_TypeDef *tim, uint8_t input, uint8_t polarity);
+#else
 void pwmICConfig(TIM_TypeDef *tim, uint8_t channel, uint16_t polarity);
+#endif
 
 typedef enum {
     INPUT_MODE_PPM,
@@ -178,6 +182,7 @@ static void ppmOverflowCallback(timerOvrHandlerRec_t* cbRec, captureCompare_t ca
 static void ppmEdgeCallback(timerCCHandlerRec_t* cbRec, captureCompare_t capture)
 {
     UNUSED(cbRec);
+
     ppmISREvent(SOURCE_EDGE, capture);
 
     int32_t i;
@@ -298,6 +303,7 @@ static void pwmEdgeCallback(timerCCHandlerRec_t *cbRec, captureCompare_t capture
         pwmInputPort->rise = capture;
         pwmInputPort->state = 1;
 #ifdef XMC4700_F100x2048
+        pwmICConfig(timerHardwarePtr->tim, timerHardwarePtr->input, XMC_CCU4_SLICE_EVENT_EDGE_SENSITIVITY_FALLING_EDGE);
 #else
 #if defined(USE_HAL_DRIVER)
         pwmICConfig(timerHardwarePtr->tim, timerHardwarePtr->channel, TIM_ICPOLARITY_FALLING);
@@ -315,6 +321,7 @@ static void pwmEdgeCallback(timerCCHandlerRec_t *cbRec, captureCompare_t capture
         // switch state
         pwmInputPort->state = 0;
 #ifdef XMC4700_F100x2048
+        pwmICConfig(timerHardwarePtr->tim, timerHardwarePtr->input, XMC_CCU4_SLICE_EVENT_EDGE_SENSITIVITY_RISING_EDGE);
 #else
 #if defined(USE_HAL_DRIVER)
         pwmICConfig(timerHardwarePtr->tim, timerHardwarePtr->channel, TIM_ICPOLARITY_RISING);
@@ -327,6 +334,19 @@ static void pwmEdgeCallback(timerCCHandlerRec_t *cbRec, captureCompare_t capture
 }
 
 #ifdef XMC4700_F100x2048
+
+void pwmICConfig(TIM_TypeDef *tim, uint8_t input, uint8_t polarity)
+{
+    XMC_CCU4_SLICE_EVENT_CONFIG_t event_config =
+    {
+		.mapped_input        = input,
+		.edge                = polarity,
+		.level               = XMC_CCU4_SLICE_EVENT_LEVEL_SENSITIVITY_ACTIVE_HIGH,
+		.duration            = XMC_CCU4_SLICE_EVENT_FILTER_DISABLED
+    };
+    XMC_CCU4_SLICE_ConfigureEvent(tim, XMC_CCU4_SLICE_EVENT_0, &event_config);
+}
+
 #else
 #ifdef USE_HAL_DRIVER
 
@@ -406,6 +426,7 @@ void pwmRxInit(const pwmConfig_t *pwmConfig)
         timerChConfigCallbacks(timer, &port->edgeCb, &port->overflowCb);
 
 #ifdef XMC4700_F100x2048
+        pwmICConfig(timer->tim, timer->input, XMC_CCU4_SLICE_EVENT_EDGE_SENSITIVITY_RISING_EDGE);
 #else
 #if defined(USE_HAL_DRIVER)
         pwmICConfig(timer->tim, timer->channel, TIM_ICPOLARITY_RISING);
@@ -463,6 +484,7 @@ void ppmRxInit(const ppmConfig_t *ppmConfig)
     timerChConfigCallbacks(timer, &port->edgeCb, &port->overflowCb);
 
 #ifdef XMC4700_F100x2048
+    pwmICConfig(timer->tim, timer->input, XMC_CCU4_SLICE_EVENT_EDGE_SENSITIVITY_RISING_EDGE);
 #else
 #if defined(USE_HAL_DRIVER)
     pwmICConfig(timer->tim, timer->channel, TIM_ICPOLARITY_RISING);

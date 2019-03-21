@@ -28,6 +28,36 @@
 #include "drivers/nvic.h"
 #include "drivers/system.h"
 
+void SystemCoreClockSetup(void)
+{
+	const XMC_SCU_CLOCK_CONFIG_t CLOCK_XMC4_0_CONFIG =
+	{
+		.syspll_config.n_div = 128U,
+		.syspll_config.p_div = 3U,
+		.syspll_config.k_div = 2U,
+		.syspll_config.mode = XMC_SCU_CLOCK_SYSPLL_MODE_NORMAL,
+		.syspll_config.clksrc = XMC_SCU_CLOCK_SYSPLLCLKSRC_OSCHP,
+		.enable_oschp = true,
+		.enable_osculp = false,
+		.calibration_mode = XMC_SCU_CLOCK_FOFI_CALIBRATION_MODE_FACTORY,
+		.fstdby_clksrc = XMC_SCU_HIB_STDBYCLKSRC_OSI,
+		.fsys_clksrc = XMC_SCU_CLOCK_SYSCLKSRC_PLL,
+		.fsys_clkdiv = 2U,
+		.fcpu_clkdiv = 1U,
+		.fccu_clkdiv = 1U,
+		.fperipheral_clkdiv = 1U
+	};
+	XMC_SCU_CLOCK_Init(&CLOCK_XMC4_0_CONFIG);
+	XMC_SCU_HIB_SetRtcClockSource(XMC_SCU_HIB_RTCCLKSRC_OSI);
+	XMC_SCU_CLOCK_SetUsbClockSource(XMC_SCU_CLOCK_USBCLKSRC_USBPLL);
+	XMC_SCU_CLOCK_SetUsbClockDivider(4U);
+	XMC_SCU_CLOCK_StartUsbPll(1U, 32U);
+	XMC_SCU_CLOCK_SetWdtClockSource(XMC_SCU_CLOCK_WDTCLKSRC_OFI);
+	XMC_SCU_CLOCK_SetWdtClockDivider(1U);
+	XMC_SCU_CLOCK_SetEbuClockDivider(1U);
+}
+
+
 void systemReset(void)
 {
     if (mpuResetFn) {

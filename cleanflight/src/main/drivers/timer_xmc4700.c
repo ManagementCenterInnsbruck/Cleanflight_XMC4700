@@ -25,6 +25,22 @@
 #include "timer.h"
 
 const timerDef_t timerDefinitions[HARDWARE_TIMER_DEFINITION_COUNT] = {
+	{ .TIMx = CCU40_CC40, .inputIrq = CCU40_0_IRQn },
+	{ .TIMx = CCU40_CC41, .inputIrq = CCU40_1_IRQn },
+	{ .TIMx = CCU40_CC42, .inputIrq = CCU40_2_IRQn },
+	{ .TIMx = CCU40_CC43, .inputIrq = CCU40_3_IRQn },
+	{ .TIMx = CCU41_CC40, .inputIrq = CCU41_0_IRQn },
+	{ .TIMx = CCU41_CC41, .inputIrq = CCU41_1_IRQn },
+	{ .TIMx = CCU41_CC42, .inputIrq = CCU41_2_IRQn },
+	{ .TIMx = CCU41_CC43, .inputIrq = CCU41_3_IRQn },
+	{ .TIMx = CCU42_CC40, .inputIrq = CCU42_0_IRQn },
+	{ .TIMx = CCU42_CC41, .inputIrq = CCU42_1_IRQn },
+	{ .TIMx = CCU42_CC42, .inputIrq = CCU42_2_IRQn },
+	{ .TIMx = CCU42_CC43, .inputIrq = CCU42_3_IRQn },
+	{ .TIMx = CCU43_CC40, .inputIrq = CCU43_0_IRQn },
+	{ .TIMx = CCU43_CC41, .inputIrq = CCU43_1_IRQn },
+	{ .TIMx = CCU43_CC42, .inputIrq = CCU43_2_IRQn },
+	{ .TIMx = CCU43_CC43, .inputIrq = CCU43_3_IRQn },
 };
 
 uint32_t timerClock(TIM_TypeDef *tim)

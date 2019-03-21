@@ -75,52 +75,92 @@ static void alignBoard(float *vec)
 
 FAST_CODE void alignSensors(float *dest, uint8_t rotation)
 {
-    const float x = dest[X];
-    const float y = dest[Y];
-    const float z = dest[Z];
+	const float x = dest[X];
+	const float y = dest[Y];
+	const float z = dest[Z];
 
     switch (rotation) {
     default:
     case CW0_DEG:
-        dest[X] = x;
-        dest[Y] = y;
-        dest[Z] = z;
+    {
+        float temp_x = x;
+        float temp_y = y;
+        float temp_z = z;
+    	dest[X] = temp_x;
+        dest[Y] = temp_y;
+        dest[Z] = temp_z;
         break;
+    }
     case CW90_DEG:
-        dest[X] = y;
-        dest[Y] = -x;
-        dest[Z] = z;
+    {
+    	float temp_x = y;
+    	float temp_y = -x;
+    	float temp_z = z;
+    	dest[X] = temp_x;
+        dest[Y] = temp_y;
+        dest[Z] = temp_z;
         break;
+    }
     case CW180_DEG:
-        dest[X] = -x;
-        dest[Y] = -y;
-        dest[Z] = z;
+    {
+    	float temp_x = -x;
+    	float temp_y = -y;
+    	float temp_z = z;
+    	dest[X] = temp_x;
+        dest[Y] = temp_y;
+        dest[Z] = temp_z;
         break;
+    }
     case CW270_DEG:
-        dest[X] = -y;
-        dest[Y] = x;
-        dest[Z] = z;
+    {
+    	float temp_x = -y;
+    	float temp_y = x;
+    	float temp_z = z;
+    	dest[X] = temp_x;
+        dest[Y] = temp_y;
+        dest[Z] = temp_z;
         break;
+    }
     case CW0_DEG_FLIP:
-        dest[X] = -x;
-        dest[Y] = y;
-        dest[Z] = -z;
+    {
+    	float temp_x = -x;
+    	float temp_y = y;
+    	float temp_z = -z;
+    	dest[X] = temp_x;
+        dest[Y] = temp_y;
+        dest[Z] = temp_z;
         break;
+    }
     case CW90_DEG_FLIP:
-        dest[X] = y;
-        dest[Y] = x;
-        dest[Z] = -z;
+    {
+    	float temp_x = y;
+    	float temp_y = x;
+    	float temp_z = -z;
+    	dest[X] = temp_x;
+        dest[Y] = temp_y;
+        dest[Z] = temp_z;
         break;
+    }
     case CW180_DEG_FLIP:
-        dest[X] = x;
-        dest[Y] = -y;
-        dest[Z] = -z;
+    {
+    	float temp_x = x;
+    	float temp_y = -y;
+    	float temp_z = -z;
+    	dest[X] = temp_x;
+        dest[Y] = temp_y;
+        dest[Z] = temp_z;
         break;
+    }
     case CW270_DEG_FLIP:
-        dest[X] = -y;
-        dest[Y] = -x;
-        dest[Z] = -z;
+    {
+    	float temp_x = -y;
+    	float temp_y = -x;
+    	float temp_z = -z;
+    	dest[X] = temp_x;
+        dest[Y] = temp_y;
+        dest[Z] = temp_z;
         break;
+    }
     }
 
     if (!standardBoardAlignment)

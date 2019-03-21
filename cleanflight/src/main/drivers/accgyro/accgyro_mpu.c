@@ -46,6 +46,7 @@
 #include "drivers/accgyro/accgyro_mpu3050.h"
 #include "drivers/accgyro/accgyro_mpu6050.h"
 #include "drivers/accgyro/accgyro_mpu6500.h"
+#include "drivers/accgyro/accgyro_icm20948.h"
 #include "drivers/accgyro/accgyro_spi_bmi160.h"
 #include "drivers/accgyro/accgyro_spi_icm20649.h"
 #include "drivers/accgyro/accgyro_spi_icm20689.h"
@@ -337,6 +338,12 @@ void mpuDetect(gyroDev_t *gyro)
             } else if (sig == MPU6500_WHO_AM_I_CONST) {
                 gyro->mpuDetectionResult.sensor = MPU_65xx_I2C;
             }
+
+#ifdef USE_GYRO_ICM20948
+            if (gyro->mpuDetectionResult.sensor == MPU_NONE)
+            	gyro->mpuDetectionResult.sensor = icm20948Detect(&gyro->bus);
+#endif
+
             return;
         }
     }

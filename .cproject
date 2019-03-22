@@ -138,7 +138,6 @@
 									<listOptionValue builtIn="false" value="XMC4700_F100x2048"/>
 									<listOptionValue builtIn="false" value="ARM_MATH_CM4"/>
 									<listOptionValue builtIn="false" value="__FPU_PRESENT=1"/>
-									<listOptionValue builtIn="false" value="FLASH_SIZE=2048"/>
 									<listOptionValue builtIn="false" value="'__TARGET__=&quot;LEDUV3&quot;'"/>
 									<listOptionValue builtIn="false" value="'__REVISION__=&quot;1.0&quot;'"/>
 								</option>
@@ -166,7 +165,7 @@
 								<option id="com.ifx.xmc4000.appLinker.option.misc.fpu.214965145" name="Fpu (-mfpu)" superClass="com.ifx.xmc4000.appLinker.option.misc.fpu" useByScannerDiscovery="false" value="org.eclipse.cdt.cross.arm.gnu.base.option.mfpu.fpv4-sp-d16" valueType="enumerated"/>
 								<option id="com.ifx.xmc4000.appLinker.option.misc.mfloat.450152410" name="Floating point" superClass="com.ifx.xmc4000.appLinker.option.misc.mfloat" useByScannerDiscovery="false" value="org.eclipse.cdt.cross.arm.gnu.base.option.other.mfloat.softfp" valueType="enumerated"/>
 								<option id="com.ifx.xmc4000.appLinker.option.nosys.specs.787516884" name="Provide default newlib system calls (-specs=nosys.specs)" superClass="com.ifx.xmc4000.appLinker.option.nosys.specs" useByScannerDiscovery="false" value="true" valueType="boolean"/>
-								<option id="com.ifx.xmc4000.appLinker.option.scriptfile.1165273882" superClass="com.ifx.xmc4000.appLinker.option.scriptfile" useByScannerDiscovery="false" value="..\cleanflight\src\main\target\link\xmc_flash_4700_2m.ld" valueType="string"/>
+								<option id="com.ifx.xmc4000.appLinker.option.scriptfile.1165273882" name="Script file (-T)" superClass="com.ifx.xmc4000.appLinker.option.scriptfile" useByScannerDiscovery="false" value="..\cleanflight\src\main\target\link\xmc_flash_4700_2m.ld" valueType="string"/>
 								<inputType id="com.ifx.xmc4000.appLinker.inputType.1867746321" name="ARM-GCC for XMC Linker Input Type" superClass="com.ifx.xmc4000.appLinker.inputType">
 									<additionalInput kind="additionalinputdependency" paths="$(USER_OBJS)"/>
 									<additionalInput kind="additionalinput" paths="$(LIBS)"/>

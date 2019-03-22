@@ -135,6 +135,10 @@ typedef enum {
     TASK_PINIOBOX,
 #endif
 
+#ifdef USE_SPIS_MSP
+	TASK_SPIS_MSP,
+#endif
+
     /* Count of real tasks */
     TASK_COUNT,
 

@@ -40,6 +40,7 @@
 #include "msp/msp_serial.h"
 
 static mspPort_t mspPorts[MAX_MSP_PORT_COUNT];
+static mspPort_t mspSPISPorts[MAX_SPIS_MSP_PORT_COUNT];
 
 static void resetMspPort(mspPort_t *mspPortToReset, serialPort_t *serialPort, bool sharedWithTelemetry)
 {
@@ -52,11 +53,21 @@ static void resetMspPort(mspPort_t *mspPortToReset, serialPort_t *serialPort, bo
 void mspSerialAllocatePorts(void)
 {
     uint8_t portIndex = 0;
+    uint8_t spisPortIndex = 0;
     serialPortConfig_t *portConfig = findSerialPortConfig(FUNCTION_MSP);
     while (portConfig && portIndex < MAX_MSP_PORT_COUNT) {
-        mspPort_t *mspPort = &mspPorts[portIndex];
+        mspPort_t *mspPort;
+
+        if (portConfig->identifier >= SERIAL_PORT_SPIS1)
+        	mspPort = &mspSPISPorts[spisPortIndex];
+        else
+        	 mspPort = &mspPorts[portIndex];
+
         if (mspPort->port) {
-            portIndex++;
+        	if (portConfig->identifier >= SERIAL_PORT_SPIS1)
+        		spisPortIndex++;
+        	else
+        		portIndex++;
             continue;
         }
 
@@ -64,7 +75,10 @@ void mspSerialAllocatePorts(void)
         if (serialPort) {
             bool sharedWithTelemetry = isSerialPortShared(portConfig, FUNCTION_MSP, TELEMETRY_PORT_FUNCTIONS_MASK);
             resetMspPort(mspPort, serialPort, sharedWithTelemetry);
-            portIndex++;
+            if (portConfig->identifier >= SERIAL_PORT_SPIS1)
+            	spisPortIndex++;
+            else
+            	portIndex++;
         }
 
         portConfig = findNextSerialPortConfig(FUNCTION_MSP);
@@ -523,6 +537,45 @@ void mspSerialProcess(mspEvaluateNonMspData_e evaluateNonMspData, mspProcessComm
         }
         else {
             mspProcessPendingRequest(mspPort);
+        }
+    }
+}
+
+/*
+ * Process MSP commands from serial ports configured as MSP ports.
+ *
+ * Called periodically by the scheduler.
+ */
+void mspSPISSerialProcess(mspProcessCommandFnPtr mspProcessCommandFn, mspProcessReplyFnPtr mspProcessReplyFn)
+{
+    for (uint8_t portIndex = 0; portIndex < MAX_SPIS_MSP_PORT_COUNT; portIndex++) {
+        mspPort_t * const mspPort = &mspSPISPorts[portIndex];
+        if (!mspPort->port) {
+            continue;
+        }
+
+        mspPostProcessFnPtr mspPostProcessFn = NULL;
+
+        while (serialRxBytesWaiting(mspPort->port)) {
+
+            const uint8_t c = serialRead(mspPort->port);
+            mspSerialProcessReceivedData(mspPort, c);
+
+            if (mspPort->c_state == MSP_COMMAND_RECEIVED) {
+                if (mspPort->packetType == MSP_PACKET_COMMAND) {
+                    mspPostProcessFn = mspSerialProcessReceivedCommand(mspPort, mspProcessCommandFn);
+                } else if (mspPort->packetType == MSP_PACKET_REPLY) {
+                    mspSerialProcessReceivedReply(mspPort, mspProcessReplyFn);
+                }
+
+                mspPort->c_state = MSP_IDLE;
+                break; // process one command at a time so as not to block.
+            }
+        }
+
+        if (mspPostProcessFn) {
+            waitForSerialPortToFinishTransmitting(mspPort->port);
+            mspPostProcessFn(mspPort->port);
         }
     }
 }

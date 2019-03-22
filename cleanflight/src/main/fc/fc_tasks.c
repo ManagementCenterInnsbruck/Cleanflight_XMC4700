@@ -154,6 +154,14 @@ static void taskHandleSerial(timeUs_t currentTimeUs)
     mspSerialProcess(evaluateMspData, mspFcProcessCommand, mspFcProcessReply);
 }
 
+#ifdef USE_SPIS_MSP
+static void taskSPISMspSerial(timeUs_t currentTimeUs)
+{
+	UNUSED(currentTimeUs);
+	mspSPISSerialProcess(mspFcProcessCommand, mspFcProcessReply);
+}
+#endif
+
 static void taskBatteryAlerts(timeUs_t currentTimeUs)
 {
     if (!ARMING_FLAG(ARMED)) {
@@ -253,6 +261,9 @@ void fcTasksInit(void)
     const bool useBatteryAlerts = batteryConfig()->useVBatAlerts || batteryConfig()->useConsumptionAlerts;
 #else
     const bool useBatteryAlerts = batteryConfig()->useVBatAlerts || batteryConfig()->useConsumptionAlerts || feature(FEATURE_OSD);
+#endif
+#ifdef USE_SPIS_MSP
+    setTaskEnabled(TASK_SPIS_MSP, true);
 #endif
     setTaskEnabled(TASK_BATTERY_ALERTS, (useBatteryVoltage || useBatteryCurrent) && useBatteryAlerts);
 
@@ -383,6 +394,15 @@ cfTask_t cfTasks[TASK_COUNT] = {
         .staticPriority = TASK_PRIORITY_LOW,
 #endif
     },
+
+#ifdef USE_SPIS_MSP
+	[TASK_SPIS_MSP] = {
+		.taskName = "SPISMSP",
+		.taskFunc = taskSPISMspSerial,
+		.desiredPeriod = TASK_PERIOD_HZ(10000),
+		.staticPriority = TASK_PRIORITY_HIGH,
+	},
+#endif
 
     [TASK_BATTERY_ALERTS] = {
         .taskName = "BATTERY_ALERTS",

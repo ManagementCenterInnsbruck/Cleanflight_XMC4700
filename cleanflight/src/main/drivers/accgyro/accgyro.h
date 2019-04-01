@@ -32,7 +32,7 @@
 #if defined(SIMULATOR_BUILD) && defined(SIMULATOR_MULTITHREAD)
 #include <pthread.h>
 #elif !defined(UNIT_TEST)
-#pragma GCC diagnostic warning "-Wpadded"
+//#pragma GCC diagnostic warning "-Wpadded"
 #endif
 
 #ifndef MPU_I2C_INSTANCE

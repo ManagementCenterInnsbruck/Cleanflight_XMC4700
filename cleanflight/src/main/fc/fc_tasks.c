@@ -399,7 +399,7 @@ cfTask_t cfTasks[TASK_COUNT] = {
 	[TASK_SPIS_MSP] = {
 		.taskName = "SPISMSP",
 		.taskFunc = taskSPISMspSerial,
-		.desiredPeriod = TASK_PERIOD_HZ(10000),
+		.desiredPeriod = TASK_PERIOD_HZ(1000),
 		.staticPriority = TASK_PRIORITY_HIGH,
 	},
 #endif
